@@ -1,1 +1,1 @@
-conds activate neo4j_build
+conda activate neo4j_build
