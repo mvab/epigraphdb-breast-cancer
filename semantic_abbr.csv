@@ -1,0 +1,134 @@
+﻿Abbreviation,Semantic type
+dsyn,Disease or Syndrome
+aapp,"Amino Acid, Peptide, or Protein"
+podg,Patient or Disabled Group
+bpoc,"Body Part, Organ, or Organ Component"
+gngm,Gene or Genome
+topp,Therapeutic or Preventive Procedure
+neop,Neoplastic Process
+cell,Cell
+mamm,Mammal
+phsu,Pharmacologic Substance
+orch,Organic Chemical
+bacs,Biologically Active Substance
+fndg,Finding
+patf,Pathologic Function
+popg,Population Group
+aggp,Age Group
+tisu,Tissue
+celc,Cell Component
+humn,Human
+sosy,Sign or Symptom
+diap,Diagnostic Procedure
+orgf,Organism Function
+inpo,Injury or Poisoning
+celf,Cell Function
+mobd,Mental or Behavioral Dysfunction
+medd,Medical Device
+blor,Body Location or Region
+hlca,Health Care Activity
+ortf,Organ or Tissue Function
+bact,Bacterium
+horm,Hormone
+lbpr,Laboratory Procedure
+virs,Virus
+prog,Professional or Occupational Group
+famg,Family Group
+hops,Hazardous or Poisonous Substance
+lipd,Lipid
+inch,Inorganic Chemical
+genf,Genetic Function
+elii,"Element, Ion, or Isotope"
+npop,Natural Phenomenon or Process
+antb,Antibiotic
+carb,Carbohydrate
+plnt,Plant
+anab,Anatomical Abnormality
+resa,Research Activity
+cgab,Congenital Abnormality
+phsf,Physiologic Function
+invt,Invertebrate
+acab,Acquired Abnormality
+imft,Immunologic Factor
+moft,Molecular Function
+anim,Animal
+fngs,Fungus
+comd,Cell or Molecular Dysfunction
+inbe,Individual Behavior
+bsoj,Body Space or Junction
+nsba,Neuroreactive Substance or Biogenic Amine
+emst,Embryonic Structure
+ftcn,Functional Concept
+orgm,Organism
+strd,Steroid
+hcro,Health Care Related Organization
+nusq,Nucleotide Sequence
+nnon,"Nucleic Acid, Nucleoside, or Nucleotide"
+enzy,Enzyme
+qnco,Quantitative Concept
+fish,Fish
+menp,Mental Process
+eico,Eicosanoid
+bdsu,Body Substance
+orgt,Organization
+inpr,Intellectual Product
+orga,Organism Attribute
+qlco,Qualitative Concept
+biof,Biologic Function
+chvs,Chemical Viewed Structurally
+grup,Group
+dora,Daily or Recreational Activity
+resd,Research Device
+tmco,Temporal Concept
+irda,"Indicator, Reagent, or Diagnostic Aid"
+amph,Amphibian
+idcn,Idea or Concept
+rcpt,Receptor
+food,Food
+emod,Experimental Model of Disease
+chem,Chemical
+spco,Spatial Concept
+geoa,Geographic Area
+opco,Organophosphorus Compound
+bodm,Biomedical or Dental Material
+chvf,Chemical Viewed Functionally
+clas,Classification
+bird,Bird
+vtbt,Vertebrate
+alga,Alga
+clnd,Clinical Drug
+rept,Reptile
+edac,Educational Activity
+bmod,Biomedical Occupation or Discipline
+mnob,Manufactured Object
+ocac,Occupational Activity
+arch,Archaeon
+sbst,Substance
+mbrt,Molecular Biology Research Technique
+rnlw,Regulation or Law
+anst,Anatomical Structure
+ocdi,Occupation or Discipline
+rich,Rickettsia or Chlamydia
+clna,Clinical Attribute
+phpr,Phenomenon or Process
+lbtr,Laboratory or Test Result
+socb,Social Behavior
+vita,Vitamin
+gora,Governmental or Regulatory Activity
+ffas,Fully Formed Anatomical Structure
+bdsy,Body System
+evnt,Event
+grpa,Group Attribute
+lang,Language
+mcha,Machine Activity
+eehu,Environmental Effect of Humans
+shro,Self-help or Relief Organization
+amas,Amino Acid Sequence
+acty,Activity
+pros,Professional Society
+cnce,Conceptual Entity
+bhvr,Behavior
+hcpp,Human-caused Phenomenon or Process
+mosq,Molecular Sequence
+drdd,Drug Delivery Device
+phob,Physical Object

@@ -1,0 +1,42 @@
+disease.label	disease.id	efo.id	efo.value
+breast lobular carcinoma	http://purl.obolibrary.org/obo/MONDO_0000552	http://www.ebi.ac.uk/efo/EFO_0008509	lobular breast carcinoma
+breast cyst	http://purl.obolibrary.org/obo/MONDO_0001011	http://www.ebi.ac.uk/efo/EFO_1000848	breast cyst
+breast fibroadenoma	http://purl.obolibrary.org/obo/MONDO_0002056	http://www.ebi.ac.uk/efo/EFO_1000254	Fibroadenoma
+malignant breast phyllodes tumor	http://purl.obolibrary.org/obo/MONDO_0002489	http://www.ebi.ac.uk/efo/EFO_0008545	Malignant Breast Phyllodes Tumor
+adenoid cystic breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0003185	http://www.ebi.ac.uk/efo/EFO_1000071	Adenoid Cystic Breast Carcinoma
+breast adenosis	http://purl.obolibrary.org/obo/MONDO_0003725	http://www.ebi.ac.uk/efo/EFO_0006891	breast adenosis
+acantholytic variant squamous cell breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0004229	http://www.ebi.ac.uk/efo/EFO_1001969	squamous cell breast carcinoma, acantholytic variant
+invasive ductal breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0004953	http://www.ebi.ac.uk/efo/EFO_0000186	invasive ductal carcinoma
+basal-like breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0004984	http://www.ebi.ac.uk/efo/EFO_0000281	basal-like carcinoma
+breast adenocarcinoma	http://purl.obolibrary.org/obo/MONDO_0004988	http://www.ebi.ac.uk/efo/EFO_0000304	breast adenocarcinoma
+breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0004989	http://www.ebi.ac.uk/efo/EFO_0000305	breast carcinoma
+breast tumor luminal A or B	http://purl.obolibrary.org/obo/MONDO_0004990	http://www.ebi.ac.uk/efo/EFO_0000306	breast tumor luminal
+ductal breast carcinoma in situ	http://purl.obolibrary.org/obo/MONDO_0005023	http://www.ebi.ac.uk/efo/EFO_0000432	ductal carcinoma in situ
+invasive lobular breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0005051	http://www.ebi.ac.uk/efo/EFO_0000553	invasive lobular carcinoma
+medullary breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0005063	http://www.ebi.ac.uk/efo/EFO_0000580	medullary breast carcinoma
+breast fibrocystic disease	http://purl.obolibrary.org/obo/MONDO_0005219	http://www.ebi.ac.uk/efo/EFO_0003014	breast fibrocystic disease
+triple-negative breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0005494	http://www.ebi.ac.uk/efo/EFO_0005537	triple-negative breast cancer
+breast ductal adenocarcinoma	http://purl.obolibrary.org/obo/MONDO_0005590	http://www.ebi.ac.uk/efo/EFO_0006318	breast ductal adenocarcinoma
+male breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0005628	http://www.ebi.ac.uk/efo/EFO_0006861	male breast carcinoma
+breast synovial sarcoma	http://purl.obolibrary.org/obo/MONDO_0006027	http://www.ebi.ac.uk/efo/EFO_1000019	breast synovial sarcoma
+metaplastic breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006043	http://www.ebi.ac.uk/efo/EFO_1000040	metaplastic breast carcinoma
+pleomorphic breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006050	http://www.ebi.ac.uk/efo/EFO_1000047	pleomorphic breast carcinoma
+squamous cell breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006056	http://www.ebi.ac.uk/efo/EFO_1000053	squamous cell breast carcinoma
+atypical lobular breast hyperplasia	http://purl.obolibrary.org/obo/MONDO_0006098	http://www.ebi.ac.uk/efo/EFO_1000100	Atypical Lobular Breast Hyperplasia
+breast carcinoma by gene expression profile	http://purl.obolibrary.org/obo/MONDO_0006116	http://www.ebi.ac.uk/efo/EFO_1000143	Breast Carcinoma by Gene Expression Profile
+breast diffuse large B-cell lymphoma	http://purl.obolibrary.org/obo/MONDO_0006117	http://www.ebi.ac.uk/efo/EFO_1000144	Breast Diffuse Large B-Cell Lymphoma
+breast fibrosis	http://purl.obolibrary.org/obo/MONDO_0006118	http://www.ebi.ac.uk/efo/EFO_1000145	breast fibrosis
+breast mucosa-associated lymphoid tissue lymphoma	http://purl.obolibrary.org/obo/MONDO_0006119	http://www.ebi.ac.uk/efo/EFO_1000146	Breast Mucosa-Associated Lymphoid Tissue Lymphoma
+columnar cell hyperplasia of the breast	http://purl.obolibrary.org/obo/MONDO_0006166	http://www.ebi.ac.uk/efo/EFO_1000199	Columnar Cell Hyperplasia of the Breast
+ductal breast carcinoma in situ and lobular carcinoma in situ	http://purl.obolibrary.org/obo/MONDO_0006184	http://www.ebi.ac.uk/efo/EFO_1000221	Ductal Breast Carcinoma In Situ and Lobular Carcinoma In Situ
+HER2 positive breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006244	http://www.ebi.ac.uk/efo/EFO_1000294	HER2 Positive Breast Carcinoma
+invasive breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006256	http://www.ebi.ac.uk/efo/EFO_1000307	Invasive Breast Carcinoma
+lobular breast carcinoma in situ	http://purl.obolibrary.org/obo/MONDO_0006270	http://www.ebi.ac.uk/efo/EFO_1000326	Lobular Breast Carcinoma In Situ
+mixed lobular and ductal breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006306	http://www.ebi.ac.uk/efo/EFO_1000382	Mixed Lobular and Ductal Breast Carcinoma
+normal breast-like subtype of breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006324	http://www.ebi.ac.uk/efo/EFO_1000402	Normal Breast-Like Subtype of Breast Carcinoma
+usual ductal breast hyperplasia	http://purl.obolibrary.org/obo/MONDO_0006484	http://www.ebi.ac.uk/efo/EFO_1000612	Usual Ductal Breast Hyperplasia
+estrogen-receptor positive breast cancer	http://purl.obolibrary.org/obo/MONDO_0006512	http://www.ebi.ac.uk/efo/EFO_1000649	estrogen-receptor positive breast cancer
+estrogen-receptor negative breast cancer	http://purl.obolibrary.org/obo/MONDO_0006513	http://www.ebi.ac.uk/efo/EFO_1000650	estrogen-receptor negative breast cancer
+inflammatory breast carcinoma	http://purl.obolibrary.org/obo/MONDO_0006804	http://www.ebi.ac.uk/efo/EFO_1000984	inflammatory breast carcinoma
+intraductal breast papilloma	http://purl.obolibrary.org/obo/MONDO_0021097	http://www.ebi.ac.uk/efo/EFO_1000306	Intraductal Breast Papilloma
+breast neoplasm	http://purl.obolibrary.org/obo/MONDO_0021100	http://www.ebi.ac.uk/efo/EFO_0003869	breast neoplasm
