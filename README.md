@@ -1,1 +1,3 @@
-conda activate neo4j_build
+## Breast cancer exploration in EpiGraphDB
+![](epigraph.png)
+
