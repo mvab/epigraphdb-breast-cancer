@@ -1,0 +1,653 @@
+﻿reactome_id,pathway_name
+R-HSA-1222387,Tolerance of reactive oxygen produced by macrophages
+R-HSA-1222449,Mtb iron assimilation by chelation
+R-HSA-1222499,Latent infection - Other responses of Mtb to phagocytosis
+R-HSA-1222538,Tolerance by Mtb to nitric oxide produced by macrophages
+R-HSA-1222541,Cell redox homeostasis
+R-HSA-1226099,Signaling by FGFR in disease
+R-HSA-1227990,Signaling by ERBB2 in Cancer
+R-HSA-1236382,Constitutive Signaling by Ligand-Responsive EGFR Cancer Variants
+R-HSA-162585,Uncoating of the HIV Virion
+R-HSA-162587,HIV Life Cycle
+R-HSA-162588,Budding and maturation of HIV virion
+R-HSA-162589,Reverse Transcription of HIV RNA
+R-HSA-162592,Integration of provirus
+R-HSA-162594,Early Phase of HIV Life Cycle
+R-HSA-162599,Late Phase of HIV Life Cycle
+R-HSA-162906,HIV Infection
+R-HSA-162909,Host Interactions of HIV factors
+R-HSA-1643685,Disease
+R-HSA-1643713,Signaling by EGFR in Cancer
+R-HSA-164516,Minus-strand DNA synthesis
+R-HSA-164525,Plus-strand DNA synthesis
+R-HSA-164843,2-LTR circle formation
+R-HSA-164938,Nef-mediates down modulation of cell surface receptors by recruiting them to clathrin adapters
+R-HSA-164939,Nef mediated downregulation of CD28 cell surface expression
+R-HSA-164940,Nef mediated downregulation of MHC class I complex cell surface expression
+R-HSA-164944,Nef and signal transduction
+R-HSA-165054,Rev-mediated nuclear export of HIV RNA
+R-HSA-167152,Formation of HIV elongation complex in the absence of HIV Tat
+R-HSA-167158,Formation of the HIV-1 Early Elongation Complex
+R-HSA-167160,RNA Pol II CTD phosphorylation and interaction with CE during HIV infection
+R-HSA-167161,HIV Transcription Initiation
+R-HSA-167162,RNA Polymerase II HIV Promoter Escape
+R-HSA-167169,HIV Transcription Elongation
+R-HSA-167172,Transcription of the HIV genome
+R-HSA-167200,Formation of HIV-1 elongation complex containing HIV-1 Tat
+R-HSA-167238,Pausing and recovery of Tat-mediated HIV elongation
+R-HSA-167242,Abortive elongation of HIV-1 transcript in the absence of Tat
+R-HSA-167243,Tat-mediated HIV elongation arrest and recovery
+R-HSA-167246,Tat-mediated elongation of the HIV-1 transcript
+R-HSA-167287,HIV elongation arrest and recovery
+R-HSA-167290,Pausing and recovery of HIV elongation
+R-HSA-167590,Nef Mediated CD4 Down-regulation
+R-HSA-168255,Influenza Infection
+R-HSA-168268,Virus Assembly and Release
+R-HSA-168270,Fusion and Uncoating of the Influenza Virion
+R-HSA-168271,Transport of Ribonucleoproteins into the Host Nucleus
+R-HSA-168273,Influenza Viral RNA Transcription and Replication
+R-HSA-168274,Export of Viral Ribonucleoproteins from Nucleus
+R-HSA-168275,Entry of Influenza Virion into Host Cell via Endocytosis
+R-HSA-168276,NS1 Mediated Effects on Host Pathways
+R-HSA-168277,Influenza Virus Induced Apoptosis
+R-HSA-168288,Fusion of the Influenza Virion to the Host Cell Endosome
+R-HSA-168298,Release
+R-HSA-168302,Budding
+R-HSA-168303,Packaging of Eight RNA Segments
+R-HSA-168305,Inhibition of Interferon Synthesis
+R-HSA-168315,Inhibition of Host mRNA Processing and RNA Silencing
+R-HSA-168316,Assembly of Viral Components at the Budding Site
+R-HSA-168325,Viral Messenger RNA Synthesis
+R-HSA-168330,Viral RNP Complexes in the Host Cell Nucleus
+R-HSA-168333,NEP/NS2 Interacts with the Cellular Export Machinery
+R-HSA-168336,Uncoating of the Influenza Virion
+R-HSA-168799,Neurotoxicity of clostridium toxins
+R-HSA-168874,"Transport of HA trimer, NA tetramer and M2 tetramer from the endoplasmic reticulum to the Golgi Apparatus"
+R-HSA-168888,Inhibition of IFN-beta
+R-HSA-169131,Inhibition of PKR
+R-HSA-171286,Synthesis and processing of ENV and VPU
+R-HSA-173107,Binding and entry of HIV virion
+R-HSA-174490,Membrane binding and targetting of GAG proteins
+R-HSA-174495,"Synthesis And Processing Of GAG, GAGPOL Polyproteins"
+R-HSA-175474,Assembly Of The HIV Virion
+R-HSA-175567,Integration of viral DNA into host genomic DNA
+R-HSA-176033,Interactions of Vpr with host cellular proteins
+R-HSA-176034,Interactions of Tat with host cellular proteins
+R-HSA-177243,Interactions of Rev with host cellular proteins
+R-HSA-177539,Autointegration results in viral DNA circles
+R-HSA-180534,Vpu mediated degradation of CD4
+R-HSA-180585,Vif-mediated degradation of APOBEC3G
+R-HSA-180689,APOBEC3G mediated resistance to HIV-1 infection
+R-HSA-180746,Nuclear import of Rev protein
+R-HSA-180897,Vpr-mediated induction of apoptosis by mitochondrial outer membrane permeabilization
+R-HSA-180910,Vpr-mediated nuclear import of PICs
+R-HSA-182218,Nef Mediated CD8 Down-regulation
+R-HSA-1839117,Signaling by cytosolic FGFR1 fusion mutants
+R-HSA-1839120,Signaling by FGFR1 amplification mutants
+R-HSA-1839122,Signaling by activated point mutants of FGFR1
+R-HSA-1839124,FGFR1 mutant receptor activation
+R-HSA-1839126,FGFR2 mutant receptor activation
+R-HSA-1839128,FGFR4 mutant receptor activation
+R-HSA-1839130,Signaling by activated point mutants of FGFR3
+R-HSA-192814,vRNA Synthesis
+R-HSA-192823,Viral mRNA Translation
+R-HSA-192869,cRNA Synthesis
+R-HSA-192905,vRNP Assembly
+R-HSA-2023837,Signaling by FGFR2 amplification mutants
+R-HSA-2033514,FGFR3 mutant receptor activation
+R-HSA-2033515,t(4;14) translocations of FGFR3
+R-HSA-2033519,Activated point mutants of FGFR2
+R-HSA-2160456,Phenylketonuria
+R-HSA-2206280,MPS IX - Natowicz syndrome
+R-HSA-2206281,Mucopolysaccharidoses
+R-HSA-2206282,MPS IIIB - Sanfilippo syndrome B
+R-HSA-2206285,MPS VI - Maroteaux-Lamy syndrome
+R-HSA-2206290,MPS IV - Morquio syndrome A
+R-HSA-2206291,MPS IIIC - Sanfilippo syndrome C
+R-HSA-2206292,MPS VII - Sly syndrome
+R-HSA-2206296,MPS II - Hunter syndrome
+R-HSA-2206302,MPS I - Hurler syndrome
+R-HSA-2206305,MPS IIID - Sanfilippo syndrome D
+R-HSA-2206307,MPS IIIA - Sanfilippo syndrome A
+R-HSA-2206308,MPS IV - Morquio syndrome B
+R-HSA-2219528,PI3K/AKT Signaling in Cancer
+R-HSA-2219530,Constitutive Signaling by Aberrant PI3K in Cancer
+R-HSA-2453864,Retinoid cycle disease events
+R-HSA-2466712,"Biosynthesis of A2E, implicated in retinal degradation"
+R-HSA-2474795,Diseases associated with visual transduction
+R-HSA-2644602,Signaling by NOTCH1 PEST Domain Mutants in Cancer
+R-HSA-2644603,Signaling by NOTCH1 in Cancer
+R-HSA-2644605,FBXW7 Mutants and NOTCH1 in Cancer
+R-HSA-2644606,Constitutive Signaling by NOTCH1 PEST Domain Mutants
+R-HSA-2644607,Loss of Function of FBXW7 in Cancer and NOTCH1 Signaling
+R-HSA-2660825,Signaling by NOTCH1 t(7;9)(NOTCH1:M1580_K2555) Translocation Mutant
+R-HSA-2660826,Constitutive Signaling by NOTCH1 t(7;9)(NOTCH1:M1580_K2555) Translocation Mutant
+R-HSA-2691230,Signaling by NOTCH1 HD Domain Mutants in Cancer
+R-HSA-2691232,Constitutive Signaling by NOTCH1 HD Domain Mutants
+R-HSA-2894858,Signaling by NOTCH1 HD+PEST Domain Mutants in Cancer
+R-HSA-2894862,Constitutive Signaling by NOTCH1 HD+PEST Domain Mutants
+R-HSA-2978092,Abnormal conversion of 2-oxoglutarate to 2-hydroxyglutarate
+R-HSA-3229121,Glycogen storage diseases
+R-HSA-3229133,Glycogen storage disease type Ib (SLC37A4)
+R-HSA-3274531,Glycogen storage disease type Ia (G6PC)
+R-HSA-3282872,Severe congenital neutropenia type 4 (G6PC3)
+R-HSA-3296469,Defects in cobalamin (B12) metabolism
+R-HSA-3296482,Defects in vitamin and cofactor metabolism
+R-HSA-3304347,Loss of Function of SMAD4 in Cancer
+R-HSA-3304349,Loss of Function of SMAD2/3 in Cancer
+R-HSA-3304351,Signaling by TGF-beta Receptor Complex in Cancer
+R-HSA-3304356,SMAD2/3 Phosphorylation Motif Mutants in Cancer
+R-HSA-3311021,SMAD4 MH2 Domain Mutants in Cancer
+R-HSA-3315487,SMAD2/3 MH2 Domain Mutants in Cancer
+R-HSA-3323169,Defects in biotin (Btn) metabolism
+R-HSA-3359454,Defective TCN2 causes hereditary megaloblastic anemia
+R-HSA-3359457,Defective GIF causes intrinsic factor deficiency
+R-HSA-3359458,Defective LMBRD1 causes methylmalonic aciduria and homocystinuria type cblF
+R-HSA-3359462,Defective AMN causes hereditary megaloblastic anemia 1
+R-HSA-3359463,Defective CUBN causes hereditary megaloblastic anemia 1
+R-HSA-3359467,Defective MTRR causes methylmalonic aciduria and homocystinuria type cblE
+R-HSA-3359469,Defective MTR causes methylmalonic aciduria and homocystinuria type cblG
+R-HSA-3359471,Defective MMAB causes methylmalonic aciduria type cblB
+R-HSA-3359473,Defective MMADHC causes methylmalonic aciduria and homocystinuria type cblD
+R-HSA-3359474,Defective MMACHC causes methylmalonic aciduria and homocystinuria type cblC
+R-HSA-3359475,Defective MMAA causes methylmalonic aciduria type cblA
+R-HSA-3359478,Defective MUT causes methylmalonic aciduria mut type
+R-HSA-3359485,Defective CD320 causes methylmalonic aciduria
+R-HSA-3371598,Defective BTD causes biotidinase deficiency
+R-HSA-3371599,Defective HLCS causes multiple carboxylase deficiency
+R-HSA-3560782,Diseases associated with glycosaminoglycan metabolism
+R-HSA-3560783,"Defective B4GALT7 causes EDS, progeroid type"
+R-HSA-3560792,Defective SLC26A2 causes chondrodysplasias
+R-HSA-3560796,Defective PAPSS2 causes SEMD-PA
+R-HSA-3560801,Defective B3GAT3 causes JDSSDHD
+R-HSA-3595172,Defective CHST3 causes SEDCJD
+R-HSA-3595174,"Defective CHST14 causes EDS, musculocontractural type"
+R-HSA-3595177,Defective CHSY1 causes TPBS
+R-HSA-3642278,Loss of Function of TGFBR2 in Cancer
+R-HSA-3642279,TGFBR2 MSI Frameshift Mutants in Cancer
+R-HSA-3645790,TGFBR2 Kinase Domain Mutants in Cancer
+R-HSA-3656225,Defective CHST6 causes MCDC1
+R-HSA-3656234,Defective HEXA causes GM2G1
+R-HSA-3656237,Defective EXT2 causes exostoses 2
+R-HSA-3656243,Defective ST3GAL3 causes MCT12 and EIEE15
+R-HSA-3656244,Defective B4GALT1 causes B4GALT1-CDG (CDG-2d)
+R-HSA-3656248,Defective HEXB causes GM2G2
+R-HSA-3656253,"Defective EXT1 causes exostoses 1, TRPS2 and CHDS"
+R-HSA-3656532,TGFBR1 KD Mutants in Cancer
+R-HSA-3656534,Loss of Function of TGFBR1 in Cancer
+R-HSA-3656535,TGFBR1 LBD Mutants in Cancer
+R-HSA-3781860,Diseases associated with N-glycosylation of proteins
+R-HSA-3781865,Diseases of glycosylation
+R-HSA-3785653,Myoclonic epilepsy of Lafora
+R-HSA-3814836,Glycogen storage disease type XV (GYG1)
+R-HSA-3828062,Glycogen storage disease type 0 (muscle GYS1)
+R-HSA-3858516,Glycogen storage disease type 0 (liver GYS2)
+R-HSA-3878781,Glycogen storage disease type IV (GBE1)
+R-HSA-3906995,Diseases associated with O-glycosylation of proteins
+R-HSA-4043911,Defective PMM2 causes PMM2-CDG (CDG-1a)
+R-HSA-4043916,Defective MPI causes MPI-CDG (CDG-1b)
+R-HSA-4085011,"Defective GNE causes sialuria, Nonaka myopathy and inclusion body myopathy 2"
+R-HSA-4085023,Defective GFPT1 causes CMSTA1
+R-HSA-4341670,Defective NEU1 causes sialidosis
+R-HSA-4420332,Defective B3GALT6 causes EDSP2 and SEMDJL1
+R-HSA-4549349,Defective ALG2 causes ALG2-CDG (CDG-1i)
+R-HSA-4549356,Defective DPAGT1 causes DPAGT1-CDG (CDG-1j) and CMSTA2
+R-HSA-4549380,Defective ALG1 causes ALG1-CDG (CDG-1k)
+R-HSA-4551295,Defective ALG11 causes ALG11-CDG (CDG-1p)
+R-HSA-4570571,Defective RFT1 causes RFT1-CDG (CDG-1n)
+R-HSA-4687000,Defective MPDU1 causes MPDU1-CDG (CDG-1f)
+R-HSA-4717374,Defective DPM1 causes DPM1-CDG (CDG-1e)
+R-HSA-4719360,Defective DPM3 causes DPM3-CDG (CDG-1o)
+R-HSA-4719377,Defective DPM2 causes DPM2-CDG (CDG-1u)
+R-HSA-4720454,Defective ALG9 causes ALG9-CDG (CDG-1l)
+R-HSA-4720475,Defective ALG3 causes ALG3-CDG (CDG-1d)
+R-HSA-4720489,Defective ALG12 causes ALG12-CDG (CDG-1g)
+R-HSA-4724289,Defective ALG6 causes ALG6-CDG (CDG-1c)
+R-HSA-4724325,Defective ALG8 causes ALG8-CDG (CDG-1h)
+R-HSA-4755579,Defective SRD5A3 causes SRD5A3-CDG (CDG-1q) and KHRZ
+R-HSA-4755583,Defective DOLK causes DOLK-CDG (CDG-1m)
+R-HSA-4755609,Defective DHDDS causes retinitis pigmentosa 59
+R-HSA-4791275,Signaling by WNT in cancer
+R-HSA-4793950,Defective MAN1B1 causes MRT15
+R-HSA-4793952,Defective MGAT2 causes MGAT2-CDG (CDG-2a)
+R-HSA-4793953,Defective B4GALT1 causes B4GALT1-CDG (CDG-2d)
+R-HSA-4793954,Defective MOGS causes MOGS-CDG (CDG-2b)
+R-HSA-4839735,Signaling by AXIN mutants
+R-HSA-4839743,Signaling by CTNNB1 phospho-site mutants
+R-HSA-4839744,Signaling by APC mutants
+R-HSA-4839748,Signaling by AMER1 mutants
+R-HSA-5083625,Defective GALNT3 causes familial hyperphosphatemic tumoral calcinosis (HFTC)
+R-HSA-5083627,Defective LARGE causes MDDGA6 and MDDGB6
+R-HSA-5083628,"Defective POMGNT1 causes MDDGA3, MDDGB3 and MDDGC3"
+R-HSA-5083629,"Defective POMT2 causes MDDGA2, MDDGB2 and MDDGC2"
+R-HSA-5083630,Defective LFNG causes SCDO3
+R-HSA-5083632,Defective C1GALT1C1 causes Tn polyagglutination syndrome (TNPS)
+R-HSA-5083633,"Defective POMT1 causes MDDGA1, MDDGB1 and MDDGC1"
+R-HSA-5083635,Defective B3GALTL causes Peters-plus syndrome (PpS)
+R-HSA-5083636,Defective GALNT12 causes colorectal cancer 1 (CRCS1)
+R-HSA-5210891,Uptake and function of anthrax toxins
+R-HSA-5250955,Toxicity of botulinum toxin type D (botD)
+R-HSA-5250958,Toxicity of botulinum toxin type B (botB)
+R-HSA-5250968,Toxicity of botulinum toxin type A (botA)
+R-HSA-5250971,Toxicity of botulinum toxin type C (botC)
+R-HSA-5250981,Toxicity of botulinum toxin type F (botF)
+R-HSA-5250982,Toxicity of tetanus toxin (tetX)
+R-HSA-5250989,Toxicity of botulinum toxin type G (botG)
+R-HSA-5250992,Toxicity of botulinum toxin type E (botE)
+R-HSA-5260271,Diseases of Immune System
+R-HSA-5336415,Uptake and function of diphtheria toxin
+R-HSA-5339562,Uptake and actions of bacterial toxins
+R-HSA-5339700,Signaling by TCF7L2 mutants
+R-HSA-5339716,Signaling by GSK3beta mutants
+R-HSA-5339717,Signaling by LRP5 mutants 
+R-HSA-5340573,LGK974 inhibits PORCN
+R-HSA-5340588,Signaling by RNF43 mutants
+R-HSA-5357609,Glycogen storage disease type II (GAA)
+R-HSA-5358747,S33 mutants of beta-catenin aren't phosphorylated
+R-HSA-5358749,S37 mutants of beta-catenin aren't phosphorylated
+R-HSA-5358751,S45 mutants of beta-catenin aren't phosphorylated
+R-HSA-5358752,T41 mutants of beta-catenin aren't phosphorylated
+R-HSA-5362768,Hh mutants are degraded by ERAD
+R-HSA-5387390,Hh mutants abrogate ligand secretion
+R-HSA-5423599,Diseases of Mismatch Repair (MMR)
+R-HSA-5467333,APC truncation mutants are not K63 polyubiquitinated
+R-HSA-5467337,APC truncation mutants have impaired AXIN binding
+R-HSA-5467340,AXIN missense mutants destabilize the destruction complex
+R-HSA-5467343,Deletions in the AMER1 gene destabilize the destruction complex
+R-HSA-5467345,Deletions in the AXIN genes in hepatocellular carcinoma result in elevated WNT signaling
+R-HSA-5467348,Truncations of AMER1 destabilize the destruction complex
+R-HSA-5545483,Defective Mismatch Repair Associated With MLH1
+R-HSA-5545619,XAV939 stabilizes AXIN
+R-HSA-5578995,Defective TPMT causes Thiopurine S-methyltransferase deficiency (TPMT deficiency)
+R-HSA-5578996,Defective CYP27A1 causes Cerebrotendinous xanthomatosis (CTX)
+R-HSA-5578997,Defective AHCY causes Hypermethioninemia with S-adenosylhomocysteine hydrolase deficiency (HMAHCHD)
+R-HSA-5578998,Defective OPLAH causes 5-oxoprolinase deficiency (OPLAHD)
+R-HSA-5578999,Defective GCLC causes Hemolytic anemia due to gamma-glutamylcysteine synthetase deficiency (HAGGSD)
+R-HSA-5579000,Defective CYP1B1 causes Glaucoma
+R-HSA-5579002,Defective UGT1A1 causes hyperbilirubinemia
+R-HSA-5579004,Defective CYP26C1 causes Focal facial dermal dysplasia 4 (FFDD4)
+R-HSA-5579005,"Defective CYP4F22 causes Ichthyosis, congenital, autosomal recessive 5 (ARCI5)"
+R-HSA-5579006,Defective GSS causes Glutathione synthetase deficiency (GSS deficiency)
+R-HSA-5579007,Defective ACY1 causes encephalopathy
+R-HSA-5579009,Defective CYP11B2 causes Corticosterone methyloxidase 1 deficiency (CMO-1 deficiency)
+R-HSA-5579010,"Defective CYP24A1 causes Hypercalcemia, infantile (HCAI)"
+R-HSA-5579011,"Defective CYP2U1 causes Spastic paraplegia 56, autosomal recessive (SPG56)"
+R-HSA-5579012,Defective MAOA causes Brunner syndrome (BRUNS)
+R-HSA-5579013,"Defective CYP7B1 causes Spastic paraplegia 5A, autosomal recessive (SPG5A) and Congenital bile acid synthesis defect 3 (CBAS3)"
+R-HSA-5579014,Defective CYP27B1 causes Rickets vitamin D-dependent 1A (VDDR1A)
+R-HSA-5579015,Defective CYP26B1 causes Radiohumeral fusions with other skeletal and craniofacial anomalies (RHFCA)
+R-HSA-5579016,Defective UGT1A4 causes hyperbilirubinemia
+R-HSA-5579017,Defective CYP11B1 causes Adrenal hyperplasia 4 (AH4)
+R-HSA-5579019,Defective FMO3 causes Trimethylaminuria (TMAU)
+R-HSA-5579020,Defective SLC35D1 causes Schneckenbecken dysplasia (SCHBCKD)
+R-HSA-5579021,Defective CYP21A2 causes Adrenal hyperplasia 3 (AH3)
+R-HSA-5579022,Defective GGT1 causes Glutathionuria (GLUTH)
+R-HSA-5579024,Defective MAT1A causes Methionine adenosyltransferase deficiency (MATD)
+R-HSA-5579026,"Defective CYP11A1 causes Adrenal insufficiency, congenital, with 46,XY sex reversal (AICSR)"
+R-HSA-5579027,Defective CYP2R1 causes Rickets vitamin D-dependent 1B (VDDR1B)
+R-HSA-5579028,Defective CYP17A1 causes Adrenal hyperplasia 5 (AH5)
+R-HSA-5579029,Metabolic disorders of biological oxidation enzymes
+R-HSA-5579030,Defective CYP19A1 causes Aromatase excess syndrome (AEXS)
+R-HSA-5579031,Defective ACTH causes Obesity and Pro-opiomelanocortinin deficiency (POMCD)
+R-HSA-5579032,Defective TBXAS1 causes Ghosal hematodiaphyseal dysplasia (GHDD)
+R-HSA-5602358,Diseases associated with the TLR signaling cascade
+R-HSA-5602410,TLR3 deficiency - HSE
+R-HSA-5602415,UNC93B1 deficiency - HSE
+R-HSA-5602498,MyD88 deficiency (TLR2/4)
+R-HSA-5602566,TICAM1 deficiency - HSE
+R-HSA-5602571,TRAF3 deficiency - HSE
+R-HSA-5602636,IKBKB deficiency causes SCID
+R-HSA-5602680,MyD88 deficiency (TLR5)
+R-HSA-5603027,IKBKG deficiency causes anhidrotic ectodermal dysplasia with immunodeficiency (EDA-ID) (via TLR)
+R-HSA-5603029,IkBA variant leads to EDA-ID
+R-HSA-5603037,IRAK4 deficiency (TLR5)
+R-HSA-5603041,IRAK4 deficiency (TLR2/4)
+R-HSA-5609974,Defective PGM1 causes PGM1-CDG (CDG1t)
+R-HSA-5609975,Diseases associated with glycosylation precursor biosynthesis
+R-HSA-5609976,Defective GALK1 can cause Galactosemia II (GALCT2)
+R-HSA-5609977,Defective GALE can cause Epimerase-deficiency galactosemia (EDG)
+R-HSA-5609978,Defective GALT can cause Galactosemia
+R-HSA-5619035,Defective SLC17A5 causes Salla disease (SD) and ISSD
+R-HSA-5619036,Defective SLC24A5 causes oculocutaneous albinism 6 (OCA6)
+R-HSA-5619037,Defective SLC35A1 causes congenital disorder of glycosylation 2F (CDG2F)
+R-HSA-5619039,"Defective SLC12A6 causes agenesis of the corpus callosum, with peripheral neuropathy (ACCPN)"
+R-HSA-5619040,Defective SLC34A1 causes hypophosphatemic nephrolithiasis/osteoporosis 1 (NPHLOP1)
+R-HSA-5619041,Defective SLC36A2 causes iminoglycinuria (IG) and hyperglycinuria (HG)
+R-HSA-5619042,Defective RHAG causes regulator type Rh-null hemolytic anemia (RHN)
+R-HSA-5619043,Defective SLC2A1 causes GLUT1 deficiency syndrome 1 (GLUT1DS1)
+R-HSA-5619044,Defective SLC6A19 causes Hartnup disorder (HND)
+R-HSA-5619045,Defective SLC34A2 causes pulmonary alveolar microlithiasis (PALM)
+R-HSA-5619046,Defective SLC26A4 causes Pendred syndrome (PDS)
+R-HSA-5619047,Defective SLC2A9 causes hypouricemia renal 2 (RHUC2)
+R-HSA-5619048,"Defective SLC11A2 causes hypochromic microcytic anemia, with iron overload 1 (AHMIO1)"
+R-HSA-5619049,Defective SLC40A1 causes hemochromatosis 4 (HFE4) (macrophages)
+R-HSA-5619050,"Defective SLC4A1 causes hereditary spherocytosis type 4 (HSP4),  distal renal tubular acidosis (dRTA) and dRTA with hemolytic anemia (dRTA-HA)"
+R-HSA-5619052,Defective SLC9A9 causes autism 16 (AUTS16)
+R-HSA-5619053,Defective SLC22A5 causes systemic primary carnitine deficiency (CDSP)
+R-HSA-5619054,"Defective SLC4A4 causes renal tubular acidosis, proximal, with ocular abnormalities and mental retardation (pRTA-OA)"
+R-HSA-5619055,Defective SLC24A4 causes hypomineralized amelogenesis imperfecta (AI)
+R-HSA-5619056,Defective HK1 causes hexokinase deficiency (HK deficiency)
+R-HSA-5619058,"Defective SLCO1B3 causes hyperbilirubinemia, Rotor type (HBLRR)"
+R-HSA-5619060,Defective CP causes aceruloplasminemia (ACERULOP)
+R-HSA-5619061,Defective SLC33A1 causes spastic paraplegia 42 (SPG42)
+R-HSA-5619062,Defective SLC1A3 causes episodic ataxia 6 (EA6)
+R-HSA-5619063,Defective SLC29A3 causes histiocytosis-lymphadenopathy plus syndrome (HLAS)
+R-HSA-5619066,Defective SLC22A18 causes lung cancer (LNCR) and embryonal rhabdomyosarcoma 1 (RMSE1)
+R-HSA-5619067,Defective SLC1A1 is implicated in schizophrenia 18 (SCZD18) and dicarboxylic aminoaciduria (DCBXA)
+R-HSA-5619068,Defective SLC2A10 causes arterial tortuosity syndrome (ATS)
+R-HSA-5619070,Defective SLC16A1 causes symptomatic deficiency in lactate transport (SDLT)
+R-HSA-5619071,Defective SLC22A12 causes renal hypouricemia 1 (RHUC1)
+R-HSA-5619072,Defective SLC35A2 causes congenital disorder of glycosylation 2M (CDG2M)
+R-HSA-5619073,Defective GCK causes maturity-onset diabetes of the young 2 (MODY2)
+R-HSA-5619076,Defective SLC17A8 causes autosomal dominant deafness 25 (DFNA25)
+R-HSA-5619077,Defective SLC24A1 causes congenital stationary night blindness 1D (CSNB1D)
+R-HSA-5619078,Defective SLC35C1 causes congenital disorder of glycosylation 2C (CDG2C)
+R-HSA-5619079,Defective SLC6A18 may confer susceptibility to iminoglycinuria and/or hyperglycinuria
+R-HSA-5619081,Defective SLC6A3 causes Parkinsonism-dystonia infantile (PKDYS)
+R-HSA-5619083,"Defective SLC35A3 causes arthrogryposis, mental retardation, and seizures (AMRS)"
+R-HSA-5619084,ABC transporter disorders
+R-HSA-5619085,Defective SLC26A3 causes congenital secretory chloride diarrhea 1 (DIAR1)
+R-HSA-5619087,Defective SLC12A3 causes Gitelman syndrome (GS)
+R-HSA-5619088,"Defective SLC39A4 causes acrodermatitis enteropathica, zinc-deficiency type (AEZ)"
+R-HSA-5619089,Defective SLC6A5 causes hyperekplexia 3 (HKPX3)
+R-HSA-5619092,"Defective SLC9A6 causes  X-linked, syndromic mental retardation,, Christianson type (MRXSCH)"
+R-HSA-5619094,Variant SLC6A14 may confer susceptibility towards obesity
+R-HSA-5619095,"Defective SLCO2A1 causes primary, autosomal recessive hypertrophic osteoarthropathy 2 (PHOAR2)"
+R-HSA-5619096,Defective SLC5A5 causes thyroid dyshormonogenesis 1 (TDH1)
+R-HSA-5619097,Defective SLC34A3 causes Hereditary hypophosphatemic rickets with hypercalciuria (HHRH)
+R-HSA-5619098,Defective SLC2A2 causes Fanconi-Bickel syndrome (FBS)
+R-HSA-5619099,"Defective AVP does not bind AVPR1A,B and causes neurohypophyseal diabetes insipidus (NDI)"
+R-HSA-5619101,Variant SLC6A20 contributes towards hyperglycinuria (HG) and iminoglycinuria (IG)
+R-HSA-5619102,SLC transporter disorders
+R-HSA-5619104,Defective SLC12A1 causes Bartter syndrome 1 (BS1)
+R-HSA-5619107,Defective TPR may confer susceptibility towards thyroid papillary carcinoma (TPC)
+R-HSA-5619108,Defective SLC27A4 causes ichthyosis prematurity syndrome (IPS)
+R-HSA-5619109,Defective SLC6A2 causes orthostatic intolerance (OI)
+R-HSA-5619110,"Defective SLCO1B1 causes hyperbilirubinemia, Rotor type (HBLRR)"
+R-HSA-5619111,Defective SLC20A2 causes idiopathic basal ganglia calcification 1 (IBGC1)
+R-HSA-5619113,Defective SLC3A1 causes cystinuria (CSNU)
+R-HSA-5619114,Defective SLC5A7 causes distal hereditary motor neuronopathy 7A (HMN7A)
+R-HSA-5619115,Disorders of transmembrane transporters
+R-HSA-5632927,Defective Mismatch Repair Associated With MSH3
+R-HSA-5632928,Defective Mismatch Repair Associated With MSH2
+R-HSA-5632968,Defective Mismatch Repair Associated With MSH6
+R-HSA-5632987,Defective Mismatch Repair Associated With PMS2
+R-HSA-5633231,Defective ALG14 causes congenital myasthenic syndrome (ALG14-CMS)
+R-HSA-5637810,Constitutive Signaling by EGFRvIII
+R-HSA-5637812,Signaling by EGFRvIII in Cancer
+R-HSA-5637815,Signaling by Ligand-Responsive EGFR Variants in Cancer
+R-HSA-5638302,Signaling by Overexpressed Wild-Type EGFR in Cancer
+R-HSA-5638303,Inhibition of Signaling by Overexpressed EGFR
+R-HSA-5655253,Signaling by FGFR2 in disease
+R-HSA-5655291,Signaling by FGFR4 in disease
+R-HSA-5655302,Signaling by FGFR1 in disease
+R-HSA-5655332,Signaling by FGFR3 in disease
+R-HSA-5655799,Defective SLC40A1 causes hemochromatosis 4 (HFE4) (duodenum)
+R-HSA-5656364,Defective SLC5A1 causes congenital glucose/galactose malabsorption (GGM)
+R-HSA-5657560,Hereditary fructose intolerance
+R-HSA-5657562,Essential fructosuria
+R-HSA-5658034,HHAT G278V doesn't palmitoylate Hh-Np
+R-HSA-5658208,Defective SLC5A2 causes renal glucosuria (GLYS1)
+R-HSA-5658471,Defective SLC5A7 causes distal hereditary motor neuronopathy 7A (HMN7A)
+R-HSA-5659729,Defective SLC6A18 may confer susceptibility to iminoglycinuria and/or hyperglycinuria
+R-HSA-5659735,Defective SLC6A19 causes Hartnup disorder (HND)
+R-HSA-5659898,Intestinal saccharidase deficiencies
+R-HSA-5659996,RPIA deficiency: failed conversion of R5P to RU5P
+R-HSA-5660686,Variant SLC6A20 contributes towards hyperglycinuria (HG) and iminoglycinuria (IG)
+R-HSA-5660724,Defective SLC6A3 causes Parkinsonism-dystonia infantile (PKDYS)
+R-HSA-5660862,Defective SLC7A7 causes lysinuric protein intolerance (LPI)
+R-HSA-5660883,Defective SLC7A9 causes cystinuria (CSNU)
+R-HSA-5662853,Essential pentosuria
+R-HSA-5663020,Defective SLC35A1 causes congenital disorder of glycosylation 2F (CDG2F)
+R-HSA-5663084,Diseases of carbohydrate metabolism
+R-HSA-5663202,Diseases of signal transduction by growth factor receptors and second messengers
+R-HSA-5663205,Infectious disease
+R-HSA-5668914,Diseases of metabolism
+R-HSA-5674400,Constitutive Signaling by AKT1 E17K in Cancer
+R-HSA-5674404,PTEN Loss of Function in Cancer
+R-HSA-5678420,"Defective ABCC9 causes CMD10, ATFB12 and Cantu syndrome"
+R-HSA-5678520,Defective ABCB11 causes PFIC2 and BRIC2
+R-HSA-5678771,"Defective ABCB4 causes PFIC3, ICP3 and GBD1"
+R-HSA-5678895,Defective CFTR causes cystic fibrosis
+R-HSA-5679001,Defective ABCC2 causes DJS
+R-HSA-5679090,Defective ABCG8 causes GBD4 and sitosterolemia
+R-HSA-5679096,Defective ABCG5 causes sitosterolemia
+R-HSA-5682113,Defective ABCA1 causes TGD
+R-HSA-5682294,Defective ABCA12 causes ARCI4B
+R-HSA-5683177,Defective ABCC8 can cause hypo- and hyper-glycemias
+R-HSA-5683329,Defective ABCD4 causes MAHCJ
+R-HSA-5683371,Defective ABCB6 causes MCOPCB7
+R-HSA-5683678,Defective ABCA3 causes SMDP3
+R-HSA-5684045,Defective ABCD1 causes ALD
+R-HSA-5687583,Defective SLC34A2 causes PALM
+R-HSA-5687613,Diseases associated with surfactant metabolism
+R-HSA-5687868,Defective SFTPA2 causes IPF
+R-HSA-5688031,Defective pro-SFTPB causes SMDP1 and RDS
+R-HSA-5688354,Defective pro-SFTPC causes SMDP2 and RDS
+R-HSA-5688399,Defective ABCA3 causes SMDP3
+R-HSA-5688849,Defective CSF2RB causes SMDP5
+R-HSA-5688890,Defective CSF2RA causes SMDP4
+R-HSA-5690338,Defective ABCC6 causes PXE
+R-HSA-6791055,"TALDO1 deficiency: failed conversion of SH7P, GA3P to Fru(6)P, E4P"
+R-HSA-6791461,RPIA deficiency: failed conversion of RU5P to R5P
+R-HSA-6791462,"TALDO1 deficiency: failed conversion of  Fru(6)P, E4P to SH7P, GA3P"
+R-HSA-6791465,Pentose phosphate pathway disease
+R-HSA-6802946,Signaling by moderate kinase activity BRAF mutants
+R-HSA-6802948,Signaling by high-kinase activity BRAF mutants
+R-HSA-6802949,Signaling by RAS mutants
+R-HSA-6802952,Signaling by BRAF and RAF fusions
+R-HSA-6802953,RAS signaling downstream of NF1 loss-of-function variants
+R-HSA-6802955,Paradoxical activation of RAF signaling by kinase inactive BRAF
+R-HSA-6802957,Oncogenic MAPK signaling
+R-HSA-6809583,Retinoid metabolism disease events
+R-HSA-8851708,Signaling by FGFR2 IIIa TM
+R-HSA-8853333,Signaling by FGFR2 fusions
+R-HSA-8853334,Signaling by FGFR3 fusions in cancer
+R-HSA-8853336,Signaling by plasma membrane FGFR1 fusions
+R-HSA-8853338,Signaling by FGFR3 point mutants in cancer
+R-HSA-8862803,Deregulated CDK5 triggers multiple neurodegenerative pathways in Alzheimer's disease models
+R-HSA-8863678,Neurodegenerative Diseases
+R-HSA-8875360,InlB-mediated entry of Listeria monocytogenes into host cell
+R-HSA-8876384,Listeria monocytogenes entry into host cells
+R-HSA-8876493,InlA-mediated entry of Listeria monocytogenes into host cells
+R-HSA-8942233,Intestinal infectious diseases
+R-HSA-9005891,Loss of function of MECP2 in Rett syndrome
+R-HSA-9005895,Pervasive developmental disorders
+R-HSA-9006821,Alternative Lengthening of Telomeres (ALT)
+R-HSA-9022534,Loss of MECP2 binding ability to 5hmC-DNA
+R-HSA-9022535,Loss of phosphorylation of MECP2 at T308
+R-HSA-9022537,Loss of MECP2 binding ability to the NCoR/SMRT complex
+R-HSA-9022538,Loss of MECP2 binding ability to 5mC-DNA
+R-HSA-9035968,Defective GGT1 causes Glutathionuria (GLUTH)
+R-HSA-9036092,Defective AVP does not bind AVPR2 and causes neurohypophyseal diabetes insipidus (NDI)
+R-HSA-9605308,Diseases of Base Excision Repair
+R-HSA-9605310,Defective Base Excision Repair Associated with MUTYH
+R-HSA-9608287,Defective MUTYH substrate binding
+R-HSA-9608290,Defective MUTYH substrate processing
+R-HSA-9609646,HCMV Infection
+R-HSA-9609690,HCMV Early Events
+R-HSA-9610379,HCMV Late Events
+R-HSA-9616333,Defective Base Excision Repair Associated with NTHL1
+R-HSA-9616334,Defective Base Excision Repair Associated with NEIL1
+R-HSA-9629232,Defective Base Excision Repair Associated with NEIL3
+R-HSA-9630221,Defective NTHL1 substrate processing
+R-HSA-9630222,Defective NTHL1 substrate binding
+R-HSA-9630747,Diseases of Cellular Senescence
+R-HSA-9630750,Evasion of Oncogene Induced Senescence Due to p16INK4A Defects
+R-HSA-9630791,Evasion of Oncogene Induced Senescence Due to Defective p16INK4A binding to CDK4
+R-HSA-9630794,Evasion of Oncogene Induced Senescence Due to Defective p16INK4A binding to CDK4 and CDK6
+R-HSA-9632693,Evasion of Oxidative Stress Induced Senescence Due to p16INK4A Defects
+R-HSA-9632697,Evasion of Oxidative Stress Induced Senescence Due to Defective p16INK4A binding to CDK4
+R-HSA-9632700,Evasion of Oxidative Stress Induced Senescence Due to Defective p16INK4A binding to CDK4 and CDK6
+R-HSA-9634285,Constitutive Signaling by Overexpressed ERBB2
+R-HSA-9635465,Suppression of apoptosis
+R-HSA-9635486,Infection with Mycobacterium tuberculosis
+R-HSA-9635644,Inhibition of membrane repair
+R-HSA-9636249,Inhibition of nitric oxide production
+R-HSA-9636383,Prevention of phagosomal-lysosomal fusion
+R-HSA-9636467,Blockage of phagosome acidification
+R-HSA-9636569,Suppression of autophagy
+R-HSA-9636667,Manipulation of host energy metabolism
+R-HSA-9637628,Modulation by Mtb of host immune system
+R-HSA-9637679,Escape of Mtb from the phagocyte
+R-HSA-9637687,Suppression of phagosomal maturation
+R-HSA-9637690,Response of Mtb to phagocytosis
+R-HSA-9637698,Phagocyte cell death caused by cytosolic Mtb
+R-HSA-9639775,Antimicrobial action and antimicrobial resistance in Mtb
+R-HSA-9645722,Defective Intrinsic Pathway for Apoptosis Due to p14ARF Loss of Function
+R-HSA-9645723,Diseases of programmed cell death
+R-HSA-9646303,Evasion of Oncogene Induced Senescence Due to p14ARF Defects
+R-HSA-9646304,Evasion of Oxidative Stress Induced Senescence Due to p14ARF Defects
+R-HSA-9649913,RAS GTPase cycle mutants
+R-HSA-9649948,Signaling downstream of RAS mutants
+R-HSA-9651496,Defects of contact activation system (CAS) and kallikrein/kinin system (KKS)
+R-HSA-9652169,Signaling by MAP2K mutants
+R-HSA-9652817,Signaling by MAPK mutants
+R-HSA-9656223,Signaling by RAF1 mutants
+R-HSA-9656249,Defective Base Excision Repair Associated with OGG1
+R-HSA-9656255,Defective OGG1 Substrate Binding
+R-HSA-9656256,Defective OGG1 Substrate Processing
+R-HSA-9657050,Defective OGG1 Localization
+R-HSA-9657688,Defective factor XII causes hereditary angioedema
+R-HSA-9657689,Defective SERPING1 causes hereditary angioedema
+R-HSA-9658195,Leishmania infection
+R-HSA-9659787,Aberrant regulation of mitotic G1/S transition in cancer due to RB1 defects
+R-HSA-9660537,Signaling by MRAS-complex mutants
+R-HSA-9660821,ADORA2B mediated anti-inflammatory cytokines production
+R-HSA-9660826,Purinergic signaling in leishmaniasis infection
+R-HSA-9661069,"Defective binding of RB1 mutants to E2F1,(E2F2, E2F3)"
+R-HSA-9661070,Defective translocation of RB1 mutants to the nucleus
+R-HSA-9662001,Defective factor VIII causes hemophilia A
+R-HSA-9662834,CD163 mediating an anti-inflammatory response
+R-HSA-9662851,Anti-inflammatory response favouring Leishmania parasite infection
+R-HSA-9663199,Defective DNA double strand break response due to BRCA1 loss of function
+R-HSA-9664323,FCGR3A-mediated IL10 synthesis
+R-HSA-9664407,Parasite infection
+R-HSA-9664417,Leishmania phagocytosis
+R-HSA-9664420,Killing mechanisms
+R-HSA-9664422,FCGR3A-mediated phagocytosis
+R-HSA-9664424,Cell recruitment (pro-inflammatory response)
+R-HSA-9664433,Leishmania parasite growth and survival
+R-HSA-9664535,LTC4-CYSLTR mediated IL4 production
+R-HSA-9664565,Signaling by ERBB2 KD Mutants
+R-HSA-9665230,Drug resistance in ERBB2 KD mutants
+R-HSA-9665233,Resistance of ERBB2 KD mutants to trastuzumab
+R-HSA-9665244,Resistance of ERBB2 KD mutants to sapitinib
+R-HSA-9665245,Resistance of ERBB2 KD mutants to tesevatinib
+R-HSA-9665246,Resistance of ERBB2 KD mutants to neratinib
+R-HSA-9665247,Resistance of ERBB2 KD mutants to osimertinib
+R-HSA-9665249,Resistance of ERBB2 KD mutants to afatinib
+R-HSA-9665250,Resistance of ERBB2 KD mutants to AEE788
+R-HSA-9665251,Resistance of ERBB2 KD mutants to lapatinib
+R-HSA-9665348,Signaling by ERBB2 ECD mutants
+R-HSA-9665686,Signaling by ERBB2 TMD/JMD mutants
+R-HSA-9665737,Drug resistance in ERBB2 TMD/JMD mutants
+R-HSA-9668250,Defective factor IX causes hemophilia B
+R-HSA-9669914,Dasatinib-resistant KIT mutants
+R-HSA-9669917,Imatinib-resistant KIT mutants
+R-HSA-9669921,KIT mutants bind TKIs
+R-HSA-9669924,Masitinib-resistant KIT mutants
+R-HSA-9669926,Nilotinib-resistant KIT mutants
+R-HSA-9669929,Regorafenib-resistant KIT mutants
+R-HSA-9669933,Signaling by kinase domain mutants of KIT
+R-HSA-9669934,Sunitinib-resistant KIT mutants
+R-HSA-9669935,Signaling by juxtamembrane domain KIT mutants
+R-HSA-9669936,Sorafenib-resistant KIT mutants
+R-HSA-9669937,Drug resistance of KIT mutants
+R-HSA-9669938,Signaling by KIT in disease
+R-HSA-9670439,"Signaling by phosphorylated juxtamembrane, extracellular and kinase domain KIT mutants"
+R-HSA-9670613,Defective Inhibition of DNA Recombination at Telomere Due to DAXX Mutations
+R-HSA-9670615,Defective Inhibition of DNA Recombination at Telomere Due to ATRX Mutations
+R-HSA-9670621,Defective Inhibition of DNA Recombination at Telomere
+R-HSA-9671555,Signaling by PDGFR in disease
+R-HSA-9671793,Diseases of hemostasis
+R-HSA-9672383,Defective factor IX causes thrombophilia
+R-HSA-9672387,Defective F8 accelerates dissociation of the A2 domain
+R-HSA-9672391,Defective F8 cleavage by thrombin
+R-HSA-9672393,Defective F8 binding to von Willebrand factor
+R-HSA-9672395,Defective F8 binding to the cell membrane
+R-HSA-9672396,Defective cofactor function of FVIIIa variant
+R-HSA-9672397,Defective F8 secretion
+R-HSA-9673013,Diseases of Telomere Maintenance
+R-HSA-9673202,Defective F9 variant does not activate FX
+R-HSA-9673218,Defective F9 secretion
+R-HSA-9673221,Defective F9 activation
+R-HSA-9673240,Defective gamma-carboxylation of F9
+R-HSA-9673324,WNT5:FZD7-mediated leishmania damping
+R-HSA-9673766,Signaling by cytosolic PDGFRA and PDGFRB fusion proteins
+R-HSA-9673767,"Signaling by PDGFRA transmembrane, juxtamembrane and kinase domain mutants"
+R-HSA-9673768,Signaling by membrane-tethered fusions of PDGFRA or PDGFRB
+R-HSA-9673770,Signaling by PDGFRA extracellular domain mutants
+R-HSA-9674396,Imatinib-resistant PDGFR mutants
+R-HSA-9674401,Sunitinib-resistant PDGFR mutants
+R-HSA-9674403,Regorafenib-resistant PDGFR mutants
+R-HSA-9674404,Sorafenib-resistant PDGFR mutants
+R-HSA-9674415,Drug resistance of PDGFR mutants
+R-HSA-9674428,PDGFR mutants bind TKIs
+R-HSA-9674519,Defective F8 sulfation at Y1699
+R-HSA-9675126,Diseases of mitotic cell cycle
+R-HSA-9675132,Diseases of cellular response to stress
+R-HSA-9675135,Diseases of DNA repair
+R-HSA-9675136,Diseases of DNA Double-Strand Break Repair
+R-HSA-9675143,Diseases of the neuronal system
+R-HSA-9675151,Disorders of Developmental Biology
+R-HSA-9678108,SARS-CoV-1 Infection
+R-HSA-9678110,Attachment and Entry
+R-HSA-9679191,Potential therapeutics for SARS
+R-HSA-9679504,Translation of Replicase and Assembly of the Replication Transcription Complex
+R-HSA-9679506,SARS-CoV Infections
+R-HSA-9679509,Virion Assembly and Release
+R-HSA-9679514,SARS-CoV-1 Genome Replication and Transcription
+R-HSA-9680187,Signaling by extracellular domain mutants of KIT
+R-HSA-9682385,FLT3 signaling in disease
+R-HSA-9682706,Replication of the SARS-CoV-1 genome
+R-HSA-9682708,Transcription of SARS-CoV-1 sgRNAs
+R-HSA-9683439,Assembly of the SARS-CoV-1 Replication-Transcription Complex (RTC)
+R-HSA-9683610,Maturation of nucleoprotein
+R-HSA-9683612,Maturation of protein M
+R-HSA-9683673,Maturation of protein 3a
+R-HSA-9683683,Maturation of protein E
+R-HSA-9683686,Maturation of spike protein
+R-HSA-9683701,Translation of structural proteins
+R-HSA-9684325,Maturation of replicase proteins
+R-HSA-9686347,Microbial modulation of RIPK1-mediated regulated necrosis
+R-HSA-9687136,Aberrant regulation of mitotic exit in cancer due to RB1 defects
+R-HSA-9687139,Aberrant regulation of mitotic cell cycle due to RB1 defects
+R-HSA-9693928,Defective RIPK1-mediated regulated necrosis
+R-HSA-9694271,Assembly of the SARS-CoV-2 Replication-Transcription Complex (RTC)
+R-HSA-9694301,Maturation of replicase proteins
+R-HSA-9694322,Virion Assembly and Release
+R-HSA-9694493,Maturation of protein E
+R-HSA-9694516,SARS-CoV-2 Infection
+R-HSA-9694548,Maturation of spike protein
+R-HSA-9694594,Maturation of protein M
+R-HSA-9694614,Attachment and Entry
+R-HSA-9694631,Maturation of nucleoprotein
+R-HSA-9694635,Translation of structural proteins
+R-HSA-9694676,Translation of Replicase and Assembly of the Replication Transcription Complex
+R-HSA-9694682,SARS-CoV-2 Genome Replication and Transcription
+R-HSA-9694686,Replication of the SARS-CoV-2 genome
+R-HSA-9694719,Maturation of protein 3a
+R-HSA-9694786,Transcription of SARS-CoV-2 sgRNAs
+R-HSA-9697154,Disorders of Nervous System Development
+R-HSA-9699150,Defective DNA double strand break response due to BARD1 loss of function
+R-HSA-9702506,Drug resistance of FLT3 mutants
+R-HSA-9702509,FLT3 mutants bind TKIs
+R-HSA-9702518,STAT5 activation downstream of FLT3 ITD mutants
+R-HSA-9702569,KW2449-resistant FLT3 mutants
+R-HSA-9702577,semaxanib-resistant FLT3 mutants
+R-HSA-9702581,crenolanib-resistant FLT3 mutants
+R-HSA-9702590,gilteritinib-resistant FLT3 mutants
+R-HSA-9702596,lestaurtinib-resistant FLT3 mutants
+R-HSA-9702600,midostaurin-resistant FLT3 mutants
+R-HSA-9702605,pexidartinib-resistant FLT3 mutants
+R-HSA-9702614,ponatinib-resistant FLT3 mutants
+R-HSA-9702620,quizartinib-resistant FLT3 mutants
+R-HSA-9702624,sorafenib-resistant FLT3 mutants
+R-HSA-9702632,sunitinib-resistant FLT3 mutants
+R-HSA-9702636,tandutinib-resistant FLT3 mutants
+R-HSA-9702998,linifanib-resistant FLT3 mutants
+R-HSA-9703009,tamatinib-resistant FLT3 mutants
+R-HSA-9703465,Signaling by FLT3 fusion proteins
+R-HSA-9703648,Signaling by FLT3 ITD and TKD mutants
+R-HSA-9706377,FLT3 signaling by CBL mutants
