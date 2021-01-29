@@ -63,5 +63,17 @@ def is_it_cancer(df, disease_column_name):
             df['is_it_cancer'][ind]= 'yes'
     return df
 
+def is_it_breast_cancer(df, disease_column_name):
+    # check which of those diseases are cancer related
+    cancer_related = ['breast', 'mammo']
+    df['is_it_breast_cancer'] = 'no'
+
+    for ind in df.index:
+        label = df[disease_column_name][ind]
+        res = [ele for ele in cancer_related if(ele in label)] 
+        if bool(res):
+            df['is_it_breast_cancer'][ind]= 'yes'
+    return df
+
 
 
