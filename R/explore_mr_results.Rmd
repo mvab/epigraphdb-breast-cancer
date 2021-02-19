@@ -1,0 +1,233 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r message=F}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(wesanderson)
+library(flextable)
+```
+
+```{r, message = FALSE}
+dat <- read_tsv("../query_results/bc_all_mr.tsv") %>% 
+  mutate(outcome = case_when(
+        outcome.id %in% c('ieu-a-1127','ieu-a-1132', 'ieu-a-1133', 'ieu-a-1134') ~ 'ER+ postmeno',
+        outcome.id %in% c('ieu-a-1128','ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137') ~ 'ER- premeno',
+        outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131') ~ 'Breast cancer (all)',
+        outcome.id %in% c('ukb-a-519','ukb-a-55') ~ 'ER+ postmeno UKB')) %>% 
+  mutate(outcome.details =  paste0(outcome.id, " - ",format(outcome.sample_size, big.mark = ","))) %>% 
+  separate(outcome.details, into=c('outcome.details','tmp'), sep=",") %>% 
+  mutate(outcome.details = paste0(outcome.details, "K" )) %>% 
+  # tidy up labels
+   mutate(exposure = str_replace(exposure.trait, "Treatment/medication code", "Drug"),
+          exposure = str_replace(exposure, "Non-cancer illness code  self-reported", "Illness"),
+          exposure = str_replace(exposure, "Diagnoses - main ICD10:", "Diagnosis"),
+          exposure = str_replace(exposure, "Mineral and other dietary supplements:", "Supplements"),
+          exposure = str_replace(exposure, "Vitamin and mineral supplements:", "Vitamins"),
+          exposure = str_replace(exposure, "Illness  injury  bereavement  stress in last 2 years", "Stress"),
+          exposure = str_replace(exposure, "Types of transport used (excluding work)", "Transport"),
+          exposure = str_replace(exposure, "Types of physical activity in last 4 weeks", "Physical activity")) %>% 
+  mutate(exposure = case_when(grepl("presbyopia", exposure.trait) ~ "Eyesight problems1",
+                              grepl("hypermetropia", exposure.trait) ~ "Eyesight problems2",
+                              TRUE ~ exposure)) %>% 
+  # convert MR results to OR
+  mutate(loci = mr.b - 1.96 * mr.se, 
+         upci = mr.b + 1.96 * mr.se,
+         or = exp(mr.b), 
+         or_loci = exp(loci), 
+         or_upci = exp(upci),
+         OR_CI = paste0(round(or,2), " [",round(or_loci,2) ,":",round(or_upci,2), "]")) %>% 
+  mutate(effect_direction = ifelse(or_loci > 1 & or_upci > 1, 'positive',
+                            ifelse(or_loci < 1 & or_upci < 1, 'negative', 'overlaps null'))) %>% 
+  mutate(mr.b = round(mr.b, 3)) %>% 
+  # subset 
+  filter(exposure.sex != 'Males') %>% 
+  #filter(mr.pval < 10e-6) %>% 
+  # create categories of exposure traits
+  mutate(exposure_cat = case_when(
+          grepl("Drug", exposure) ~ "drugs",
+          grepl("Diagnos|Illness|cancer|diagnos|death|disorder|eye|carcino|colitis|disease", exposure, ignore.case = T) ~ "disease",
+          grepl("vitamin|suppl", exposure, ignore.case = T) ~ "vitamin",
+          grepl("waist|hip|obesity|trunk|mass|weight|bmi|body size|height|length|impedance", exposure, ignore.case = T) ~ "antrophometric",
+          grepl("age at|age started", exposure, ignore.case = T) ~ "reproductive",
+          grepl("alco|wine", exposure, ignore.case = T) ~ "alcohol",
+          grepl("smok|cigar", exposure, ignore.case = T) ~ "smoking",
+          grepl("activi|transport|diy", exposure, ignore.case = T) ~ "activity",
+          TRUE ~ 'other'))
+
+```
+
+```{r}
+outcome_table<- dat %>% 
+  select(outcome, outcome.id, outcome.sample_size, N_case)%>% 
+  distinct() %>%
+  arrange(outcome, desc(outcome.sample_size)) %>% 
+  rename(`sample_size`=outcome.sample_size)
+
+
+set_flextable_defaults(big.mark = " ", 
+  font.size = 10, theme_fun = theme_vanilla,
+  padding.bottom = 6, 
+  padding.top = 6,
+  padding.left = 6,
+  padding.right = 6,
+  background.color = "#EFEFEF")
+
+ft<-flextable(outcome_table)
+ft<-width(ft, j = 1, width=1.5)
+ft
+
+
+```
+
+
+
+```{r include=F}
+# heatmap function
+plot_heatmap <- function(input){
+  
+  pal <- wes_palette("Zissou1", 100, type = "continuous")
+  limit <- max(abs(input$mr.b)) * c(-1, 1)
+
+  p<-ggplot(input, aes( outcome.details, exposure, fill= mr.b, label = mr.pval, label2 = OR_CI, label3 = exposure.sex)) + 
+    scale_fill_gradientn(colours = pal
+                        , limit = limit
+                        ) + 
+    geom_tile()+
+    facet_grid(exposure_cat~outcome, scales = 'free') +
+    theme_bw()+
+    theme(axis.text.x=element_text(angle=35, hjust=1))
+  return(p)
+}
+
+plot_bubble_plot <- function(input){
+  
+  pal <- wes_palette("Zissou1", 100, type = "continuous")
+  limit <- max(abs(input$mr.b)) * c(-1, 1)
+  
+  # first, create a usable p-value variable (truncated and log10-transformed)
+    input <- mutate(input, 
+            # convert all super small pval into 1e-15
+            pval_truncated = ifelse(mr.pval < 1e-15, 1e-15, mr.pval),
+            # log transform pvals
+            log10pval_trunc = as.integer(-log10(pval_truncated)))
+
+  p<-ggplot(input, aes( outcome.details, exposure, 
+                  color= mr.b, size = log10pval_trunc, label2 = OR_CI, label3 = exposure.sex)) + 
+    geom_point()+
+    scale_size(breaks = c(5,7,15))+
+    scale_color_gradientn(colours = pal
+                        , limit = limit
+                        ) + 
+    facet_grid(exposure_cat~outcome, scales = 'free') +
+    theme_bw()+
+    theme(axis.text.x=element_text(angle=35, hjust=1))
+  return(p)
+}
+
+```
+
+
+### Anthophometric traits
+```{r fig.width=8}
+input <- dat %>% filter(exposure_cat %in% c('antrophometric')) 
+p<-plot_heatmap(input)
+p
+```
+```{r}
+input <- dat %>% filter(exposure_cat %in% c('antrophometric')) 
+p<-plot_bubble_plot(input)
+p
+```
+
+### Activity
+```{r fig.width=10}
+input <- dat %>% filter(exposure_cat %in% c('activity')) %>% 
+                mutate(exposure = gsub("\\(eg.*)", "", exposure))
+p<-plot_heatmap(input)
+p
+```
+
+```{r}
+input <- dat %>% filter(exposure_cat %in% c('activity')) %>% 
+              mutate(exposure = gsub("\\(eg.*)", "", exposure))
+p<-plot_bubble_plot(input)
+p
+```
+
+### Supplements / vitamins
+```{r fig.width=10}
+input <- dat %>% filter(exposure_cat %in% c('vitamin')) 
+p<-plot_heatmap(input)
+p
+```
+```{r}
+input <- dat %>% filter(exposure_cat %in% c('vitamin')) 
+p<-plot_bubble_plot(input)
+p
+```
+
+
+### Reproductive traits
+```{r fig.height=5}
+input <- dat %>% filter(exposure_cat %in% c('reproductive')) %>% 
+                mutate(exposure = gsub("\\(eg.*)", "", exposure))
+p<-plot_heatmap(input)
+p
+```
+```{r}
+input <- dat %>% filter(exposure_cat %in%  c('reproductive')) %>% 
+                mutate(exposure = gsub("\\(eg.*)", "", exposure))
+p<-plot_bubble_plot(input)
+p
+```
+
+
+
+```{r }
+ply<-plotly::ggplotly(p)
+ply
+```
+
+
+### Other
+```{r fig.width=12}
+input <- dat %>% filter(exposure_cat %in% c('other')) %>% 
+                filter(!grepl("inhaler", exposure))
+p<-plot_heatmap(input)
+p
+```
+```{r}
+input <- dat %>% filter(exposure_cat %in% c('other')) %>% 
+                filter(!grepl("inhaler", exposure))
+p<-plot_bubble_plot(input)
+p
+```
+
+
+
+
+### Drugs
+```{r fig.width=12}
+input <- dat %>% filter(exposure_cat %in% c('drugs')) 
+p<-plot_heatmap(input)
+p
+```
+
+### Disease
+```{r fig.width=12}
+input <- dat %>% filter(exposure_cat %in% c('disease')) 
+p<-plot_heatmap(input)
+p
+```
+
+```{r }
+ply<-plotly::ggplotly(p)
+ply
+```
+
