@@ -1,0 +1,270 @@
+exposure.id	exposure.trait	exposure.sample_size	exposure.sex	outcome.id	outcome.sample_size	N_case	mr.pval	mr.b	mr.se
+ukb-a-320	Age at last live birth	123676.0	Males and Females	ukb-a-55	337159.0	7480	5.7191756360368e-06	-0.0130656464906421	0.00288010731301523
+ieu-a-1004	Age at menopause	69360.0	Females	ukb-a-519	337199.0	5510	4.02674731044012e-06	0.00124629666613625	0.000228421974242762
+ieu-a-1004	Age at menopause	69360.0	Females	ukb-a-55	337159.0	7480	8.67066550501408e-06	0.00120495097469804	0.000270902251630792
+ieu-a-1004	Age at menopause	69360.0	Females	ieu-a-1126	228951.0	122977	6.90924528411086e-11	0.0425421819308547	0.00652225949642208
+ieu-a-1004	Age at menopause	69360.0	Females	ieu-a-1127	175475.0	69501	7.69191897623922e-12	0.0684365711568185	0.00611890023255942
+ieu-a-1004	Age at menopause	69360.0	Females	ieu-a-1130	89677.0	46785	2.20195333188894e-09	0.0633928513403737	0.00763087646900787
+ieu-a-1004	Age at menopause	69360.0	Females	ieu-a-1133	69970.0	27078	1.63761629262192e-08	0.0736	0.00974572744270268
+ukb-a-323	Age started oral contraceptive pill	144113.0	Males and Females	ieu-a-1132	83691.0	38197	2.72469318505056e-54	0.382138568828175	0.0246294588585208
+ukb-a-323	Age started oral contraceptive pill	144113.0	Males and Females	ukb-a-55	337159.0	7480	8.10136264612995e-18	0.00880373554910673	0.00102391082046257
+ukb-a-323	Age started oral contraceptive pill	144113.0	Males and Females	ieu-a-1129	106776.0	61282	6.44404965359875e-46	0.300595463649104	0.0211320348261205
+ukb-a-288	Arm fat-free mass (left)	331159.0	Males and Females	ieu-a-1137	22068.0	4480	5.71305318388811e-06	-0.639826183996326	0.138724054888836
+ukb-a-27	Average weekly champagne plus white wine intake	240864.0	Males and Females	ieu-a-1131	32498.0	14910	1.90552072598845e-20	-2.01907823419477	0.217866445091552
+ukb-a-27	Average weekly champagne plus white wine intake	240864.0	Males and Females	ieu-a-1126	228951.0	122977	3.9266661041497e-30	-0.59136359862957	0.0518491373040027
+ukb-a-30	Average weekly fortified wine intake	241381.0	Males and Females	ieu-a-1137	22068.0	4480	2.97015779258354e-06	-2.40531834957469	0.514740818036743
+ukb-a-30	Average weekly fortified wine intake	241381.0	Males and Females	ieu-a-1134	21814.0	4226	1.67659283487969e-34	3.48620459761459	0.284584351318966
+ieu-a-29	Birth length	28459.0	Males and Females	ukb-a-55	337159.0	7480	3.8074609510138e-10	-0.00835262965897903	0.00133391867624251
+ieu-a-974	Body mass index	171977.0	Females	ieu-a-1126	228951.0	122977	9.78811784289222e-13	-0.788037146309407	0.110470631642082
+ieu-a-785	Body mass index	152893.0	Males	ieu-a-1131	32498.0	14910	3.84805051394271e-06	-0.46817413806438	0.101349008618974
+ieu-a-1015	C-reactive protein	10112.0	Males and Females	ieu-a-1134	21814.0	4226	5.20602298694658e-23	0.35280043976828	0.0357171901703885
+ukb-a-60	Cancer code  self-reported: squamous cell carcinoma	337159.0	Males and Females	ieu-a-1137	22068.0	4480	3.52845315624925e-07	-60.8999617788916	11.9580906545196
+ukb-a-60	Cancer code  self-reported: squamous cell carcinoma	337159.0	Males and Females	ukb-a-55	337159.0	7480	8.46099808596609e-09	-0.637311843494057	0.110663487022459
+ukb-a-307	Cancer diagnosed by doctor	336272.0	Males and Females	ukb-a-519	337199.0	5510	7.68664067731784e-13	0.119282133254422	0.0166441037470964
+ukb-a-307	Cancer diagnosed by doctor	336272.0	Males and Females	ieu-a-1137	22068.0	4480	3.92734086313898e-09	7.52856292720237	1.27879655260106
+ukb-a-34	Comparative body size at age 10	331693.0	Males and Females	ieu-a-1127	175475.0	69501	6.60998200864788e-08	-0.402564787382738	0.0705997744278241
+ieu-a-1073	Copper	2603.0	Males and Females	ieu-a-1131	32498.0	14910	0.0	-0.0866186818986572	0.000518969261469289
+ukb-a-520	Diagnoses - main ICD10: C61 Malignant neoplasm of prostate	337199.0	Males and Females	ieu-a-1126	228951.0	122977	6.37201198881091e-07	4.08339737138887	0.820027325718481
+ukb-a-522	Diagnoses - main ICD10: D25 Leiomyoma of uterus	337199.0	Males and Females	ieu-a-1128	127442.0	21468	1.76262397696063e-08	-8.40325632757077	1.49157381246592
+ukb-a-529	Diagnoses - main ICD10: H25 Senile cataract	337199.0	Males and Females	ieu-a-1130	89677.0	46785	2.23012033412206e-26	-1.48934279979411	0.140146153586799
+ukb-a-531	Diagnoses - main ICD10: I10 Essential (primary) hypertension	337199.0	Males and Females	ieu-a-1127	175475.0	69501	4.93797276666824e-227	8.33949115615468	0.259247540383845
+ukb-a-531	Diagnoses - main ICD10: I10 Essential (primary) hypertension	337199.0	Males and Females	ieu-a-1133	69970.0	27078	8.10206072959697e-18	11.8145109249317	1.37407801755742
+ukb-a-532	Diagnoses - main ICD10: I20 Angina pectoris	337199.0	Males and Females	ieu-a-1137	22068.0	4480	0.0	-6.09170310652397	0.162086309278657
+ukb-a-532	Diagnoses - main ICD10: I20 Angina pectoris	337199.0	Males and Females	ukb-a-519	337199.0	5510	8.15707284200006e-31	0.186544665133208	0.016163064955286
+ukb-a-537	Diagnoses - main ICD10: I80 Phlebitis and thrombophlebitis	337199.0	Males and Females	ieu-a-1137	22068.0	4480	1.83822909060918e-11	-13.7810880489962	2.05126785374896
+ukb-a-539	Diagnoses - main ICD10: I84 Haemorrhoids	337199.0	Males and Females	ieu-a-1133	69970.0	27078	5.32877040111754e-06	9.01543796175338	1.98080129913494
+ukb-a-539	Diagnoses - main ICD10: I84 Haemorrhoids	337199.0	Males and Females	ukb-a-519	337199.0	5510	1.34365873426791e-27	-0.289933131466821	0.0266334963519357
+ukb-a-539	Diagnoses - main ICD10: I84 Haemorrhoids	337199.0	Males and Females	ieu-a-1126	228951.0	122977	1.47423908867313e-13	6.39329821171166	0.865191277762178
+ukb-a-539	Diagnoses - main ICD10: I84 Haemorrhoids	337199.0	Males and Females	ieu-a-1130	89677.0	46785	1.59206393871552e-33	10.0725000037429	0.834765685925826
+ukb-a-543	Diagnoses - main ICD10: J44 Other chronic obstructive pulmonary disease	337199.0	Males and Females	ieu-a-1135	55149.0	9655	1.27213551042024e-234	34.4763837002196	1.05412166278462
+ukb-a-543	Diagnoses - main ICD10: J44 Other chronic obstructive pulmonary disease	337199.0	Males and Females	ieu-a-1131	32498.0	14910	5.21983006355711e-09	29.2597377244387	5.01022215796763
+ukb-a-552	Diagnoses - main ICD10: K50 Crohn's disease [regional enteritis]	337199.0	Males and Females	ieu-a-1137	22068.0	4480	9.38623769481487e-22	38.8616007761479	4.0550770355824
+ukb-a-552	Diagnoses - main ICD10: K50 Crohn's disease [regional enteritis]	337199.0	Males and Females	ieu-a-1128	127442.0	21468	6.96684506740202e-296	19.3683292228947	0.526829788576375
+ukb-a-553	Diagnoses - main ICD10: K51 Ulcerative colitis	337199.0	Males and Females	ieu-a-1130	89677.0	46785	1.05192107742802e-87	6.21045085938861	0.312832223676732
+ukb-a-555	Diagnoses - main ICD10: K57 Diverticular disease of intestine	337199.0	Males and Females	ieu-a-1127	175475.0	69501	1.10664178930671e-07	-3.05920211290916	0.57630753453642
+ukb-a-563	Diagnoses - main ICD10: M17 Gonarthrosis [arthrosis of knee]	337199.0	Males and Females	ukb-a-519	337199.0	5510	4.43421876519435e-06	0.157469053551444	0.0343076022423901
+ukb-a-563	Diagnoses - main ICD10: M17 Gonarthrosis [arthrosis of knee]	337199.0	Males and Females	ieu-a-1134	21814.0	4226	4.11581214439006e-16	-17.3180706548288	2.1288072491546
+ukb-a-563	Diagnoses - main ICD10: M17 Gonarthrosis [arthrosis of knee]	337199.0	Males and Females	ieu-a-1130	89677.0	46785	2.07804991235917e-09	3.19065642059864	0.532522886826327
+ukb-a-564	Diagnoses - main ICD10: M20 Acquired deformities of fingers and toes	337199.0	Males and Females	ukb-a-519	337199.0	5510	0.0	0.108120720828772	0.00147218448660522
+ukb-a-564	Diagnoses - main ICD10: M20 Acquired deformities of fingers and toes	337199.0	Males and Females	ieu-a-1128	127442.0	21468	2.21581458567691e-47	13.955307103413	0.965197587584495
+ukb-a-565	Diagnoses - main ICD10: M21 Other acquired deformities of limbs	337199.0	Males and Females	ieu-a-1130	89677.0	46785	4.29863942284892e-06	16.0690590583263	3.49601370454224
+ukb-a-574	Diagnoses - main ICD10: N20 Calculus of kidney and ureter	337199.0	Males and Females	ieu-a-1130	89677.0	46785	1.25074841766821e-26	-3.33889450418107	0.312604695599268
+ukb-a-578	Diagnoses - main ICD10: N92 Excessive  frequent and irregular menstruation	337199.0	Males and Females	ieu-a-1133	69970.0	27078	3.25958406096973e-06	-6.54798284065985	1.40703487813123
+ukb-a-578	Diagnoses - main ICD10: N92 Excessive  frequent and irregular menstruation	337199.0	Males and Females	ieu-a-1135	55149.0	9655	2.42508373199104e-10	10.2743171918529	1.6226845959133
+ukb-a-578	Diagnoses - main ICD10: N92 Excessive  frequent and irregular menstruation	337199.0	Males and Females	ukb-a-55	337159.0	7480	1.59232364168197e-84	-0.0920094224578186	0.0047230409994594
+ukb-a-584	Diagnoses - main ICD10: R14 Flatulence and related conditions	337199.0	Males and Females	ieu-a-1126	228951.0	122977	6.55633521331685e-31	12.4116587125411	1.07365522693176
+ukb-a-584	Diagnoses - main ICD10: R14 Flatulence and related conditions	337199.0	Males and Females	ieu-a-1127	175475.0	69501	8.1950123066024e-57	23.7143037660024	1.49297939154134
+ukb-a-584	Diagnoses - main ICD10: R14 Flatulence and related conditions	337199.0	Males and Females	ieu-a-1129	106776.0	61282	8.69555767700399e-189	16.6859814786789	0.569370690251256
+ukb-a-584	Diagnoses - main ICD10: R14 Flatulence and related conditions	337199.0	Males and Females	ieu-a-1130	89677.0	46785	8.15836119616583e-32	15.4934362866751	1.31996113405638
+ukb-a-584	Diagnoses - main ICD10: R14 Flatulence and related conditions	337199.0	Males and Females	ieu-a-1132	83691.0	38197	9.63269266759214e-11	24.9467244099117	3.85420100965157
+ukb-a-584	Diagnoses - main ICD10: R14 Flatulence and related conditions	337199.0	Males and Females	ieu-a-1133	69970.0	27078	1.64599503182198e-95	23.5497859334096	1.13570514025443
+ukb-a-585	Diagnoses - main ICD10: R31 Unspecified haematuria	337199.0	Males and Females	ieu-a-1134	21814.0	4226	4.9050901279933e-51	14.7016663778298	0.978366534602557
+ukb-a-344	Difficulty not smoking for 1 day	23332.0	Males and Females	ukb-a-519	337199.0	5510	8.67851503239084e-06	-0.00701223830790363	0.00157659043856427
+ukb-a-4	Duration of light DIY	168725.0	Males and Females	ieu-a-1134	21814.0	4226	6.30045868767291e-09	-0.746084863052661	0.128445291008978
+ukb-a-512	Duration of vigorous activity	183731.0	Males and Females	ieu-a-1130	89677.0	46785	8.3477701196466e-20	0.347095724148621	0.0381065152485557
+ukb-a-512	Duration of vigorous activity	183731.0	Males and Females	ieu-a-1133	69970.0	27078	7.69734270874259e-07	0.276427625377438	0.0559243069052402
+ukb-a-378	Ever highly irritable/argumentative for 2 days	108925.0	Males and Females	ieu-a-1131	32498.0	14910	1.45105720010921e-09	1.90246300857055	0.314471707035195
+ukb-a-378	Ever highly irritable/argumentative for 2 days	108925.0	Males and Females	ieu-a-1137	22068.0	4480	0.0	4.34336085508518	0.108069860098379
+ukb-a-378	Ever highly irritable/argumentative for 2 days	108925.0	Males and Females	ukb-a-55	337159.0	7480	2.39009463454695e-08	0.022246984366141	0.00398613275368853
+ieu-a-85	Extreme body mass index	16068.0	Males and Females	ieu-a-1127	175475.0	69501	5.15876620523361e-08	-0.127222475776786	0.0233617930992642
+ieu-a-87	Extreme waist-to-hip ratio	10255.0	Males and Females	ieu-a-1133	69970.0	27078	1.38783597924898e-46	0.0596797860726324	0.00416419505094162
+ieu-a-87	Extreme waist-to-hip ratio	10255.0	Males and Females	ieu-a-1137	22068.0	4480	6.07404797962693e-21	-0.093102423187519	0.00991642500999134
+ukb-a-426	Eye problems/disorders: Cataract	108817.0	Males and Females	ieu-a-1137	22068.0	4480	7.79450377364053e-06	3.3749638070267	0.754898459968435
+ukb-a-426	Eye problems/disorders: Cataract	108817.0	Males and Females	ieu-a-1134	21814.0	4226	5.02756794853134e-22	2.85382958166518	0.295804459282986
+ukb-a-36	Handedness (chirality/laterality): Left-handed	337130.0	Males and Females	ieu-a-1136	50225.0	7333	4.49158560802604e-88	4.68400999883472	0.235435948809757
+ukb-a-354	Headaches for 3+ months	65583.0	Males and Females	ukb-a-519	337199.0	5510	3.18266458524286e-29	-0.0177287713408995	0.00157983336335419
+ieu-a-1034	Height	13960.0	Males and Females	ieu-a-1126	228951.0	122977	9.45025306953864e-07	0.224204107552458	0.0457302425089537
+ieu-a-1034	Height	13960.0	Males and Females	ieu-a-1127	175475.0	69501	2.60375037154129e-07	0.285624409619347	0.0554601862755735
+ieu-a-89	Height	253288.0	Males and Females	ieu-a-1132	83691.0	38197	1.23023838147825e-08	0.118110479581239	0.020737573888988
+ieu-a-99	Hip circumference	73137.0	Females	ieu-a-1130	89677.0	46785	3.6065961077087e-07	-0.640139872062477	0.125798079056853
+ieu-a-100	Hip circumference	60586.0	Males	ieu-a-1132	83691.0	38197	5.98115814994862e-06	0.79185162044052	0.174915424439424
+ieu-a-55	Hip circumference	211114.0	Males and Females	ieu-a-1132	83691.0	38197	1.85719417093276e-06	0.21726874798896	0.0455645425475318
+ieu-a-101	Hip circumference	73137.0	Females	ieu-a-1135	55149.0	9655	1.12558442349127e-08	0.615043247973451	0.107701462527011
+ieu-a-100	Hip circumference	60586.0	Males	ieu-a-1131	32498.0	14910	2.64996612888133e-237	0.55705647552966	0.0169347320371766
+ieu-a-99	Hip circumference	73137.0	Females	ieu-a-1131	32498.0	14910	1.71378900401947e-07	-0.680786547972218	0.130219991581246
+ieu-a-100	Hip circumference	60586.0	Males	ukb-a-519	337199.0	5510	1.54163251763851e-06	0.0156677436509524	0.00326019970415799
+ieu-a-100	Hip circumference	60586.0	Males	ukb-a-55	337159.0	7480	1.51481652827149e-06	0.0183204707000371	0.00380940694388694
+ieu-a-99	Hip circumference	73137.0	Females	ukb-a-55	337159.0	7480	1.09552286527163e-06	-0.0216059552718226	0.00443321401488403
+ieu-a-100	Hip circumference	60586.0	Males	ieu-a-1126	228951.0	122977	1.42082380202682e-07	0.602507970244421	0.114490057918733
+ieu-a-101	Hip circumference	73137.0	Females	ieu-a-1126	228951.0	122977	3.83187911266248e-06	0.300115131394609	0.0649557850803822
+ieu-a-99	Hip circumference	73137.0	Females	ieu-a-1126	228951.0	122977	6.2477875672861e-11	-0.571581023959631	0.0874286428560777
+ieu-a-100	Hip circumference	60586.0	Males	ieu-a-1127	175475.0	69501	4.2242085398583e-07	0.675897980871413	0.133614540016874
+ieu-a-99	Hip circumference	73137.0	Females	ieu-a-1127	175475.0	69501	5.44301698202213e-08	-0.522189209059877	0.0960578384845334
+ieu-a-55	Hip circumference	211114.0	Males and Females	ieu-a-1127	175475.0	69501	1.61394859752666e-06	0.160989450123887	0.0335633596104615
+ieu-a-100	Hip circumference	60586.0	Males	ieu-a-1129	106776.0	61282	3.47466299474737e-06	0.728947592103819	0.157081816662922
+ieu-a-99	Hip circumference	73137.0	Females	ieu-a-1129	106776.0	61282	8.38671532094857e-06	-0.494692912753329	0.111040520025121
+ukb-a-416	Illness  injury  bereavement  stress in last 2 years: Death of a close relative	335219.0	Males and Females	ieu-a-1128	127442.0	21468	1.21491852847648e-06	-1.29265877666277	0.266352453632469
+ukb-a-418	Illness  injury  bereavement  stress in last 2 years: Financial difficulties	335219.0	Males and Females	ukb-a-519	337199.0	5510	2.66752180914435e-19	-0.0512605435248008	0.00570725659951094
+ukb-a-418	Illness  injury  bereavement  stress in last 2 years: Financial difficulties	335219.0	Males and Females	ieu-a-1134	21814.0	4226	5.37449008937746e-14	-3.04808407038444	0.405196445638306
+ukb-a-414	Illness  injury  bereavement  stress in last 2 years: None of the above	335219.0	Males and Females	ieu-a-1136	50225.0	7333	1.84962184861566e-10	2.43251718705379	0.381671053093734
+ukb-a-206	Illnesses of father: Chronic bronchitis/emphysema	292053.0	Males and Females	ukb-a-55	337159.0	7480	1.72004968234326e-126	-0.0936958980905513	0.00391638355770272
+ukb-a-206	Illnesses of father: Chronic bronchitis/emphysema	292053.0	Males and Females	ieu-a-1134	21814.0	4226	3.87313664501456e-64	-6.83159225908909	0.404025102453628
+ukb-a-204	Illnesses of father: Prostate cancer	292053.0	Males and Females	ieu-a-1127	175475.0	69501	9.49502703733081e-07	1.66696674653103	0.340070617116533
+ukb-a-210	Illnesses of mother: Alzheimer's disease/dementia	308780.0	Males and Females	ieu-a-1126	228951.0	122977	6.57162785000218e-06	-0.566625170720048	0.125718043878819
+ukb-a-213	Illnesses of mother: Breast cancer	308780.0	Males and Females	ukb-a-519	337199.0	5510	6.20340493525285e-12	0.278225848050115	0.0404698122518631
+ukb-a-213	Illnesses of mother: Breast cancer	308780.0	Males and Females	ukb-a-55	337159.0	7480	1.88355576429476e-25	0.387620699048705	0.0371777205171788
+ukb-a-214	Illnesses of mother: Chronic bronchitis/emphysema	308780.0	Males and Females	ieu-a-1129	106776.0	61282	3.48655032984108e-12	3.04305328474236	0.437435823523772
+ukb-a-214	Illnesses of mother: Chronic bronchitis/emphysema	308780.0	Males and Females	ieu-a-1137	22068.0	4480	6.61308720854779e-75	-8.83202015352731	0.482302261932456
+ukb-a-211	Illnesses of mother: None of the above (group 1)	308780.0	Males and Females	ieu-a-1133	69970.0	27078	1.0838334085965e-06	1.11653579107288	0.228996685187951
+ukb-a-217	Illnesses of siblings: Heart disease	259921.0	Males and Females	ieu-a-1134	21814.0	4226	8.94029549771867e-36	-1.63460634788959	0.130918735484033
+ieu-a-1017	Immunoglobulin G index levels	938.0	Males and Females	ukb-a-519	337199.0	5510	1.21454963988069e-11	0.000344601414618922	5.08376375495577e-05
+ukb-a-273	Impedance of arm (left)	331292.0	Males and Females	ieu-a-1127	175475.0	69501	7.02989960407756e-06	0.151954240584118	0.033821865176958
+ieu-a-295	Inflammatory bowel disease	2413.0	Males and Females	ieu-a-1135	55149.0	9655	7.81207401376598e-06	-0.0220616670472059	0.00493519735986686
+ieu-a-1049	Iron	23986.0	Males and Females	ieu-a-1137	22068.0	4480	3.37136770945951e-54	-0.158549644487637	0.0102278000229906
+ieu-a-965	Lung adenocarcinoma	18336.0	Males and Females	ieu-a-1133	69970.0	27078	2.63580954910248e-41	0.026060968599187	0.00193596598308733
+ieu-a-965	Lung adenocarcinoma	18336.0	Males and Females	ieu-a-1131	32498.0	14910	5.2027805510487e-08	-0.0315800892211936	0.00580064518145916
+ieu-a-965	Lung adenocarcinoma	18336.0	Males and Females	ukb-a-519	337199.0	5510	3.756442064574e-06	-0.00151798501240806	0.000328253990757314
+ukb-a-393	Maximum heart rate during fitness test	49610.0	Males and Females	ieu-a-1128	127442.0	21468	1.72433130317785e-06	0.0709688889283702	0.0148367784126849
+ukb-a-495	Mineral and other dietary supplements: Calcium	336314.0	Males and Females	ukb-a-55	337159.0	7480	1.32263695235513e-74	0.130828433343837	0.00715909774442126
+ukb-a-492	Mineral and other dietary supplements: Fish oil (including cod liver oil)	336314.0	Males and Females	ieu-a-1129	106776.0	61282	4.52746787657388e-15	-0.95278845015389	0.121538623124261
+ukb-a-492	Mineral and other dietary supplements: Fish oil (including cod liver oil)	336314.0	Males and Females	ieu-a-1135	55149.0	9655	2.55858472213844e-07	-4.49331547118253	0.871919374403175
+ukb-a-494	Mineral and other dietary supplements: Glucosamine	336314.0	Males and Females	ieu-a-1137	22068.0	4480	1.063022571678e-71	4.24543139388394	0.237098424676699
+ukb-a-494	Mineral and other dietary supplements: Glucosamine	336314.0	Males and Females	ieu-a-1126	228951.0	122977	5.1543215295548e-35	-0.133423381448065	0.0108074916262059
+ukb-a-494	Mineral and other dietary supplements: Glucosamine	336314.0	Males and Females	ieu-a-1128	127442.0	21468	3.36184775718076e-19	0.811124987679667	0.0905661655190386
+ukb-a-493	Mineral and other dietary supplements: None of the above	336314.0	Males and Females	ieu-a-1136	50225.0	7333	0.0	-2.5986128974828	0.0636556179070626
+ukb-a-493	Mineral and other dietary supplements: None of the above	336314.0	Males and Females	ieu-a-1131	32498.0	14910	0.0	1.38980136065847	0.00291374523689083
+ukb-a-493	Mineral and other dietary supplements: None of the above	336314.0	Males and Females	ieu-a-1137	22068.0	4480	4.19019391015668e-210	1.7405472575849	0.0562667575976407
+ukb-a-11	Morning/evening person (chronotype)	301143.0	Males and Females	ieu-a-1127	175475.0	69501	4.23474095718848e-06	0.261791480643566	0.0569171827222304
+ukb-a-103	Non-cancer illness code  self-reported: crohns disease	337159.0	Males and Females	ieu-a-1137	22068.0	4480	1.13551676616833e-34	26.2067407141111	2.13379975090058
+ukb-a-102	Non-cancer illness code  self-reported: diverticular disease/diverticulitis	337159.0	Males and Females	ieu-a-1127	175475.0	69501	1.80138361565474e-11	-3.22652141108162	0.480045868284147
+ukb-a-109	Non-cancer illness code  self-reported: hiatus hernia	337159.0	Males and Females	ukb-a-519	337199.0	5510	4.37679706876725e-07	0.248564859981516	0.0492032854639166
+ukb-a-109	Non-cancer illness code  self-reported: hiatus hernia	337159.0	Males and Females	ukb-a-55	337159.0	7480	2.39445481762972e-48	0.280310386126145	0.0191850596360844
+ukb-a-72	Non-cancer illness code  self-reported: kidney stone/ureter stone/bladder stone	337159.0	Males and Females	ieu-a-1130	89677.0	46785	7.14066675544574e-38	-2.95150007450658	0.229431857157292
+ukb-a-72	Non-cancer illness code  self-reported: kidney stone/ureter stone/bladder stone	337159.0	Males and Females	ieu-a-1131	32498.0	14910	1.06319911918303e-07	-10.2055617456861	1.91993491191228
+ukb-a-78	Non-cancer illness code  self-reported: migraine	337159.0	Males and Females	ieu-a-1137	22068.0	4480	5.42738901843567e-07	6.71747832536441	1.34066609534286
+ukb-a-106	Non-cancer illness code  self-reported: osteoarthritis	337159.0	Males and Females	ieu-a-1135	55149.0	9655	1.14465196563464e-15	-0.680051113362753	0.0848974968187491
+ukb-a-106	Non-cancer illness code  self-reported: osteoarthritis	337159.0	Males and Females	ieu-a-1137	22068.0	4480	0.0	-6.27316127068641	0.0570331390946044
+ukb-a-106	Non-cancer illness code  self-reported: osteoarthritis	337159.0	Males and Females	ieu-a-1126	228951.0	122977	1.04168824827867e-298	1.77892390629488	0.0481566975634635
+ukb-a-90	Non-cancer illness code  self-reported: pernicious anaemia	337159.0	Males and Females	ieu-a-1126	228951.0	122977	3.36483017585716e-26	5.22097644570158	0.4930738753508
+ukb-a-90	Non-cancer illness code  self-reported: pernicious anaemia	337159.0	Males and Females	ieu-a-1137	22068.0	4480	5.30265189509662e-13	32.2761068024671	4.47204189536102
+ukb-a-64	Non-cancer illness code  self-reported: pulmonary embolism +/- dvt	337159.0	Males and Females	ieu-a-1126	228951.0	122977	3.55225537897676e-11	-3.12475366702814	0.471899973475291
+ukb-a-75	Non-cancer illness code  self-reported: type 2 diabetes	337159.0	Males and Females	ieu-a-1126	228951.0	122977	1.63675940962885e-12	14.5782626599429	2.06421417802461
+ukb-a-75	Non-cancer illness code  self-reported: type 2 diabetes	337159.0	Males and Females	ieu-a-1127	175475.0	69501	1.62841918660626e-40	12.841490541108	0.963622401668924
+ukb-a-75	Non-cancer illness code  self-reported: type 2 diabetes	337159.0	Males and Females	ieu-a-1129	106776.0	61282	2.27910451431335e-13	11.8776938125983	1.62013209716107
+ukb-a-75	Non-cancer illness code  self-reported: type 2 diabetes	337159.0	Males and Females	ieu-a-1130	89677.0	46785	4.12620778482752e-11	13.9666335537407	2.11632545667928
+ukb-a-75	Non-cancer illness code  self-reported: type 2 diabetes	337159.0	Males and Females	ieu-a-1132	83691.0	38197	5.67831447197681e-14	12.5780585254621	1.67366152032371
+ukb-a-75	Non-cancer illness code  self-reported: type 2 diabetes	337159.0	Males and Females	ieu-a-1131	32498.0	14910	2.61427133544702e-11	28.8340957664811	4.32502282119682
+ukb-a-91	Non-cancer illness code  self-reported: uterine fibroids	337159.0	Males and Females	ieu-a-1137	22068.0	4480	2.38841267183273e-20	9.22566559055716	0.998084053057011
+ukb-a-110	Non-cancer illness code  self-reported: varicose veins	337159.0	Males and Females	ieu-a-1135	55149.0	9655	3.47465641709193e-15	20.7850849143226	2.64019495332101
+ukb-a-110	Non-cancer illness code  self-reported: varicose veins	337159.0	Males and Females	ukb-a-55	337159.0	7480	1.07519189971978e-08	-0.137770059356133	0.0240923300771793
+ukb-a-304	Number of children fathered	154888.0	Males and Females	ieu-a-1132	83691.0	38197	2.61626219345636e-11	-0.795800588659063	0.119369563050619
+ukb-a-304	Number of children fathered	154888.0	Males and Females	ieu-a-1131	32498.0	14910	2.94596637369726e-248	0.0466526695167915	0.0013863398039484
+ukb-a-304	Number of children fathered	154888.0	Males and Females	ieu-a-1137	22068.0	4480	1.51369188695796e-23	-2.32346756147186	0.232331186278865
+ukb-a-342	Number of cigarettes currently smoked daily (current cigarette smokers)	23205.0	Males and Females	ieu-a-1137	22068.0	4480	5.95961292302275e-09	-0.445252672135078	0.0765316796711777
+ukb-a-342	Number of cigarettes currently smoked daily (current cigarette smokers)	23205.0	Males and Females	ukb-a-55	337159.0	7480	7.84709430221802e-08	-0.00557840900460991	0.00103869196707499
+ukb-a-328	Number of cigarettes previously smoked daily	78291.0	Males and Females	ukb-a-55	337159.0	7480	1.69976218013568e-16	-0.00750220237955722	0.000910288850371663
+ukb-a-328	Number of cigarettes previously smoked daily	78291.0	Males and Females	ieu-a-1137	22068.0	4480	1.56429375826321e-07	-0.470971088046773	0.0897972657585256
+ieu-a-91	Obesity class 2	72546.0	Males and Females	ieu-a-1129	106776.0	61282	5.24858570565183e-06	-0.133139705882353	0.0292319336330275
+ieu-a-91	Obesity class 2	72546.0	Males and Females	ieu-a-1130	89677.0	46785	3.68891437071219e-06	-0.163329148576697	0.0352901380613906
+ieu-a-92	Obesity class 3	50364.0	Males and Females	ukb-a-55	337159.0	7480	9.53970592788091e-08	-0.00517856710355825	0.000970626993582136
+ieu-a-93	Overweight	158855.0	Males and Females	ieu-a-1129	106776.0	61282	5.44871542054067e-07	-0.282505273778531	0.0563905501822955
+ieu-a-803	PGC cross-disorder traits	61220.0	Males and Females	ieu-a-1132	83691.0	38197	1.60286167373313e-08	-0.0882417479055438	0.0156175294654256
+ieu-a-803	PGC cross-disorder traits	61220.0	Males and Females	ieu-a-1131	32498.0	14910	2.96302397214828e-06	0.207477971506681	0.044395827621121
+ukb-a-472	Pain type(s) experienced in last month: Neck or shoulder pain	336650.0	Males and Females	ieu-a-1132	83691.0	38197	2.37964286300003e-06	0.11647735378013	0.0246869262733096
+ukb-a-472	Pain type(s) experienced in last month: Neck or shoulder pain	336650.0	Males and Females	ieu-a-1135	55149.0	9655	4.46239885658647e-229	1.20425737612676	0.0372674727849551
+ukb-a-472	Pain type(s) experienced in last month: Neck or shoulder pain	336650.0	Males and Females	ieu-a-1131	32498.0	14910	6.96211267900703e-62	-1.1824691331077	0.0712328221884376
+ukb-a-472	Pain type(s) experienced in last month: Neck or shoulder pain	336650.0	Males and Females	ieu-a-1128	127442.0	21468	6.41193398620095e-19	0.319852143838432	0.0360005130125571
+ukb-a-197	Prospective memory result	111099.0	Males and Females	ieu-a-1132	83691.0	38197	3.21217966242809e-06	0.0302862779368206	0.00650371728991847
+ukb-a-197	Prospective memory result	111099.0	Males and Females	ieu-a-1137	22068.0	4480	2.98159216658616e-09	-3.57505135018312	0.602610360597796
+ukb-a-365	Pulse wave peak to peak time	110099.0	Males and Females	ieu-a-1131	32498.0	14910	6.46330040608411e-135	-0.847560061056635	0.0342859277378311
+ukb-a-365	Pulse wave peak to peak time	110099.0	Males and Females	ukb-a-519	337199.0	5510	1.16213254658541e-41	-0.0196858766750156	0.00145585656804216
+ukb-a-365	Pulse wave peak to peak time	110099.0	Males and Females	ukb-a-55	337159.0	7480	1.07722870289639e-190	-0.0299800399128698	0.00101781524176668
+ukb-a-364	Pulse wave reflection index	110153.0	Males and Females	ukb-a-519	337199.0	5510	1.588198949291e-53	-0.0268109726747229	0.00174075241673192
+ukb-a-364	Pulse wave reflection index	110153.0	Males and Females	ieu-a-1134	21814.0	4226	1.50237969325819e-09	-0.77945023273357	0.128960321430316
+ukb-a-364	Pulse wave reflection index	110153.0	Males and Females	ieu-a-1130	89677.0	46785	1.7122835184663e-10	-0.795073796490229	0.124519183388512
+ukb-a-364	Pulse wave reflection index	110153.0	Males and Females	ieu-a-1137	22068.0	4480	1.33195507047709e-26	-0.617615061396201	0.0578559775319113
+ukb-a-401	Qualifications: CSEs or equivalent	334070.0	Males and Females	ieu-a-1132	83691.0	38197	2.46545537049005e-95	-1.18149838785391	0.0570320904542033
+ukb-a-401	Qualifications: CSEs or equivalent	334070.0	Males and Females	ieu-a-1136	50225.0	7333	3.69092669388858e-41	2.21036178543337	0.164503271950122
+ukb-a-421	Reason for glasses/contact lenses: For just reading/near work as you are getting older (called 'presbyopia')	335700.0	Males and Females	ieu-a-1135	55149.0	9655	8.13530407742969e-08	2.98035553577622	0.555611298661498
+ukb-a-421	Reason for glasses/contact lenses: For just reading/near work as you are getting older (called 'presbyopia')	335700.0	Males and Females	ieu-a-1137	22068.0	4480	7.06571359118396e-06	-2.27025188219167	0.505432738933303
+ukb-a-421	Reason for glasses/contact lenses: For just reading/near work as you are getting older (called 'presbyopia')	335700.0	Males and Females	ieu-a-1126	228951.0	122977	9.57022121357549e-16	2.09932450986676	0.261361994410089
+ukb-a-421	Reason for glasses/contact lenses: For just reading/near work as you are getting older (called 'presbyopia')	335700.0	Males and Females	ieu-a-1127	175475.0	69501	2.17564177823442e-06	2.28008009005727	0.481396703082842
+ukb-a-420	Reason for glasses/contact lenses: For long-sightedness  i.e. for distance and near  but particularly for near tasks like reading (called 'hypermetropia')	335700.0	Males and Females	ieu-a-1127	175475.0	69501	6.73859459337478e-10	-2.50889061961415	0.406488528590512
+ukb-a-420	Reason for glasses/contact lenses: For long-sightedness  i.e. for distance and near  but particularly for near tasks like reading (called 'hypermetropia')	335700.0	Males and Females	ieu-a-1133	69970.0	27078	1.87935350431231e-45	-5.60422404995214	0.396070614728719
+ukb-a-420	Reason for glasses/contact lenses: For long-sightedness  i.e. for distance and near  but particularly for near tasks like reading (called 'hypermetropia')	335700.0	Males and Females	ieu-a-1135	55149.0	9655	1.64497380490763e-09	8.58674168794139	1.42412856761609
+ukb-a-314	Reason for reducing amount of alcohol drunk: Health precaution	124798.0	Males and Females	ieu-a-1135	55149.0	9655	8.71464009496489e-07	-0.882024655345048	0.179322776556408
+ukb-a-314	Reason for reducing amount of alcohol drunk: Health precaution	124798.0	Males and Females	ieu-a-1129	106776.0	61282	1.79854891044724e-07	-0.501446572803445	0.0960802691207874
+ukb-a-195	Sitting height	336172.0	Males and Females	ieu-a-1132	83691.0	38197	1.5621334298906e-06	0.14182695201849	0.0290230050869051
+ieu-a-1088	Sleep duration	128266.0	Males and Females	ieu-a-1137	22068.0	4480	1.1720212771001e-08	-1.14924523263507	0.201489524426849
+ukb-a-14	Snoring	314449.0	Males and Females	ieu-a-1128	127442.0	21468	1.3222503964585e-06	1.75905424449871	0.363712993396213
+ukb-a-343	Time from waking to first cigarette	23265.0	Males and Females	ieu-a-1134	21814.0	4226	8.44244463962251e-09	0.402584176380127	0.0699006343306349
+ukb-a-7	Time spent driving	224813.0	Males and Females	ieu-a-1137	22068.0	4480	1.64276503963436e-17	2.27959482811457	0.26766424411397
+ukb-a-7	Time spent driving	224813.0	Males and Females	ukb-a-519	337199.0	5510	5.57165585959561e-06	0.00156658190839104	0.00034490828954117
+ukb-a-7	Time spent driving	224813.0	Males and Females	ieu-a-1127	175475.0	69501	7.44740870946032e-15	-0.3462969784951	0.0445303912747781
+ukb-a-7	Time spent driving	224813.0	Males and Females	ieu-a-1129	106776.0	61282	1.89511596438213e-08	-0.471591730131475	0.0838935197042375
+ukb-a-260	Tobacco smoking: Ex-smoker	83133.0	Males and Females	ieu-a-1129	106776.0	61282	1.17604356841115e-11	-0.464710292402977	0.0685097708676911
+ukb-a-260	Tobacco smoking: Ex-smoker	83133.0	Males and Females	ieu-a-1137	22068.0	4480	3.95418631679763e-67	-1.34312764101487	0.0775925870973061
+ieu-a-1051	Transferrin Saturation	23986.0	Males and Females	ieu-a-1136	50225.0	7333	5.06495233112256e-07	-0.0683260125913368	0.0136003671668038
+ukb-a-148	Treatment/medication code: bisoprolol	337159.0	Males and Females	ukb-a-519	337199.0	5510	6.69053501686514e-10	-0.390769133731225	0.063300512526774
+ukb-a-148	Treatment/medication code: bisoprolol	337159.0	Males and Females	ukb-a-55	337159.0	7480	2.49472916801022e-45	-0.425470250837912	0.0301119302561103
+ukb-a-180	Treatment/medication code: clopidogrel	337159.0	Males and Females	ieu-a-1134	21814.0	4226	4.47320655307844e-06	-7.51696875709675	1.6383657279344
+ukb-a-173	Treatment/medication code: co-amilofruse	337159.0	Males and Females	ieu-a-1135	55149.0	9655	1.89013543014164e-16	13.9316210776191	1.69302088441545
+ukb-a-173	Treatment/medication code: co-amilofruse	337159.0	Males and Females	ieu-a-1134	21814.0	4226	6.7734324547085e-07	33.9209519035363	6.82823294541981
+ukb-a-155	Treatment/medication code: codeine	337159.0	Males and Females	ieu-a-1130	89677.0	46785	7.00039557478924e-144	-3.88890224696637	0.152264108270534
+ukb-a-149	Treatment/medication code: doxazosin	337159.0	Males and Females	ieu-a-1130	89677.0	46785	1.96191357664766e-06	4.17765358108853	0.878154885502827
+ukb-a-149	Treatment/medication code: doxazosin	337159.0	Males and Females	ieu-a-1135	55149.0	9655	4.67390946396132e-09	-14.8740512852526	2.53893386149994
+ukb-a-149	Treatment/medication code: doxazosin	337159.0	Males and Females	ieu-a-1128	127442.0	21468	5.24520716571918e-30	-4.11619310365076	0.361696347034495
+ukb-a-152	Treatment/medication code: eumovate cream	337159.0	Males and Females	ieu-a-1134	21814.0	4226	0.0	-47.1325382110152	0.381660787845684
+ukb-a-152	Treatment/medication code: eumovate cream	337159.0	Males and Females	ieu-a-1131	32498.0	14910	8.26130787357279e-06	-11.2883276863775	2.53198153548263
+ukb-a-186	Treatment/medication code: omacor 1g capsule	337159.0	Males and Females	ieu-a-1132	83691.0	38197	1.23426766107402e-11	-9.95159337838267	1.46862216529361
+ukb-a-186	Treatment/medication code: omacor 1g capsule	337159.0	Males and Females	ieu-a-1129	106776.0	61282	7.49776224876094e-11	-16.7180414010096	2.56791881237628
+ukb-a-141	Treatment/medication code: prednisolone	337159.0	Males and Females	ieu-a-1126	228951.0	122977	5.62662360567798e-06	-9.28318349559652	2.0447743424116
+ukb-a-141	Treatment/medication code: prednisolone	337159.0	Males and Females	ieu-a-1127	175475.0	69501	0.0	-12.9082685230119	0.342821679629634
+ukb-a-141	Treatment/medication code: prednisolone	337159.0	Males and Females	ieu-a-1129	106776.0	61282	3.63681897771967e-08	-4.68661917520307	0.85093098638501
+ukb-a-141	Treatment/medication code: prednisolone	337159.0	Males and Females	ieu-a-1131	32498.0	14910	1.94394021194942e-06	-9.9491971119222	2.09053351842348
+ukb-a-138	Treatment/medication code: quinine	337159.0	Males and Females	ieu-a-1130	89677.0	46785	3.56441017393844e-06	-17.0119436297755	3.67009427551387
+ukb-a-138	Treatment/medication code: quinine	337159.0	Males and Females	ieu-a-1136	50225.0	7333	1.4474458860784e-13	-17.2776981418376	2.33738233175939
+ukb-a-117	Treatment/medication code: ramipril	337159.0	Males and Females	ieu-a-1137	22068.0	4480	6.91903953816937e-06	9.2129002839716	2.04905790771684
+ukb-a-117	Treatment/medication code: ramipril	337159.0	Males and Females	ieu-a-1128	127442.0	21468	4.6610149935882e-11	3.24417332524124	0.492932076074463
+ukb-a-184	Treatment/medication code: rosiglitazone	337159.0	Males and Females	ukb-a-519	337199.0	5510	8.83870112836777e-18	0.712497350184842	0.0829629217212207
+ukb-a-151	Treatment/medication code: salbutamol	337159.0	Males and Females	ieu-a-1136	50225.0	7333	1.05415961932143e-13	19.3334626243366	2.60070470427334
+ukb-a-151	Treatment/medication code: salbutamol	337159.0	Males and Females	ieu-a-1137	22068.0	4480	0.0	22.1206864062751	0.289535912358901
+ukb-a-178	Treatment/medication code: salmeterol product	337159.0	Males and Females	ieu-a-1132	83691.0	38197	9.76302076960414e-14	13.7951049873155	1.85316717827221
+ukb-a-167	Treatment/medication code: venlafaxine	337159.0	Males and Females	ieu-a-1132	83691.0	38197	2.24643198504039e-08	-7.3397314390227	1.31257302774902
+ukb-a-167	Treatment/medication code: venlafaxine	337159.0	Males and Females	ieu-a-1135	55149.0	9655	4.01938230972614e-07	-3.32509915884164	0.656092059063865
+ukb-a-167	Treatment/medication code: venlafaxine	337159.0	Males and Females	ieu-a-1131	32498.0	14910	3.34912823529329e-08	-22.3683530657898	4.05067418284414
+ukb-a-167	Treatment/medication code: venlafaxine	337159.0	Males and Females	ukb-a-55	337159.0	7480	2.44034462591746e-07	0.214119175297941	0.0414780956898941
+ukb-a-167	Treatment/medication code: venlafaxine	337159.0	Males and Females	ieu-a-1128	127442.0	21468	2.03106093656221e-09	-11.7866571589115	1.96598182091108
+ukb-a-122	Treatment/medication code: ventolin 100micrograms inhaler	337159.0	Males and Females	ieu-a-1131	32498.0	14910	4.81674137994875e-10	5.28575621651353	0.849122709943213
+ukb-a-175	Treatment/medication code: xalatan 0.005% eye drops	337159.0	Males and Females	ieu-a-1133	69970.0	27078	6.41656308630471e-08	6.74172890880812	1.24690131186502
+ukb-a-175	Treatment/medication code: xalatan 0.005% eye drops	337159.0	Males and Females	ieu-a-1134	21814.0	4226	2.60355126297508e-21	20.8748222996474	2.20255767048427
+ukb-a-487	Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging)	335599.0	Males and Females	ieu-a-1128	127442.0	21468	3.48559385246429e-07	-0.898557849263929	0.176357295573964
+ukb-a-487	Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging)	335599.0	Males and Females	ieu-a-1132	83691.0	38197	6.25415005844088e-11	-1.09918382605321	0.168134323167783
+ukb-a-486	Types of physical activity in last 4 weeks: Light DIY (eg: pruning  watering the lawn)	335599.0	Males and Females	ieu-a-1136	50225.0	7333	1.37946436120896e-31	-1.86973751181486	0.159898401419847
+ukb-a-486	Types of physical activity in last 4 weeks: Light DIY (eg: pruning  watering the lawn)	335599.0	Males and Females	ieu-a-1134	21814.0	4226	4.5554563410945e-06	-3.69403698769021	0.805804641214024
+ukb-a-486	Types of physical activity in last 4 weeks: Light DIY (eg: pruning  watering the lawn)	335599.0	Males and Females	ukb-a-55	337159.0	7480	1.05928172744097e-29	0.0242680106637738	0.00214404705810935
+ukb-a-483	Types of physical activity in last 4 weeks: None of the above	335599.0	Males and Females	ieu-a-1126	228951.0	122977	4.22348904469471e-09	3.56437888519382	0.606682774188277
+ukb-a-481	Types of transport used (excluding work): Cycle	335650.0	Males and Females	ieu-a-1128	127442.0	21468	1.01360067989143e-08	-4.83803104523708	0.844563863496398
+ukb-a-481	Types of transport used (excluding work): Cycle	335650.0	Males and Females	ieu-a-1129	106776.0	61282	6.99734021811339e-13	-4.22110362654487	0.587939436565988
+ukb-a-481	Types of transport used (excluding work): Cycle	335650.0	Males and Females	ieu-a-1132	83691.0	38197	1.969110921272e-159	-3.81466673257111	0.141787815301172
+ukb-a-481	Types of transport used (excluding work): Cycle	335650.0	Males and Females	ieu-a-1137	22068.0	4480	2.93275283801321e-44	-6.82764464380137	0.489261304090811
+ukb-a-479	Types of transport used (excluding work): Walk	335650.0	Males and Females	ieu-a-1133	69970.0	27078	0.0	-3.04315827052595	0.0241288738427886
+ukb-a-479	Types of transport used (excluding work): Walk	335650.0	Males and Females	ukb-a-519	337199.0	5510	0.0	-0.057670440232475	0.000215343901666978
+ukb-a-479	Types of transport used (excluding work): Walk	335650.0	Males and Females	ieu-a-1127	175475.0	69501	1.07287985891258e-06	-2.54963299129559	0.522703859071629
+ukb-a-479	Types of transport used (excluding work): Walk	335650.0	Males and Females	ieu-a-1130	89677.0	46785	1.07475737570078e-94	-2.22629976121692	0.107835396006453
+ieu-a-970	Ulcerative colitis	47745.0	Males and Females	ieu-a-1136	50225.0	7333	2.96691480713064e-07	0.125005401424334	0.0222575090536467
+ukb-a-357	Underlying (primary) cause of death: ICD10: E85.4 Organ-limited amyloidosis	7637.0	Males and Females	ieu-a-1134	21814.0	4226	8.61788910004503e-07	-2.27114199621602	0.46153656403847
+ieu-a-792	Urate	17078.0	Males and Females	ieu-a-1136	50225.0	7333	2.96034777881485e-32	-0.00919987649889087	0.000778117911600296
+ieu-a-794	Urate	7189.0	Females	ieu-a-1136	50225.0	7333	2.85372594362589e-29	-0.00610616523202751	0.000543661033893658
+ukb-a-339	Used an inhaler for chest within last hour	309688.0	Males and Females	ieu-a-1137	22068.0	4480	2.20452674111723e-07	17.4796568740549	3.37366392996482
+ukb-a-436	Vascular/heart problems diagnosed by doctor: Angina	336683.0	Males and Females	ieu-a-1129	106776.0	61282	6.77471595152415e-06	-5.96361006896053	1.32505637693837
+ukb-a-464	Vitamin and mineral supplements: Multivitamins +/- minerals	335591.0	Males and Females	ieu-a-1130	89677.0	46785	2.33140057085967e-06	-1.50974583731379	0.319702529509168
+ukb-a-464	Vitamin and mineral supplements: Multivitamins +/- minerals	335591.0	Males and Females	ieu-a-1134	21814.0	4226	1.03472103092489e-112	-0.707882900058643	0.0313756548388938
+ukb-a-459	Vitamin and mineral supplements: None of the above	335591.0	Males and Females	ieu-a-1130	89677.0	46785	3.15577595867584e-08	1.67636984130163	0.303000361464785
+ukb-a-459	Vitamin and mineral supplements: None of the above	335591.0	Males and Females	ieu-a-1133	69970.0	27078	9.16539443641822e-08	2.08564406356623	0.390384477417536
+ieu-a-103	Waist circumference	73137.0	Females	ieu-a-1130	89677.0	46785	9.33649202060223e-09	-0.782212920515539	0.136217972784921
+ieu-a-102	Waist circumference	60586.0	Males	ieu-a-1132	83691.0	38197	1.09822517970688e-06	-0.564175906162367	0.115771887387681
+ieu-a-103	Waist circumference	73137.0	Females	ieu-a-1133	69970.0	27078	3.67052805432523e-06	-0.70543416772382	0.152387396217894
+ieu-a-102	Waist circumference	60586.0	Males	ieu-a-1133	69970.0	27078	1.42944756953946e-07	-0.735958689258439	0.139878259234895
+ieu-a-103	Waist circumference	73137.0	Females	ieu-a-1131	32498.0	14910	6.83244237526847e-10	-0.69931888008801	0.11334325989595
+ieu-a-103	Waist circumference	73137.0	Females	ukb-a-55	337159.0	7480	1.4699662783658e-07	-0.0249265212354121	0.00474223415045839
+ieu-a-102	Waist circumference	60586.0	Males	ukb-a-55	337159.0	7480	1.08004350042143e-07	-0.0220544873137924	0.00415126551735764
+ieu-a-68	Waist circumference	134038.0	Females	ieu-a-1126	228951.0	122977	4.45844473939805e-08	-0.395373258930234	0.0722584005344972
+ieu-a-103	Waist circumference	73137.0	Females	ieu-a-1126	228951.0	122977	1.86256976719135e-12	-0.667426231821125	0.094745592326744
+ieu-a-102	Waist circumference	60586.0	Males	ieu-a-1126	228951.0	122977	1.99050300562063e-14	-0.642405448512787	0.0839609580971239
+ieu-a-103	Waist circumference	73137.0	Females	ieu-a-1127	175475.0	69501	1.42816058460291e-08	-0.57938626316676	0.102184926965809
+ieu-a-102	Waist circumference	60586.0	Males	ieu-a-1127	175475.0	69501	7.51076451146417e-11	-0.603692561886294	0.0927318831960484
+ieu-a-103	Waist circumference	73137.0	Females	ieu-a-1128	127442.0	21468	8.69074054499671e-08	-0.82728767908074	0.154570618957006
+ieu-a-102	Waist circumference	60586.0	Males	ieu-a-1128	127442.0	21468	2.53878783609581e-07	-0.684590744296567	0.132806023685143
+ieu-a-103	Waist circumference	73137.0	Females	ieu-a-1129	106776.0	61282	2.33418095587217e-06	-0.56471872640113	0.119590507338951
+ieu-a-102	Waist circumference	60586.0	Males	ieu-a-1129	106776.0	61282	2.79641396353929e-07	-0.534119402544345	0.103981537506535
