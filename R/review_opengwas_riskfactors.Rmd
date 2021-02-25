@@ -17,7 +17,9 @@ library(TwoSampleMR)
 ```
 
 ```{r}
-ao <- available_outcomes()
+if (!exists("ao")) {
+  ao <- available_outcomes()
+}
 ```
 
 ```{r}
@@ -52,7 +54,8 @@ antrophometric_ids <-
         mutate(trait = case_when(note == 'Adjusted for BMI' ~ paste0(trait, " AdjBMI"),
                         TRUE ~ trait)) %>% 
         arrange(trait) %>% 
-        mutate(category = 'antrophometric traits')
+       mutate(category = 'antrophometric traits')
+
 ```
 
 ```{r}
@@ -105,7 +108,7 @@ makeforest_plot <- function(res_sub, my_title){
     geom_errorbarh(aes(xmin=or_loci, xmax=or_upci), height=.3) +
     geom_point(size=2)+
     geom_text(aes(label=OR_CI),hjust=-0.1, vjust=-0.6, size =3, color = 'darkgrey')+
-    theme_bw()+
+    theme_light()+
     scale_color_manual(values=pal[c(1,3,5)])+
     scale_y_discrete(position = "right")+
     geom_vline(xintercept=1, linetype='longdash') +
@@ -120,60 +123,15 @@ makeforest_plot <- function(res_sub, my_title){
 ```
 
 
-## Activity traits
-```{r}
-
-res_sub<- res %>% 
-      filter(category == 'activity') %>% 
-      mutate(exposure.trait = str_replace(exposure.trait, 
-                                    "Types of physical activity in last 4 weeks", "Physical activity")) %>% 
-      mutate(exposure.trait = gsub("\\(eg.*)", "", exposure.trait)) %>% 
-      mutate(exposure.trait = gsub("\\(not.*)", "", exposure.trait))
-
-
-#meta
-res_sub1 <- res_sub %>% filter(outcome.id %in% c('ieu-a-1126', 'ieu-a-1127','ieu-a-1128'))
-act_p1<-makeforest_plot(res_sub1, "BCAC meta analysis")
-
-# oncoarray
-res_sub2 <- res_sub %>% filter(outcome.id %in% c('ieu-a-1129', 'ieu-a-1132','ieu-a-1135'))
-act_p2<-makeforest_plot(res_sub2, "BCAC oncoarray")
-
-#iCOGS
-res_sub3 <- res_sub %>% filter(outcome.id %in% c('ieu-a-1130', 'ieu-a-1133','ieu-a-1136'))
-act_p3<-makeforest_plot(res_sub3, "BCAC iCOGS")
-
-#UKB
-res_sub4 <- res_sub %>% filter(outcome.id %in% c('ukb-a-55', 'ukb-a-519'))
-act_p4<-makeforest_plot(res_sub4, "UK biobank NL")
-```
-
-```{r fig.width = 10, echo=F}
-act_p1
-```
-
-
-```{r fig.width = 10,echo=F}
-act_p2
-```
-
-
-```{r fig.width = 10,echo=F}
-act_p3
-```
-
-```{r fig.width = 8,echo=F}
-act_p4
-```
-
 
 ## Antrophometric traits
 
 ```{r fig.width = 10,echo=F}
 res_sub<- res %>% 
       filter(category == 'antrophometric traits') %>% 
-      mutate(exposure.trait = case_when(exposure.sex == 'Females' ~ paste(exposure.trait, "F", consortium, year),
-                                        TRUE ~ paste(exposure.trait, "M/F", consortium))) %>% 
+      mutate(exposure.trait = case_when(
+        exposure.sex == 'Females' ~ paste0(exposure.trait, " (F) ", consortium,"/" , year),
+                             TRUE ~ paste0(exposure.trait, " (M/F) ", consortium,"/" , year))) %>% 
   
       mutate(exposure.trait = gsub("Difference in height between ", "Height diff: ", exposure.trait)) %>% 
       mutate(exposure.trait = gsub("Comparative ", "", exposure.trait)) %>% 
@@ -220,6 +178,55 @@ antr_p4
 ```
 
 
+
+## Activity traits
+```{r}
+
+res_sub<- res %>% 
+      filter(category == 'activity') %>% 
+      mutate(exposure.trait = str_replace(exposure.trait, 
+                                    "Types of physical activity in last 4 weeks", "Physical activity")) %>% 
+      mutate(exposure.trait = gsub("\\(eg.*)", "", exposure.trait)) %>% 
+      mutate(exposure.trait = gsub("\\(not.*)", "", exposure.trait))
+
+
+#meta
+res_sub1 <- res_sub %>% filter(outcome.id %in% c('ieu-a-1126', 'ieu-a-1127','ieu-a-1128'))
+act_p1<-makeforest_plot(res_sub1, "BCAC meta analysis")
+
+# oncoarray
+res_sub2 <- res_sub %>% filter(outcome.id %in% c('ieu-a-1129', 'ieu-a-1132','ieu-a-1135'))
+act_p2<-makeforest_plot(res_sub2, "BCAC oncoarray")
+
+#iCOGS
+res_sub3 <- res_sub %>% filter(outcome.id %in% c('ieu-a-1130', 'ieu-a-1133','ieu-a-1136'))
+act_p3<-makeforest_plot(res_sub3, "BCAC iCOGS")
+
+#UKB
+res_sub4 <- res_sub %>% filter(outcome.id %in% c('ukb-a-55', 'ukb-a-519'))
+act_p4<-makeforest_plot(res_sub4, "UK biobank NL")
+```
+
+```{r fig.width = 10, fig.height=4, echo=F}
+act_p1
+```
+
+
+```{r fig.width = 10,fig.height=4, echo=F}
+act_p2
+```
+
+
+```{r fig.width = 10,fig.height=4, echo=F}
+act_p3
+```
+
+```{r fig.width = 8,fig.height=3.5, echo=F}
+act_p4
+```
+
+
+
 ## Reproductive traits
 
 ```{r fig.width = 10,echo=F}
@@ -250,21 +257,21 @@ repr_p4<-makeforest_plot(res_sub4, "UK biobank NL")
 ```
 
 
-```{r fig.width = 10, echo=F}
+```{r fig.width = 10, fig.height = 5, echo=F}
 repr_p1
 ```
 
 
-```{r fig.width = 10,echo=F}
+```{r fig.width = 10, fig.height = 5,echo=F}
 repr_p2
 ```
 
 
-```{r fig.width = 10,echo=F}
+```{r fig.width = 10, fig.height = 5, echo=F}
 repr_p3
 ```
 
-```{r fig.width = 8,echo=F}
+```{r fig.width = 8,fig.height = 5, echo=F}
 repr_p4
 ```
 
