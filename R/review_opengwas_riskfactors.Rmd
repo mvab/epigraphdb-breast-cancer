@@ -28,6 +28,16 @@ activity_ids <- ao %>%
         grepl("Types of physical activity|Time spent doing|activity 10+ minutes|Duration of", trait)) %>%  
         select(id, trait, sex, note, year, consortium)  %>% 
         mutate(category = 'activity')
+
+acitivity_summary <- ao %>% 
+    filter(grepl('activity', trait),
+    grepl("Types of physical activity|Time spent doing|activity 10+ minutes|Duration of", trait)) %>% 
+    filter(consortium =='Neale Lab') %>% 
+    mutate(category = ifelse(grepl("Types", trait), 'Binary', category)) %>% 
+    select(id, trait, category, sample_size,  ncase, ncontrol) %>% 
+    mutate(percent_cases = round(ncase/sample_size*100, 1)) %>% 
+    arrange(-percent_cases)
+
 ```
 
 
@@ -209,6 +219,29 @@ act_p4<-makeforest_plot(res_sub4, "UK biobank NL")
 
 ```{r fig.width = 10, fig.height=4, echo=F}
 act_p1
+```
+```{r}
+
+acitivity_summary<- acitivity_summary %>% 
+  mutate(trait = str_replace(trait, 
+                           "Types of physical activity in last 4 weeks", "Physical activity")) %>% 
+  mutate(trait = gsub("\\(eg.*)", "", trait)) %>% 
+  mutate(trait = gsub("\\(not.*)", "", trait))
+
+set_flextable_defaults(big.mark = " ", 
+  font.size = 10, theme_fun = theme_vanilla,
+  padding.bottom = 6, 
+  padding.top = 6,
+  padding.left = 6,
+  padding.right = 6,
+  background.color = "#EFEFEF")
+
+ft<-flextable(acitivity_summary)
+ft<-width(ft, j = 2, width=4)
+ft<-width(ft, j = 1, width=1.5)
+ft<-width(ft, j = 5, width=1.5)
+
+ft
 ```
 
 
