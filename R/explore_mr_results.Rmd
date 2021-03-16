@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Explore traits with effect in at least one outcome"
 output: html_notebook
 ---
 
@@ -12,38 +12,43 @@ library(ggplot2)
 library(wesanderson)
 library(RColorBrewer)
 library(flextable)
-
 library(TwoSampleMR)
-ao <- available_outcomes()
 ```
 
 
 ```{r, message = FALSE}
 rm(dat)
 dat <- read_tsv("../query_results/bc_all_mr.tsv") %>% 
+  # deal ith al outcome related changes
   mutate(outcome = case_when(
-        outcome.id %in% c('ieu-a-1127','ieu-a-1132', 'ieu-a-1133', 'ieu-a-1134') ~ 'ER+ postmeno',
-        outcome.id %in% c('ieu-a-1128','ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137') ~ 'ER- premeno',
-        outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131') ~ 'Breast cancer (all)',
-        outcome.id %in% c('ukb-a-519','ukb-a-55') ~ 'ER+ postmeno UKB')) %>% 
+        outcome.id %in% c('ieu-a-1127','ieu-a-1132', 'ieu-a-1133', 'ieu-a-1134', 'ieu-a-1167', 'ieu-a-1164', 'ieu-a-1161') ~ 'ER+ postmeno',
+        outcome.id %in% c('ieu-a-1128','ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137', 'ieu-a-1166', 'ieu-a-1163', 'ieu-a-1160') ~ 'ER- premeno',
+        outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1168', 'ieu-a-1165', 'ieu-a-1162', 'ebi-a-GCST004988', 'ebi-a-GCST007236') ~ 'Breast cancer (all)',
+        grepl('ukb', outcome.id) ~ 'ER+ postmeno UKB')) %>% 
   mutate(chip = case_when(
-        outcome.id %in% c('ieu-a-1126','ieu-a-1127', 'ieu-a-1128') ~ 'Meta',
-        outcome.id %in% c('ieu-a-1129', 'ieu-a-1132','ieu-a-1135') ~ 'OncArr',
-        outcome.id %in% c('ieu-a-1130', 'ieu-a-1133','ieu-a-1136') ~ 'iCOGS',
-        outcome.id %in% c('ieu-a-1131', 'ieu-a-1134','ieu-a-1137') ~ 'Old',
-        outcome.id %in% c('ukb-a-519','ukb-a-55') ~                  'UKBB')) %>% 
+        outcome.id %in% c('ieu-a-1126','ieu-a-1127', 'ieu-a-1128', 'ebi-a-GCST004988') ~ 'Meta_____',
+        outcome.id %in% c('ieu-a-1129', 'ieu-a-1132','ieu-a-1135') ~                     'OncArray',
+        outcome.id %in% c('ieu-a-1130', 'ieu-a-1133','ieu-a-1136') ~                     'iCOG2017',
+        outcome.id %in% c('ieu-a-1161', 'ieu-a-1160','ieu-a-1162', 'ebi-a-GCST007236') ~ 'iCOG2015',
+        outcome.id %in% c('ieu-a-1131', 'ieu-a-1134','ieu-a-1137') ~                     'GWASold1',
+        outcome.id %in% c('ieu-a-1166', 'ieu-a-1167','ieu-a-1168') ~                     'GWASold2',
+        outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival__',
+        grepl('ukb', outcome.id) ~                                                       'UKBB_____')) %>% 
   mutate(outcome.details =  paste0(outcome.id, " (",format(outcome.sample_size, big.mark = ","))) %>% 
   separate(outcome.details, into=c('outcome.details', 'tmp'), sep=",") %>% 
-  mutate(outcome.details = gsub("ieu-a-|ukb-a-", '', outcome.details),
+  mutate(outcome.details = gsub("ieu-a-|ukb-a-|ukb-b-|ukb-d-|ebi-a-GCST00", '', outcome.details),
          outcome.details = paste0(chip, ": ",outcome.details, "K)"))
 
 dat<- dat %>% 
   mutate(outcome.details = factor(outcome.details, levels= c( 
-                    sort(unique(dat$outcome.details)[grepl('Meta', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('OncArr', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('iCOGS', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('Old', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('UKBB', unique(dat$outcome.details))])  ))) %>% 
+                    sort(unique(dat$outcome.details)[grepl('Meta_____', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('OncArray', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('iCOG2017', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('iCOG2015', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('GWASold1', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('GWASold2', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('Survival__ ', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('UKBB_____', unique(dat$outcome.details))])  ))) %>% 
   # convert MR results to OR
   mutate(loci = mr.b - 1.96 * mr.se, 
          upci = mr.b + 1.96 * mr.se,
@@ -56,7 +61,7 @@ dat<- dat %>%
   mutate(mr.b = round(mr.b, 3)) %>% 
   # subset 
   filter(exposure.sex != 'Males') %>% 
-  filter(chip!='old') %>% 
+  #filter(chip!='old') %>% 
   #filter(mr.pval < 10e-6) %>% 
   # create categories of exposure traits
       # tidy up labels
@@ -72,34 +77,42 @@ dat<- dat %>%
                               grepl("hypermetropia", exposure) ~ "Eyesight problems2",
                               TRUE ~ exposure)) %>% 
   mutate(exposure_cat = case_when(
-          grepl("Drug", exposure) ~ "drugs",
-          grepl("Diagnos|Illness|cancer|diagnos|death|disorder|eye|carcino|colitis|disease", exposure, ignore.case = T) ~ "disease",
+          grepl("Drug|Medication for pain|prescription medications", exposure, ignore.case = T) ~ "drugs",
+          grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies", exposure, ignore.case = T) ~ "disease",
+          grepl("blood|heart|Pulse", exposure, ignore.case = T) ~ "heart_blood_related",
+          grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "medical_operations",
+          grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure, , ignore.case = T) ~ "eye_hearing-teeth",
           grepl("vitamin|suppl", exposure, ignore.case = T) ~ "vitamin",
-          grepl("waist|hip|obesity|trunk|mass|weight|bmi|body size|height|length|impedance", exposure, ignore.case = T) ~ "antrophometric",
-          grepl("age at|age started", exposure, ignore.case = T) ~ "reproductive",
-          grepl("alco|wine", exposure, ignore.case = T) ~ "alcohol",
+          grepl("waist|hip|obesity|trunk|mass|weight|bmi|body size|height|length|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "antrophometric",
+          grepl("age at|age started|parous|contraceptive pill|replacement therapy|menopause|menarche|live birth|oophorectomy|hysterectomy|sex", exposure, ignore.case = T) ~ "reproductive",
+          grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "alcohol",
           grepl("smok|cigar", exposure, ignore.case = T) ~ "smoking",
-          grepl("activi|transport|diy", exposure, ignore.case = T) ~ "activity",
-          TRUE ~ 'other')) 
-  
-# add notes for trats
-exposure_notes <- ao %>% filter(id %in% dat$exposure.id) %>% select(id, note)
-
-dat<- dat %>% 
-  left_join(exposure_notes, by = c('exposure.id'='id')) %>% 
+          grepl("activi|transport|diy|walking|walked|Time spent|job|Weekly usage of|stair climbing", exposure, ignore.case = T) ~ "activity",
+          grepl("sleep|Snoring|chronotype", exposure, ignore.case = T) ~ "sleep_related",
+          grepl("intake|diet|food|milk|dairy|coffee|cereal|butter", exposure, ignore.case = T) ~ "diet",
+          grepl("count|distribution width|Reticulocyte|cell|Platelet|Eosinophill", exposure, ignore.case = T) ~ 'cell_measures',
+          grepl("prot", exposure.id) ~ 'protein_measures',
+          grepl("met", exposure.id) ~ 'metabolite_measures',
+          grepl("cholesterol|glyc", exposure, ignore.case = T) ~ 'metabolite_measures',
+          grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|Iron|cystatin|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'other_biomarkers',
+          grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic", exposure, ignore.case = T) ~ 'education',
+          grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung", exposure, ignore.case = T) ~ 'psycology',
+          TRUE ~ 'other')) %>% 
   # add other exposure details
   mutate(exposure = case_when(
     exposure.sex == 'Females' ~ paste0(exposure, " (F) ", coalesce(consortium, author),"/" , year),
                          TRUE ~ paste0(exposure, " (M/F) ", coalesce(consortium, author),"/" , year))) %>% 
   # add note
-  mutate(exposure = case_when(grepl('Adjusted for BMI', note) ~ paste0(exposure, " AdjBMI"),
+  mutate(exposure = case_when(grepl('Adjusted for BMI', exposure.note) ~ paste0(exposure, " AdjBMI"),
                         TRUE ~ exposure)) 
 
 ```
 
 ```{r}
 outcome_table<- dat %>% 
-  select(outcome, outcome.id, outcome.sample_size, N_case, chip)%>% 
+  mutate(case_percent = round(N_case/outcome.sample_size*100, 2)) %>% 
+  select(outcome, outcome.id, outcome.sample_size, N_case, case_percent, chip, year)%>% 
+  mutate(chip=gsub("_","", chip)) %>% 
   distinct() %>%
   arrange(outcome, desc(outcome.sample_size)) %>% 
   rename(`sample_size`=outcome.sample_size)
@@ -115,6 +128,7 @@ set_flextable_defaults(big.mark = " ",
 
 ft<-flextable(outcome_table)
 ft<-width(ft, j = 1, width=1.5)
+ft<-width(ft, j = 2, width=1.7)
 ft
 
 
