@@ -26,14 +26,14 @@ dat <- read_tsv("../query_results/bc_all_mr.tsv") %>%
         outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1168', 'ieu-a-1165', 'ieu-a-1162', 'ebi-a-GCST004988', 'ebi-a-GCST007236') ~ 'Breast cancer (all)',
         grepl('ukb', outcome.id) ~ 'ER+ postmeno UKB')) %>% 
   mutate(chip = case_when(
-        outcome.id %in% c('ieu-a-1126','ieu-a-1127', 'ieu-a-1128', 'ebi-a-GCST004988') ~ 'Meta_____',
+        outcome.id %in% c('ieu-a-1126','ieu-a-1127', 'ieu-a-1128', 'ebi-a-GCST004988') ~ 'Meta',
         outcome.id %in% c('ieu-a-1129', 'ieu-a-1132','ieu-a-1135') ~                     'OncArray',
         outcome.id %in% c('ieu-a-1130', 'ieu-a-1133','ieu-a-1136') ~                     'iCOG2017',
         outcome.id %in% c('ieu-a-1161', 'ieu-a-1160','ieu-a-1162', 'ebi-a-GCST007236') ~ 'iCOG2015',
         outcome.id %in% c('ieu-a-1131', 'ieu-a-1134','ieu-a-1137') ~                     'GWASold1',
         outcome.id %in% c('ieu-a-1166', 'ieu-a-1167','ieu-a-1168') ~                     'GWASold2',
-        outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival__',
-        grepl('ukb', outcome.id) ~                                                       'UKBB_____')) %>% 
+        outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival_',
+        grepl('ukb', outcome.id) ~                                                       'UKBB')) %>% 
   mutate(outcome.details =  paste0(outcome.id, " (",format(outcome.sample_size, big.mark = ","))) %>% 
   separate(outcome.details, into=c('outcome.details', 'tmp'), sep=",") %>% 
   mutate(outcome.details = gsub("ieu-a-|ukb-a-|ukb-b-|ukb-d-|ebi-a-GCST00", '', outcome.details),
@@ -41,14 +41,14 @@ dat <- read_tsv("../query_results/bc_all_mr.tsv") %>%
 
 dat<- dat %>% 
   mutate(outcome.details = factor(outcome.details, levels= c( 
-                    sort(unique(dat$outcome.details)[grepl('Meta_____', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('Meta', unique(dat$outcome.details))]),
                     sort(unique(dat$outcome.details)[grepl('OncArray', unique(dat$outcome.details))]),
                     sort(unique(dat$outcome.details)[grepl('iCOG2017', unique(dat$outcome.details))]),
                     sort(unique(dat$outcome.details)[grepl('iCOG2015', unique(dat$outcome.details))]),
                     sort(unique(dat$outcome.details)[grepl('GWASold1', unique(dat$outcome.details))]),
                     sort(unique(dat$outcome.details)[grepl('GWASold2', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('Survival__ ', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('UKBB_____', unique(dat$outcome.details))])  ))) %>% 
+                    sort(unique(dat$outcome.details)[grepl('Survival_', unique(dat$outcome.details))]),
+                    sort(unique(dat$outcome.details)[grepl('UKBB', unique(dat$outcome.details))])  ))) %>% 
   # convert MR results to OR
   mutate(loci = mr.b - 1.96 * mr.se, 
          upci = mr.b + 1.96 * mr.se,
@@ -61,6 +61,7 @@ dat<- dat %>%
   mutate(mr.b = round(mr.b, 3)) %>% 
   # subset 
   filter(exposure.sex != 'Males') %>% 
+  filter(outcome.id != 'ebi-a-GCST007236') %>% 
   #filter(chip!='old') %>% 
   #filter(mr.pval < 10e-6) %>% 
   # create categories of exposure traits
@@ -81,13 +82,13 @@ dat<- dat %>%
           grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies", exposure, ignore.case = T) ~ "disease",
           grepl("blood|heart|Pulse", exposure, ignore.case = T) ~ "heart_blood_related",
           grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "medical_operations",
-          grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure, , ignore.case = T) ~ "eye_hearing-teeth",
+          grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure, , ignore.case = T) ~ "eye_hearing_teeth",
           grepl("vitamin|suppl", exposure, ignore.case = T) ~ "vitamin",
-          grepl("waist|hip|obesity|trunk|mass|weight|bmi|body size|height|length|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "antrophometric",
-          grepl("age at|age started|parous|contraceptive pill|replacement therapy|menopause|menarche|live birth|oophorectomy|hysterectomy|sex", exposure, ignore.case = T) ~ "reproductive",
+          grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "antrophometric",
+          grepl("age at|age started|parous|contraceptive pill|replacement therapy|menopause|menarche|live birth|oophorectomy|hysterectomy|sex|menstrual", exposure, ignore.case = T) ~ "reproductive",
           grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "alcohol",
           grepl("smok|cigar", exposure, ignore.case = T) ~ "smoking",
-          grepl("activi|transport|diy|walking|walked|Time spent|job|Weekly usage of|stair climbing", exposure, ignore.case = T) ~ "activity",
+          grepl("activi|transport|diy|walking|walked|Time spent|Weekly usage of|stair climbing", exposure, ignore.case = T) ~ "activity",
           grepl("sleep|Snoring|chronotype", exposure, ignore.case = T) ~ "sleep_related",
           grepl("intake|diet|food|milk|dairy|coffee|cereal|butter", exposure, ignore.case = T) ~ "diet",
           grepl("count|distribution width|Reticulocyte|cell|Platelet|Eosinophill", exposure, ignore.case = T) ~ 'cell_measures',
@@ -96,7 +97,7 @@ dat<- dat %>%
           grepl("cholesterol|glyc", exposure, ignore.case = T) ~ 'metabolite_measures',
           grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|Iron|cystatin|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'other_biomarkers',
           grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic", exposure, ignore.case = T) ~ 'education',
-          grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung", exposure, ignore.case = T) ~ 'psycology',
+          grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung", exposure, ignore.case = T) ~ 'psychology',
           TRUE ~ 'other')) %>% 
   # add other exposure details
   mutate(exposure = case_when(
@@ -134,6 +135,27 @@ ft
 
 ```
 
+```{r}
+
+exposure_table<- dat %>% 
+  select(exposure_cat, exposure.trait) %>% 
+  distinct() %>% 
+  count(exposure_cat) %>% arrange(-n)
+
+
+set_flextable_defaults(big.mark = " ", 
+  font.size = 10, theme_fun = theme_vanilla,
+  padding.bottom = 6, 
+  padding.top = 6,
+  padding.left = 6,
+  padding.right = 6,
+  background.color = "#EFEFEF")
+
+ft<-flextable(exposure_table)
+ft
+
+
+```
 
 
 ```{r include=F}
@@ -163,7 +185,11 @@ plot_bubble_plot <- function(input){
             # convert all super small pval into 1e-15
             pval_truncated = ifelse(mr.pval < 1e-15, 1e-15, mr.pval),
             # log transform pvals
-            log10pval_trunc = as.integer(-log10(pval_truncated)))
+            log10pval_trunc = as.integer(-log10(pval_truncated))) %>% 
+            mutate(log10pval_trunc2 = case_when(
+              log10pval_trunc <5 ~ 0,
+              log10pval_trunc >=7 ~ 2,
+              TRUE ~ 1))
   
   
   #pal <- wes_palette("Zissou1", 100, type = "continuous")
@@ -173,9 +199,11 @@ plot_bubble_plot <- function(input){
   getPalette<-colorRampPalette(rev(brewer.pal(n=7, name = "PiYG")))
   
   p<-ggplot(input, aes( outcome.details, reorder(exposure, mr.b), 
-                  color= factor(mr.b), size = log10pval_trunc, label2 = OR_CI, label3 = exposure.sex)) + 
+                  color= factor(mr.b), size = log10pval_trunc, label1=mr.pval, label2 = OR_CI, label3 = exposure.sex)) + 
     geom_point()+
     scale_size(breaks = c(0,5,7,15))+
+    #scale_size(breaks = c(0,1,2))+
+
     scale_colour_manual(values = getPalette(colourCount))+ # unfair scale + need factor & no legend
     #scale_colour_gradientn(colours = getPalette(11), limits=limit)+ #fair scale
     
@@ -206,7 +234,9 @@ p
 
 ```{r fig.width=10}
 input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
-   mutate(exposure = gsub("Comparative ", "", exposure)) 
+   mutate(exposure = gsub("Comparative ", "", exposure)) %>% 
+    filter(!grepl("arm|leg", exposure.trait, ignore.case = T))
+
 p<-plot_bubble_plot(input)
 p
 ```
@@ -255,9 +285,90 @@ p
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('reproductive')) %>% 
                 mutate(exposure = gsub("\\(eg.*)", "", exposure))
+
+input_sub<- input %>% filter(mr.pval < 10e-5)
+p<-plot_bubble_plot(input_sub)
+p
+```
+
+
+
+### Metabolites
+
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('metabolite_measures')) %>% 
+        # only keeloin ivrn
+        filter(!grepl("_raw",exposure.id))
 p<-plot_bubble_plot(input)
 p
 ```
+
+
+### Diet
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('diet')) %>% 
+        # only keeloin ivrn
+        filter(!grepl("_raw",exposure.id)) %>% 
+        filter(chip %in% c('Meta',
+                            'OncArray',
+                            'iCOG2017'))
+p<-plot_bubble_plot(input)
+p
+```
+
+
+
+### Protein measures
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('protein_measures')) %>% 
+        # only keeloin ivrn
+        filter(!grepl("_raw",exposure.id)) %>% 
+        arrange(exposure.trait)
+dim(input)[1]/9
+length(unique(input$exposure.trait))
+
+p<-plot_bubble_plot(input[1:1000,])
+p<-plot_bubble_plot(input[1000:2000,])
+p
+```
+
+### Other biomarkers/compounds
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('other_biomarkers')) %>% 
+        # only keeloin ivrn
+        filter(!grepl("_raw",exposure.id)) %>% 
+        filter(chip %in% c('Meta',
+                            'OncArray',
+                            'iCOG2017'))
+p<-plot_bubble_plot(input)
+p
+```
+
+### Cell measurements
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('cell_measures')) %>% 
+        # only keeloin ivrn
+        filter(!grepl("_raw",exposure.id))
+p<-plot_bubble_plot(input)
+p
+```
+
+
+### Sleep
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('sleep_related'))
+p<-plot_bubble_plot(input)
+p
+```
+
+
+
 
 <br>
 
