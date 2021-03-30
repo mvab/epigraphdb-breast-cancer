@@ -1,0 +1,156 @@
+---
+title: "explore literature query output"
+output: html_notebook
+---
+
+
+```{r message=F}
+library(readr)
+library(tidyr)
+library(stringr)
+library(vroom)
+library(dplyr)
+
+library(ggplot2)
+library(wesanderson)
+library(RColorBrewer)
+library(flextable)
+library(TwoSampleMR)
+```
+
+```{r}
+dat<-vroom('../query_results/lit_bc_to_other_litterms.tsv')
+dat %>% head %>% View()
+```
+
+```{r}
+dat %>% count(gwas.id, gwas.trait) 
+```
+
+```{r}
+dat %>% select(st1.name) %>% distinct() %>% dim() #4550
+dat %>% filter(gs1.pval<0.05) %>% select(st1.name) %>% distinct() %>% dim() #4524
+hist(sort(dat$gs1.pval))
+```
+
+```{r}
+dat %>% count(st1.name) %>% arrange(-n)
+```
+```{r}
+dat %>% select(gwas.id, gwas.trait, st1.name) %>% dim() #554663
+dat %>% select(gwas.id, gwas.trait, st1.name) %>% distinct %>% dim() #89705 - unique terms that all gwas match
+```
+
+
+```{r}
+xx <- dat %>% filter(gwas.id %in% c('ieu-a-1126', 'ieu-a-1127', 'ieu-a-1128')) %>% pull(st1.name) %>% unique() 
+length(xx)
+
+yy <- dat %>% filter(!gwas.id %in% c('ieu-a-1126', 'ieu-a-1127', 'ieu-a-1128')) %>% pull(st1.name) %>% unique() 
+length(yy)
+
+diff <- setdiff(yy, xx)
+length(diff) # 254 terms are not picked up by main 3 GWAS
+
+dat %>% filter(st1.name %in% diff) %>% count(gwas.id, gwas.trait) %>%  arrange(-n)
+dat %>% filter(st1.name %in% diff) %>% View()
+```
+```{r}
+x<- dat %>% filter(gwas.id == 'ieu-a-1126') %>% pull(st1.name) %>% unique() 
+y<- dat %>% filter(gwas.id == 'ieu-a-1127') %>% pull(st1.name) %>% unique() 
+z<- dat %>% filter(gwas.id == 'ieu-a-1128') %>% pull(st1.name) %>% unique() 
+length(x) # 4279
+length(y) # 702
+length(z) # 702
+
+
+length(intersect(x,y)) # 701
+length(intersect(x,z)) # 701
+length(intersect(y,z)) # 702
+
+setdiff(y,x)
+
+```
+
+```{r}
+dat2 <- dat %>% filter(gwas.id == 'ieu-a-1126')
+
+dat2 %>% filter(grepl('gene', st1.name)) %>% View()
+
+dat2 %>% filter(grepl('gene', st1.name)) %>% filter(grepl('ABCG2', st.name)) %>% View()
+
+
+dat2_sub<-dat2 %>% select(-c("s1.subject_id", "s1.id", "s1.object_id"  )) %>% 
+  mutate(st1.name = gsub(" gene", "", st1.name)) %>% 
+  mutate(st.name = gsub(" gene", "", st.name)) %>% #dim() 28443
+  distinct() #%>% dim() 24449
+
+# if you subset the one about to 'Breast Diseases' in st.name, will get same as melodi-presto query
+
+
+dat2_sub <- dat2_sub %>% 
+  filter(!grepl('dsyn', st1.type)) %>% 
+  filter(!grepl('dsyn', st.type)) %>% 
+  filter(!(st.name==st1.name)) 
+
+dim(dat2_sub)# 22846
+
+dat2_sub %>% count(st1.name) %>% arrange(-n)
+
+dat2_sub %>% count(st.name) %>% arrange(-n)
+
+```
+
+```{r}
+test<- dat2_sub %>% filter(st1.name == 'ESR1') 
+```
+
+```{r}
+nodes<-bind_rows(test %>% select(node=st1.name) %>% mutate(node_type =1),
+                 test %>% select(node=st.name) %>% mutate(node_type =2)) %>% 
+       distinct()
+nodes
+
+
+edges <- test %>% 
+    select(node = `st1.name`, label = `s1.predicate`, assoc_node = `st.name`) %>%
+    distinct()
+edges
+
+length(nodes$node)
+length(unique(edges$assoc_node))
+
+```
+```{r}
+library("ggplot2")
+library("igraph")
+plot_network <- function(edges, nodes) {
+
+  graph <- igraph::graph_from_data_frame(edges, directed = TRUE, vertices = nodes)
+  graph$layout <- layout_with_kk
+
+  # generate colors based on node type
+  colors <- c("tomato", "lightblue", "gold")
+  V(graph)$color <- colors[V(graph)$node_type]
+
+  # Configure canvas
+  default_mar <- par("mar")
+  new_mar <- c(0, 0, 0, 0)
+  par(mar = new_mar)
+
+  plot.igraph(
+    graph,
+    vertex.size = 13,
+    vertex.label.color = "black",
+    vertex.label.family = "Helvetica",
+    vertex.label.cex = 0.8,
+    edge.arrow.size = 0.4,
+    edge.label.color = "black",
+    edge.label.family = "Helvetica",
+    edge.label.cex = 0.5
+  )
+  par(mar = default_mar)
+}
+plot_network(edges, nodes)
+```
+
