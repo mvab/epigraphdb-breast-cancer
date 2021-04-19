@@ -16,7 +16,7 @@ library(TwoSampleMR)
 ```
 
 
-```{r, message = FALSE}
+```{r, message = FALSE, include=F}
 rm(dat)
 dat <- read_tsv("../query_results/bc_all_mr.tsv") %>% 
   # deal ith al outcome related changes
@@ -34,6 +34,9 @@ dat <- read_tsv("../query_results/bc_all_mr.tsv") %>%
         outcome.id %in% c('ieu-a-1166', 'ieu-a-1167','ieu-a-1168') ~                     'GWASold2',
         outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival_',
         grepl('ukb', outcome.id) ~                                                       'UKBB')) %>% 
+    # subset 
+  filter(exposure.sex != 'Males') %>% 
+  filter(outcome.id != 'ebi-a-GCST007236') %>% 
   # create outcome label
   mutate(outcome.details =  paste0(outcome.id, " (",format(outcome.sample_size, big.mark = ","))) %>% 
   separate(outcome.details, into=c('outcome.details', 'tmp'), sep=",") %>% 
@@ -65,14 +68,13 @@ dat<- dat %>%
   mutate(effect_direction = ifelse(or_loci > 1 & or_upci > 1, 'positive',
                             ifelse(or_loci < 1 & or_upci < 1, 'negative', 'overlaps null'))) %>% 
   mutate(mr.b = round(mr.b, 3)) %>% 
-  mutate(`MR method and score` = paste0(mr.method," / ", mr.moescore)) %>% 
-  # subset 
-  filter(exposure.sex != 'Males') %>% 
-  filter(outcome.id != 'ebi-a-GCST007236') %>% 
-  #filter(chip!='old') %>% 
-  #filter(mr.pval < 10e-6) %>% 
+  mutate(`MR method and score` = paste0(mr.method," / ", mr.moescore))
+
   # create categories of exposure traits
-      # tidy up labels
+
+      
+dat<- dat %>% 
+  # tidy up labels
    mutate(exposure = str_replace(exposure.trait, "Treatment/medication code", "Drug"),
           exposure = str_replace(exposure, "Non-cancer illness code  self-reported", "Illness"),
           exposure = str_replace(exposure, "Diagnoses - main ICD10:", "Diagnosis"),
@@ -84,6 +86,8 @@ dat<- dat %>%
   mutate(exposure = case_when(grepl("presbyopia", exposure) ~ "Eyesight problems1",
                               grepl("hypermetropia", exposure) ~ "Eyesight problems2",
                               TRUE ~ exposure)) %>% 
+  
+  ### grouping stuff into categories
   mutate(exposure_cat = case_when(
           grepl("Drug|Medication for pain|prescription medications", exposure, ignore.case = T) ~ "drugs",
           grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies", exposure, ignore.case = T) ~ "disease",
@@ -119,7 +123,7 @@ dat<- dat %>%
 ```{r}
 outcome_table<- dat %>% 
   mutate(case_percent = round(N_case/outcome.sample_size*100, 2)) %>% 
-  select(outcome, outcome.id, outcome.sample_size, N_case, case_percent, chip, outcome.year)%>% 
+  select(outcome, outcome.id, outcome.sample_size, N_case, case_percent, chip, outcome.year, outcome.nsnp)%>% 
   mutate(chip=gsub("_","", chip)) %>% 
   distinct() %>%
   arrange(outcome, desc(outcome.sample_size)) %>% 
@@ -199,6 +203,7 @@ plot_bubble_plot <- function(input){
               TRUE ~ 1))
   
   # try to add effect brackets
+  #####
   input <- input %>% mutate(mr.b_col = case_when(mr.b > 1 ~ 2,
                                                  mr.b > 0.5 ~ 1,
                                                  mr.b > 0.25 ~ 0.5,
@@ -238,7 +243,7 @@ plot_bubble_plot <- function(input){
                                                                         '-0.25:-0.50',
                                                                         "-0.50:-1",
                                                                         '< -1')))
-  
+  #####
   # try to ad
           
     
@@ -305,29 +310,58 @@ input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>%
     filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T))
 
 p<-plot_bubble_plot(input)
-p
+ply<-plotly::ggplotly(p)
+ply
+```
+```{r fig.width=10}
+input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
+   mutate(exposure = gsub("Comparative ", "", exposure)) %>% 
+    filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
+  filter(mr.moescore >= 0.75)
 
+p<-plot_bubble_plot(input)
+ply<-plotly::ggplotly(p)
+ply
+```
+
+
+Antrophometric by sub-class
+
+```{r fig.width=10}
 # waist/hip subset
 input_sub <- input %>%  filter(grepl('hip|waist|trunk' , exposure.trait, ignore.case = T))
 p<-plot_bubble_plot(input_sub)
+ply<-plotly::ggplotly(p)
+ply
+```
 
+```{r fig.width=10}
 # body
 input_sub <- input %>%  filter(grepl('body|obesity|mass|weight' , exposure.trait, ignore.case = T)) %>% 
                         filter(!grepl('birth' , exposure.trait, ignore.case = T)) 
 p<-plot_bubble_plot(input_sub)
+ply<-plotly::ggplotly(p)
+ply
+```
 
+```{r fig.width=10}
 # height 
 input_sub <- input %>%  filter(grepl('height' , exposure.trait, ignore.case = T)) %>% 
                         filter(!grepl('birth' , exposure.trait, ignore.case = T)) 
 p<-plot_bubble_plot(input_sub)
+ply<-plotly::ggplotly(p)
+ply
+```
 
+```{r fig.width=10}
 # birth
 input_sub <- input %>%  filter(grepl('birth' , exposure.trait, ignore.case = T)) 
                         #filter(!grepl('birth' , exposure.trait, ignore.case = T)) 
 p<-plot_bubble_plot(input_sub)
-
-
+ply<-plotly::ggplotly(p)
+ply
 ```
+
 
 ### Activity
 
@@ -491,6 +525,44 @@ p
 ### Disease
 ```{r fig.width=15}
 input <- dat %>% filter(exposure_cat %in% c('disease')) 
+p<-plot_bubble_plot(input)
+p
+```
+
+### Education
+```{r fig.width=15}
+input <- dat %>% filter(exposure_cat %in% c('education')) 
+p<-plot_bubble_plot(input)
+p
+```
+
+
+### Alcohol & smoking
+```{r fig.width=15}
+input <- dat %>% filter(exposure_cat %in% c('alcohol', 'smoking')) %>% filter(!grepl('dehydrogenase', exposure.trait))
+p<-plot_bubble_plot(input)
+p
+```
+
+
+### Phycology
+```{r fig.width=15}
+input <- dat %>% filter(exposure_cat %in% c('psychology')) 
+p<-plot_bubble_plot(input)
+p
+```
+
+### mix
+```{r fig.width=15}
+input <- dat %>% filter(exposure_cat %in% c('eye_hearing_teeth')) 
+p<-plot_bubble_plot(input)
+p
+```
+
+
+## mix
+```{r fig.width=15}
+input <- dat %>% filter(exposure_cat %in% c('heart_blood_related')) %>% filter(!grepl('transferase', exposure.trait))
 p<-plot_bubble_plot(input)
 p
 ```
