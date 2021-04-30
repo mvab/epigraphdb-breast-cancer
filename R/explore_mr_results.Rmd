@@ -9,114 +9,28 @@ library(readr)
 library(tidyr)
 library(stringr)
 library(ggplot2)
+library(plotly)
 library(wesanderson)
 library(RColorBrewer)
 library(flextable)
 library(TwoSampleMR)
+source('functions.R')
 ```
 
 
 ```{r, message = FALSE, include=F}
 rm(dat)
 dat <- read_tsv("../query_results/bc_all_mr.tsv") %>% 
-  # deal ith al outcome related changes
-  mutate(outcome = case_when(
-        outcome.id %in% c('ieu-a-1127','ieu-a-1132', 'ieu-a-1133', 'ieu-a-1134', 'ieu-a-1167', 'ieu-a-1164', 'ieu-a-1161') ~ 'ER+ postmeno',
-        outcome.id %in% c('ieu-a-1128','ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137', 'ieu-a-1166', 'ieu-a-1163', 'ieu-a-1160') ~ 'ER- premeno',
-        outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1168', 'ieu-a-1165', 'ieu-a-1162', 'ebi-a-GCST004988', 'ebi-a-GCST007236') ~ 'Breast cancer (all)',
-        grepl('ukb', outcome.id) ~ 'ER+ postmeno UKB')) %>% 
-  mutate(chip = case_when(
-        outcome.id %in% c('ieu-a-1126','ieu-a-1127', 'ieu-a-1128', 'ebi-a-GCST004988') ~ 'Meta',
-        outcome.id %in% c('ieu-a-1129', 'ieu-a-1132','ieu-a-1135') ~                     'OncArray',
-        outcome.id %in% c('ieu-a-1130', 'ieu-a-1133','ieu-a-1136') ~                     'iCOG2017',
-        outcome.id %in% c('ieu-a-1161', 'ieu-a-1160','ieu-a-1162', 'ebi-a-GCST007236') ~ 'iCOG2015',
-        outcome.id %in% c('ieu-a-1131', 'ieu-a-1134','ieu-a-1137') ~                     'GWASold1',
-        outcome.id %in% c('ieu-a-1166', 'ieu-a-1167','ieu-a-1168') ~                     'GWASold2',
-        outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival_',
-        grepl('ukb', outcome.id) ~                                                       'UKBB')) %>% 
-    # subset 
+      # subset 
   filter(exposure.sex != 'Males') %>% 
   filter(outcome.id != 'ebi-a-GCST007236') %>% 
-  # create outcome label
-  mutate(outcome.details =  paste0(outcome.id, " (",format(outcome.sample_size, big.mark = ","))) %>% 
-  separate(outcome.details, into=c('outcome.details', 'tmp'), sep=",") %>% 
-  mutate(outcome.details = gsub("ieu-a-|ukb-a-|ukb-b-|ukb-d-|ebi-a-GCST00", '', outcome.details),
-         outcome.details = paste0(chip, ": ",outcome.details, "K)")) %>% 
-  # create tidy exposure sample size
-  mutate(exposure.ss = format(exposure.sample_size, big.mark = ",")) %>% 
-  separate(exposure.ss, into=c('exposure.ss', 'tmp'), sep=",") %>% 
-  mutate(exposure.ss_label = paste0(" [",exposure.ss,"K]"))
-  
-
-dat<- dat %>% 
-  mutate(outcome.details = factor(outcome.details, levels= c( 
-                    sort(unique(dat$outcome.details)[grepl('Meta', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('OncArray', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('iCOG2017', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('iCOG2015', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('GWASold1', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('GWASold2', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('Survival_', unique(dat$outcome.details))]),
-                    sort(unique(dat$outcome.details)[grepl('UKBB', unique(dat$outcome.details))])  ))) %>% 
   # convert MR results to OR
-  mutate(loci = mr.b - 1.96 * mr.se, 
-         upci = mr.b + 1.96 * mr.se,
-         or = exp(mr.b), 
-         or_loci = exp(loci), 
-         or_upci = exp(upci),
-         OR_CI = paste0(round(or,2), " [",round(or_loci,2) ,":",round(or_upci,2), "]")) %>% 
-  mutate(effect_direction = ifelse(or_loci > 1 & or_upci > 1, 'positive',
-                            ifelse(or_loci < 1 & or_upci < 1, 'negative', 'overlaps null'))) %>% 
-  mutate(mr.b = round(mr.b, 3)) %>% 
-  mutate(`MR method and score` = paste0(mr.method," / ", mr.moescore))
-
+  tidy_display_numbers()%>% 
+  # deal ith al outcome related changes
+  process_bc_outcomes() %>% 
   # create categories of exposure traits
-
-      
-dat<- dat %>% 
-  # tidy up labels
-   mutate(exposure = str_replace(exposure.trait, "Treatment/medication code", "Drug"),
-          exposure = str_replace(exposure, "Non-cancer illness code  self-reported", "Illness"),
-          exposure = str_replace(exposure, "Diagnoses - main ICD10:", "Diagnosis"),
-          exposure = str_replace(exposure, "Mineral and other dietary supplements:", "Supplements"),
-          exposure = str_replace(exposure, "Vitamin and mineral supplements:", "Vitamins"),
-          exposure = str_replace(exposure, "Illness  injury  bereavement  stress in last 2 years", "Stress"),
-          exposure = str_replace(exposure, "Types of transport used (excluding work)", "Transport"),
-          exposure = str_replace(exposure, "Types of physical activity in last 4 weeks", "Physical activity")) %>% 
-  mutate(exposure = case_when(grepl("presbyopia", exposure) ~ "Eyesight problems1",
-                              grepl("hypermetropia", exposure) ~ "Eyesight problems2",
-                              TRUE ~ exposure)) %>% 
-  
-  ### grouping stuff into categories
-  mutate(exposure_cat = case_when(
-          grepl("Drug|Medication for pain|prescription medications", exposure, ignore.case = T) ~ "drugs",
-          grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies", exposure, ignore.case = T) ~ "disease",
-          grepl("blood|heart|Pulse", exposure, ignore.case = T) ~ "heart_blood_related",
-          grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "medical_operations",
-          grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure, , ignore.case = T) ~ "eye_hearing_teeth",
-          grepl("vitamin|suppl", exposure, ignore.case = T) ~ "vitamin",
-          grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "antrophometric",
-          grepl("age at|age started|parous|contraceptive pill|replacement therapy|menopause|menarche|live birth|oophorectomy|hysterectomy|menstrual", exposure, ignore.case = T) ~ "reproductive",
-          grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "alcohol",
-          grepl("smok|cigar", exposure, ignore.case = T) ~ "smoking",
-          grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing", exposure, ignore.case = T) ~ "activity",
-          grepl("sleep|Snoring|chronotype", exposure, ignore.case = T) ~ "sleep_related",
-          grepl("intake|diet|food|milk|dairy|coffee|cereal|butter", exposure, ignore.case = T) ~ "diet",
-          grepl("count|distribution width|Reticulocyte|cell|Platelet|Eosinophill", exposure, ignore.case = T) ~ 'cell_measures',
-          grepl("prot", exposure.id) ~ 'protein_measures',
-          grepl("met", exposure.id) ~ 'metabolite_measures',
-          grepl("cholesterol|glyc", exposure, ignore.case = T) ~ 'metabolite_measures',
-          grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|Iron|cystatin|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'other_biomarkers',
-          grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic", exposure, ignore.case = T) ~ 'education',
-          grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung", exposure, ignore.case = T) ~ 'psychology',
-          TRUE ~ 'other')) %>% 
-  # add other exposure details
-  mutate(exposure = case_when(
-    exposure.sex == 'Females' ~ paste0(exposure, " (F) ", coalesce(consortium, author),"/" , year, exposure.ss_label),
-                         TRUE ~ paste0(exposure, " (M/F) ", coalesce(consortium, author),"/" , year, exposure.ss_label))) %>% 
-  # add note
-  mutate(exposure = case_when(grepl('Adjusted for BMI', exposure.note) ~ paste0(exposure, " AdjBMI"),
-                        TRUE ~ exposure)) 
+  create_exposure_categories() %>% 
+  add_exposure_labels()
 
 ```
 
@@ -170,133 +84,6 @@ ft
 
 
 ```{r include=F}
-# heatmap function
-plot_heatmap <- function(input){
-  
-  #pal <- wes_palette("Zissou1", 100, type = "continuous")
-  limit <- max(abs(input$mr.b)) * c(-1, 1)
-  
-  colourCount = length(unique(input$mr.b))
-  getPalette<-colorRampPalette(rev(brewer.pal(n=7, name = "PiYG")))
-
-  p<-ggplot(input, aes( outcome.details, exposure.trait, fill= mr.b, label = mr.pval, label2 = OR_CI, label3 = exposure.sex)) + 
-    scale_fill_gradientn(colours = getPalette(11), limits=limit) + 
-    geom_tile()+
-    scale_y_discrete(position = "right")+
-    facet_grid(exposure_cat~outcome, scales = 'free') +
-    theme_bw()+
-    theme(axis.text.x=element_text(angle=35, hjust=1), legend.position = 'none')
-  return(p)
-}
-
-plot_bubble_plot <- function(input){
-  
-  # first, create a usable p-value variable (truncated and log10-transformed)
-  input <- mutate(input, 
-            # convert all super small pval into 1e-15
-            pval_truncated = ifelse(mr.pval < 1e-15, 1e-15, mr.pval),
-            # log transform pvals
-            log10pval_trunc = as.integer(-log10(pval_truncated))) %>% 
-            mutate(log10pval_trunc2 = case_when(
-              log10pval_trunc <5 ~ 0,
-              log10pval_trunc >=7 ~ 2,
-              TRUE ~ 1))
-  
-  # try to add effect brackets
-  #####
-  input <- input %>% mutate(mr.b_col = case_when(mr.b > 1 ~ 2,
-                                                 mr.b > 0.5 ~ 1,
-                                                 mr.b > 0.25 ~ 0.5,
-                                                 mr.b > 0.10 ~ 0.25,
-                                                 mr.b > 0.01 ~ 0.1,
-                                                 mr.b > 0.001 ~ 0.01,
-                                                 mr.b < -1 ~ -2,
-                                                 mr.b < -0.5 ~ -1,
-                                                 mr.b < -0.25 ~ -0.5,
-                                                 mr.b < -0.10 ~ -0.25,
-                                                 mr.b < -0.01 ~ -0.1,
-                                                 mr.b < -0.001 ~ -0.01,
-                                                 TRUE ~ 0)) %>% 
-             mutate(mr.b_col_verbose = case_when(mr.b > 1 ~    "> 1",
-                                                 mr.b > 0.5 ~  "0.50:1",
-                                                 mr.b > 0.25 ~ '0.25:0.50',
-                                                 mr.b > 0.10 ~ '0.10:0.25',
-                                                 mr.b > 0.01 ~ '0.001:0.10',
-                                                 mr.b > 0.001 ~'<  0.001',
-                                                 mr.b < -1 ~   '< -1',
-                                                 mr.b < -0.5 ~  "-0.50:-1",
-                                                 mr.b < -0.25 ~ '-0.25:-0.50',
-                                                 mr.b < -0.10 ~ '-0.10:-0.25',
-                                                 mr.b < -0.01 ~ '-0.001:-0.10',
-                                                 mr.b < -0.001 ~'> -0.001',
-                                                 TRUE ~ '0')) %>% 
-            mutate(mr.b_col_verbose = factor(mr.b_col_verbose, levels=c("> 1",
-                                                                        "0.50:1",
-                                                                        '0.25:0.50',
-                                                                        '0.10:0.25',
-                                                                        '0.001:0.10',
-                                                                        '<  0.001',
-                                                                         '0',
-                                                                        '> -0.001',
-                                                                        '-0.001:-0.10',
-                                                                        '-0.10:-0.25',
-                                                                        '-0.25:-0.50',
-                                                                        "-0.50:-1",
-                                                                        '< -1')))
-  #####
-  # try to ad
-          
-    
-          
-   limit <- max(abs(input$mr.b_col)) * c(-1, 1)
-  
-  colourCount = length(unique(input$mr.b_col))
-  getPalette<-colorRampPalette((brewer.pal(n=7, name = "PiYG")))   
-  
-  p<-ggplot(input, aes( outcome.details, reorder(exposure, mr.b), 
-                  label = mr.b, label1=mr.pval, label2 = OR_CI, label3 = exposure.sex, label4 = `MR method and score`,
-                  color= mr.b_col_verbose, size = log10pval_trunc )) + 
-    geom_point()+
-    scale_size(breaks = c(0,5,7,15))+
-    #scale_size(breaks = c(0,1,2))+
-
-    scale_colour_manual(values = getPalette(colourCount))+ # unfair scale + need factor & no legend
-    #scale_colour_gradientn(colours = getPalette(11), limits=limit)+ #fair scale
-    
-    scale_y_discrete(position = "right")+
-    facet_grid(exposure_cat~outcome, scales = 'free') +
-    theme_light()+
-    #theme_solarized()+
-    labs(size="-log10(pval)", color='beta', y="", x="")+
-    theme(axis.text.x=element_text(angle=35, hjust=1), legend.position = 'left')
-  
-  
-  
-  #pal <- wes_palette("Zissou1", 100, type = "continuous")
-  #limit <- max(abs(input$mr.b)) * c(-1, 1)
-  #
-  #colourCount = length(unique(input$mr.b))
-  #getPalette<-colorRampPalette(rev(brewer.pal(n=7, name = "PiYG")))
-  #
-  #p<-ggplot(input, aes( outcome.details, reorder(exposure, mr.b), 
-  #                color= factor(mr.b), size = log10pval_trunc, label1=mr.pval, label2 = OR_CI, label3 = exposure.sex)) + 
-  #  geom_point()+
-  #  scale_size(breaks = c(0,5,7,15))+
-  #  #scale_size(breaks = c(0,1,2))+
-#
-  #  scale_colour_manual(values = getPalette(colourCount))+ # unfair scale + need factor & no legend
-  #  #scale_colour_gradientn(colours = getPalette(11), limits=limit)+ #fair scale
-  #  
-  #  scale_y_discrete(position = "right")+
-  #  facet_grid(exposure_cat~outcome, scales = 'free') +
-  #  theme_light()+
-  #  #theme_solarized()+
-  #  labs(size="-log10(pval)", color='beta', y="", x="")+
-  #  theme(axis.text.x=element_text(angle=35, hjust=1), legend.position = 'left')+
-  #   guides(color = FALSE)
-  return(p)
-}
-
 ply<-plotly::ggplotly(p)
 ```
 
@@ -306,23 +93,42 @@ ply<-plotly::ggplotly(p)
 
 ```{r fig.width=10}
 input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
-   mutate(exposure = gsub("Comparative ", "", exposure)) %>% 
     filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T))
 
 p<-plot_bubble_plot(input)
 ply<-plotly::ggplotly(p)
 ply
+
+p_gg<-plotly::plotly_build(p) # convert ggplot object to plotly
+p_gg$layout$showlegend = "TRUE"
+
 ```
+
+
+
 ```{r fig.width=10}
 input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
-   mutate(exposure = gsub("Comparative ", "", exposure)) %>% 
     filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
-  filter(mr.moescore >= 0.75)
+  filter(mr.moescore >= 0.8) 
 
 p<-plot_bubble_plot(input)
 ply<-plotly::ggplotly(p)
 ply
 ```
+
+
+```{r fig.width=10}
+input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
+  
+    filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
+  filter(mr.pval <= 10e-8)
+
+p<-plot_bubble_plot(input)
+ply<-plotly::ggplotly(p)
+ply
+```
+
+
 
 
 Antrophometric by sub-class
