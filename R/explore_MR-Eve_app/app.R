@@ -10,19 +10,18 @@ source("../functions.R")
 
 ####
 #current issue with the app:
-#- colour scale problem when applying filters
-#- survival data not displaying right?
-#- add beta widget
-#- add 'ovelaps null' widget
+#- colour scale problem when applying filters -- only become a problem if you filter down to very low number of exposures
 #- set plot size dynamically
 #- if nrow> x apply filters at display
-#
+# include any other trait categories
+
 ###
 
 dat <- read_tsv("../../query_results/bc_all_mr.tsv") %>% 
   # subset 
   filter(exposure.sex != 'Males') %>% 
   filter(outcome.id != 'ebi-a-GCST007236') %>% 
+  filter(mr.method != 'Steiger null') %>% 
   # convert MR results to OR
   tidy_display_numbers()%>% 
   # deal ith al outcome related changes
@@ -64,15 +63,19 @@ ui <- fluidPage(
                   choices = list("Antrophometric" = 'antrophometric',
                                  "Reproductive" = 'reproductive',
                                  "Activity" = 'activity',
-                                 "Supplements" = 'vitamin',
-                                 "Diet" = 'diet',
+                                 "Diet and supplements" = 'diet_and_supplements',
                                  "Alcohol" = 'alcohol',
                                  "Smoking" = 'smoking',
                                  'Metabolites' = 'metabolite_measures',
                                  "Proteins" = 'protein_measures',
                                  "Other biomarkers" = 'other_biomarkers'), 
                   
-                  selected = 'antrophometric')
+                  selected = 'antrophometric'),
+      
+      br(),
+      textInput(inputId = 'min_beta',
+                label = "Smallest beta included \n (absolute value)", 
+                value = 0)
       ),
     column(3,
        sliderInput(inputId = "moe",
@@ -80,7 +83,13 @@ ui <- fluidPage(
                    min = 0.5,
                    max = 1,
                    value = 0.5,
-                   step = 0.05)
+                   step = 0.05),
+       
+       br(),
+       strong("CIs overlap the null"), 
+       checkboxInput("null_overlap", 
+                     label = "Exclude", 
+                     value = FALSE)
     ),
        
     column(3,
@@ -91,14 +100,7 @@ ui <- fluidPage(
                   value = 0),
       p("-log10(1e-8) = 8")
     ),
-    
-    #column(3,
-    #       sliderInput(inputId = "beta",
-    #                   label = "Include beta (absolute):",
-    #                   min = 0,
-    #                   max = 15,
-    #                   value = 0)
-    #),
+
    
     column(3,
             checkboxGroupInput("outcomes", 
@@ -124,7 +126,8 @@ server <- function(input, output) {
           filter(exposure_cat == input$category) %>% 
           filter(mr.moescore >= input$moe) %>% 
           filter(log10pval_trunc >= input$pval) %>% 
-          filter(chip %in% input$outcomes)
+          filter(chip %in% input$outcomes) %>% 
+          filter(mr.b >= as.numeric(input$min_beta) | mr.b <= as.numeric(input$min_beta)*-1 )
     
     ## ad hoc filtering for specific categories
     if (input$category == 'antrophometric'){
@@ -138,6 +141,12 @@ server <- function(input, output) {
       filter(!grepl("_raw",exposure.id)) %>% # keep only invr
       filter(mr.b > 0.01 | mr.b < -0.01)   
     }
+    
+    # exclude results overlapping null
+    if (input$null_overlap){
+      dat_sub<-dat_sub %>% filter(effect_direction != 'overlaps null')
+    }
+
       
     return(dat_sub)
   })
@@ -156,7 +165,7 @@ server <- function(input, output) {
   output$bubbleplot2 <- renderPlotly({
     
     plot <- plot_bubble_plot(dataInput(), font_size = 8)  
-    plotly::ggplotly(plot , tooltip = c("text", "y", "x"))
+    plotly::ggplotly(plot , tooltip = c("text"))
     
   })
   

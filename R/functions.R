@@ -17,7 +17,7 @@ process_bc_outcomes <- function(dat){
       outcome.id %in% c('ieu-a-1161', 'ieu-a-1160','ieu-a-1162', 'ebi-a-GCST007236') ~ 'iCOG2015',
       outcome.id %in% c('ieu-a-1131', 'ieu-a-1134','ieu-a-1137') ~                     'GWASold1',
       outcome.id %in% c('ieu-a-1166', 'ieu-a-1167','ieu-a-1168') ~                     'GWASold2',
-      outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival_',
+      outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival',
       grepl('ukb', outcome.id) ~                                                       'UKBB')) %>% 
     
     # create outcome label
@@ -35,7 +35,7 @@ process_bc_outcomes <- function(dat){
         sort(unique(dat$outcome.details)[grepl('iCOG2015', unique(dat$outcome.details))]),
         sort(unique(dat$outcome.details)[grepl('GWASold1', unique(dat$outcome.details))]),
         sort(unique(dat$outcome.details)[grepl('GWASold2', unique(dat$outcome.details))]),
-        sort(unique(dat$outcome.details)[grepl('Survival_', unique(dat$outcome.details))]),
+        sort(unique(dat$outcome.details)[grepl('Survival', unique(dat$outcome.details))]),
         sort(unique(dat$outcome.details)[grepl('UKBB', unique(dat$outcome.details))])  ))) 
   
     return(dat)
@@ -69,14 +69,14 @@ create_exposure_categories <- function(dat){
       grepl("blood|heart|Pulse", exposure, ignore.case = T) ~ "heart_blood_related",
       grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "medical_operations",
       grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure,  ignore.case = T) ~ "eye_hearing_teeth",
-      grepl("vitamin|suppl", exposure, ignore.case = T) ~ "vitamin",
+      grepl("vitamin|suppl", exposure, ignore.case = T) ~ "diet_and_supplements",
       grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "antrophometric",
       grepl("age at|age started|parous|contraceptive pill|replacement therapy|menopause|menarche|live birth|oophorectomy|hysterectomy|menstrual", exposure, ignore.case = T) ~ "reproductive",
       grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "alcohol",
       grepl("smok|cigar", exposure, ignore.case = T) ~ "smoking",
       grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing", exposure, ignore.case = T) ~ "activity",
       grepl("sleep|Snoring|chronotype", exposure, ignore.case = T) ~ "sleep_related",
-      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter", exposure, ignore.case = T) ~ "diet",
+      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter", exposure, ignore.case = T) ~ "diet_and_supplements",
       grepl("cholesterol|glyc", exposure, ignore.case = T) ~ 'metabolite_measures',
       grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|Iron|cystatin|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'other_biomarkers',
       grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic", exposure, ignore.case = T) ~ 'education',
@@ -115,8 +115,8 @@ tidy_display_numbers<- function(dat){
          or_loci = exp(loci), 
          or_upci = exp(upci),
          OR_CI = paste0(round(or,2), " [",round(or_loci,2) ,":",round(or_upci,2), "]")) %>% 
-    mutate(effect_direction = ifelse(or_loci > 1 & or_upci > 1, 'positive',
-                                     ifelse(or_loci < 1 & or_upci < 1, 'negative', 'overlaps null'))) %>% 
+    mutate(effect_direction = ifelse(or_loci > 1 & or_upci >= 1, 'positive',
+                              ifelse(or_loci < 1 & or_upci <= 1, 'negative', 'overlaps null'))) %>% 
     # convert all super small pval into 1e-15
     mutate(pval_truncated = ifelse(mr.pval < 1e-15, 1e-15, mr.pval),
            #log transform pvals
@@ -124,7 +124,9 @@ tidy_display_numbers<- function(dat){
     # round beta for display
     mutate(mr.b = round(mr.b, 3)) %>% 
     # tidy moe display
-    mutate(`MR method and score` = paste0(mr.method," / ", mr.moescore)) 
+    mutate(`MR method and score` = paste0(mr.method," / ", mr.moescore)) %>% 
+    # emply col fro display
+    mutate(empty_col = " ")
     
   return(dat)
 }
@@ -144,12 +146,16 @@ plot_bubble_plot <- function(input, font_size = 10){
   getPalette<-colorRampPalette((brewer.pal(n=7, name = "PiYG")))   
   
   p<-ggplot(input, aes(x= outcome.details, y =reorder(exposure, mr.b), color= mr.b_col_verbose,  size = log10pval_trunc,
-                        text = paste('Beta: ', mr.b,
+                        text = paste(" ", empty_col,
+                                    '</br>Exposure ID: ', exposure.id,
+                                    '</br>Exposure: ', exposure.trait,
+                                    '</br>Outcome ID: ',  outcome.id,
+                                    '</br>Outcome: ',  outcome,
+                                    '</br>Beta: ', mr.b,
                                     '</br>P-value: ', mr.pval,
                                     '</br>P-value (-log10): ', log10pval_trunc,
                                     '</br>Odds ratio: ', OR_CI,
-                                    '</br>MR method and score: ', `MR method and score`,
-                                    '</br>Exposure sex: ', exposure.sex)
+                                    '</br>MR method and score: ', `MR method and score`)
                         
   )) + 
     geom_point()+
