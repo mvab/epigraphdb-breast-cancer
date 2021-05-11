@@ -5,4 +5,4 @@ __pycache__/*
 .Rhistory
 R/htmls/*
 *.html
-query_results/*
+
