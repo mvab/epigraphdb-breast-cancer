@@ -6,6 +6,3 @@ __pycache__/*
 R/htmls/*
 *.html
 query_results/*
-
-*.xlsx
-*.xmind
