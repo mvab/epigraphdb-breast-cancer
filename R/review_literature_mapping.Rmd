@@ -21,10 +21,10 @@ dat<-vroom('../query_results/lit_bc_to_other_litterms.tsv')
 keep_gwas<-c('ieu-a-1126','finn-a-C3_BREAST', 'finn-a-CD2_BENIGN_BREAST', 'ukb-a-519', 'ukb-d-C3_BREAST_3', 'ukb-d-D05') # can query with neo4j just for these
 
 # check drug overlap with : https://www.cancer.gov/about-cancer/treatment/drugs/breast#3
-bc_drugs <- read_tsv("breast_cancer_drug_list.tsv", col_names = c('name')) %>% distinct()
+bc_drugs <- read_tsv("external_files/breast_cancer_drug_list.tsv", col_names = c('name')) %>% distinct()
 
 # load predicate direction
-predicate_ref <- read_csv("predicates_direction.csv")
+predicate_ref <- read_csv("external_files/predicates_direction.csv")
 ```
 
 ```{r}
