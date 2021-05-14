@@ -73,9 +73,9 @@ ui <- fluidPage(
                   selected = 'antrophometric'),
       
       br(),
-      textInput(inputId = 'min_beta',
-                label = "Smallest beta included \n (absolute value)", 
-                value = 0)
+      textInput(inputId = 'exposure_contains',
+                label = "Exposure name contains:", 
+                value = "")
       ),
     column(3,
        sliderInput(inputId = "moe",
@@ -98,7 +98,12 @@ ui <- fluidPage(
                   min = 0,
                   max = 15,
                   value = 0),
-      p("-log10(1e-8) = 8")
+      p("-log10(1e-8) = 8"),
+      
+      br(),
+      textInput(inputId = 'min_beta',
+                label = "Smallest beta included \n (absolute value)", 
+                value = 0)
     ),
 
    
@@ -127,15 +132,14 @@ server <- function(input, output) {
           filter(mr.moescore >= input$moe) %>% 
           filter(log10pval_trunc >= input$pval) %>% 
           filter(chip %in% input$outcomes) %>% 
-          filter(mr.b >= as.numeric(input$min_beta) | mr.b <= as.numeric(input$min_beta)*-1 )
+          filter(mr.b >= as.numeric(input$min_beta) | mr.b <= as.numeric(input$min_beta)*-1 ) %>% 
+          filter(grepl(input$exposure_contains, exposure, ignore.case=T))
     
     ## ad hoc filtering for specific categories
     if (input$category == 'antrophometric'){
       dat_sub <- dat_sub %>% 
         filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) 
-    } else if (input$category == 'alcohol'){
-      dat_sub <- dat_sub %>% 
-         filter(!grepl('dehydrogenase', exposure.trait))
+      
     } else if (input$category == 'protein_measures'){
     dat_sub <- dat_sub %>% 
       filter(!grepl("_raw",exposure.id)) %>% # keep only invr
