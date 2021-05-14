@@ -37,6 +37,26 @@ def start_graph_session_crashdown(env):
     session = epigraphdb_driver.session()
     return session
 
+def start_graph_session_crashdown_w_auth(env):
+    # no auth required
+
+    from neo4j import GraphDatabase
+    env.read_env()
+
+    EPIGRAPHDB_SERVER = env.str("EPIGRAPHDB_SERVER_CRASHDOWN")
+    EPIGRAPHDB_PORT = env.str("EPIGRAPHDB_PORT_CRASHDOWN")
+    EPIGRAPHDB_USER = env.str("EPIGRAPHDB_USER_CRASHDOWN")
+    EPIGRAPHDB_PASSWORD = env.str("EPIGRAPHDB_PASSWORD_CRASHDOWN")
+    print(EPIGRAPHDB_PORT)
+
+    epigraphdb_driver = GraphDatabase.driver(
+        "bolt://{server_name}:{port}".format(
+            server_name=EPIGRAPHDB_SERVER, port=EPIGRAPHDB_PORT),
+        auth=(EPIGRAPHDB_USER, EPIGRAPHDB_PASSWORD))
+    
+    session = epigraphdb_driver.session()
+    return session
+
 
 
 def query_to_df(session, query, print_query=True):
