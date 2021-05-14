@@ -4,7 +4,7 @@ output: html_notebook
 ---
   
   
-  ```{r message=F}
+```{r message=F}
 library(readr)
 library(tidyr)
 library(stringr)
@@ -16,7 +16,7 @@ library(networkD3)
 ```
 
 ```{r message=F}
-dat<-vroom('../query_results/lit_bc_to_other_litterms.tsv')
+dat<-vroom('../query_results/lit_bc_to_other_litterms_upd.tsv')
 
 keep_gwas<-c('ieu-a-1126','finn-a-C3_BREAST', 'finn-a-CD2_BENIGN_BREAST', 'ukb-a-519', 'ukb-d-C3_BREAST_3', 'ukb-d-D05') # can query with neo4j just for these
 
@@ -31,11 +31,6 @@ predicate_ref <- read_csv("external_files/predicates_direction.csv")
 dat %>% count(gwas.id, gwas.trait) 
 ```
 
-```{r}
-dat %>% select(st1.name) %>% distinct() %>% dim() #4550
-dat %>% filter(gs1.pval<0.05) %>% select(st1.name) %>% distinct() %>% dim() #4524
-hist(sort(dat$gs1.pval))
-```
 
 ```{r}
 dat %>% count(st1.name) %>% arrange(-n)
@@ -84,7 +79,7 @@ tidy_gwas_to_lit_output <- function(dat){
 
 bc_triples_tidy <- tidy_gwas_to_lit_output(bc_triples)
 
-dim(bc_triples_tidy) #26955
+dim(bc_triples_tidy) #31350
 
 # if you subset the one above to 'Breast Diseases' in term2, will get same as melodi-presto query
 
@@ -107,6 +102,14 @@ node_types<-bind_rows(bc_triples_tidy %>% select(name = term1, type =st1.type),
                                  grepl('cisplatin',name) ~ 'drug_or_compound',
                                  grepl('methotrexate polyglutamate',name) ~ 'drug_or_compound',
                                  grepl('herceptin',name) ~ 'drug_or_compound',
+                                 grepl('fulvestrant',name) ~ 'drug_or_compound',
+                                 grepl('capecitabine',name) ~ 'drug_or_compound',
+                                 grepl('fluorouracil',name) ~ 'drug_or_compound',
+                                 grepl('cyclophosphamide',name) ~ 'drug_or_compound',
+                                 grepl('exemestane',name) ~ 'drug_or_compound',
+                                  grepl('ado-trastuzumab emtansine',name) ~ 'drug_or_compound',
+                                  grepl('megestrol acetate',name) ~ 'drug_or_compound',
+                                  grepl('thiotepa',name) ~ 'drug_or_compound',
                                  TRUE ~ 'any'))
 
 #node_types %>% count(type, sort=T) %>% View()
@@ -114,7 +117,7 @@ node_types<-bind_rows(bc_triples_tidy %>% select(name = term1, type =st1.type),
 # find most common things
 node_type_counts<-node_types %>% count(name, name='size', sort=T)
 #node_type_counts %>% View()
-common_nodes <- node_type_counts %>% filter(size > 310) %>% pull(name) # arbitary theshold
+common_nodes <- node_type_counts %>% filter(size > 300) %>% pull(name) # arbitary theshold
 
 ```
 
@@ -122,7 +125,7 @@ common_nodes <- node_type_counts %>% filter(size > 310) %>% pull(name) # arbitar
 # check which know BC drugs are in this dataset (imperfect matching approch WIP)
 dim(bc_drugs)
 
-length(intersect(node_type_counts$name, bc_drugs$name))#13
+length(intersect(node_type_counts$name, bc_drugs$name))#22
 intersect(node_type_counts$name, bc_drugs$name)
 length(setdiff( bc_drugs$name,node_type_counts$name))
 setdiff( bc_drugs$name,node_type_counts$name)
@@ -162,7 +165,7 @@ select_network <- function(full_data, key_term, network_dir,
                            predicate_ref, 
                            rare_node = F){
   
-  if (network_dir != 'F+B pair'){
+  if (!network_dir %in% c('F+B pair', 'F+B multiple') ){
     if (length(key_term) > 1) {
       stop("this network type accepts only 1 key word")
     }
@@ -219,9 +222,20 @@ select_network <- function(full_data, key_term, network_dir,
     if (!include_common_nodes_links){
       print('removing rels of common nodes')
       data_megred<-data_megred %>% filter(!term1 %in% common_nodes)
-    }
+  }
+  } else if (network_dir == 'F+B multiple'){ 
+    stopifnot(length(key_term) >= 2)
+    data_dir1<- full_data %>% filter(term1 %in% key_term) 
+    data_dir2<- full_data %>% filter(term2 %in% key_term) 
     
+    data_megred <- bind_rows(data_dir1, data_dir2) %>% distinct()
+    if (!include_common_nodes_links){
+      print('removing rels of common nodes')
+      data_megred<-data_megred %>% filter(!term1 %in% common_nodes)
+    }
   }  
+    
+  
   
   # tidy data further
   
@@ -247,21 +261,22 @@ select_network <- function(full_data, key_term, network_dir,
 filter_by_count <- function(dat, lowest_count_rel_to_keep, key_term='', rare_node=F){
   if (!rare_node){key_term=''}
   # if it's indicate that the key term is a rare node, we will keep all links for it, even below counts threshold
-  keep_by_term<-dat %>% filter(term1 == key_term | term2 == key_term)
+  keep_by_term<-dat %>% filter(term1 %in% key_term | term2 %in% key_term)
   keep_by_count<- dat %>% filter(count >= lowest_count_rel_to_keep)
   out<-bind_rows(keep_by_term, keep_by_count)
   return(out)
 }
 
 
-key_term = 'paclitaxel'
+key_term = 'Cyclin D1'
+#key_term <- node_type_counts$name[grepl("statin", node_type_counts$name)]
 network_subset <-  select_network(full_data = bc_triples_tidy,
                                   #key_term = c("trastuzumab" ,"ERBB2"),
                                   key_term = key_term,
-                                  network_dir = 'F+B 2-level',
+                                  network_dir = 'forwards',
                                   lowest_count_rel_to_keep = 10,
-                                  exclude_neutral = F, 
-                                  include_common_nodes_links = F, 
+                                  exclude_neutral = T, 
+                                  include_common_nodes_links = T, 
                                   common_nodes = common_nodes, 
                                   predicate_ref = predicate_ref,
                                   rare_node = F)
@@ -300,7 +315,7 @@ build_networkD3 <- function(network_subset, node_counts) {
   nodes<- nodes %>% left_join(node_counts, by='name') %>% select(-group) %>% rename('group' =  'type_verbose')
   
   # work out order of occurrence and set colors order
-  node_cat_order <- data.frame(cat = node_counts$type_verbose[!duplicated(node_counts$type_verbose)])
+  node_cat_order <- data.frame(cat = nodes$group[!duplicated(nodes$group)])
   category_cols <- data.frame(cat = c("drug_or_compound", "disease", "key_term" , "any" ),
                               col = c("'#F2AD00'", "'#00A08A'", "'green'", "'black'"))
   cols_order <- left_join(node_cat_order, category_cols, by ='cat') %>% pull(col) %>% str_c(.,  collapse = ", ")
@@ -322,7 +337,7 @@ build_networkD3 <- function(network_subset, node_counts) {
                   colourScale = JS(JS_input),
                   Value = 'value', arrows = T,
                   Nodesize = 'size',
-                  charge = -2000, # node repulsion
+                  charge = -1000, # node repulsion
                   linkDistance = 25,
                   fontSize=24,
                   linkColour = ifelse(direction == 'positive', "#FF0000", 
@@ -336,7 +351,7 @@ build_networkD3 <- function(network_subset, node_counts) {
 ```{r}
 
 b<-build_networkD3(network_subset, node_counts)
-#htmlwidgets::saveWidget(b, file=paste0( getwd(), "/htmls/exemestane.html"))
+#htmlwidgets::saveWidget(b, file=paste0( getwd(), "/htmls/cyclinD1_backwards.html"))
 ```
 
 
@@ -346,7 +361,7 @@ b<-build_networkD3(network_subset, node_counts)
 
 ```{r}
 ## check other GWAS quick
-other_gwas<-vroom('../query_results/lit_ferritin_triples.tsv')
+other_gwas<-vroom('../query_results/lit_childhood_obesity_triples.tsv')
 dim(other_gwas)
 
 dim(bc_triples)
@@ -361,22 +376,25 @@ View(intersect(other_gwas$st.name, bc_triples$st1.name))
 ```
 
 ```{r}
-ferritin_tidy<-tidy_gwas_to_lit_output(other_gwas)
+other_gwas_tidy<-tidy_gwas_to_lit_output(other_gwas)
 bc_triples_tidy
 
 # overlap Y -> X
 
-overlap1 <- intersect( ferritin_tidy$term2, bc_triples_tidy$term1)
-overlap1_merged<-bind_rows(ferritin_tidy %>% filter(term2 %in% overlap1),
-                           bc_triples_tidy %>% filter(term1 %in% overlap1)) %>% 
+overlap1 <- intersect( other_gwas_tidy$term2, bc_triples_tidy$term1)
+overlap1_merged<-bind_rows(other_gwas_tidy %>% filter(term2 %in% overlap1),
+                           bc_triples_tidy %>% filter(term1 %in% overlap1) %>% 
+                                             filter(!predicate %in% c('COEXISTS_WITH', 'INTERACTS_WITH', 'ASSOCIATED_WITH'))) %>% 
+                          # other_gwas_tidy %>% filter(grepl("ICOS|Inducible",term2) | grepl("ICOS|Inducible",term1))) %>% 
   select(term1, gs1.localCount, predicate, term2)  %>% 
-  filter(gs1.localCount >= 5) %>% 
+  filter(gs1.localCount >= 2) %>% 
   group_by(term1, predicate, term2) %>% 
   summarise(count = sum(gs1.localCount)) %>%
   distinct() %>% 
   left_join(predicate_ref %>% select(predicate, direction), by = 'predicate') %>% 
   ungroup() %>% 
-  filter(!term1 %in% common_nodes)
+  filter(!term1 %in% c(common_nodes, 'Obesity'), term2 != 'Obesity')
+  #filter(!predicate %in% c('COEXISTS_WITH', 'INTERACTS_WITH', 'ASSOCIATED_WITH')) 
 dim(overlap1_merged)
 
 node_counts<-bind_rows(overlap1_merged %>% select(name = term1),
@@ -387,6 +405,8 @@ node_counts<-bind_rows(overlap1_merged %>% select(name = term1),
 dim(node_counts)
 
 c<-build_networkD3(overlap1_merged, node_counts)
+
+#htmlwidgets::saveWidget(c, file=paste0( getwd(), "/htmls/bc_w_childhoodobesity.html"))
 ```
 
 
