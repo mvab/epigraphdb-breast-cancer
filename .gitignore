@@ -1,5 +1,5 @@
 .env
-.ipynb_checkpoints/*
+python/.ipynb_checkpoints/*
 __pycache__/*
 .Rproj.user
 .Rhistory
