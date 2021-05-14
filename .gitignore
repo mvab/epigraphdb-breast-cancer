@@ -1,6 +1,7 @@
 .env
 python/.ipynb_checkpoints/*
 .ipynb_checkpoints/*
+python/__pycache__/*
 __pycache__/*
 .Rproj.user
 .Rhistory
