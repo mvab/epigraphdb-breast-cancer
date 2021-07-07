@@ -27,7 +27,7 @@ dat <- read_tsv("data_copy/bc_all_mr.tsv") %>%
     split_protein_exposures() %>% 
     add_exposure_labels()
 
-chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival')
+chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival', 'UKBB')
 
 
 
@@ -90,9 +90,9 @@ shinyServer(function(input, output) {
                    `# of cases` = format(`# of cases`, big.mark = ",", scientific = FALSE)),
         striped=T, hover=T)
     
-    url <- a("location", href="https://5d5pxx-mvab.shinyapps.io/explore_MR-EvE_breast_cancer/")
-    output$tab <- renderUI({
-        tagList("\nPlease view the app at the altrenative ", url)})
+    url <- a("@marina_vab", href="https://twitter.com/marina_vab/")
+    output$twitter_link <- renderUI({
+        tagList("\nAny problems with the app? Let me know ", url)})
     
     #output$outcome_table <- function(){
      #   dat %>% create_outcomes_table() %>% 

@@ -37,7 +37,7 @@ dat <- read_tsv("data_copy/bc_all_mr.tsv") %>%
   add_exposure_labels()
 
 
-chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival')
+chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival', 'UKBB')
 
 
 ### APP
@@ -53,11 +53,12 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 # Output: Tabsets
                 tabsetPanel(type = "tabs",
                             tabPanel("Static plot", plotOutput("bubbleplot1", height = "700px", width = "900px")),
-                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "700px", width = "900px"))
+                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "700px", width = "1000px"))
                             ),
                 
                 
                 hr(),
+         
                 
                 fluidRow(
                   helpText("     Set display parameters:"),
@@ -123,8 +124,9 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                          checkboxGroupInput("outcomes", 
                                             p("Include outcomes:"), 
                                             choices = chip_list,
-                                            selected = chip_list[!grepl('iCOG2015|GWASold2',chip_list)])
+                                            selected = chip_list[!grepl('iCOG2015|GWASold2|UKBB',chip_list)])
                   )
+                  
                   
                 ),
                 hr(),
@@ -137,7 +139,9 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 br(), br(),
                 helpText("MR-EvE (Mendelian Randomization Everything-vs-Everything) results were extarcted from EpiGraphDB (epigraphdb.org), and were generated using the MR mixture-of-experts model (Hemani et al 2017)"), 
                 
-                img(src='MRC_IEU_Bristol.png', align='centre', height = '60px') 
+                img(src='MRC_IEU_Bristol.png', align='centre', height = '60px')  , 
+                br(),
+                span(uiOutput("twitter_link"), style="color:grey;font-size:12px;")
                 
                 
                 
@@ -153,7 +157,7 @@ server <- function(input, output) {
           filter(log10pval_trunc >= input$pval) %>% 
           filter(chip %in% input$outcomes) %>% 
           filter(mr.b >= as.numeric(input$min_beta) | mr.b <= as.numeric(input$min_beta)*-1 ) %>% 
-          filter(grepl(input$exposure_contains, exposure, ignore.case=T))
+          filter(grepl(input$exposure_contains, exposure, ignore.case=T)) 
     
     ## ad hoc filtering for specific categories
     if (input$category == 'Antrophometric'){
@@ -173,6 +177,7 @@ server <- function(input, output) {
     if (input$null_overlap){
       dat_sub<-dat_sub %>% filter(effect_direction != 'overlaps null')
     }
+    
 
       
     return(dat_sub)
@@ -205,6 +210,11 @@ server <- function(input, output) {
   }
 
  
+  url <- a("@marina_vab", href="https://twitter.com/marina_vab/")
+  output$twitter_link <- renderUI({
+    tagList("\nAny problems with the app? Let me know ", url)})
+  
+
 }
 
 shinyApp(ui = ui, server = server)

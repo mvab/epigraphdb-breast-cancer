@@ -11,14 +11,14 @@ library(dplyr)
 source("functions.R")
 
 
-chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival')
+chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival', 'UKBB')
 
 
 shinyUI(
     
     fluidPage(align="center", theme = shinytheme("flatly"),
         
-        span(strong(uiOutput("tab")), style="color:red"),
+       
               
         titlePanel("MR-EvE results for breast cancer outcomes"),
         
@@ -98,7 +98,7 @@ shinyUI(
                    checkboxGroupInput("outcomes", 
                                       p("Include outcomes:"), 
                                       choices = chip_list,
-                                      selected = chip_list[!grepl('iCOG2015|GWASold2',chip_list)])
+                                      selected = chip_list[!grepl('iCOG2015|GWASold2|UKBB',chip_list)])
             )
             
             
@@ -116,7 +116,9 @@ shinyUI(
      br(), br(),
      helpText("MR-EvE (Mendelian Randomization Everything-vs-Everything) results were extarcted from EpiGraphDB (epigraphdb.org), and were generated using the MR mixture-of-experts model (Hemani et al 2017)"), 
      
-    img(src='MRC_IEU_Bristol.png', align='centre', height = '60px')         
+    img(src='MRC_IEU_Bristol.png', align='centre', height = '60px') , 
+    br(),
+    span(uiOutput("twitter_link"), style="color:grey;font-size:12px;")
     )
     
 )

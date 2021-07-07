@@ -8,7 +8,7 @@ process_bc_outcomes <- function(dat){
     outcome.id %in% c('ieu-a-1127','ieu-a-1132', 'ieu-a-1133', 'ieu-a-1134', 'ieu-a-1167', 'ieu-a-1164', 'ieu-a-1161') ~ 'ER+ postmeno',
     outcome.id %in% c('ieu-a-1128','ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137', 'ieu-a-1166', 'ieu-a-1163', 'ieu-a-1160') ~ 'ER- premeno',
     outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1168', 'ieu-a-1165', 'ieu-a-1162', 'ebi-a-GCST004988', 'ebi-a-GCST007236') ~ 'Breast cancer (all)',
-    grepl('ukb', outcome.id) ~ 'ER+ postmeno UKB')) %>% 
+    grepl('ukb', outcome.id) ~ 'UK Biobank')) %>% 
     # create data version subgroups
     mutate(chip = case_when(
       outcome.id %in% c('ieu-a-1126','ieu-a-1127', 'ieu-a-1128', 'ebi-a-GCST004988') ~ 'Meta',
