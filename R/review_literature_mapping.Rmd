@@ -29,135 +29,85 @@ predicate_ref <- read_csv("external_files/predicates_direction.csv")
 ```
 
 ```{r}
-dat %>% count(gwas.id, gwas.trait) 
-```
-
-
-```{r}
-dat %>% count(st1.name) %>% arrange(-n)
-dat %>% select(gwas.id, gwas.trait, st1.name) %>% dim() #554663
-dat %>% select(gwas.id, gwas.trait, st1.name) %>% distinct %>% dim() #89705 - unique terms that all gwas match
-```
-
-
-```{r}
-# exploration of the matching difference between gwas
-xx <- dat %>% filter(gwas.id %in% keep_gwas) %>% select(st1.name, st.name) 
-xx<-c(xx$st1.name, xx$st.name) %>% unique()
-length(xx)
-
-yy <- dat %>% filter(!gwas.id %in% keep_gwas) %>% select(st1.name, st.name) 
-yy<-c(yy$st1.name, yy$st.name) %>% unique()
-length(yy)
-
-diff <- setdiff(yy, xx)
-length(diff) # 320 terms are not picked up by selected GWAS
-
-# terms that are not included
-dat %>% filter(st1.name %in% diff | st.name %in% diff) %>% count(gwas.id, gwas.trait) %>%  arrange(-n)
-
-```
-
-```{r}
-bc_triples <- dat %>% filter(gwas.id %in% keep_gwas)
-
+### functions
 tidy_gwas_to_lit_output <- function(dat){  
   dat %>% 
-    select(-c('gwas.trait','gwas.id','gs1.pval' ,"s1.subject_id", "s1.id", "s1.object_id"  )) %>% 
+    select(-c(#"lit.id", "lit.year" ,
+           "lit.dp",
+           'gwas.id', 'gwas.trait','gs1.pval' ,"s1.subject_id", "s1.id", "s1.object_id"  )) %>% 
     rename(term1 = st1.name,
            term2  = st.name,
            predicate = s1.predicate) %>% 
     # tidy up names
-    mutate(term1 = gsub(" gene", "", term1)) %>% 
-    mutate(term2 = gsub(" gene", "", term2)) %>% 
-    mutate(term1 = gsub(" protein, human", "", term1)) %>% 
-    mutate(term2 = gsub(" protein, human", "", term2)) %>% 
-    mutate(term1 = gsub(", human", "", term1, ignore.case = T)) %>% 
-    mutate(term2 = gsub(", human", "", term2, ignore.case = T)) %>% 
+    mutate(term1 = gsub(" gene", "", term1), term2 = gsub(" gene", "", term2)) %>% 
+    mutate(term1 = gsub(" protein, human", "", term1), term2 = gsub(" protein, human", "", term2)) %>% 
+    mutate(term1 = gsub(", human", "", term1, ignore.case = T), term2 = gsub(", human", "", term2, ignore.case = T)) %>% 
+    mutate(term1 = gsub("BRCA1 Protein", "BRCA1", term1, ignore.case = T), term2 = gsub("BRCA1 Protein", "BRCA1", term2, ignore.case = T)) %>% 
+    mutate(term1 = gsub("BRCA2 Protein", "BRCA2", term1, ignore.case = T), term2 = gsub("BRCA2 Protein", "BRCA2", term2, ignore.case = T)) %>% 
+    mutate(term1 = gsub("BCL-2 Protein", "BCL-2", term1, ignore.case = T), term2 = gsub("BCL-2 Protein", "BCL-2", term2, ignore.case = T)) %>% 
     distinct() %>% 
     filter(!(term2==term1)) 
 }  
 
-bc_triples_tidy <- tidy_gwas_to_lit_output(bc_triples)
+keep_one_type <- function(node_types){
+  
+  node_types_count <- node_types %>% group_by(name, type) %>% count() %>% ungroup()
+  terms_w_multiple_types<- node_types_count %>% count(name) %>% filter(n>1) %>% pull(name)
+  node_types_count_w_mulp<-node_types_count %>% filter(name %in% terms_w_multiple_types) 
+  
+  selected_types <- tibble()
+  for (i in terms_w_multiple_types){
+    
+    tmp1<-node_types_count_w_mulp %>% filter(name == i)
+    
+    if (length(unique(tmp1$n))!=1){
+      # sort by freq and get the top one
+       tmp2<- tmp1 %>% 
+         arrange(-n) %>% 
+         filter(row_number()==1)
+    } else {
+      # all types appear with the same freq
+      # order by type, to keep the longer name
+      tmp2<-tmp1 %>%
+        mutate(len_type = str_length(type)) %>%
+        arrange(-len_type) %>% 
+        filter(row_number()==1) %>% 
+        select(-len_type)
+    }
+    selected_types<-bind_rows(selected_types, tmp2)
+  }
+  
+  node_types_new<-node_types %>% filter(!name %in% terms_w_multiple_types) %>% 
+    bind_rows(., selected_types %>% select(-n))
+}
 
-dim(bc_triples_tidy) #31350
 
-# if you subset the one above to 'Breast Diseases' in term2, will get same as melodi-presto query
-
-```
-
-
-```{r}
 # add type to disease and drug nodes (selective)
+make_node_types <- function(dat){
 
-node_types<-bind_rows(bc_triples_tidy %>% select(name = term1, type =st1.type),
-                      bc_triples_tidy %>% select(name = term2, type = st.type)) %>% 
-  mutate(type_verbose= case_when(type == "['dsyn']" ~ 'disease',
-                                 type == "['orch']" ~ 'drug_or_compound',
-                                 type == "['phsu']" ~ 'drug_or_compound',
-                                 type == "['orch', 'phsu']" ~ 'drug_or_compound',
-                                 type == "['hops']" ~ 'drug_or_compound',
-                                 type == "['orch', 'phsu', 'hops']" ~ 'drug_or_compound',
-                                 type == "['orch', 'hops']" ~ 'drug_or_compound',
-                                 grepl('mab$',name) ~ 'drug_or_compound',
-                                 grepl('cisplatin',name) ~ 'drug_or_compound',
-                                 grepl('methotrexate polyglutamate',name) ~ 'drug_or_compound',
-                                 grepl('herceptin',name) ~ 'drug_or_compound',
-                                 grepl('fulvestrant',name) ~ 'drug_or_compound',
-                                 grepl('capecitabine',name) ~ 'drug_or_compound',
-                                 grepl('fluorouracil',name) ~ 'drug_or_compound',
-                                 grepl('cyclophosphamide',name) ~ 'drug_or_compound',
-                                 grepl('exemestane',name) ~ 'drug_or_compound',
-                                  grepl('ado-trastuzumab emtansine',name) ~ 'drug_or_compound',
-                                  grepl('megestrol acetate',name) ~ 'drug_or_compound',
-                                  grepl('thiotepa',name) ~ 'drug_or_compound',
-                                 TRUE ~ 'any'))
-
-#node_types %>% count(type, sort=T) %>% View()
-
-# find most common things
-node_type_counts<-node_types %>% count(name, name='size', sort=T)
-#node_type_counts %>% View()
-common_nodes <- node_type_counts %>% filter(size > 300) %>% pull(name) # arbitary theshold
-
-```
-
-```{r}
-# check which know BC drugs are in this dataset (imperfect matching approch WIP)
-dim(bc_drugs)
-
-length(intersect(node_type_counts$name, bc_drugs$name))#22
-intersect(node_type_counts$name, bc_drugs$name)
-length(setdiff( bc_drugs$name,node_type_counts$name))
-setdiff( bc_drugs$name,node_type_counts$name)
-
-node_types %>% filter(name %in% bc_drugs$name) %>% distinct %>% View()
-```
+  node_types<-bind_rows(dat %>% select(name = term1, type =st1.type),
+                        dat %>% select(name = term2, type = st.type)) %>% 
+              keep_one_type() %>% 
+    mutate(type_verbose= case_when(type == "['dsyn']" ~ 'disease',
+                                   type == "['orch']|['phsu']|['orch', 'phsu']|['hops']|['orch', 'phsu', 'hops']|['orch', 'hops']" ~ 'drug_or_compound',
+                                   grepl('mab$',name) ~ 'drug_or_compound',
+                                   grepl('tinib',name) ~ 'drug_or_compound',
+                                   grepl('cisplatin',name) ~ 'drug_or_compound',
+                                   grepl('methotrexate polyglutamate',name) ~ 'drug_or_compound',
+                                   grepl('herceptin',name, ignore.case = T) ~ 'drug_or_compound',
+                                   grepl('fulvestrant',name) ~ 'drug_or_compound',
+                                   grepl('capecitabine',name) ~ 'drug_or_compound',
+                                   grepl('fluorouracil',name) ~ 'drug_or_compound',
+                                   grepl('cyclophosphamide',name) ~ 'drug_or_compound',
+                                   grepl('exemestane',name) ~ 'drug_or_compound',
+                                    grepl('ado-trastuzumab emtansine',name) ~ 'drug_or_compound',
+                                    grepl('megestrol acetate',name) ~ 'drug_or_compound',
+                                    grepl('thiotepa',name) ~ 'drug_or_compound',
+                                   grepl('tamoxifen',name) ~ 'drug_or_compound',
+                                   TRUE ~ 'any'))
+}
 
 
-*Network matching methods:*
-  
-  * Forwards (2-level, 1 direction): term1 (set) -> term2 (many) -> term1 (many more)
-* Backwards (2-level, 1 direction): term2 (many more) <- term 1 (many) <- term2 (set)
-
-* F+B (1-level, 2 directions) : /[             \[ term1 /]-> term2  \]
-/[  term1   <- \[ term2 /]          \]
-
-
-* F+B pair ( two terms match + 1-level, 2 directions) :
-  termX -> termY -> many 
-many <- termX <- termY
-
-
-*Additional network filters:*
-  
-  - exclude neutral relationships
-- exclude low count relationships (set threshold, default is 10)
-- do not included rels from common nodes (e.g. estrogen - get a hairball right away)
-- for 'rare' nodes - search the term in both term1 and term2 - use F+B
-
-
-```{r}
 select_network <- function(full_data, key_term, network_dir,
                            lowest_count_rel_to_keep = 10,
                            exclude_neutral = F, 
@@ -165,6 +115,28 @@ select_network <- function(full_data, key_term, network_dir,
                            common_nodes = '', 
                            predicate_ref, 
                            rare_node = F){
+  
+#    *Network matching methods:*
+#      
+#    * Forwards (2-level, 1 direction): term1 (set) -> term2 (many) -> term1 (many more)
+#    * Backwards (2-level, 1 direction): term2 (many more) <- term 1 (many) <- term2 (set)
+#    
+#    * F+B (1-level, 2 directions) : /[             \[ term1 /]-> term2  \]
+#    /[  term1   <- \[ term2 /]          \]
+#    
+#    
+#    * F+B pair ( two terms match + 1-level, 2 directions) :
+#      termX -> termY -> many 
+#    many <- termX <- termY
+#    
+#    
+#    *Additional network filters:*
+#      
+#    - exclude neutral relationships
+#    - exclude low count relationships (set threshold, default is 10)
+#    - do not included rels from common nodes (e.g. estrogen - get a hairball right away)
+#    - for 'rare' nodes - search the term in both term1 and term2 - use F+B
+
   
   if (!network_dir %in% c('F+B pair', 'F+B multiple') ){
     if (length(key_term) > 1) {
@@ -246,62 +218,38 @@ select_network <- function(full_data, key_term, network_dir,
   }
   
   data_megred_tidy<- data_megred %>% 
-    select(term1, gs1.localCount, predicate, term2)  %>% 
+    select(term1, predicate, term2)  %>% 
     group_by(term1, predicate, term2) %>% 
-    summarise(count = sum(gs1.localCount)) %>% 
+    count() %>% ungroup() %>% 
     filter_by_count(., lowest_count_rel_to_keep, key_term, rare_node )%>%
     distinct() %>% 
-    left_join(predicate_ref %>% select(predicate, direction), by = 'predicate') %>% 
-    ungroup()
-  
+    left_join(predicate_ref %>% select(predicate, direction), by = 'predicate')
+
   print(paste0("Rels in the network subset: ", dim(data_megred_tidy)[1]))
   
   return (data_megred_tidy)
 }
 
+
+
+
 filter_by_count <- function(dat, lowest_count_rel_to_keep, key_term='', rare_node=F){
   if (!rare_node){key_term=''}
   # if it's indicate that the key term is a rare node, we will keep all links for it, even below counts threshold
   keep_by_term<-dat %>% filter(term1 %in% key_term | term2 %in% key_term)
-  keep_by_count<- dat %>% filter(count >= lowest_count_rel_to_keep)
+  keep_by_count<- dat %>% filter(n >= lowest_count_rel_to_keep)
   out<-bind_rows(keep_by_term, keep_by_count)
   return(out)
 }
 
 
-key_term = 'Cyclin D1'
-#key_term <- node_type_counts$name[grepl("statin", node_type_counts$name)]
-network_subset <-  select_network(full_data = bc_triples_tidy,
-                                  #key_term = c("trastuzumab" ,"ERBB2"),
-                                  key_term = key_term,
-                                  network_dir = 'forwards',
-                                  lowest_count_rel_to_keep = 10,
-                                  exclude_neutral = T, 
-                                  include_common_nodes_links = T, 
-                                  common_nodes = common_nodes, 
-                                  predicate_ref = predicate_ref,
-                                  rare_node = F)
 
-
-# count node frequency in network subset
-node_counts<-bind_rows(network_subset %>% select(name = term1),
-                       network_subset %>% select(name = term2)) %>% 
-  count(name, name='size', sort=T) %>% 
-  left_join(node_types %>% select(name, type_verbose) %>% distinct() , by = 'name') %>% 
-  mutate(type_verbose = ifelse(name == key_term, 'key_term', type_verbose))
-
-dim(node_counts)
-
-```
-
-
-```{r}
 build_networkD3 <- function(network_subset, node_counts) {
   #http://curleylab.psych.columbia.edu/netviz/netviz2.html
   
   networkData <- data.frame(src = network_subset$term1,
                             target = network_subset$term2, 
-                            rel_count = network_subset$count,
+                            rel_count = network_subset$n,
                             direction = network_subset$direction, 
                             stringsAsFactors = FALSE)
   direction <- network_subset$direction
@@ -326,7 +274,7 @@ build_networkD3 <- function(network_subset, node_counts) {
   # make a links data frame using the indexes (0-based) of nodes in 'nodes'
   links <- data.frame(source = match(networkData$src, nodes$name) - 1,
                       target = match(networkData$target, nodes$name) - 1)
-  links$value <- networkData$rel_count/5
+  links$value <- networkData$rel_count
   
   
   b<-forceNetwork(Links = links, Nodes = nodes, Source = "source",
@@ -348,37 +296,392 @@ build_networkD3 <- function(network_subset, node_counts) {
 }
 ```
 
+need to write a method to pick the most common type for a term if there are many and assigning it to all -- this will help with countiong
 
 ```{r}
 
-b<-build_networkD3(network_subset, node_counts)
-#htmlwidgets::saveWidget(b, file=paste0( getwd(), "/htmls/cyclinD1_backwards.html"))
+bc_triples_tidy <- dat %>% filter(gwas.id %in% keep_gwas) %>% 
+                            filter(lit.year >=2016) %>% 
+                            tidy_gwas_to_lit_output() %>%  distinct() %>% 
+                            select(-c("lit.id", "lit.year")) 
+
+
+# add type to disease and drug nodes (selective)
+node_types<-bc_triples_tidy %>% make_node_types()
+
+#node_types %>% count(type, sort=T) %>% View()
+
+# find most common things
+node_type_counts<-node_types %>% count(name, name='size', sort=T)
+#node_type_counts %>% View()
+common_nodes <- node_type_counts %>% filter(size > 300) %>% pull(name) # arbitrary threshold
+
+#write_tsv(node_type_counts, "common_terms_reading_list.tsv")
+```
+
+
+
+```{r}
+key_term = 'ESR1'
+network_subset <-  select_network(full_data = bc_triples_tidy,
+                                  key_term = key_term,
+                                  network_dir = 'F+B 2-level',
+                                  lowest_count_rel_to_keep = 4,
+                                  exclude_neutral = F, 
+                                  include_common_nodes_links = T, 
+                                  common_nodes = common_nodes, 
+                                  predicate_ref = predicate_ref,
+                                  rare_node = F)
+# sum counts of pairs (ignore actual predicate)
+network_subset <-network_subset %>% 
+                  select(-predicate) %>% 
+                  group_by(term1, term2, direction) %>% 
+                  summarise(n=sum(n)) %>% ungroup()
+
+
+# count node frequency in network subset
+node_counts<-bind_rows(network_subset %>% select(name = term1),
+                       network_subset %>% select(name = term2)) %>% 
+  count(name, name='size', sort=T) %>% 
+  left_join(node_types %>% select(name, type_verbose) %>% distinct() , by = 'name') %>% 
+  mutate(type_verbose = ifelse(name == key_term, 'key_term', type_verbose))
+
+dim(node_counts)
+
+
+#key_term <- node_type_counts$name[grepl("statin", node_type_counts$name)]
+
 ```
 
 
 
 
+```{r}
+
+b3<-build_networkD3(network_subset, node_counts)
+b#htmlwidgets::saveWidget(b, file=paste0( getwd(), "/htmls/cyclinD1_backwards.html"))
+```
+
+
+
+**Literature exploration by years**
+
+```{r}
+#all
+bc_triples <- dat %>% filter(gwas.id %in% keep_gwas) 
+
+
+count_term_pairs <- function (dat){
+
+  sum1 <- dat %>% distinct() %>% 
+                  select(-st1.type, -st.type, -gs1.localCount) %>% 
+                  distinct() %>%
+                  select(term1,predicate, term2) %>% 
+                  group_by(term1, predicate, term2) %>% 
+                  count() %>% ungroup()
+  sum2 <- sum1 %>% 
+    select(-predicate) %>%  
+           group_by(term1, term2) %>% 
+           summarise(total_n = sum(n))
+  return(sum2)
+}
+
+categorise_years <- function(dat){
+  
+  dat_tidy <- tidy_gwas_to_lit_output(dat)
+  
+  dat_count<-count_term_pairs(dat_tidy)  
+  dim(dat_count) #18536 unique all time
+  
+  # 2000
+  
+  dat2000 <- dat %>%  filter(lit.year >=2000) %>% tidy_gwas_to_lit_output()
+  dat2000_count<-count_term_pairs(dat2000) %>% rename(since2000 = total_n)
+  dim(dat2000_count) # last 20: 17230
+  
+  
+  dat2000before <- dat %>%  filter(lit.year <2000) %>% tidy_gwas_to_lit_output()
+  dat2000before_count<-count_term_pairs(dat2000before) %>% rename(before_2000 = total_n)
+  dim(dat2000before_count) # exclude after 2000 3748
+  
+  # 2016
+  dat2016 <-  dat %>%  filter(lit.year >= 2016) %>% tidy_gwas_to_lit_output()
+  dat2016_count<-count_term_pairs(dat2016)%>% rename(since2016 = total_n)
+  dim(dat2016_count) # 7397
+  
+  
+  # join
+  merged<- left_join(dat_count, dat2000_count, by = c('term1', 'term2') ) %>% 
+            left_join(dat2016_count,by = c('term1', 'term2') ) %>% 
+             mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+            # calc % remaining
+            mutate(percent_since_2000 = round(since2000/total_n *100),
+                   percent_since_2016 = round(since2016/total_n *100))
+
+  return(merged)
+}
+
+merged<-categorise_years(bc_triples)
+        
+dim(merged)
+
+merged %>% filter(total_n >=2) %>% View()
+
+dim(merged) #18536 total unique relationships
+
+merged %>% filter(percent_since_2000 == 0) %>% dim() # 1306 were only mentioned before 2000 -- old/wrong/obvious
+
+merged %>% filter(percent_since_2000 == 100) %>% dim() # 14788  mentioned after 2000
+
+merged %>% filter(percent_since_2016 == 100) %>% dim() # 3151 mentioned after 2016 -- novel 
+
+
+merged %>% filter(total_n > 5) %>% dim() # 1898 mentioned in at least 5 papers
+
+merged %>% filter(total_n > 5) %>% filter(percent_since2000 == 0) %>% dim() #19 things were frequently mentioned but only before 2000
+merged %>% filter(total_n > 5)%>% filter(percent_since2000 == 100) %>% dim() #1016  frequent things were mentioned after 2000
+merged %>% filter(total_n >= 3) %>% filter(percent_since2016 == 100) %>% dim() # 58 slightly common things after 2016
+
+
+merged %>% mutate(cat = case_when(percent_since2000 == 0 ~ 'only before 2000',
+                                  percent_since2000 == 100 ~ 'only after 2000',
+                                  percent_since2016 == 100 ~ 'only after 2016',
+                                  percent_since2016 == 0 ~ 'only before 2016',
+                                  percent_since2016 > 50 ~ 'mostly after 2016',
+                                  percent_since2016 >= 50 &  percent_since2000 >= 50 ~ 'mostly after 2016',
+                                  percent_since2000 > 50 ~ 'mostly after 2000',
+                                  TRUE ~ "XX")) %>% ungroup %>%  count(cat)
+
+
+merged %>% filter(percent_since2000 == 100) -> x
+data.frame(col = c(x$term1, x$term2)) %>% count(col, sort=T) %>% View()
+
+```
+
+```{r}
+
+plot_categorised_years<- function(dat){
+    #all
+  dat_tidy <- tidy_gwas_to_lit_output(dat)
+  dat_tidy_count<-count_term_pairs(dat_tidy) 
+  
+  dat_tidy2000 <- dat %>%  filter(lit.year >=2000 & lit.year<2016) %>% tidy_gwas_to_lit_output()
+  dat_tidy2000_count<-count_term_pairs(dat_tidy2000) %>% rename(since2000 = total_n)
+  dim(dat_tidy2000_count) # last 20: 17230
+  
+  dat_tidy2000before <- dat %>%  filter(lit.year <2000) %>% tidy_gwas_to_lit_output()
+  dat_tidy2000before_count<-count_term_pairs(dat_tidy2000before) %>% rename(before_2000 = total_n)
+  dim(dat_tidy2000before_count) # exclude after 2000 3748
+  
+  dat_tidy2016 <-  dat %>%  filter(lit.year >= 2016) %>% tidy_gwas_to_lit_output()
+  dat_tidy2016_count<-count_term_pairs(dat_tidy2016)%>% rename(since2016 = total_n)
+  dim(dat_tidy2016_count) # 7397
+  
+  library(eulerr)
+  s4 <- list(since2000 = dat_tidy2000_count %>% mutate(c=paste0(term1, "::", term2)) %>% pull(c),
+             before2000 = dat_tidy2000before_count %>% mutate(c=paste0(term1, "::", term2)) %>% pull(c),
+             since2016 = dat_tidy2016_count %>% mutate(c=paste0(term1, "::", term2)) %>% pull(c))
+  plot(euler(s4, shape = "ellipse"), quantities = TRUE)
+}
+
+bc_triples <- dat %>% filter(gwas.id %in% keep_gwas) 
+plot_categorised_years(bc_triples)
+
+```
+
+
+
+# **other GWAS**
 
 
 ```{r}
 ## check other GWAS quick
-other_gwas<-vroom('../query_results/lit_childhood_obesity_triples.tsv')
+other_gwas<-vroom('../query_results/lit_betaine_triples.tsv')  
 dim(other_gwas)
 
 dim(bc_triples)
 
-# X -> Y, where X is BC
-length(intersect(bc_triples$st.name, other_gwas$st1.name)) #245
-View(intersect(bc_triples$st.name, other_gwas$st1.name))
 
 # Y -> X , where X is BC
 length(intersect(other_gwas$st.name, bc_triples$st1.name)) #175
 View(intersect(other_gwas$st.name, bc_triples$st1.name))
 ```
 
+
 ```{r}
-other_gwas_tidy<-tidy_gwas_to_lit_output(other_gwas)
-bc_triples_tidy
+# years
+merged_othergwas<-categorise_years(other_gwas) 
+
+plot_categorised_years(other_gwas)
+
+
+```
+
+
+```{r}
+other_gwas_tidy<-tidy_gwas_to_lit_output(other_gwas) %>% select(-c("lit.id", "lit.year")) %>% distinct() 
+
+
+# other gwas only network
+out<-other_gwas_tidy %>% 
+  select(term1, gs1.localCount, predicate, term2)  %>% 
+    group_by(term1, predicate, term2) %>% 
+    summarise(count = sum(gs1.localCount)) %>% 
+    distinct() %>% 
+    left_join(predicate_ref %>% select(predicate, direction), by = 'predicate') %>% 
+  #filter(!predicate %in% c('COEXISTS_WITH', 'INTERACTS_WITH', 'ASSOCIATED_WITH')) %>% 
+    ungroup()
+
+node_types<-make_node_types(other_gwas_tidy)
+key_term = 'betaine'
+node_counts_out<-bind_rows(out %>% select(name = term1),
+                         out %>% select(name = term2)) %>% 
+  count(name, name='size', sort=T) %>% 
+  left_join(node_types %>% select(name, type_verbose) %>% distinct() , by = 'name') %>% 
+  mutate(type_verbose = ifelse(name == key_term, 'key_term', type_verbose)) 
+
+
+out2<-out %>% filter(count>=6)
+a<-build_networkD3(out2, node_counts_out)
+
+out3 <-out %>% left_join(node_types, by =c('term1' = 'name')) %>% rename(type1=type, type_verbose1=type_verbose) %>% 
+              left_join(node_types, by =c('term2' = 'name')) %>% rename(type2=type, type_verbose2=type_verbose) %>% 
+              filter(grepl("['gngm', 'aapp']", type2, fixed = T) | grepl("['gngm', 'aapp']", type1, fixed = T)) %>%
+              distinct() %>% 
+              select(-c(type1, type2, type_verbose1, type_verbose2))
+                     
+
+gwas_genes2
+
+unique(out[grepl(paste(gwas_genes2, collapse = "|"), out$term2, ignore.case = T),]$term2)
+unique(out[grepl(paste(gwas_genes2, collapse = "|"), out$term1, ignore.case = T),]$term1)
+
+
+a<-build_networkD3(out3, node_counts_out)
+
+
+
+
+key_term = 'betaine'
+network_subset <-  select_network(full_data = other_gwas_tidy,
+                                  key_term = key_term,
+                                  network_dir = 'F+B 2-level',
+                                  lowest_count_rel_to_keep = 5,
+                                  exclude_neutral = F, 
+                                  include_common_nodes_links = T, 
+                                  common_nodes = common_nodes, 
+                                  predicate_ref = predicate_ref,
+                                  rare_node = F)
+
+
+# count node frequency in network subset
+node_counts<-bind_rows(network_subset %>% select(name = term1),
+                       network_subset %>% select(name = term2)) %>% 
+  count(name, name='size', sort=T) %>% 
+  left_join(node_types %>% select(name, type_verbose) %>% distinct() , by = 'name') %>% 
+  mutate(type_verbose = ifelse(name == key_term, 'key_term', type_verbose))
+
+dim(node_counts)
+aa<-build_networkD3(network_subset, node_counts)
+
+
+key_term = c('betaine', 'choline')
+network_subset <-  select_network(full_data = other_gwas_tidy,
+                                  key_term = key_term,
+                                  network_dir = 'F+B multiple',
+                                  lowest_count_rel_to_keep = 3,
+                                  exclude_neutral = F, 
+                                  include_common_nodes_links = T, 
+                                  common_nodes = common_nodes, 
+                                  predicate_ref = predicate_ref,
+                                  rare_node = F)
+
+
+# count node frequency in network subset
+node_counts<-bind_rows(network_subset %>% select(name = term1),
+                       network_subset %>% select(name = term2)) %>% 
+  count(name, name='size', sort=T) %>% 
+  left_join(node_types %>% select(name, type_verbose) %>% distinct() , by = 'name') %>% 
+  mutate(type_verbose = ifelse(name == key_term, 'key_term', type_verbose))
+
+dim(node_counts)
+aa<-build_networkD3(network_subset, node_counts)
+
+```
+
+
+```{r}
+
+
+
+
+
+
+
+
+# betaine
+# overlap Y -> X
+
+overlap1 <- intersect( other_gwas_tidy$term2, bc_triples_tidy$term1)
+overlap1_merged<-bind_rows(other_gwas_tidy %>% filter(term2 %in% overlap1),
+                           bc_triples_tidy %>% filter(term1 %in% overlap1) )%>% 
+                                             #filter(!predicate %in% c('COEXISTS_WITH', 'INTERACTS_WITH', 'ASSOCIATED_WITH'))) %>% 
+                          # other_gwas_tidy %>% filter(grepl("ICOS|Inducible",term2) | grepl("ICOS|Inducible",term1))) %>% 
+  select(term1, gs1.localCount, predicate, term2)  %>% 
+  filter(gs1.localCount >= 2) %>% 
+  group_by(term1, predicate, term2) %>% 
+  summarise(count = sum(gs1.localCount)) %>%
+  distinct() %>% 
+  left_join(predicate_ref %>% select(predicate, direction), by = 'predicate') %>% 
+  ungroup() %>% 
+  filter(!predicate %in% c('COEXISTS_WITH', 'INTERACTS_WITH', 'ASSOCIATED_WITH')) %>% 
+  filter(!term1 %in% common_nodes)
+dim(overlap1_merged)
+
+node_counts<-bind_rows(overlap1_merged %>% select(name = term1),
+                       overlap1_merged %>% select(name = term2)) %>% 
+  count(name, name='size', sort=T) %>% 
+  mutate(type_verbose = ifelse(name %in% overlap1, 'overlap', 'other'))
+
+dim(node_counts)
+
+c<-build_networkD3(overlap1_merged, node_counts)
+
+#htmlwidgets::saveWidget(c, file=paste0( getwd(), "/htmls/bc_w_sleepduration.html"))
+
+
+
+
+# sleep
+# overlap Y -> X
+
+overlap1 <- intersect( other_gwas_tidy$term2, bc_triples_tidy$term1)
+overlap1_merged<-bind_rows(other_gwas_tidy %>% filter(term2 %in% overlap1),
+                           bc_triples_tidy %>% filter(term1 %in% overlap1) )%>% 
+                                             #filter(!predicate %in% c('COEXISTS_WITH', 'INTERACTS_WITH', 'ASSOCIATED_WITH'))) %>% 
+                          # other_gwas_tidy %>% filter(grepl("ICOS|Inducible",term2) | grepl("ICOS|Inducible",term1))) %>% 
+  select(term1, gs1.localCount, predicate, term2)  %>% 
+  filter(gs1.localCount >= 2) %>% 
+  group_by(term1, predicate, term2) %>% 
+  summarise(count = sum(gs1.localCount)) %>%
+  distinct() %>% 
+  left_join(predicate_ref %>% select(predicate, direction), by = 'predicate') %>% 
+  ungroup() 
+  #filter(!predicate %in% c('COEXISTS_WITH', 'INTERACTS_WITH', 'ASSOCIATED_WITH')) 
+dim(overlap1_merged)
+
+node_counts<-bind_rows(overlap1_merged %>% select(name = term1),
+                       overlap1_merged %>% select(name = term2)) %>% 
+  count(name, name='size', sort=T) %>% 
+  mutate(type_verbose = ifelse(name %in% overlap1, 'overlap', 'other'))
+
+dim(node_counts)
+
+c<-build_networkD3(overlap1_merged, node_counts)
+
+htmlwidgets::saveWidget(c, file=paste0( getwd(), "/htmls/bc_w_sleepduration.html"))
+
+# childhood obesity
 
 # overlap Y -> X
 
@@ -401,7 +704,11 @@ dim(overlap1_merged)
 node_counts<-bind_rows(overlap1_merged %>% select(name = term1),
                        overlap1_merged %>% select(name = term2)) %>% 
   count(name, name='size', sort=T) %>% 
+  left_join(node_types %>% select(name, type_verbose) %>% distinct() , by = 'name') %>% 
+  mutate(type_verbose_type = ifelse(name == key_term, 'key_term', type_verbose)) %>% 
   mutate(type_verbose = ifelse(name %in% overlap1, 'overlap', 'other'))
+
+node_counts %>% filter(type_verbose_type!='disease') %>% View()
 
 dim(node_counts)
 
@@ -441,6 +748,20 @@ p <- simpleNetwork(test_merge1_simple, height="100px", width="100px",
 # save the widget
 # library(htmlwidgets)
 # saveWidget(p, file=paste0( getwd(), "/HtmlWidget/networkInteractive2.html"))
+```
+
+
+
+```{r}
+# check which know BC drugs are in this dataset (imperfect matching approch WIP)
+dim(bc_drugs)
+
+length(intersect(node_type_counts$name, bc_drugs$name))#22
+intersect(node_type_counts$name, bc_drugs$name)
+length(setdiff( bc_drugs$name,node_type_counts$name))
+setdiff( bc_drugs$name,node_type_counts$name)
+
+node_types %>% filter(name %in% bc_drugs$name) %>% distinct %>% View()
 ```
 
 
