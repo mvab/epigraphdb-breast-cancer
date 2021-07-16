@@ -16,7 +16,8 @@ library(networkD3)
 ```
 
 ```{r message=F}
-dat<-vroom('../query_results/lit_bc_to_other_litterms_upd.tsv')
+dat<-vroom('../query_results/lit_bc_to_other_litterms_upd.tsv') %>% mutate(lit.id = as.character(lit.id))
+
 
 keep_gwas<-c('ieu-a-1126','finn-a-C3_BREAST', 'finn-a-CD2_BENIGN_BREAST', 'ukb-a-519', 'ukb-d-C3_BREAST_3', 'ukb-d-D05') # can query with neo4j just for these
 
