@@ -14,23 +14,30 @@ library(wesanderson)
 library(RColorBrewer)
 library(flextable)
 library(TwoSampleMR)
-source('functions.R')
+source('explore_MR-EvE_app/functions.R')
 ```
 
 
 ```{r, message = FALSE, include=F}
 rm(dat)
-dat <- read_tsv("../query_results/bc_all_mr.tsv") %>% 
+dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>% 
+        #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_madewR.tsv") %>% 
+      read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>% 
       # subset 
   filter(exposure.sex != 'Males') %>% 
-  filter(outcome.id != 'ebi-a-GCST007236') %>% 
+  filter(!outcome.id %in% c('ebi-a-GCST007236', 'ebi-a-GCST004988')) %>% 
+  filter(mr.method != 'Steiger null') %>% 
   # convert MR results to OR
   tidy_display_numbers()%>% 
   # deal ith al outcome related changes
   process_bc_outcomes() %>% 
   # create categories of exposure traits
   create_exposure_categories() %>% 
-  add_exposure_labels()
+  add_exposure_labels() %>% 
+  # drop really weird cases when CIs are weird
+  filter(!or_loci > or_upci) %>% 
+  # remove very small effects
+  filter(OR_CI != "0 [0:0]")
 
 ```
 
@@ -89,11 +96,27 @@ ply<-plotly::ggplotly(p)
 
 
 
-### Anthophometric traits
+### 1. Anthophometric traits
 
 ```{r fig.width=10}
-input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
-    filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T))
+antro_blacklist <- c('ieu-a-81','ieu-a-74', "ieu-a-73" ,"ieu-a-79" ,"ieu-a-72" ,"ieu-a-78",
+                     'ieu-a-63',  'ieu-a-66', 'ieu-a-60',  'ieu-a-69' , 'ieu-a-61',
+                      'ieu-a-54', 'ieu-a-55',  'ieu-a-49' , 'ieu-a-48', 'ieu-a-57' , 'ieu-a-50',
+                     'ukb-b-12039', 'ukb-b-2303',
+                     'ieu-a-2', 'ieu-a-835')
+
+input <- dat %>% filter(exposure_cat %in% c('Antrophometric')) %>% 
+    filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
+    filter(!exposure.id %in% antro_blacklist)
+
+# deal with duplicated from UKB
+ukb_diff_sources<-input %>%
+        select(exposure.trait, exposure.id, author, consortium, exposure.sample_size, year) %>% 
+        filter(author %in% c("Neale", "Ben Elsworth")) %>% distinct() %>% 
+        count(exposure.trait) %>% filter(n==2) 
+
+input <- input %>% 
+  filter(!(exposure.trait %in% ukb_diff_sources$exposure.trait & author == 'Neale'))
 
 p<-plot_bubble_plot(input)
 ply<-plotly::ggplotly(p)
@@ -106,107 +129,63 @@ p_gg$layout$showlegend = "TRUE"
 
 
 
-```{r fig.width=10}
-input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
-    filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
-  filter(mr.moescore >= 0.8) 
 
-p<-plot_bubble_plot(input)
-ply<-plotly::ggplotly(p)
-ply
-```
-
-
-```{r fig.width=10}
-input <- dat %>% filter(exposure_cat %in% c('antrophometric')) %>% 
-  
-    filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
-  filter(mr.pval <= 10e-8)
-
-p<-plot_bubble_plot(input)
-ply<-plotly::ggplotly(p)
-ply
-```
-
-
-
-
-Antrophometric by sub-class
-
-```{r fig.width=10}
-# waist/hip subset
-input_sub <- input %>%  filter(grepl('hip|waist|trunk' , exposure.trait, ignore.case = T))
-p<-plot_bubble_plot(input_sub)
-ply<-plotly::ggplotly(p)
-ply
-```
-
-```{r fig.width=10}
-# body
-input_sub <- input %>%  filter(grepl('body|obesity|mass|weight' , exposure.trait, ignore.case = T)) %>% 
-                        filter(!grepl('birth' , exposure.trait, ignore.case = T)) 
-p<-plot_bubble_plot(input_sub)
-ply<-plotly::ggplotly(p)
-ply
-```
-
-```{r fig.width=10}
-# height 
-input_sub <- input %>%  filter(grepl('height' , exposure.trait, ignore.case = T)) %>% 
-                        filter(!grepl('birth' , exposure.trait, ignore.case = T)) 
-p<-plot_bubble_plot(input_sub)
-ply<-plotly::ggplotly(p)
-ply
-```
-
-```{r fig.width=10}
-# birth
-input_sub <- input %>%  filter(grepl('birth' , exposure.trait, ignore.case = T)) 
-                        #filter(!grepl('birth' , exposure.trait, ignore.case = T)) 
-p<-plot_bubble_plot(input_sub)
-ply<-plotly::ggplotly(p)
-ply
-```
-
-
-### Activity
+### 2. Activity
 
 ```{r fig.width=10, fig.height=5}
-input <- dat %>% filter(exposure_cat %in% c('activity')) %>% 
-              mutate(exposure = gsub("\\(eg.*)", "", exposure))
+input <- dat %>% filter(exposure_cat %in% c('Physical activity')) %>% 
+             filter(!grepl("mental", exposure))
+
 p<-plot_bubble_plot(input)
 p
 ```
 
-### Supplements / vitamins
+### 3.  Supplements / diat
 
 ```{r fig.width=10, fig.height=5}
-input <- dat %>% filter(exposure_cat %in% c('vitamin')) 
+input <- dat %>% filter(exposure_cat %in% c('Diet and supplements')) %>% 
+                filter(!grepl("questionnaire", exposure))
 p<-plot_bubble_plot(input)
 p
 ```
 
 
-### Reproductive traits
+### 4. Reproductive traits
 
 ```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('reproductive')) %>% 
-                mutate(exposure = gsub("\\(eg.*)", "", exposure))
+input <- dat %>% filter(exposure_cat %in%  c('Reproductive')) 
 
-input_sub<- input %>% filter(mr.pval < 10e-5)
 p<-plot_bubble_plot(input)
 p
 ```
 
 
 
-### Metabolites
+### 5. alcohol
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Alcohol')) 
+
+p<-plot_bubble_plot(input)
+p
+```
+
+### 6. smoking traits
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c( "Smoking")) 
+
+p<-plot_bubble_plot(input)
+p
+```
+
+
+
+### 7. Metabolites
 
 
 ```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('metabolite_measures')) %>% 
-        # only keeloin ivrn
-        filter(!grepl("_raw",exposure.id))
+input <- dat %>% filter(exposure_cat %in%  c('Metabolites')) 
 p<-plot_bubble_plot(input)
 p
 
@@ -221,27 +200,12 @@ ply<-plotly::ggplotly(p)
 ```
 
 
-### Diet
+
+
+### 8. Protein measures
 
 ```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('diet')) %>% 
-        # only keeloin ivrn
-        filter(!grepl("_raw",exposure.id)) %>% 
-        filter(chip %in% c('Meta',
-                            'OncArray',
-                            'iCOG2017'))
-p<-plot_bubble_plot(input)
-p
-```
-
-
-
-### Protein measures
-
-```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('protein_measures')) %>% 
-        # only keeloin ivrn
-        filter(!grepl("_raw",exposure.id)) %>% 
+input <- dat %>% filter(exposure_cat %in%  c('Proteins')) %>% 
         arrange(exposure.trait)
 dim(input)[1]/9
 length(unique(input$exposure.trait))
@@ -255,41 +219,195 @@ length(test_list)
 
 p<-plot_bubble_plot(input %>% filter(exposure.id %in% test_list[1:60]))
 p<-plot_bubble_plot(input %>% filter(exposure.id %in% test_list[61:131]))
+
+
+p<-plot_bubble_plot(input %>% filter(grepl('interl', exposure.trait, ignore.case = T)))
+
 ply<-plotly::ggplotly(p)
 
 ```
 
-### Other biomarkers/compounds
+### 9. Other biomarkers/compounds
 
 ```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('other_biomarkers')) %>% 
-        # only keeloin ivrn
-        filter(!grepl("_raw",exposure.id)) %>% 
-        filter(chip %in% c('Meta',
-                            'OncArray',
-                            'iCOG2017'))
+input <- dat %>% filter(exposure_cat %in%  c('Other biomarkers')) %>% 
+        filter(!grepl("FEV",exposure.trait)) 
+p<-plot_bubble_plot(input)
+```
+
+
+
+### 10. Sleep
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Sleep'))
 p<-plot_bubble_plot(input)
 p
 ```
 
-### Cell measurements
-
-```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('cell_measures')) %>% 
-        # only keeloin ivrn
-        filter(!grepl("_raw",exposure.id))
+### 11. Drugs
+```{r fig.width=12}
+input <- dat %>% filter(exposure_cat %in% c('Drugs')) 
 p<-plot_bubble_plot(input)
 p
 ```
 
 
-### Sleep
 
-```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('sleep_related'))
-p<-plot_bubble_plot(input)
-p
+#### Method for finding interesting things
+
+
+```{r}
+
+traits_for_follow_up <- function(input, dat) {
+  
+  ids <- input %>% pull(exposure.id) %>% unique()
+  res <- list()
+  
+  for (i in ids){
+    # pre-set of results to use for selection
+    x <- dat %>% 
+      filter(chip %in% c('Meta', "OncArray",  "iCOG2017")) %>% 
+      select(exposure.id, exposure.trait, exposure_cat, outcome.id, outcome, mr.pval, starts_with('or'),
+             effect_direction, mr.method, mr.moescore) %>%
+      filter(exposure.id == i) 
+    
+    if (dim(x)[1] != 0) {
+      # continue id these outcomes have been tested
+    
+      # drop results that 'overlap null' for all selected outcomes
+      effect <-x %>% pull(effect_direction) %>% unique()
+      if (length(effect) == 1){
+          if (effect == "overlaps null"){
+            #print(paste0(i, ": nope"))
+          }
+      } else {
+        #get counts per BC type
+        y <- x %>% group_by(outcome) %>% 
+          janitor::tabyl(outcome, effect_direction) %>% 
+          as_tibble()
+        
+        rm(tmp)
+        # identify cases when traits have >=2 effects in positive or negative direction
+        if ('positive' %in% colnames(y) & 'negative' %in% colnames(y)){
+          dir <- 'both'
+          tmp <- bind_rows(
+            y %>% filter(positive >  `overlaps null`),
+            y %>% filter(negative > `overlaps null` )) %>% 
+                  distinct()
+          if (sum(tmp$negative) == 0){dir <- 'positive'
+          } else if (sum(tmp$positive) == 0){dir <- 'negative'
+          } else if (sum(tmp$negative) > sum(tmp$positive) ){dir <- 'negative'
+          } else if (sum(tmp$negative) < sum(tmp$positive)){dir <- 'positive'}
+          
+          
+        } else if ('positive' %in% colnames(y)){
+          tmp <- y %>% filter(positive >  `overlaps null`)
+          dir <- 'positive'
+          
+        } else if ('negative' %in% colnames(y)){
+          tmp <-  y %>% filter(negative > `overlaps null` )
+           dir <- 'negative'
+        }
+    
+        if (dim(tmp)[1] != 0) {
+          # collect results for trait in a vector and keep in a list
+          trait_tmp<-c(unique(x$exposure_cat), unique(x$exposure.id),  unique(x$exposure.trait), 0,0,0, dir)
+          names(trait_tmp)<-c('exposure_cat', 'id', 'trait', 'all', "ER+", "ER-", 'dir')
+            
+          if ("Breast cancer (all)" %in% tmp$outcome){ trait_tmp[["all"]] <- 1 }
+          if ("ER+ postmeno"        %in% tmp$outcome){ trait_tmp[["ER+"]] <- 1 }
+          if ("ER- premeno"          %in% tmp$outcome){ trait_tmp[["ER-"]] <- 1 }
+          res[[unique(x$exposure.id)]] <- trait_tmp
+        }
+        }
+    }
+  }
+  
+  
+  #list to df
+  out<- bind_rows(res) 
+  return(out)
+}
 ```
+
+```{r}
+
+# all_cats<-tibble() # run once
+
+# run for each category input
+u <- traits_for_follow_up(input, dat)
+all_cats<-bind_rows(all_cats, u) %>% distinct()
+all_cats %>% select(exposure_cat, trait) %>% distinct() %>% count(exposure_cat)
+
+
+write_tsv(all_cats, "mr_evidence_outputs/trait_for_followup.tsv")
+```
+
+
+```{r}
+
+do_MR <- function(trait, bc_type){
+  
+  if (bc_type == 'all')      {bc.id <- 'ieu-a-1126'
+  }else if (bc_type == 'ER+'){bc.id <- 'ieu-a-1127'
+  }else if (bc_type == 'ER-'){bc.id <- 'ieu-a-1128'}
+  
+  instruments <- extract_instruments(trait)
+  out <- extract_outcome_data(snps = instruments$SNP,
+                              outcome = bc.id)
+  harmonised<- harmonise_data(exposure_dat = instruments, 
+                              outcome_dat = out)
+  res <- mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio')) %>% 
+    split_outcome() %>% 
+    split_exposure() %>% 
+    generate_odds_ratios() %>% 
+    mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
+    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                              ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
+    select(exposure, id.exposure ,id.outcome, OR_CI, effect_direction , nsnp)
+
+ return(res) 
+} 
+
+
+
+exp_help_names <- dat %>% select(exposure_name=exposure, id.exposure=exposure.id, exposure_cat) %>% distinct()
+
+## validate results using basic IVW
+
+ids <-all_cats %>% filter(all ==1) %>% pull(id)
+res <- lapply(ids, do_MR, 'all')
+res_all_df<-bind_rows(res)%>% left_join(exp_help_names)
+
+ids <-all_cats %>% filter(`ER+` == 1) %>% pull(id)
+res <- lapply(ids, do_MR, 'ER+')
+res_df_pos<-bind_rows(res)%>% left_join(exp_help_names)
+
+ids <-all_cats %>% filter(`ER-` == 1) %>% pull(id)
+res <- lapply(ids, do_MR, 'ER-')
+res_df_neg<-bind_rows(res) %>% left_join(exp_help_names)
+
+
+redone <- bind_rows(res_all_df, res_df_pos,res_df_neg ) %>% 
+          filter(effect_direction != "overlaps null")
+
+write_tsv(redone, "mr_evidence_outputs/trait_manual_ivw.tsv")
+
+redone %>%  select(exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)
+
+```
+
+```{r}
+library(eulerr)
+
+s4 <- list(`All` = redone %>% filter(id.outcome == 'ieu-a-1126') %>% pull(id.exposure),
+           `ER+` = redone %>% filter(id.outcome == 'ieu-a-1127') %>% pull(id.exposure),
+           `ER-` = redone %>% filter(id.outcome == 'ieu-a-1128') %>% pull(id.exposure))
+
+plot(euler(s4, shape = "ellipse"), quantities = TRUE)
+```
+
 
 
 
@@ -304,29 +422,15 @@ ply
 
 ### Other
 ```{r fig.width=12, eval=F}
-input <- dat %>% filter(exposure_cat %in% c('other')) %>% 
-                filter(!grepl("inhaler", exposure))
-p<-plot_heatmap(input)
-p
-```
-
-
-```{r fig.width=15}
-input <- dat %>% filter(exposure_cat %in% c('other')) %>% 
-                filter(!grepl("inhaler", exposure))
+input <- dat %>% filter(exposure_cat %in% c('other')) 
 p<-plot_bubble_plot(input)
-p
+ply<-plotly::ggplotly(p)
+ply
 ```
 
 
 
 
-### Drugs
-```{r fig.width=12}
-input <- dat %>% filter(exposure_cat %in% c('drugs')) 
-p<-plot_bubble_plot(input)
-p
-```
 
 ### Disease
 ```{r fig.width=15}
@@ -343,13 +447,6 @@ p
 ```
 
 
-### Alcohol & smoking
-```{r fig.width=15}
-input <- dat %>% filter(exposure_cat %in% c('alcohol', 'smoking')) %>% filter(!grepl('dehydrogenase', exposure.trait))
-p<-plot_bubble_plot(input)
-p
-```
-
 
 ### Phycology
 ```{r fig.width=15}
@@ -358,7 +455,7 @@ p<-plot_bubble_plot(input)
 p
 ```
 
-### mix
+### Eye etc
 ```{r fig.width=15}
 input <- dat %>% filter(exposure_cat %in% c('eye_hearing_teeth')) 
 p<-plot_bubble_plot(input)
@@ -366,15 +463,36 @@ p
 ```
 
 
-## mix
+## CHD
 ```{r fig.width=15}
 input <- dat %>% filter(exposure_cat %in% c('heart_blood_related')) %>% filter(!grepl('transferase', exposure.trait))
 p<-plot_bubble_plot(input)
 p
 ```
 
-```{r }
-ply<-plotly::ggplotly(p)
-ply
+
+
+
+
+## exploring for subsetting
+
+```{r}
+dim(dat)
+
+dat_sub<-dat %>% filter(!chip %in% c('iCOG2015','GWASold2','UKBB', 'Survival'),
+               effect_direction != "overlaps null",
+               mr.moescore >=0.75, 
+               mr.b > 0.01 | mr.b < -0.01)
+dim(dat_sub)
+
+ids <- dat_sub %>% filter(chip == 'Meta') %>% pull(exposure.id) %>% unique()
+
+write.csv(ids, "../other_text_files/potential_intem_traits.csv")
+
+View(unique(dat_sub$exposure.trait))
+
 ```
+
+
+
 
