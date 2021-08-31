@@ -70,7 +70,7 @@ ft
 ```{r}
 
 exposure_table<- dat %>% 
-  select(exposure_cat, exposure.trait) %>% 
+  select(exposure_cat, exposure.trait, exposure.id) %>% 
   distinct() %>% 
   count(exposure_cat) %>% arrange(-n)
 
@@ -89,10 +89,6 @@ ft
 
 ```
 
-
-```{r include=F}
-ply<-plotly::ggplotly(p)
-```
 
 
 
@@ -134,7 +130,7 @@ p_gg$layout$showlegend = "TRUE"
 
 ```{r fig.width=10, fig.height=5}
 input <- dat %>% filter(exposure_cat %in% c('Physical activity')) %>% 
-             filter(!grepl("mental", exposure))
+             filter(!grepl("leisure|mental", exposure, ignore.case = T))
 
 p<-plot_bubble_plot(input)
 p
@@ -260,7 +256,7 @@ p
 ```{r}
 
 traits_for_follow_up <- function(input, dat) {
-  
+  # this is a method to select trait have effect in 2/3 of main dataset in a subtype
   ids <- input %>% pull(exposure.id) %>% unique()
   res <- list()
   
@@ -338,7 +334,7 @@ traits_for_follow_up <- function(input, dat) {
 # run for each category input
 u <- traits_for_follow_up(input, dat)
 all_cats<-bind_rows(all_cats, u) %>% distinct()
-all_cats %>% select(exposure_cat, trait) %>% distinct() %>% count(exposure_cat)
+all_cats %>% select(exposure_cat, trait, id) %>% distinct() %>% count(exposure_cat)
 
 
 write_tsv(all_cats, "mr_evidence_outputs/trait_for_followup.tsv")
@@ -394,21 +390,69 @@ redone <- bind_rows(res_all_df, res_df_pos,res_df_neg ) %>%
 
 write_tsv(redone, "mr_evidence_outputs/trait_manual_ivw.tsv")
 
-redone %>%  select(exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)
+redone %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)
+
+
+# create wide form of reult to view by subtype
+redone_wide <- redone %>%
+   mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
+  select(id.outcome, label) %>% mutate(val =1) %>% 
+  pivot_wider(names_from = id.outcome, values_from = val) %>% 
+  mutate(across(everything(), ~replace_na(.x, 0)))
+
 
 ```
 
 ```{r}
 library(eulerr)
 
-s4 <- list(`All` = redone %>% filter(id.outcome == 'ieu-a-1126') %>% pull(id.exposure),
-           `ER+` = redone %>% filter(id.outcome == 'ieu-a-1127') %>% pull(id.exposure),
-           `ER-` = redone %>% filter(id.outcome == 'ieu-a-1128') %>% pull(id.exposure))
-
+s4 <- list(`All` = redone %>% filter(id.outcome == 'ieu-a-1126') %>% pull(label) %>% sort(),
+           `ER+` = redone %>% filter(id.outcome == 'ieu-a-1127') %>% pull(label)%>% sort(),
+           `ER-` = redone %>% filter(id.outcome == 'ieu-a-1128') %>% pull(label)%>% sort())
 plot(euler(s4, shape = "ellipse"), quantities = TRUE)
+
+
+# get items by type
+tmp<- redone %>% count(id.exposure) %>% filter(n ==1)
+onlyERneg<-redone %>% filter(id.exposure %in% tmp$id.exposure & id.outcome == 'ieu-a-1128')
+onlyERpos<-redone %>% filter(id.exposure %in% tmp$id.exposure & id.outcome == 'ieu-a-1127')
+onlyFull<-redone %>% filter(id.exposure %in% tmp$id.exposure & id.outcome == 'ieu-a-1126')
 ```
 
+# load results from subtype analysis
+```{r message =F}
+res_subtypes <- read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/02_Results/new_bcac/all_merged.tsv") %>% 
+  filter(effect_direction != 'overlaps null',
+         method %in% c('Inverse variance weighted', 'Wald ratio')) %>%
+   distinct() %>% 
+   left_join(exp_help_names, c('exposure.id'='id.exposure') )
 
+
+res_subtypes_wide<- res_subtypes %>% 
+  mutate(label = paste0("(", exposure.id, ") ", exposure_name )) %>% 
+  select(outcome, label) %>% mutate(val =1) %>% 
+  mutate(outcome =   case_when(outcome == 'Luminal B-HER2 negative' ~ 'Luminal B1: ER+PR+HER-',
+                               outcome == 'Luminal B'        ~ 'Luminal B2: ER+PR+HER+',
+                               outcome == 'Luminal A'        ~ 'Luminal A: ER+PR+HER-',
+                               outcome == 'HER2 enriched'    ~ 'HER2-enriched: ER-PR-HER+',
+                               outcome == 'TNBC Basal-like'  ~ 'Basal-like TNBC: ER-PR-HER-',
+                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'BRCA1_CIMBA TNBC: ER-PR-HER-',
+                               TRUE ~ outcome)) %>% 
+  pivot_wider(names_from = outcome, values_from = val) %>% 
+  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+  select(label,'Breast cancer (overall BCAC 2020)', 'Basal-like TNBC: ER-PR-HER-','BRCA1_CIMBA TNBC: ER-PR-HER-', everything()  )
+
+#merge subtypes and validation
+
+merged <- left_join(redone_wide, res_subtypes_wide) %>% 
+          mutate(across(everything(), ~replace_na(.x, 0))) 
+
+merged %>% filter(`ieu-a-1128` ==1 & `Basal-like TNBC: ER-PR-HER-` ==1 & `BRCA1_CIMBA TNBC: ER-PR-HER-` ==1) %>% View()
+
+
+##### NEXT: need to decide how to use this info to make any further decisions
+
+```
 
 
 
