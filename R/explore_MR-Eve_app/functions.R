@@ -45,6 +45,7 @@ create_exposure_categories <- function(dat){
   
   # shorten names for some:
   dat <- dat %>%  
+    filter(!grepl("_raw",exposure.id)) %>% 
     mutate(exposure = str_replace(exposure.trait, "Treatment/medication code", "Drug"),
          exposure = str_replace(exposure, "Non-cancer illness code  self-reported", "Illness"),
          exposure = str_replace(exposure, "Diagnoses - main ICD10:", "Diagnosis"),
@@ -59,9 +60,17 @@ create_exposure_categories <- function(dat){
     mutate(exposure = gsub(", because of other reasons", "", exposure)) %>% 
     mutate(exposure = gsub("or pain relief  constipation  heartburn", "", exposure)) %>%
     mutate(exposure = gsub("or pain relief, constipation, heartburn", "", exposure)) %>%
+    mutate(exposure = gsub("\\(excluding work)", "", exposure)) %>% 
+    mutate(exposure = gsub("\\(not as a means of transport)", "", exposure)) %>% 
+    mutate(exposure = gsub("Number of days/week of", "Days/week of", exposure)) %>% 
+    mutate(exposure = gsub(" eggs, dairy, wheat, sugar", ": ", exposure)) %>% 
+    mutate(exposure = gsub("Number of cigarettes currently smoked daily", " # cigarettes daily ", exposure)) %>% 
+    mutate(exposure = gsub("Pack years adult smoking as proportion of life span exposed to smoking", "Pack years/life span exposed to smoking ", exposure)) %>% 
     mutate(exposure = case_when(grepl("presbyopia", exposure) ~ "Eyesight problems1",
                                 grepl("hypermetropia", exposure) ~ "Eyesight problems2",
                                 TRUE ~ exposure)) %>% 
+    
+
     
     ### grouping stuff into categories
     mutate(exposure_cat = case_when(
@@ -69,21 +78,21 @@ create_exposure_categories <- function(dat){
       grepl("met", exposure.id) ~ 'Metabolites',
       grepl("Drug|Medication for pain|prescription medications", exposure, ignore.case = T) ~ "Drugs",
       grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies", exposure, ignore.case = T) ~ "Diseases",
-      grepl("blood|heart|Pulse", exposure, ignore.case = T) ~ "CHD",
+      grepl("blood pressure|heart|Pulse|Cardiac|thromboembolism", exposure, ignore.case = T) ~ "CHD",
       grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "Medical Procedures",
       grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure,  ignore.case = T) ~ "eye_hearing_teeth",
       grepl("vitamin|suppl", exposure, ignore.case = T) ~ "Diet and supplements",
       grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "Antrophometric",
-      grepl("age at|age started|parous|contraceptive pill|replacement therapy|menopause|menarche|live birth|oophorectomy|hysterectomy|menstrual", exposure, ignore.case = T) ~ "Reproductive",
+      grepl("age at|age started|parous|contraceptive pill|replacement therapy|menopause|menarche|live birth|oophorectomy|hysterectomy|menstrual|sexual", exposure, ignore.case = T) ~ "Reproductive",
       grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "Alcohol",
       grepl("smok|cigar", exposure, ignore.case = T) ~ "Smoking",
-      grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing", exposure, ignore.case = T) ~ "Physical activity",
-      grepl("sleep|Snoring|chronotype", exposure, ignore.case = T) ~ "Sleep",
-      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter", exposure, ignore.case = T) ~ "Diet and supplements",
-      grepl("cholesterol|glyc", exposure, ignore.case = T) ~ 'Other biomarkers',
+      grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing|walk|spend outdoors", exposure, ignore.case = T) ~ "Physical activity",
+      grepl("sleep|Snoring|chronotype|Getting up in morning|Nap during day", exposure, ignore.case = T) ~ "Sleep",
+      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter|bread|Never eat", exposure, ignore.case = T) ~ "Diet and supplements",
+      grepl("cholesterol|glyc|phosphatase|IGF|LDL direct|SHBG|bilirubin|reticulocyte|count|percentage|volume|Total protein", exposure, ignore.case = T) ~ 'Other biomarkers',
       grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|Iron|cystatin|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'Other biomarkers',
-      grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic", exposure, ignore.case = T) ~ 'Education',
-      grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung", exposure, ignore.case = T) ~ 'Psychology',
+      grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic|education", exposure, ignore.case = T) ~ 'Education',
+      grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves", exposure, ignore.case = T) ~ 'Psychology',
       TRUE ~ 'other')) 
   
   return(dat)
@@ -132,7 +141,10 @@ add_exposure_labels <-function(dat){
     TRUE ~ paste0(exposure, " (M/F) ", coalesce(consortium, author),"/" , year, exposure.ss_label))) %>% 
     # add note
     mutate(exposure = case_when(grepl('Adjusted for BMI', exposure.note) ~ paste0(exposure, " AdjBMI"),
-                                TRUE ~ exposure)) 
+                                TRUE ~ exposure)) %>% 
+  # create ukb data tag for filtering in the app
+  mutate(ukb_tag = ifelse(author %in% c('Neale lab', 'Neale'), "Neale lab",
+                   ifelse (consortium == "MRC-IEU", "MRC-IEU", NA)))
   
   return(dat)
 }
@@ -148,6 +160,8 @@ tidy_display_numbers<- function(dat){
          OR_CI = paste0(round(or,2), " [",round(or_loci,2) ,":",round(or_upci,2), "]")) %>% 
     mutate(effect_direction = ifelse(or_loci > 1 & or_upci >= 1, 'positive',
                               ifelse(or_loci < 1 & or_upci <= 1, 'negative', 'overlaps null'))) %>% 
+    # fix issue with rounding negative effect to 1 
+    mutate(OR_CI = ifelse(effect_direction == 'negative' & OR_CI == '1 [1:1]', "0.99 [0.99:0.99]", OR_CI)) %>% 
     # convert all super small pval into 1e-15
     mutate(pval_truncated = ifelse(mr.pval < 1e-15, 1e-15, mr.pval),
            #log transform pvals

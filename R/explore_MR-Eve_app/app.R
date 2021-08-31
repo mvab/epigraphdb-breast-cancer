@@ -21,7 +21,9 @@ source("functions.R")
 
 ###
 
-dat <- read_tsv("data_copy/bc_all_mr.tsv") %>% 
+dat <- 
+  #read_tsv("data_copy/bc_all_mr_madewR.tsv") %>% 
+  read_tsv("data_copy/bc_all_mr_fromCIs.tsv") %>% 
   # subset 
   filter(exposure.sex != 'Males') %>% 
   filter(!outcome.id %in% c('ebi-a-GCST007236', 'ebi-a-GCST004988')) %>% 
@@ -34,10 +36,13 @@ dat <- read_tsv("data_copy/bc_all_mr.tsv") %>%
   create_exposure_categories() %>%
   # split several hunderds of protins in smaller chunks
   split_protein_exposures() %>% 
-  add_exposure_labels()
+  add_exposure_labels() %>% 
+  # drop really weird cases when CIs are weird
+  filter(!or_loci > or_upci) %>% 
+  # remove very small effects
+  filter(OR_CI != "0 [0:0]")
 
-
-chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival', 'UKBB')
+chip_list <- c("Meta", "OncArray",  "iCOG2017",'GWASold1','GWASold2', 'Survival', 'UKBB')
 
 
 ### APP
@@ -52,8 +57,8 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 
                 # Output: Tabsets
                 tabsetPanel(type = "tabs",
-                            tabPanel("Static plot", plotOutput("bubbleplot1", height = "700px", width = "900px")),
-                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "700px", width = "1000px"))
+                            tabPanel("Static plot", plotOutput("bubbleplot1", height = "800px", width = "1000px")),
+                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "800px", width = "1000px"))
                             ),
                 
                 
@@ -73,6 +78,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                                     "Diet and supplements" = 'Diet and supplements',
                                                     "Alcohol" = 'Alcohol',
                                                     "Smoking" = 'Smoking',
+                                                    "Sleep" = 'Sleep',
                                                     'Metabolites (met-)'       = 'Metabolites',    
                                                     'Proteins (prot-) (pt. 1)' = "Proteins (pt. 1)",
                                                     'Proteins (prot-) (pt. 2)' = "Proteins (pt. 2)",
@@ -84,6 +90,12 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                                     "Drugs" = 'Drugs'), 
                                      
                                      selected = 'Antrophometric'),
+                         
+                         br(),
+                         checkboxGroupInput("ukb_versions", 
+                                            p("Display UK Biobank (duplicated) traits from:"), 
+                                            choices = c("MRC-IEU", "Neale lab"),
+                                            selected = c("MRC-IEU", "Neale lab")),
                          
                          br(),
                          textInput(inputId = 'exposure_contains',
@@ -124,7 +136,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                          checkboxGroupInput("outcomes", 
                                             p("Include outcomes:"), 
                                             choices = chip_list,
-                                            selected = chip_list[!grepl('iCOG2015|GWASold2|UKBB',chip_list)])
+                                            selected = chip_list[!grepl('iCOG2015|GWASold2|UKBB|Survival',chip_list)])
                   )
                   
                   
@@ -159,14 +171,39 @@ server <- function(input, output) {
           filter(mr.b >= as.numeric(input$min_beta) | mr.b <= as.numeric(input$min_beta)*-1 ) %>% 
           filter(grepl(input$exposure_contains, exposure, ignore.case=T)) 
     
+    ukb_diff_sources<-dat_sub %>%
+      select(exposure.trait, exposure.id, author, consortium, exposure.sample_size, year) %>% 
+      filter(author %in% c("Neale", "Ben Elsworth")) %>% distinct() %>% 
+      count(exposure.trait) %>% filter(n==2) 
+    
+    dat_sub <- dat_sub %>% 
+      filter(!(exposure.trait %in% ukb_diff_sources$exposure.trait & !ukb_tag %in% input$ukb_versions))
+    
+    
     ## ad hoc filtering for specific categories
     if (input$category == 'Antrophometric'){
+      antro_blacklist <- c('ieu-a-81','ieu-a-74', "ieu-a-73" ,"ieu-a-79" ,"ieu-a-72" ,"ieu-a-78",
+                           'ieu-a-63',  'ieu-a-66', 'ieu-a-60',  'ieu-a-69' , 'ieu-a-61',
+                           'ieu-a-54', 'ieu-a-55',  'ieu-a-49' , 'ieu-a-48', 'ieu-a-57' , 'ieu-a-50',
+                           'ukb-b-12039', 'ukb-b-2303',
+                           'ieu-a-2', 'ieu-a-835')
       dat_sub <- dat_sub %>% 
-        filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) 
+        filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
+        filter(!exposure.id %in% antro_blacklist)
+  
+    } else if (input$category %in% c('Physical activity')){
+      dat_sub <- dat_sub %>% 
+        filter(!grepl("leisure|mental", exposure, ignore.case = T))
+      
+
+    } else if (input$category %in% c('Diet and supplements')){  
+      dat_sub<- dat_sub %>% filter(exposure_cat %in% c('Diet and supplements')) %>% 
+            filter(!grepl("questionnaire", exposure))
+      
       
     } else if (input$category %in% c('Other biomarkers')){
     dat_sub <- dat_sub %>% 
-      filter(!grepl("_raw",exposure.id))  
+      filter(!grepl("FEV",exposure.trait)) 
     
     } else if (grepl('Proteins', input$category)){
       dat_sub <- dat_sub %>% 
@@ -203,10 +240,10 @@ server <- function(input, output) {
   
   output$outcome_table <- function(){
     dat %>% create_outcomes_table() %>% 
-    knitr::kable("html",
-                 format.args = list(big.mark = ",", scientific = FALSE)) %>%
-    kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F) %>% 
-    footnote(general = "BCAC: Breast Cancer Association Consortium")
+      knitr::kable("html",
+                   format.args = list(big.mark = ",", scientific = FALSE)) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F) 
+      #footnote(general = "BCAC: Breast Cancer Association Consortium") # does not want to display for some reason (worked before!)
   }
 
  
