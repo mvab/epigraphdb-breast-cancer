@@ -1,0 +1,247 @@
+exposure	id.exposure	id.outcome	OR_CI	effect_direction	nsnp	exposure_name	exposure_cat
+Body mass index	ieu-a-974	ieu-a-1126	0.736 [0.644:0.841]	negative	36	Body mass index (F) Locke AE/2015 [171K]	Antrophometric
+Body mass index	ieu-a-95	ieu-a-1126	0.669 [0.517:0.865]	negative	11	Body mass index (F) Randall JC/2013 [ 73K]	Antrophometric
+Body mass index (BMI)	ukb-b-19953	ieu-a-1126	0.889 [0.832:0.948]	negative	415	Body mass index (BMI) (M/F) MRC-IEU/2018 [461K]	Antrophometric
+Comparative body size at age 10	ukb-b-4650	ieu-a-1126	0.603 [0.528:0.69]	negative	204	body size at age 10 (M/F) MRC-IEU/2018 [454K]	Antrophometric
+Extreme body mass index	ieu-a-85	ieu-a-1126	0.874 [0.834:0.916]	negative	7	Extreme body mass index (M/F) Berndt SI/2013 [ 16K]	Antrophometric
+Hip circumference	ieu-a-51	ieu-a-1126	0.73 [0.59:0.904]	negative	16	Hip circumference (F) Shungin D/2015 [127K]	Antrophometric
+Obesity class 1	ieu-a-90	ieu-a-1126	0.856 [0.791:0.927]	negative	16	Obesity class 1 (M/F) Berndt SI/2013 [ 98K]	Antrophometric
+Obesity class 2	ieu-a-91	ieu-a-1126	0.874 [0.828:0.923]	negative	10	Obesity class 2 (M/F) Berndt SI/2013 [ 72K]	Antrophometric
+Overweight	ieu-a-93	ieu-a-1126	0.773 [0.691:0.865]	negative	14	Overweight (M/F) Berndt SI/2013 [158K]	Antrophometric
+Waist circumference	ieu-a-68	ieu-a-1126	0.837 [0.705:0.994]	negative	24	Waist circumference (F) Shungin D/2015 [134K] AdjBMI	Antrophometric
+Waist circumference	ieu-a-62	ieu-a-1126	0.719 [0.591:0.874]	negative	17	Waist circumference (F) Shungin D/2015 [134K]	Antrophometric
+Waist-to-hip ratio	ieu-a-75	ieu-a-1126	0.778 [0.622:0.973]	negative	20	Waist-to-hip ratio (F) Shungin D/2015 [118K]	Antrophometric
+Body mass index (BMI)	ukb-a-248	ieu-a-1126	0.876 [0.82:0.936]	negative	289	Body mass index (BMI) (M/F) Neale Lab/2017 [336K]	Antrophometric
+Comparative body size at age 10	ukb-a-34	ieu-a-1126	0.64 [0.563:0.727]	negative	144	body size at age 10 (M/F) Neale Lab/2017 [331K]	Antrophometric
+Hip circumference	ukb-a-388	ieu-a-1126	0.894 [0.823:0.972]	negative	261	Hip circumference (M/F) Neale Lab/2017 [336K]	Antrophometric
+Impedance of whole body	ukb-a-269	ieu-a-1126	1.183 [1.074:1.303]	positive	333	Impedance of whole body (M/F) Neale Lab/2017 [331K]	Antrophometric
+Body mass index	ieu-a-974	ieu-a-1127	0.765 [0.672:0.871]	negative	36	Body mass index (F) Locke AE/2015 [171K]	Antrophometric
+Body mass index	ieu-a-95	ieu-a-1127	0.698 [0.55:0.887]	negative	11	Body mass index (F) Randall JC/2013 [ 73K]	Antrophometric
+Comparative body size at age 10	ukb-b-4650	ieu-a-1127	0.638 [0.552:0.737]	negative	204	body size at age 10 (M/F) MRC-IEU/2018 [454K]	Antrophometric
+Comparative height size at age 10	ukb-a-35	ieu-a-1127	1.154 [1.045:1.275]	positive	342	height size at age 10 (M/F) Neale Lab/2017 [332K]	Antrophometric
+Extreme body mass index	ieu-a-85	ieu-a-1127	0.893 [0.846:0.943]	negative	7	Extreme body mass index (M/F) Berndt SI/2013 [ 16K]	Antrophometric
+Hip circumference	ieu-a-51	ieu-a-1127	0.785 [0.64:0.964]	negative	16	Hip circumference (F) Shungin D/2015 [127K]	Antrophometric
+Obesity class 1	ieu-a-90	ieu-a-1127	0.868 [0.809:0.932]	negative	16	Obesity class 1 (M/F) Berndt SI/2013 [ 98K]	Antrophometric
+Obesity class 2	ieu-a-91	ieu-a-1127	0.897 [0.84:0.959]	negative	10	Obesity class 2 (M/F) Berndt SI/2013 [ 72K]	Antrophometric
+Overweight	ieu-a-93	ieu-a-1127	0.803 [0.718:0.897]	negative	14	Overweight (M/F) Berndt SI/2013 [158K]	Antrophometric
+Sitting height	ukb-b-16881	ieu-a-1127	1.074 [1.001:1.153]	positive	550	Sitting height (M/F) MRC-IEU/2018 [461K]	Antrophometric
+Standing height	ukb-b-10787	ieu-a-1127	1.098 [1.033:1.167]	positive	710	Standing height (M/F) MRC-IEU/2018 [461K]	Antrophometric
+Waist circumference	ieu-a-68	ieu-a-1127	0.81 [0.679:0.967]	negative	24	Waist circumference (F) Shungin D/2015 [134K] AdjBMI	Antrophometric
+Waist circumference	ukb-b-9405	ieu-a-1127	0.843 [0.77:0.923]	negative	344	Waist circumference (M/F) MRC-IEU/2018 [462K]	Antrophometric
+Waist circumference	ieu-a-62	ieu-a-1127	0.769 [0.632:0.937]	negative	17	Waist circumference (F) Shungin D/2015 [134K]	Antrophometric
+Waist circumference	ieu-a-105	ieu-a-1127	0.748 [0.567:0.988]	negative	5	Waist circumference (F) Randall JC/2013 [ 73K] AdjBMI	Antrophometric
+Waist-to-hip ratio	ieu-a-109	ieu-a-1127	0.703 [0.559:0.885]	negative	4	Waist-to-hip ratio (F) Randall JC/2013 [ 73K]	Antrophometric
+Comparative body size at age 10	ukb-a-34	ieu-a-1127	0.67 [0.584:0.769]	negative	144	body size at age 10 (M/F) Neale Lab/2017 [331K]	Antrophometric
+Impedance of whole body	ukb-a-269	ieu-a-1127	1.152 [1.04:1.276]	positive	333	Impedance of whole body (M/F) Neale Lab/2017 [331K]	Antrophometric
+Body mass index	ieu-a-95	ieu-a-1128	0.595 [0.403:0.878]	negative	11	Body mass index (F) Randall JC/2013 [ 73K]	Antrophometric
+Comparative body size at age 10	ukb-b-4650	ieu-a-1128	0.529 [0.445:0.63]	negative	204	body size at age 10 (M/F) MRC-IEU/2018 [454K]	Antrophometric
+Extreme body mass index	ieu-a-85	ieu-a-1128	0.847 [0.787:0.912]	negative	7	Extreme body mass index (M/F) Berndt SI/2013 [ 16K]	Antrophometric
+Hip circumference	ieu-a-51	ieu-a-1128	0.584 [0.432:0.788]	negative	16	Hip circumference (F) Shungin D/2015 [127K]	Antrophometric
+Hip circumference	ieu-a-101	ieu-a-1128	1.478 [1.156:1.889]	positive	5	Hip circumference (F) Randall JC/2013 [ 73K] AdjBMI	Antrophometric
+Obesity class 1	ieu-a-90	ieu-a-1128	0.823 [0.734:0.923]	negative	16	Obesity class 1 (M/F) Berndt SI/2013 [ 98K]	Antrophometric
+Overweight	ieu-a-93	ieu-a-1128	0.702 [0.594:0.83]	negative	14	Overweight (M/F) Berndt SI/2013 [158K]	Antrophometric
+Waist circumference	ukb-b-9405	ieu-a-1128	0.878 [0.78:0.989]	negative	344	Waist circumference (M/F) MRC-IEU/2018 [462K]	Antrophometric
+Waist circumference	ieu-a-62	ieu-a-1128	0.561 [0.434:0.724]	negative	17	Waist circumference (F) Shungin D/2015 [134K]	Antrophometric
+Whole body fat-free mass	ukb-a-266	ieu-a-1128	0.832 [0.732:0.945]	negative	374	Whole body fat-free mass (M/F) Neale Lab/2017 [331K]	Antrophometric
+Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging)	ukb-a-487	ieu-a-1126	0.332 [0.111:0.994]	negative	3	Physical activity: Heavy DIY  (M/F) Neale Lab/2017 [335K]	Physical activity
+Types of transport used (excluding work): Cycle	ukb-b-17557	ieu-a-1126	0.125 [0.022:0.715]	negative	8	Types of transport used : Cycle (M/F) MRC-IEU/2018 [460K]	Physical activity
+Cereal type: Other (e.g. Cornflakes, Frosties)	ukb-d-1468_5	ieu-a-1126	14.826 [1.545:142.267]	positive	10	Cereal type: Other (e.g. Cornflakes, Frosties) (M/F) Neale lab/2018 [299K]	Diet and supplements
+Dried fruit intake	ukb-b-16576	ieu-a-1126	0.54 [0.399:0.73]	negative	40	Dried fruit intake (M/F) MRC-IEU/2018 [421K]	Diet and supplements
+Milk type used: Skimmed	ukb-d-1418_3	ieu-a-1126	0.007 [0:0.348]	negative	3	Milk type used: Skimmed (M/F) Neale lab/2018 [360K]	Diet and supplements
+Age at last live birth	ukb-a-320	ieu-a-1126	0.712 [0.546:0.927]	negative	4	Age at last live birth (M/F) Neale Lab/2017 [123K]	Reproductive
+Age at menopause (last menstrual period)	ukb-b-17422	ieu-a-1126	1.166 [1.086:1.253]	positive	102	Age at menopause (last menstrual period) (M/F) MRC-IEU/2018 [143K]	Reproductive
+Had menopause	ukb-a-316	ieu-a-1126	0.306 [0.095:0.991]	negative	7	Had menopause (M/F) Neale Lab/2017 [152K]	Reproductive
+Tobacco smoking: Never smoked	ukb-d-22506_114	ieu-a-1126	0.348 [0.176:0.69]	negative	3	Tobacco smoking: Never smoked (M/F) Neale lab/2018 [ 91K]	Smoking
+3-dehydrocarnitine*	met-a-500	ieu-a-1126	0.457 [0.316:0.661]	negative	3	3-dehydrocarnitine* (M/F) Shin/2014 [  7K]	Metabolites
+Cholesterol esters in large HDL	met-c-875	ieu-a-1126	1.061 [1.018:1.106]	positive	13	Cholesterol esters in large HDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Cholesterol esters in large VLDL	met-c-887	ieu-a-1126	0.895 [0.859:0.933]	negative	12	Cholesterol esters in large VLDL (M/F) Kettunen/2016 [ 18K]	Metabolites
+Cholesterol esters in medium VLDL	met-c-910	ieu-a-1126	0.928 [0.885:0.972]	negative	14	Cholesterol esters in medium VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Concentration of chylomicrons and largest VLDL particles	met-c-958	ieu-a-1126	0.889 [0.839:0.943]	negative	7	Concentration of chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 18K]	Metabolites
+Concentration of large HDL particles	met-c-878	ieu-a-1126	1.047 [1.01:1.085]	positive	11	Concentration of large HDL particles (M/F) Kettunen/2016 [ 19K]	Metabolites
+Concentration of large VLDL particles	met-c-890	ieu-a-1126	0.9 [0.861:0.941]	negative	10	Concentration of large VLDL particles (M/F) Kettunen/2016 [ 18K]	Metabolites
+Concentration of small HDL particles	met-c-922	ieu-a-1126	0.924 [0.874:0.975]	negative	5	Concentration of small HDL particles (M/F) Kettunen/2016 [ 19K]	Metabolites
+Concentration of small VLDL particles	met-c-930	ieu-a-1126	0.927 [0.884:0.971]	negative	15	Concentration of small VLDL particles (M/F) Kettunen/2016 [ 19K]	Metabolites
+Concentration of very large VLDL particles	met-c-950	ieu-a-1126	0.891 [0.845:0.939]	negative	8	Concentration of very large VLDL particles (M/F) Kettunen/2016 [ 18K]	Metabolites
+Free cholesterol in medium HDL	met-c-900	ieu-a-1126	1.089 [1.02:1.163]	positive	5	Free cholesterol in medium HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Free cholesterol in medium VLDL	met-c-911	ieu-a-1126	0.921 [0.875:0.969]	negative	12	Free cholesterol in medium VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Free cholesterol in small VLDL	met-c-928	ieu-a-1126	0.928 [0.884:0.975]	negative	14	Free cholesterol in small VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Free cholesterol in very large HDL	met-c-944	ieu-a-1126	1.05 [1.014:1.088]	positive	13	Free cholesterol in very large HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Phospholipids in chylomicrons and largest VLDL particles	met-c-959	ieu-a-1126	0.871 [0.824:0.921]	negative	8	Phospholipids in chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 21K]	Metabolites
+Phospholipids in small VLDL	met-c-931	ieu-a-1126	0.929 [0.885:0.976]	negative	14	Phospholipids in small VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Phospholipids in very large VLDL	met-c-951	ieu-a-1126	0.897 [0.85:0.946]	negative	9	Phospholipids in very large VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Serine	met-a-464	ieu-a-1126	1.613 [1.009:2.577]	positive	3	Serine (M/F) Shin/2014 [  7K]	Metabolites
+Total cholesterol in large HDL	met-c-874	ieu-a-1126	1.062 [1.019:1.108]	positive	14	Total cholesterol in large HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in medium VLDL	met-c-909	ieu-a-1126	0.928 [0.882:0.976]	negative	15	Total cholesterol in medium VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in very large HDL	met-c-942	ieu-a-1126	1.076 [1.033:1.12]	positive	13	Total cholesterol in very large HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total lipids in chylomicrons and largest VLDL particles	met-c-957	ieu-a-1126	0.878 [0.832:0.926]	negative	9	Total lipids in chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 18K]	Metabolites
+Total lipids in large HDL	met-c-877	ieu-a-1126	1.047 [1.011:1.085]	positive	11	Total lipids in large HDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Total lipids in large VLDL	met-c-889	ieu-a-1126	0.892 [0.85:0.936]	negative	9	Total lipids in large VLDL (M/F) Kettunen/2016 [ 18K]	Metabolites
+Total lipids in medium VLDL	met-c-912	ieu-a-1126	0.907 [0.87:0.945]	negative	12	Total lipids in medium VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Total lipids in small VLDL	met-c-929	ieu-a-1126	0.93 [0.885:0.977]	negative	14	Total lipids in small VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Total lipids in very large HDL	met-c-945	ieu-a-1126	1.047 [1.014:1.081]	positive	13	Total lipids in very large HDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Triglycerides in chylomicrons and largest VLDL particles	met-c-960	ieu-a-1126	0.883 [0.838:0.929]	negative	9	Triglycerides in chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in small HDL	met-c-923	ieu-a-1126	0.897 [0.855:0.94]	negative	11	Triglycerides in small HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in small VLDL	met-c-932	ieu-a-1126	0.909 [0.877:0.943]	negative	14	Triglycerides in small VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in very large VLDL	met-c-952	ieu-a-1126	0.897 [0.851:0.946]	negative	9	Triglycerides in very large VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in very small VLDL	met-c-956	ieu-a-1126	0.954 [0.91:0.999]	negative	19	Triglycerides in very small VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+X-10510	met-a-444	ieu-a-1126	1.4 [1.011:1.939]	positive	3	X-10510 (M/F) Shin/2014 [  7K]	Metabolites
+X-11445--5-alpha-pregnan-3beta,20alpha-disulfate	met-a-517	ieu-a-1126	0.819 [0.696:0.964]	negative	2	X-11445--5-alpha-pregnan-3beta,20alpha-disulfate (M/F) Shin/2014 [  2K]	Metabolites
+Alcohol dehydrogenase [NADP(+)]	prot-a-67	ieu-a-1126	0.97 [0.954:0.986]	negative	3	Alcohol dehydrogenase [NADP(+)] (M/F) Sun BB/2018 [  3K]	Proteins
+Alpha-L-iduronidase	prot-a-1411	ieu-a-1126	1.023 [1.002:1.045]	positive	2	Alpha-L-iduronidase (M/F) Sun BB/2018 [  3K]	Proteins
+C-C motif chemokine 14	prot-a-390	ieu-a-1126	0.974 [0.951:0.997]	negative	3	C-C motif chemokine 14 (M/F) Sun BB/2018 [  3K]	Proteins
+CUB and zona pellucida-like domain-containing protein 1	prot-a-735	ieu-a-1126	1.022 [1.004:1.04]	positive	2	CUB and zona pellucida-like domain-containing protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Cadherin-related family member 3	prot-a-488	ieu-a-1126	0.915 [0.855:0.979]	negative	2	Cadherin-related family member 3 (M/F) Sun BB/2018 [  3K]	Proteins
+Calcium/calmodulin-dependent protein kinase type 1	prot-a-346	ieu-a-1126	0.977 [0.965:0.99]	negative	3	Calcium/calmodulin-dependent protein kinase type 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Calpastatin	prot-a-366	ieu-a-1126	1.056 [1.022:1.092]	positive	4	Calpastatin (M/F) Sun BB/2018 [  3K]	Proteins
+Carbohydrate sulfotransferase 11	prot-a-550	ieu-a-1126	1.062 [1.007:1.121]	positive	2	Carbohydrate sulfotransferase 11 (M/F) Sun BB/2018 [  3K]	Proteins
+Cardiotrophin-1	prot-a-710	ieu-a-1126	0.971 [0.949:0.993]	negative	3	Cardiotrophin-1 (M/F) Sun BB/2018 [  3K]	Proteins
+Complement C1q tumor necrosis factor-related protein 1	prot-a-303	ieu-a-1126	1.024 [1.003:1.046]	positive	6	Complement C1q tumor necrosis factor-related protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Complement C1q tumor necrosis factor-related protein 5	prot-a-305	ieu-a-1126	0.923 [0.879:0.97]	negative	4	Complement C1q tumor necrosis factor-related protein 5 (M/F) Sun BB/2018 [  3K]	Proteins
+Complement factor B	prot-a-518	ieu-a-1126	1.03 [1:1.061]	positive	4	Complement factor B (M/F) Sun BB/2018 [  3K]	Proteins
+Diamine acetyltransferase 2	prot-a-2629	ieu-a-1126	0.928 [0.883:0.974]	negative	3	Diamine acetyltransferase 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Discoidin, CUB and LCCL domain-containing protein 2	prot-a-766	ieu-a-1126	0.94 [0.908:0.974]	negative	3	Discoidin, CUB and LCCL domain-containing protein 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Extracellular sulfatase Sulf-2	prot-a-2891	ieu-a-1126	0.955 [0.916:0.996]	negative	3	Extracellular sulfatase Sulf-2 (M/F) Sun BB/2018 [  3K]	Proteins
+Immunoglobulin superfamily containing leucine-rich repeat protein 2	prot-a-1576	ieu-a-1126	0.924 [0.868:0.983]	negative	4	Immunoglobulin superfamily containing leucine-rich repeat protein 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Interleukin-21	prot-a-1506	ieu-a-1126	1.049 [1.012:1.086]	positive	3	Interleukin-21 (M/F) Sun BB/2018 [  3K]	Proteins
+Interleukin-3 receptor subunit alpha	prot-a-1530	ieu-a-1126	0.95 [0.919:0.982]	negative	3	Interleukin-3 receptor subunit alpha (M/F) Sun BB/2018 [  3K]	Proteins
+Killer cell immunoglobulin-like receptor 2DL5A	prot-a-1644	ieu-a-1126	1.016 [1:1.031]	positive	2	Killer cell immunoglobulin-like receptor 2DL5A (M/F) Sun BB/2018 [  3K]	Proteins
+MHC class I polypeptide-related sequence B	prot-a-1898	ieu-a-1126	1.029 [1.008:1.051]	positive	4	MHC class I polypeptide-related sequence B (M/F) Sun BB/2018 [  3K]	Proteins
+Mannosyl-oligosaccharide 1,2-alpha-mannosidase IB	prot-a-1833	ieu-a-1126	1.101 [1.016:1.193]	positive	3	Mannosyl-oligosaccharide 1,2-alpha-mannosidase IB (M/F) Sun BB/2018 [  3K]	Proteins
+PH and SEC7 domain-containing protein 1	prot-a-2398	ieu-a-1126	0.971 [0.945:0.997]	negative	4	PH and SEC7 domain-containing protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Probable carboxypeptidase X1	prot-a-648	ieu-a-1126	1.034 [1.006:1.063]	positive	3	Probable carboxypeptidase X1 (M/F) Sun BB/2018 [  3K]	Proteins
+Protein S100-A13	prot-a-2616	ieu-a-1126	1.014 [1.002:1.026]	positive	1	Protein S100-A13 (M/F) Sun BB/2018 [  3K]	Proteins
+Rho GTPase-activating protein 30	prot-a-149	ieu-a-1126	0.969 [0.94:0.997]	negative	5	Rho GTPase-activating protein 30 (M/F) Sun BB/2018 [  3K]	Proteins
+Serine/threonine-protein kinase 16	prot-a-2877	ieu-a-1126	0.955 [0.915:0.996]	negative	4	Serine/threonine-protein kinase 16 (M/F) Sun BB/2018 [  3K]	Proteins
+Tenascin-X	prot-a-3071	ieu-a-1126	1.02 [1.002:1.038]	positive	3	Tenascin-X (M/F) Sun BB/2018 [  3K]	Proteins
+Tubulin-specific chaperone A	prot-a-2930	ieu-a-1126	1.019 [1.003:1.035]	positive	2	Tubulin-specific chaperone A (M/F) Sun BB/2018 [  3K]	Proteins
+Tyrosine-protein kinase receptor Tie-1, soluble	prot-a-2978	ieu-a-1126	0.969 [0.952:0.986]	negative	4	Tyrosine-protein kinase receptor Tie-1, soluble (M/F) Sun BB/2018 [  3K]	Proteins
+Xyloside xylosyltransferase 1	prot-a-3243	ieu-a-1126	1.052 [1.011:1.094]	positive	3	Xyloside xylosyltransferase 1 (M/F) Sun BB/2018 [  3K]	Proteins
+HDL cholesterol	ieu-a-780	ieu-a-1126	1.082 [1.027:1.14]	positive	37	HDL cholesterol (M/F) Willer CJ/2013 [ 92K]	Other biomarkers
+HDL cholesterol	ukb-d-30760_irnt	ieu-a-1126	1.085 [1.038:1.134]	positive	245	HDL cholesterol (M/F) Neale lab/2018 [  NA K]	Other biomarkers
+HDL cholesterol	ieu-a-299	ieu-a-1126	1.091 [1.03:1.155]	positive	78	HDL cholesterol (M/F) Willer CJ/2013 [187K]	Other biomarkers
+IGF-1	ukb-d-30770_irnt	ieu-a-1126	1.069 [1.012:1.128]	positive	318	IGF-1 (M/F) Neale lab/2018 [  NA K]	Other biomarkers
+Triglycerides	ieu-a-783	ieu-a-1126	0.911 [0.847:0.98]	negative	27	Triglycerides (M/F) Willer CJ/2013 [ 86K]	Other biomarkers
+Morning/evening person (chronotype)	ukb-a-11	ieu-a-1126	1.308 [1.129:1.514]	positive	77	Morning/evening person (chronotype) (M/F) Neale Lab/2017 [301K]	Sleep
+Sleep duration	ukb-b-4424	ieu-a-1126	1.328 [1.013:1.741]	positive	66	Sleep duration (M/F) MRC-IEU/2018 [460K]	Sleep
+Snoring	ukb-a-14	ieu-a-1126	3.143 [1.244:7.942]	positive	20	Snoring (M/F) Neale Lab/2017 [314K]	Sleep
+Types of transport used (excluding work): Walk	ukb-b-14926	ieu-a-1127	0.207 [0.065:0.657]	negative	7	Types of transport used : Walk (M/F) MRC-IEU/2018 [460K]	Physical activity
+Fresh fruit intake	ukb-b-3881	ieu-a-1127	0.651 [0.444:0.954]	negative	53	Fresh fruit intake (M/F) MRC-IEU/2018 [446K]	Diet and supplements
+Milk type used: Skimmed	ukb-d-1418_3	ieu-a-1127	0.007 [0:0.145]	negative	3	Milk type used: Skimmed (M/F) Neale lab/2018 [360K]	Diet and supplements
+Age at last live birth	ukb-a-320	ieu-a-1127	0.677 [0.469:0.976]	negative	4	Age at last live birth (M/F) Neale Lab/2017 [123K]	Reproductive
+Age at menopause (last menstrual period)	ukb-b-17422	ieu-a-1127	1.16 [1.071:1.256]	positive	102	Age at menopause (last menstrual period) (M/F) MRC-IEU/2018 [143K]	Reproductive
+Tobacco smoking: Never smoked	ukb-d-22506_114	ieu-a-1127	0.262 [0.083:0.833]	negative	3	Tobacco smoking: Never smoked (M/F) Neale lab/2018 [ 91K]	Smoking
+3-dehydrocarnitine*	met-a-500	ieu-a-1127	0.416 [0.238:0.729]	negative	3	3-dehydrocarnitine* (M/F) Shin/2014 [  7K]	Metabolites
+Albumin	met-c-841	ieu-a-1127	1.21 [1.043:1.405]	positive	3	Albumin (M/F) Kettunen/2016 [ 18K]	Metabolites
+Cholesterol esters in large HDL	met-c-875	ieu-a-1127	1.071 [1.016:1.128]	positive	13	Cholesterol esters in large HDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Cholesterol esters in large VLDL	met-c-887	ieu-a-1127	0.885 [0.843:0.93]	negative	12	Cholesterol esters in large VLDL (M/F) Kettunen/2016 [ 18K]	Metabolites
+Cholesterol esters in medium VLDL	met-c-910	ieu-a-1127	0.914 [0.872:0.957]	negative	14	Cholesterol esters in medium VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Concentration of chylomicrons and largest VLDL particles	met-c-958	ieu-a-1127	0.872 [0.816:0.933]	negative	7	Concentration of chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 18K]	Metabolites
+Concentration of large VLDL particles	met-c-890	ieu-a-1127	0.881 [0.837:0.928]	negative	10	Concentration of large VLDL particles (M/F) Kettunen/2016 [ 18K]	Metabolites
+Concentration of medium VLDL particles	met-c-913	ieu-a-1127	0.896 [0.855:0.938]	negative	14	Concentration of medium VLDL particles (M/F) Kettunen/2016 [ 19K]	Metabolites
+Concentration of small HDL particles	met-c-922	ieu-a-1127	0.898 [0.841:0.958]	negative	5	Concentration of small HDL particles (M/F) Kettunen/2016 [ 19K]	Metabolites
+Concentration of small VLDL particles	met-c-930	ieu-a-1127	0.911 [0.868:0.957]	negative	15	Concentration of small VLDL particles (M/F) Kettunen/2016 [ 19K]	Metabolites
+Free cholesterol in large HDL	met-c-876	ieu-a-1127	1.077 [1.019:1.139]	positive	15	Free cholesterol in large HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Free cholesterol in large VLDL	met-c-888	ieu-a-1127	0.882 [0.838:0.929]	negative	11	Free cholesterol in large VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Free cholesterol in medium HDL	met-c-900	ieu-a-1127	1.124 [1.04:1.214]	positive	5	Free cholesterol in medium HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Free cholesterol in medium VLDL	met-c-911	ieu-a-1127	0.907 [0.862:0.953]	negative	12	Free cholesterol in medium VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Free cholesterol in small VLDL	met-c-928	ieu-a-1127	0.915 [0.874:0.957]	negative	14	Free cholesterol in small VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Isovalerylcarnitine	met-a-652	ieu-a-1127	0.584 [0.345:0.99]	negative	3	Isovalerylcarnitine (M/F) Shin/2014 [  7K]	Metabolites
+Mean diameter for VLDL particles	met-c-941	ieu-a-1127	0.916 [0.871:0.964]	negative	14	Mean diameter for VLDL particles (M/F) Kettunen/2016 [ 19K]	Metabolites
+Phospholipids in chylomicrons and largest VLDL particles	met-c-959	ieu-a-1127	0.851 [0.796:0.909]	negative	8	Phospholipids in chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 21K]	Metabolites
+Phospholipids in large VLDL	met-c-891	ieu-a-1127	0.866 [0.819:0.916]	negative	9	Phospholipids in large VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Phospholipids in medium VLDL	met-c-914	ieu-a-1127	0.899 [0.859:0.94]	negative	15	Phospholipids in medium VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Phospholipids in small VLDL	met-c-931	ieu-a-1127	0.917 [0.874:0.962]	negative	14	Phospholipids in small VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in HDL	met-c-864	ieu-a-1127	1.062 [1.014:1.112]	positive	12	Total cholesterol in HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in large HDL	met-c-874	ieu-a-1127	1.071 [1.018:1.126]	positive	14	Total cholesterol in large HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in large VLDL	met-c-886	ieu-a-1127	0.881 [0.835:0.929]	negative	10	Total cholesterol in large VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in medium HDL	met-c-898	ieu-a-1127	1.137 [1.048:1.233]	positive	6	Total cholesterol in medium HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in medium VLDL	met-c-909	ieu-a-1127	0.917 [0.872:0.964]	negative	15	Total cholesterol in medium VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in small VLDL	met-c-927	ieu-a-1127	0.93 [0.884:0.978]	negative	16	Total cholesterol in small VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total cholesterol in very large HDL	met-c-942	ieu-a-1127	1.08 [1.032:1.13]	positive	13	Total cholesterol in very large HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Total lipids in chylomicrons and largest VLDL particles	met-c-957	ieu-a-1127	0.854 [0.801:0.91]	negative	9	Total lipids in chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 18K]	Metabolites
+Total lipids in medium VLDL	met-c-912	ieu-a-1127	0.892 [0.85:0.936]	negative	12	Total lipids in medium VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Total lipids in small VLDL	met-c-929	ieu-a-1127	0.917 [0.873:0.963]	negative	14	Total lipids in small VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Total lipids in very large VLDL	met-c-949	ieu-a-1127	0.87 [0.818:0.927]	negative	8	Total lipids in very large VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+Triglycerides in chylomicrons and largest VLDL particles	met-c-960	ieu-a-1127	0.866 [0.815:0.921]	negative	9	Triglycerides in chylomicrons and largest VLDL particles (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in large VLDL	met-c-892	ieu-a-1127	0.87 [0.822:0.92]	negative	9	Triglycerides in large VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in medium VLDL	met-c-915	ieu-a-1127	0.882 [0.84:0.926]	negative	13	Triglycerides in medium VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in small HDL	met-c-923	ieu-a-1127	0.881 [0.837:0.928]	negative	11	Triglycerides in small HDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in small VLDL	met-c-932	ieu-a-1127	0.895 [0.858:0.935]	negative	14	Triglycerides in small VLDL (M/F) Kettunen/2016 [ 21K]	Metabolites
+Triglycerides in very small VLDL	met-c-956	ieu-a-1127	0.943 [0.895:0.995]	negative	19	Triglycerides in very small VLDL (M/F) Kettunen/2016 [ 19K]	Metabolites
+X-02269	met-a-485	ieu-a-1127	1.301 [1.034:1.637]	positive	2	X-02269 (M/F) Shin/2014 [  7K]	Metabolites
+X-11440	met-a-513	ieu-a-1127	0.89 [0.794:0.997]	negative	3	X-11440 (M/F) Shin/2014 [  7K]	Metabolites
+X-11445--5-alpha-pregnan-3beta,20alpha-disulfate	met-a-517	ieu-a-1127	0.801 [0.659:0.973]	negative	2	X-11445--5-alpha-pregnan-3beta,20alpha-disulfate (M/F) Shin/2014 [  2K]	Metabolites
+X-11469	met-a-519	ieu-a-1127	1.276 [1.013:1.607]	positive	2	X-11469 (M/F) Shin/2014 [  7K]	Metabolites
+Alcohol dehydrogenase [NADP(+)]	prot-a-67	ieu-a-1127	0.97 [0.951:0.989]	negative	3	Alcohol dehydrogenase [NADP(+)] (M/F) Sun BB/2018 [  3K]	Proteins
+C-reactive protein	prot-a-670	ieu-a-1127	1.07 [1.018:1.126]	positive	3	C-reactive protein (M/F) Sun BB/2018 [  3K]	Proteins
+CUB and zona pellucida-like domain-containing protein 1	prot-a-735	ieu-a-1127	1.022 [1.001:1.044]	positive	2	CUB and zona pellucida-like domain-containing protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Cadherin-related family member 3	prot-a-488	ieu-a-1127	0.905 [0.835:0.982]	negative	2	Cadherin-related family member 3 (M/F) Sun BB/2018 [  3K]	Proteins
+Calcium/calmodulin-dependent protein kinase type 1	prot-a-346	ieu-a-1127	0.982 [0.968:0.997]	negative	3	Calcium/calmodulin-dependent protein kinase type 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Calpastatin	prot-a-366	ieu-a-1127	1.075 [1.025:1.127]	positive	4	Calpastatin (M/F) Sun BB/2018 [  3K]	Proteins
+Carbohydrate sulfotransferase 11	prot-a-550	ieu-a-1127	1.082 [1.014:1.153]	positive	2	Carbohydrate sulfotransferase 11 (M/F) Sun BB/2018 [  3K]	Proteins
+Cardiotrophin-1	prot-a-710	ieu-a-1127	0.971 [0.948:0.994]	negative	3	Cardiotrophin-1 (M/F) Sun BB/2018 [  3K]	Proteins
+Complement C1q tumor necrosis factor-related protein 5	prot-a-305	ieu-a-1127	0.914 [0.867:0.963]	negative	4	Complement C1q tumor necrosis factor-related protein 5 (M/F) Sun BB/2018 [  3K]	Proteins
+Diamine acetyltransferase 2	prot-a-2629	ieu-a-1127	0.936 [0.886:0.988]	negative	3	Diamine acetyltransferase 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Discoidin, CUB and LCCL domain-containing protein 2	prot-a-766	ieu-a-1127	0.937 [0.885:0.992]	negative	3	Discoidin, CUB and LCCL domain-containing protein 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Dual specificity protein kinase CLK2	prot-a-586	ieu-a-1127	0.956 [0.924:0.99]	negative	3	Dual specificity protein kinase CLK2 (M/F) Sun BB/2018 [  3K]	Proteins
+E3 ubiquitin-protein ligase RNF8	prot-a-2573	ieu-a-1127	0.954 [0.911:0.998]	negative	3	E3 ubiquitin-protein ligase RNF8 (M/F) Sun BB/2018 [  3K]	Proteins
+Filamin-A	prot-a-1117	ieu-a-1127	0.902 [0.843:0.966]	negative	2	Filamin-A (M/F) Sun BB/2018 [  3K]	Proteins
+Histone-lysine N-methyltransferase SUV420H2	prot-a-2904	ieu-a-1127	0.908 [0.852:0.967]	negative	3	Histone-lysine N-methyltransferase SUV420H2 (M/F) Sun BB/2018 [  3K]	Proteins
+Immunoglobulin superfamily containing leucine-rich repeat protein 2	prot-a-1576	ieu-a-1127	0.925 [0.867:0.987]	negative	4	Immunoglobulin superfamily containing leucine-rich repeat protein 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Interleukin-21	prot-a-1506	ieu-a-1127	1.048 [1.005:1.094]	positive	3	Interleukin-21 (M/F) Sun BB/2018 [  3K]	Proteins
+Interleukin-3 receptor subunit alpha	prot-a-1530	ieu-a-1127	0.952 [0.92:0.984]	negative	3	Interleukin-3 receptor subunit alpha (M/F) Sun BB/2018 [  3K]	Proteins
+Kelch-like protein 13	prot-a-1655	ieu-a-1127	0.957 [0.919:0.998]	negative	3	Kelch-like protein 13 (M/F) Sun BB/2018 [  3K]	Proteins
+Leukocyte immunoglobulin-like receptor subfamily B member 4	prot-a-1746	ieu-a-1127	1.098 [1.018:1.185]	positive	2	Leukocyte immunoglobulin-like receptor subfamily B member 4 (M/F) Sun BB/2018 [  3K]	Proteins
+MHC class I polypeptide-related sequence B	prot-a-1898	ieu-a-1127	1.031 [1.006:1.058]	positive	4	MHC class I polypeptide-related sequence B (M/F) Sun BB/2018 [  3K]	Proteins
+Multimerin-2	prot-a-1922	ieu-a-1127	1.027 [1:1.055]	positive	4	Multimerin-2 (M/F) Sun BB/2018 [  3K]	Proteins
+Myeloblastin	prot-a-2395	ieu-a-1127	1.043 [1.006:1.082]	positive	3	Myeloblastin (M/F) Sun BB/2018 [  3K]	Proteins
+Myeloblastin	prot-a-2396	ieu-a-1127	1.057 [1.005:1.113]	positive	3	Myeloblastin (M/F) Sun BB/2018 [  3K]	Proteins
+Neutrophil-activating peptide 2	prot-a-2337	ieu-a-1127	1.076 [1.02:1.134]	positive	3	Neutrophil-activating peptide 2 (M/F) Sun BB/2018 [  3K]	Proteins
+PAX-interacting protein 1	prot-a-2189	ieu-a-1127	0.934 [0.889:0.982]	negative	3	PAX-interacting protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Plexin-B2	prot-a-2308	ieu-a-1127	1.04 [1.001:1.081]	positive	3	Plexin-B2 (M/F) Sun BB/2018 [  3K]	Proteins
+Pro-FMRFamide-related neuropeptide FF	prot-a-2073	ieu-a-1127	0.968 [0.945:0.992]	negative	3	Pro-FMRFamide-related neuropeptide FF (M/F) Sun BB/2018 [  3K]	Proteins
+Protein-tyrosine sulfotransferase 2	prot-a-3093	ieu-a-1127	1.061 [1.003:1.123]	positive	4	Protein-tyrosine sulfotransferase 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Rho GTPase-activating protein 30	prot-a-149	ieu-a-1127	0.949 [0.912:0.987]	negative	5	Rho GTPase-activating protein 30 (M/F) Sun BB/2018 [  3K]	Proteins
+Torsin-1A-interacting protein 1	prot-a-3076	ieu-a-1127	0.954 [0.916:0.993]	negative	4	Torsin-1A-interacting protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Tyrosine-protein kinase receptor Tie-1, soluble	prot-a-2978	ieu-a-1127	0.963 [0.943:0.983]	negative	4	Tyrosine-protein kinase receptor Tie-1, soluble (M/F) Sun BB/2018 [  3K]	Proteins
+Vascular endothelial growth factor receptor 2	prot-a-1622	ieu-a-1127	0.957 [0.925:0.989]	negative	4	Vascular endothelial growth factor receptor 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Xyloside xylosyltransferase 1	prot-a-3243	ieu-a-1127	1.058 [1.009:1.109]	positive	3	Xyloside xylosyltransferase 1 (M/F) Sun BB/2018 [  3K]	Proteins
+rRNA methyltransferase 3, mitochondrial	prot-a-2575	ieu-a-1127	0.972 [0.95:0.995]	negative	4	rRNA methyltransferase 3, mitochondrial (M/F) Sun BB/2018 [  3K]	Proteins
+Apoliprotein A	ukb-d-30630_irnt	ieu-a-1127	1.065 [1.01:1.124]	positive	222	Apoliprotein A (M/F) Neale lab/2018 [  NA K]	Other biomarkers
+HDL cholesterol	ieu-a-780	ieu-a-1127	1.084 [1.026:1.146]	positive	37	HDL cholesterol (M/F) Willer CJ/2013 [ 92K]	Other biomarkers
+HDL cholesterol	ukb-d-30760_irnt	ieu-a-1127	1.089 [1.037:1.144]	positive	245	HDL cholesterol (M/F) Neale lab/2018 [  NA K]	Other biomarkers
+IGF-1	ukb-d-30770_irnt	ieu-a-1127	1.065 [1.005:1.129]	positive	318	IGF-1 (M/F) Neale lab/2018 [  NA K]	Other biomarkers
+Triglycerides	ieu-a-783	ieu-a-1127	0.899 [0.826:0.979]	negative	27	Triglycerides (M/F) Willer CJ/2013 [ 86K]	Other biomarkers
+Morning/evening person (chronotype)	ukb-a-11	ieu-a-1127	1.4 [1.195:1.639]	positive	77	Morning/evening person (chronotype) (M/F) Neale Lab/2017 [301K]	Sleep
+Sleep duration	ukb-b-4424	ieu-a-1127	1.495 [1.116:2.003]	positive	66	Sleep duration (M/F) MRC-IEU/2018 [460K]	Sleep
+Snoring	ukb-a-14	ieu-a-1127	2.798 [1.101:7.112]	positive	20	Snoring (M/F) Neale Lab/2017 [314K]	Sleep
+Types of transport used (excluding work): Cycle	ukb-b-17557	ieu-a-1128	0.028 [0.002:0.32]	negative	8	Types of transport used : Cycle (M/F) MRC-IEU/2018 [460K]	Physical activity
+Types of transport used (excluding work): Public transport	ukb-b-15957	ieu-a-1128	10.669 [1.963:57.971]	positive	9	Types of transport used : Public transport (M/F) MRC-IEU/2018 [460K]	Physical activity
+Milk type used: Skimmed	ukb-d-1418_3	ieu-a-1128	0.002 [0:0.278]	negative	3	Milk type used: Skimmed (M/F) Neale lab/2018 [360K]	Diet and supplements
+Never eat eggs, dairy, wheat, sugar: Sugar or foods/drinks containing sugar	ukb-b-5495	ieu-a-1128	4.631 [1.558:13.763]	positive	20	Never eat: Sugar or foods/drinks containing sugar (M/F) MRC-IEU/2018 [461K]	Diet and supplements
+Pancake intake	ukb-b-6500	ieu-a-1128	7.815 [1.332:45.853]	positive	4	Pancake intake (M/F) MRC-IEU/2018 [ 64K]	Diet and supplements
+1-arachidonoylglycerophosphocholine*	met-a-558	ieu-a-1128	1.63 [1.104:2.405]	positive	3	1-arachidonoylglycerophosphocholine* (M/F) Shin/2014 [  7K]	Metabolites
+1-arachidonoylglycerophosphoethanolamine*	met-a-682	ieu-a-1128	2.128 [1.134:3.993]	positive	2	1-arachidonoylglycerophosphoethanolamine* (M/F) Shin/2014 [  7K]	Metabolites
+Average number of double bonds in a fatty acid chain	met-c-851	ieu-a-1128	1.094 [1.012:1.183]	positive	5	Average number of double bonds in a fatty acid chain (M/F) Kettunen/2016 [ 15K]	Metabolites
+Betaine	met-a-362	ieu-a-1128	0.316 [0.103:0.967]	negative	3	Betaine (M/F) Shin/2014 [  7K]	Metabolites
+Ratio of bisallylic groups to double bonds	met-c-844	ieu-a-1128	1.08 [1.016:1.149]	positive	4	Ratio of bisallylic groups to double bonds (M/F) Kettunen/2016 [ 13K]	Metabolites
+Ratio of bisallylic groups to total fatty acids	met-c-845	ieu-a-1128	1.093 [1.025:1.165]	positive	6	Ratio of bisallylic groups to total fatty acids (M/F) Kettunen/2016 [ 13K]	Metabolites
+X-11315	met-a-495	ieu-a-1128	0.515 [0.272:0.976]	negative	3	X-11315 (M/F) Shin/2014 [  7K]	Metabolites
+Advanced glycosylation end product-specific receptor, soluble	prot-a-54	ieu-a-1128	0.94 [0.891:0.993]	negative	5	Advanced glycosylation end product-specific receptor, soluble (M/F) Sun BB/2018 [  3K]	Proteins
+Diamine acetyltransferase 2	prot-a-2629	ieu-a-1128	0.895 [0.814:0.984]	negative	3	Diamine acetyltransferase 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Discoidin, CUB and LCCL domain-containing protein 2	prot-a-766	ieu-a-1128	0.925 [0.867:0.986]	negative	3	Discoidin, CUB and LCCL domain-containing protein 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Ferritin	prot-a-1148	ieu-a-1128	1.049 [1.002:1.099]	positive	3	Ferritin (M/F) Sun BB/2018 [  3K]	Proteins
+Fibroblast growth factor 7	prot-a-1097	ieu-a-1128	1.125 [1.028:1.232]	positive	3	Fibroblast growth factor 7 (M/F) Sun BB/2018 [  3K]	Proteins
+Interleukin-3 receptor subunit alpha	prot-a-1530	ieu-a-1128	0.957 [0.925:0.991]	negative	3	Interleukin-3 receptor subunit alpha (M/F) Sun BB/2018 [  3K]	Proteins
+Low-density lipoprotein receptor-related protein 1B	prot-a-1779	ieu-a-1128	0.919 [0.85:0.994]	negative	3	Low-density lipoprotein receptor-related protein 1B (M/F) Sun BB/2018 [  3K]	Proteins
+Mannosyl-oligosaccharide 1,2-alpha-mannosidase IB	prot-a-1833	ieu-a-1128	1.081 [1.005:1.164]	positive	3	Mannosyl-oligosaccharide 1,2-alpha-mannosidase IB (M/F) Sun BB/2018 [  3K]	Proteins
+PR domain zinc finger protein 1	prot-a-2357	ieu-a-1128	1.082 [1.036:1.13]	positive	3	PR domain zinc finger protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+Protein-tyrosine sulfotransferase 2	prot-a-3093	ieu-a-1128	1.07 [1.015:1.129]	positive	4	Protein-tyrosine sulfotransferase 2 (M/F) Sun BB/2018 [  3K]	Proteins
+Thioredoxin domain-containing protein 12	prot-a-3123	ieu-a-1128	0.96 [0.926:0.996]	negative	7	Thioredoxin domain-containing protein 12 (M/F) Sun BB/2018 [  3K]	Proteins
+Vascular cell adhesion protein 1	prot-a-3193	ieu-a-1128	1.121 [1.008:1.248]	positive	2	Vascular cell adhesion protein 1 (M/F) Sun BB/2018 [  3K]	Proteins
+interleukin 1 receptor like 1	prot-b-38	ieu-a-1128	0.95 [0.915:0.987]	negative	3	interleukin 1 receptor like 1 (M/F) Folkersen L/2018 [  3K]	Proteins
+HDL cholesterol	ukb-d-30760_irnt	ieu-a-1128	1.089 [1.019:1.163]	positive	245	HDL cholesterol (M/F) Neale lab/2018 [  NA K]	Other biomarkers
+Putamen volume	ieu-a-1047	ieu-a-1128	1 [1:1.001]	positive	4	Putamen volume (M/F) Hibar/2015 [ 30K]	Other biomarkers
+Reticulocyte percentage	ukb-d-30240_irnt	ieu-a-1128	0.903 [0.84:0.97]	negative	249	Reticulocyte percentage (M/F) Neale lab/2018 [344K]	Other biomarkers
+Snoring	ukb-a-14	ieu-a-1128	5.825 [1.899:17.871]	positive	20	Snoring (M/F) Neale Lab/2017 [314K]	Sleep
+Treatment/medication code: allopurinol	ukb-b-15895	ieu-a-1128	0.03 [0.002:0.581]	negative	12	Drug: allopurinol (M/F) MRC-IEU/2018 [462K]	Drugs
