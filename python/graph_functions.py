@@ -73,7 +73,7 @@ def query_to_df(session, query, print_query=True):
 
 def is_it_cancer(df, disease_column_name):
     # check which of those diseases are cancer related
-    cancer_related = ['cancer', 'malignant', 'tumor', 'neoplasm', 'lymphoma', 'carcin', 'oma', 'leukemia', 'metasta', 'myelofibrosis']
+    cancer_related = ['cancer', 'malignant', 'tumor', 'neoplasm', 'lymphoma', 'sarcoma', 'carcin', 'melanoma', 'leukemia', 'metasta', 'myelofibrosis'] # adenoma is benign
     df['is_it_cancer'] = 'no'
 
     for ind in df.index:
