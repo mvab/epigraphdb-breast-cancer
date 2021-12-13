@@ -6,8 +6,11 @@ python/__pycache__/*
 __pycache__/*
 .Rproj.user
 .Rhistory
-R/htmls/*
+R/htmls*
 *.html
+
+R/external_figures/
+
 
 query_results/*
 
