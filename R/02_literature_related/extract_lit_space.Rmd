@@ -1,0 +1,254 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(epigraphdb)
+library(tidyverse)
+source("../helper_functions.R")
+```
+
+MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
+WHERE gwas.id = '", id, "'
+AND gs1.pval < 0.01
+MATCH (s1)-[:SEMMEDDB_SUB]-(st1:LiteratureTerm) 
+MATCH (gwas)-[:GWAS_TO_LITERATURE]-(lit:Literature)-[]-(s1)
+RETURN lit.id, lit.year,  gwas {.id, .trait}, 
+gs1 {.pval, .localCount}, st1 {.name, .type}, s1 {.id, .subject_id, .object_id, .predicate}, st {.name, .type}
+```{r}    
+# extract literatur space
+
+
+extract_literature_space <- function(id){
+  
+  ## this query is too heavy for R when literature space is huge (like for BC)
+  
+ # query =  paste0("
+ #     MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
+ #     WHERE gwas.id = '", id, "'
+ #     AND gs1.pval < 0.01
+ #     MATCH (s1)-[:SEMMEDDB_SUB]-(st1:LiteratureTerm) 
+ #     MATCH (gwas)-[:GWAS_TO_LITERATURE]-(lit:Literature)-[]-(s1)
+ #     RETURN lit.id, lit.year,  gwas {.id, .trait}, 
+ #     gs1 {.pval, .localCount}, st1 {.name, .type}, s1 {.id, .subject_id, .object_id, .predicate}, st {.name, .type}
+ #     ")
+ # out<-query_epigraphdb_as_table(query)
+ # dim(out)
+
+  
+  # so we're going to split it in two parts
+  
+  # 1: extract GWAS triples and theit terms
+  query1 =  paste0("
+      MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
+      WHERE gwas.id = '", id, "'
+      AND gs1.pval < 0.01
+      MATCH (s1)-[:SEMMEDDB_SUB]-(st1:LiteratureTerm) 
+      RETURN  gwas {.id, .trait}, 
+      gs1 {.pval, .localCount}, st1 {.name, .type}, s1 {.id, .subject_id, .object_id, .predicate}, st {.name, .type}
+      ")
+  # gwas and triples  
+  out1<-query_epigraphdb_as_table(query1)
+  
+  if (dim(out1)[1]==0 ){
+    print(paste0("======= ", id, " : empty literature space"))
+    return(data.frame())
+    
+  } else {
+    
+    dim(out1) # 24239
+    triple_id_list <- unique(out1$s1.id) #23278
+    length(triple_id_list)
+    
+    
+    # 2: for these triples, extract literature nodes
+    query2 =  paste0("
+        MATCH (s1:LiteratureTriple)-[]-(lit:Literature)
+        WHERE s1.id in ['", paste0(triple_id_list, collapse = "', '"),"'] 
+        MATCH (lit)-[:GWAS_TO_LITERATURE]-(gwas:Gwas)
+        WHERE gwas.id = '", id, "'
+        RETURN gwas.id, lit.id, lit.year, s1 {.id, .subject_id, .object_id, .predicate}
+        ")
+      
+    out2<-query_epigraphdb_as_table(query2) 
+    dim(out2)
+    
+    triple_id_list2 <- unique(out2$s1.id) #23142
+    length(triple_id_list2)
+    
+    litspace <- full_join(out1, out2, by = c("s1.subject_id"="s1.subject_id",
+                                    "s1.predicate"="s1.predicate",
+                                    "s1.id" = "s1.id" ,
+                                    'gwas.id' = 'gwas.id',
+                                    "s1.object_id" ="s1.object_id" )) %>% 
+        filter(!is.na(lit.id))
+    
+   trait <- unique(litspace$gwas.trait)
+    
+   print(paste0("Lit space of ", trait, " - ", id, ": ", dim(litspace)[1] ))  
+   dim(litspace)
+   
+   litspace<- litspace %>% rowwise() %>% 
+      mutate(st1.type = paste0(unlist(st1.type), collapse="/")) %>%  
+      mutate(st.type = paste0(unlist(st.type), collapse="/"))
+   return(litspace)
+  }
+
+}
+```
+
+
+```{r}
+id = 'ieu-a-1126' 
+space1<-extract_literature_space(id)
+dim(space1) #77496 (63907 w/o gwas cols?)
+
+id = 'finn-a-C3_BREAST' 
+space2<-extract_literature_space(id)
+dim(space2) #56878 (47473)
+
+
+bc_space <- bind_rows(space1, space2) %>% select(-gwas.id, -gwas.trait, -gs1.localCount, -gs1.pval) %>% distinct()
+dim(bc_space) #65738
+
+bc_space<- bc_space %>% rowwise() %>% 
+  mutate(st1.type = paste0(unlist(st1.type), collapse="/")) %>%  
+  mutate(st.type = paste0(unlist(st.type), collapse="/"))
+
+bc_space %>%  write_csv("breast_cancer_litspace_prod.csv")
+```
+
+
+```{r}
+# read list of traits for follow up
+
+trait_df <- read_tsv("../01_MR_related/mr_evidence_outputs/trait_manual_ivw.tsv") %>% 
+            select(id.exposure,exposure, exposure_cat) %>% distinct()
+ignore_traits<- c('ieu-a-95', 'ieu-a-974', 'ukb-a-248', 'ukb-b-4650', 'ukb-a-34', 'ukb-a-35', 'ukb-d-30760_irnt', 	
+                  'ieu-a-299', 	'ukb-a-388', 'ieu-a-101', 'prot-a-2396', 'ieu-a-62', 	'ukb-b-9405', 'ieu-a-105', 'ieu-a-109')
+trait_df<- trait_df %>% filter(!id.exposure %in% ignore_traits) %>%
+             filter(!grepl("X-", exposure)) %>%
+             filter(!grepl("HDL|VLDL", exposure)) 
+
+
+lit_spaces<-list()
+id_list <- trait_df$id.exposure
+length(id_list)
+
+for ( id in id_list){
+  lit_spaces[[id]] <-extract_literature_space(id)
+}
+save(lit_spaces, file="lit_spaces_finalset.RData")
+
+# save dim to table
+for (i in 1:length(trait_df$id.exposure)){
+  id <- trait_df$id.exposure[i]
+  if (id %in% names(lit_spaces)){
+    trait_df$lit[i]<-dim(lit_spaces[[id]])[1]
+  }else{
+    trait_df$lit[i]<-NA
+  }
+  
+}
+
+```
+
+```{r}
+## test tidying lit space on one
+
+tidy_lit_space <- function(dat){
+  
+  triples_tidy <- dat %>% 
+                #filter(lit.year >=1990) %>% 
+                tidy_gwas_to_lit_output() %>%  distinct() 
+  
+  #length(unique(triples_tidy$lit.id))# unique papers
+  
+  triples_tidy_count<-triples_tidy %>% 
+    select(lit.id, term1, predicate, term2)  %>% distinct() %>% 
+      group_by(term1, predicate, term2) %>% 
+      count() %>% ungroup() %>% 
+      distinct() 
+  
+  # add type to disease and drug nodes (selective)
+  node_types<-triples_tidy %>% 
+        # optional - only required if not rerun main extraction function
+        rowwise() %>% 
+        mutate(st1.type = paste0(unlist(st1.type), collapse="/")) %>%  
+        mutate(st.type = paste0(unlist(st.type), collapse="/")) %>% 
+        #
+        make_node_types()
+  
+  # find most common things
+  #node_type_counts<-node_types %>% count(name, name='size', sort=T)
+  
+  # add term types to counts
+  triples_tidy_count<-triples_tidy_count %>%
+    left_join(node_types, by=c('term1'='name')) %>% 
+    rename('term1.type'='type', 'term1.type_verbose'='type_verbose') %>%  
+    left_join(node_types, by=c('term2'='name')) %>% 
+    rename('term2.type'='type', 'term2.type_verbose'='type_verbose') 
+  
+  return(triples_tidy_count)
+}
+
+dat<-lit_spaces[["ukb-d-30630_irnt"]] 
+datout<- tidy_lit_space(dat)
+
+```
+
+
+```{r}
+
+tidy_litspace <- list()
+
+for (i in 1:length(lit_spaces)){
+  if (dim(lit_spaces[[i]])[1] > 0){
+    print(paste("tidying... " , i, names(lit_spaces)[i] ))
+    
+    tidy_litspace[[names(lit_spaces)[i]]] <- tidy_lit_space(lit_spaces[[i]])
+  }
+}
+
+
+save(tidy_litspace, file="lit_spaces_finalset_tidy.RData")
+
+# save dim to table
+for (i in 1:length(trait_df$id.exposure)){
+  id <- trait_df$id.exposure[i]
+  if (id %in% names(tidy_litspace)){
+    trait_df$lit_tidy[i]<-dim(tidy_litspace[[id]])[1]
+  }else{
+    trait_df$lit_tidy[i]<-NA
+  }
+  
+}
+
+```
+
+```{r}
+tidy_litspace[["ukb-d-30770_irnt"]] %>% View()
+```
+
+
+```{r}
+library(neo4r)
+
+con <- neo4j_api$new(
+  url = "http://crashdown.epi.bris.ac.uk:38474",
+  user = "api",
+  password = "***REMOVED***"
+  )
+
+con <- neo4j_api$new(
+  url = "http://localhost:7474",
+  user = "neo4j", 
+  password = "password"
+  )
+con$ping()
+
+```
+

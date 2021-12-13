@@ -1,0 +1,165 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+  
+```{r message=F}
+library(readr)
+library(tidyr)
+library(stringr)
+library(vroom)
+library(dplyr)
+
+library(igraph)
+library(networkD3)
+source("functions_literature.R")
+```
+
+```{r message=F}
+dat<-vroom('../../query_results/lit_bc_to_other_litterms_upd.tsv') %>% mutate(lit.id = as.character(lit.id)) %>% select(-lit.dp)
+
+
+keep_gwas<-c('ieu-a-1126','finn-a-C3_BREAST', 'finn-a-CD2_BENIGN_BREAST', 'ukb-a-519', 'ukb-d-C3_BREAST_3', 'ukb-d-D05') # can query with neo4j just for these
+
+```
+
+
+**Literature exploration by years**
+
+```{r}
+#all
+bc_triples <- dat %>% filter(gwas.id %in% keep_gwas) 
+
+
+count_term_pairs <- function (dat){
+
+  sum1 <- dat %>% distinct() %>% 
+                  select(-st1.type, -st.type, -gs1.localCount) %>% 
+                  distinct() %>%
+                  select(term1,predicate, term2) %>% 
+                  group_by(term1, predicate, term2) %>% 
+                  count() %>% ungroup()
+  sum2 <- sum1 %>% 
+    select(-predicate) %>%  
+           group_by(term1, term2) %>% 
+           summarise(total_n = sum(n))
+  return(sum2)
+}
+
+categorise_years <- function(dat){
+  
+  dat_tidy <- tidy_gwas_to_lit_output(dat)
+  
+  dat_count<-count_term_pairs(dat_tidy)  
+  dim(dat_count) #18536 unique all time
+  
+  # 2000
+  
+  dat2000 <- dat %>%  filter(lit.year >=2000) %>% tidy_gwas_to_lit_output()
+  dat2000_count<-count_term_pairs(dat2000) %>% rename(since2000 = total_n)
+  dim(dat2000_count) # last 20: 17230
+  
+  
+  dat2000before <- dat %>%  filter(lit.year <2000) %>% tidy_gwas_to_lit_output()
+  dat2000before_count<-count_term_pairs(dat2000before) %>% rename(before_2000 = total_n)
+  dim(dat2000before_count) # exclude after 2000 3748
+  
+  # 2016
+  dat2016 <-  dat %>%  filter(lit.year >= 2016) %>% tidy_gwas_to_lit_output()
+  dat2016_count<-count_term_pairs(dat2016)%>% rename(since2016 = total_n)
+  dim(dat2016_count) # 7397
+  
+  
+  # join
+  merged<- left_join(dat_count, dat2000_count, by = c('term1', 'term2') ) %>% 
+            left_join(dat2016_count,by = c('term1', 'term2') ) %>% 
+             mutate(across(everything(), ~replace_na(.x, 0))) %>% 
+            # calc % remaining
+            mutate(percent_since_2000 = round(since2000/total_n *100),
+                   percent_since_2016 = round(since2016/total_n *100))
+
+  return(merged)
+}
+
+merged<-categorise_years(bc_triples)
+        
+dim(merged)
+
+merged %>% filter(total_n >=2) %>% View()
+
+dim(merged) #18536 total unique relationships
+
+merged %>% filter(percent_since_2000 == 0) %>% dim() # 1306 were only mentioned before 2000 -- old/wrong/obvious
+
+merged %>% filter(percent_since_2000 == 100) %>% dim() # 14788  mentioned after 2000
+
+merged %>% filter(percent_since_2016 == 100) %>% dim() # 3151 mentioned after 2016 -- novel 
+
+
+merged %>% filter(total_n > 5) %>% dim() # 1898 mentioned in at least 5 papers
+
+merged %>% filter(total_n > 5) %>% filter(percent_since2000 == 0) %>% dim() #19 things were frequently mentioned but only before 2000
+merged %>% filter(total_n > 5)%>% filter(percent_since2000 == 100) %>% dim() #1016  frequent things were mentioned after 2000
+merged %>% filter(total_n >= 3) %>% filter(percent_since2016 == 100) %>% dim() # 58 slightly common things after 2016
+
+
+merged %>% mutate(cat = case_when(percent_since2000 == 0 ~ 'only before 2000',
+                                  percent_since2000 == 100 ~ 'only after 2000',
+                                  percent_since2016 == 100 ~ 'only after 2016',
+                                  percent_since2016 == 0 ~ 'only before 2016',
+                                  percent_since2016 > 50 ~ 'mostly after 2016',
+                                  percent_since2016 >= 50 &  percent_since2000 >= 50 ~ 'mostly after 2016',
+                                  percent_since2000 > 50 ~ 'mostly after 2000',
+                                  TRUE ~ "XX")) %>% ungroup %>%  count(cat)
+
+
+merged %>% filter(percent_since2000 == 100) -> x
+data.frame(col = c(x$term1, x$term2)) %>% count(col, sort=T) %>% View()
+
+```
+
+```{r}
+
+plot_categorised_years<- function(dat){
+    #all
+  dat_tidy <- tidy_gwas_to_lit_output(dat)
+  dat_tidy_count<-count_term_pairs(dat_tidy) 
+  
+  dat_tidy2000 <- dat %>%  filter(lit.year >=2000 & lit.year<2016) %>% tidy_gwas_to_lit_output()
+  dat_tidy2000_count<-count_term_pairs(dat_tidy2000) %>% rename(since2000 = total_n)
+  dim(dat_tidy2000_count) # last 20: 17230
+  
+  dat_tidy2000before <- dat %>%  filter(lit.year <2000) %>% tidy_gwas_to_lit_output()
+  dat_tidy2000before_count<-count_term_pairs(dat_tidy2000before) %>% rename(before_2000 = total_n)
+  dim(dat_tidy2000before_count) # exclude after 2000 3748
+  
+  dat_tidy2016 <-  dat %>%  filter(lit.year >= 2016) %>% tidy_gwas_to_lit_output()
+  dat_tidy2016_count<-count_term_pairs(dat_tidy2016)%>% rename(since2016 = total_n)
+  dim(dat_tidy2016_count) # 7397
+  
+  library(eulerr)
+  s4 <- list(since2000 = dat_tidy2000_count %>% mutate(c=paste0(term1, "::", term2)) %>% pull(c),
+             before2000 = dat_tidy2000before_count %>% mutate(c=paste0(term1, "::", term2)) %>% pull(c),
+             since2016 = dat_tidy2016_count %>% mutate(c=paste0(term1, "::", term2)) %>% pull(c))
+  plot(euler(s4, shape = "ellipse"), quantities = TRUE)
+}
+
+bc_triples <- dat %>% filter(gwas.id %in% keep_gwas) 
+plot_categorised_years(bc_triples)
+
+```
+
+
+
+
+```{r}
+# 
+other_gwas<-vroom('../query_results/lit_betaine_triples.tsv')  
+
+merged_othergwas<-categorise_years(other_gwas) 
+
+plot_categorised_years(other_gwas)
+
+```
+
+
