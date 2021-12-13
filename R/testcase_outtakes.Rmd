@@ -1,0 +1,149 @@
+
+*Semi-manual step*
+
+Select 1000 randomly generated genes sets of the same length and test them in pathway enrichment analysis:
+
+```{r eval=F}
+#https://www.molbiotools.com/randomgenesetgenerator.html
+random_sets<-read_csv("random_gene_sets_4.csv", col_names =F)
+random_enrich <- list()
+for (i in 1:1000){
+  g_list <- random_sets[i,] %>% as_vector() %>% unname()
+  random_enrich[[i]] <-enrich_pathways(g_list, pathway_dbs)
+  print(paste0("finished ", i, ";  n_path: ", dim(random_enrich[[i]])[1]))
+}
+save(random_enrich, file="random_enrich.RData")
+```
+
+```{r echo=F}
+load("random_enrich.RData")
+```
+
+```{r}
+# list of pathways enriched at pval <0.5 with the current GWAS variants
+case_pathways<- unique(enriched_df$Term)
+# length(case_pathways) # 27
+
+overlap_count<-data_frame()
+for (i in 1:length(random_enrich)) {
+  path_list <- random_enrich[[i]]$Term
+  shared <- intersect(case_pathways, path_list)
+  x<-length(shared)
+  #print(paste0("overlap with ", i, ": ", x))
+  overlap_count<-rbind(overlap_count, c(i,x))
+}
+
+overlap_count<-overlap_count %>% distinct()
+colnames(overlap_count) <- c("gene_set", 'pathways_overlap_w_main_geneset')
+
+## 
+overlap_count %>% count(pathways_overlap_w_main_geneset, name = 'gene_set_count', sort=T)
+```
+
+```{r}
+# pathways that came up in random gene sets that are also in my pathways list:
+numChar =50
+bind_rows(random_enrich) %>%
+  count(Term, sort=T) %>%
+  mutate(in_my = ifelse(Term %in%case_pathways, 1, 0)) %>%
+  filter(in_my ==1) %>% select(-in_my) %>% rename(in_n_genesets=n) %>% 
+  mutate(Term = paste(substr(Term, 1, numChar), ifelse(nchar(Term) > numChar, "...", ""), sep = "")) 
+
+
+```
+
+
+
+
+
+
+
+
+
+*Semi-manual step*
+
+Select 1000 randomly generated genes sets of the same length and test them in pathway enrichment analysis:
+
+```{r eval=F}
+#https://www.molbiotools.com/randomgenesetgenerator.html
+random_sets<-read_csv("random_gene_sets_4.csv", col_names =F)
+random_enrich_tissues <- list()
+for (i in 1:1000){
+  g_list <- random_sets[i,] %>% as_vector() %>% unname()
+  enriched_df <- enrich_dbs(g_list, tissue_dbs, adjpval_filter = 1)
+  if (dim(enriched_df)[1] >0){
+    random_enrich_tissues[[i]] <-  enriched_df %>% 
+            separate(Term, into = c("id", "tissue", "sex", "age"), sep = "\\s",extra = "merge") %>% 
+            filter(Adjusted.P.value < 0.5) %>%  ### NB high threshold
+            mutate(direction = ifelse(grepl("down", db), "downregulated", "upregulated"))
+  }else{
+    random_enrich_tissues[[i]] <-  enriched_df 
+  }
+  
+  print(paste0("finished ", i, ";  n_tissue: ", dim(random_enrich_tissues[[i]])[1]))
+}
+save(random_enrich_tissues, file="random_enrich_tissues.RData")
+```
+
+```{r echo=F}
+load("random_enrich_tissues.RData")
+```
+
+```{r}
+random_enrich_tissues_count<-list()
+random_enrich_tissues_count_breast<-list()
+
+for (i in 1:length(random_enrich_tissues)) {
+  if (dim(random_enrich_tissues[[i]])[1] >0){
+    
+    random_enrich_tissues[[i]]<- random_enrich_tissues[[i]] %>%  filter(Adjusted.P.value < 0.05)
+    tmp<-random_enrich_tissues[[i]] %>% count(tissue,direction, sort=T)
+    random_enrich_tissues_count[[i]]<-tmp
+    random_enrich_tissues_count_breast[[i]] <- tmp %>% filter(tissue == 'breast') %>% mutate(gene_set_id = i)
+  }
+}  
+
+df<-data.frame()
+for ( i in 1:length(random_enrich_tissues_count)){
+  tmp<- c(i, sum(random_enrich_tissues_count[[i]]$n), sum(random_enrich_tissues_count_breast[[i]]$n))
+  df<-rbind(df, tmp)
+}
+colnames(df) <- c("geneset", "enriched_in_alltissues", "enriched_in_breasttissue")
+
+genesets_w_exp <- df %>% filter(enriched_in_alltissues != 0) %>% pull(geneset)
+
+genesets_w_exp_df<-data.frame()
+for ( i in genesets_w_exp){
+  tmp<-random_enrich_tissues_count[[i]]
+  tmp$geneset_number <- i
+  genesets_w_exp_df<- rbind(genesets_w_exp_df, tmp)
+}
+genesets_w_exp_df<-genesets_w_exp_df %>% select(geneset_number, everything())
+
+genesets_w_exp_df
+```
+
+
+
+
+
+Check tissue expression data in EpiGraphDB for one of the genesets
+```{r echo=T}
+genelist<-random_sets[21,] %>% as_vector() %>% unname()
+
+query = paste0(
+    "MATCH (g:Gene)-[gene_to_tissue:EXPRESSED_IN]->(tissue:Tissue)
+    where g.name in  ['", paste0(genelist, collapse = "', '"),"']
+    AND gene_to_tissue.tpm > 1
+    WITH   gene_to_tissue, g, tissue
+    RETURN g.name, tissue.name, gene_to_tissue.tpm
+    ORDER BY g.name, gene_to_tissue.tpm  desc")
+
+path_to_tissue_tbl = query_epigraphdb_as_table(query)
+
+path_to_tissue_tbl_top5<-data_frame()
+for (i in unique(path_to_tissue_tbl$g.name)){
+  tmp<- path_to_tissue_tbl %>% filter(g.name == i) %>% head(5)
+  path_to_tissue_tbl_top5 <-bind_rows(path_to_tissue_tbl_top5, tmp)}
+path_to_tissue_tbl_top5
+```

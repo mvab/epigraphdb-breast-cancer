@@ -1,0 +1,575 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    theme: sandstone
+---
+
+```{r, echo=F, warning=FALSE, message=FALSE}
+library(epigraphdb)
+library(tidyverse)
+library(tidyr)
+library(TwoSampleMR)
+library(wesanderson)
+source("helper_functions.R")
+source("explore_MR-EvE_app/functions.R")
+#rmarkdown::render("query_epigraphdb_testcase.Rmd")
+```
+
+## Workflow for evidence collection and follow-up
+
+```{r}
+risk_investigated = 'met-a-362' ## Betaine
+```
+
+
+<br>
+
+<br>
+
+
+
+## Part 1. MR-EvE and manual MR evidence
+
+```{r message=F}
+dat <- read_tsv("../query_results/bc_all_mr.tsv") %>% 
+  # subset to the specified trait
+  filter(exposure.id == risk_investigated) %>% 
+  tidy_display_numbers()%>% 
+  process_bc_outcomes() %>% 
+  create_exposure_categories() %>% 
+  add_exposure_labels()
+```
+
+<br>
+
+### MR-EvE results for `r risk_investigated` as exposure
+```{r fig.height=4, fig.align='center'}
+mreve_res <- dat %>% filter(chip %in% c("Meta", "OncArray","iCOG2017")) %>% 
+                     filter(!grepl("ebi", outcome.details))
+p1 <- makeforest_plot(mreve_res, paste0("MR-EvE best estimates for ", risk_investigated))
+p1
+```
+
+### MR IVW  locally generated results for `r risk_investigated` as exposure
+```{r message=F, warning=F, fig.height=4, fig.align='center'}
+outcomes_to_try <-mreve_res %>% pull(outcome.id) %>% unique()
+#mr_res_all_ivw <- run_local_mr_all_outcomes(risk_investigated,  outcomes_to_try)
+p2<-makeforest_plot(mr_res_all_ivw, paste0("MR IVW local for ", risk_investigated, " based on ", unique(mr_res_all_ivw$nsnp), " SNPs"))
+p2
+```
+
+### MR IVW locally generated results for breast cancer subtypes
+
+<br>
+
+![](external_figures/new_bcac_met-a-362.png)
+<br>
+
+## Part 2. GWAS variants to pathways and tissues
+
+### Variants to genes
+
+Based on tophits
+
+```{r}
+query = 
+    paste0(
+    "MATCH (g:Gwas)-[tophits:OPENGWAS_TOPHITS]->(v:Variant)-[rel:VARIANT_TO_GENE]->(gene:Gene)
+    where g.id = '", risk_investigated ,"'
+    return g.id, tophits.pval, v.name,rel.consequence, gene.name")
+
+var_to_gene<-query_epigraphdb_as_table(query)
+var_to_gene
+
+gwas_genes<-var_to_gene$gene.name
+```
+With lower p-val threshold
+```{r}
+# query those SNPs from OpenGWAS with 2SMR
+instr <- TwoSampleMR::extract_instruments(risk_investigated, p1 = 5e-06, clump=F)
+query = 
+    paste0(
+    "MATCH (v:Variant)-[rel:VARIANT_TO_GENE]->(gene:Gene)
+    where v.name in ['", paste0(instr$SNP, collapse = "', '"),"']
+    return v.name, rel.consequence, gene.name order by v.name")
+
+var_to_gene2<-query_epigraphdb_as_table(query)
+var_to_gene2
+
+gwas_genes2<-unique(var_to_gene2$gene.name)
+```
+
+Table comparing genes from tophits and at p.val 5e-06
+```{r}
+vep_genes<-as.data.frame(gwas_genes2) %>% rename('newname' = 'gwas_genes2') %>% 
+  mutate(tophits = ifelse(newname %in% gwas_genes, newname, NA )) %>% 
+  rename('pval_5e-06'  = 'newname')%>% arrange(tophits)
+vep_genes
+```
+
+
+
+
+#### Genes to pathways
+
+(Using set of genes from the query with lower p-value threshold)
+
+```{r}
+query = paste0(
+    "MATCH (gene:Gene)-[]->(protein:Protein)-[]->(path:Pathway)
+    where gene.name in ['", paste0(gwas_genes2, collapse = "', '"),"']
+    return gene.name,  path.name")
+
+gene_to_path = query_epigraphdb_as_table(query)
+gene_to_path
+gene_to_path %>% count(path.name, sort=T) %>% rename("# genes map to this pathway"="n")
+```
+
+#### Genes to tissues
+
+```{r}
+query = paste0(
+    "MATCH (gene:Gene)-[gene_to_tissue:EXPRESSED_IN]->(tissue:Tissue)
+    where gene.name in  ['", paste0(gwas_genes2, collapse = "', '"),"']
+    AND gene_to_tissue.tpm > 1
+    WITH gene_to_tissue, gene, tissue
+    ORDER BY gene_to_tissue.tpm  desc, tissue.name
+    RETURN gene.name, count(tissue.name) as N_tissues, 
+    collect(tissue.name) as Tissues, collect(gene_to_tissue.tpm) as TPM_vals")
+
+
+gene_to_tissue = query_epigraphdb_as_table(query)
+gene_to_tissue 
+```
+Show top 5 tissues for each gene:
+```{r echo=T, warning=F, message=F}
+query = paste0(
+    "MATCH (gene:Gene)-[gene_to_tissue:EXPRESSED_IN]->(tissue:Tissue)
+    where gene.name in  ['", paste0(gwas_genes2, collapse = "', '"),"']
+    AND gene_to_tissue.tpm > 1
+    WITH gene_to_tissue, gene, tissue
+    RETURN gene.name, tissue.name, gene_to_tissue.tpm
+    ORDER BY gene.name, gene_to_tissue.tpm  desc")
+gene_to_tissue_tbl = query_epigraphdb_as_table(query)
+
+gene_to_tissue_tbl_top5<-data_frame()
+for (i in unique(gene_to_tissue_tbl$gene.name)){
+  tmp<- gene_to_tissue_tbl %>% filter(gene.name == i) %>% head(5)
+  gene_to_tissue_tbl_top5 <-bind_rows(gene_to_tissue_tbl_top5, tmp)}
+
+gene_to_tissue_tbl_top5 %>% kable_it()
+```
+
+#### Genes to breast tissue only 
+```{r}
+#  expression in breast tissue 
+query = paste0(
+  "MATCH (gene:Gene)-[gene_to_tissue:EXPRESSED_IN]->(tissue:Tissue)
+  where gene.name in  ['", paste0(gwas_genes2, collapse = "', '"),"']
+  AND  tissue.name = 'Breast - Mammary Tissue'
+  return distinct gene.name,   gene_to_tissue.tpm as TPM, tissue.name
+  ORDER BY TPM desc")
+
+gene_to_tissue_breast = query_epigraphdb_as_table(query)
+gene_to_tissue_breast
+```
+
+
+### Querying eQTL catalogue for GWAS variats
+
+```{r}
+variants <- var_to_gene$v.name # tophits
+variants2 <- var_to_gene2$v.name # SNPs with relaxed pval
+
+eqtl_for_snps <- function(variants){
+  eqtl_df <- data.frame()
+  for (i in 1:length(variants)){
+    eqtl_df<-bind_rows(eqtl_df, get_eQTL_for_snp(variants[i]))
+    #print(paste0("done: ", i))
+  }
+  gene_names <- map_ensembl_to_genename(eqtl_df$gene_id)
+  
+  eqtl_df<-left_join(eqtl_df, gene_names, 
+                     by = c('gene_id' = 'ensembl_gene_id')) %>% 
+          dplyr::select('hgnc_symbol', everything()) %>% 
+          arrange(desc(median_tpm))
+}
+
+eqtl1 <- eqtl_for_snps(variants)
+eqtl2 <- eqtl_for_snps(variants2)
+```
+
+```{r}
+# Queried these:
+var_to_gene %>% select(v.name, gene.name)
+# eQTL map of SNPs:
+eqtl1 %>% arrange(rsid, pvalue)
+```
+
+
+```{r}
+# Queried these:
+var_to_gene2 %>% select(v.name, gene.name)
+# eQTL map of SNPs:
+eqtl2 %>% arrange(rsid, pvalue)
+```
+
+Show all genes each SNP maps
+```{r}
+eqtl2 %>% select(rsid, hgnc_symbol) %>% distinct() %>% arrange(rsid)
+```
+
+
+
+Table comparing genes from tophits and at p.val 5e-06
+```{r}
+eqtl_genes<- as.data.frame(eqtl2 %>% pull(hgnc_symbol) %>% unique()) %>% rename('newname' = 1) %>% 
+  mutate(tophits = ifelse(newname %in% eqtl1$hgnc_symbol, newname, NA )) %>% 
+  rename('pval_5e-06'  = 'newname') %>% arrange(tophits)
+eqtl_genes
+```
+#### Genes to pathways (eQTL)
+```{r}
+query = paste0(
+    "MATCH (gene:Gene)-[]->(protein:Protein)-[]->(path:Pathway)
+    where gene.name in ['", paste0(unique(eqtl2$hgnc_symbol), collapse = "', '"),"']
+    return gene.name,  path.name")
+
+eqtl_gene_to_path = query_epigraphdb_as_table(query)
+```
+
+#### Compare pathways via VEP and eQTL genes
+```{r}
+full_join(
+  gene_to_path %>% count(path.name) %>%  rename(vep_n = n),
+  eqtl_gene_to_path %>% count(path.name) %>%  rename(eqtl_n = n),
+  by = 'path.name') %>%  arrange(-eqtl_n, -vep_n)
+```
+
+
+
+
+```{r eval=F, echo=F}
+### Pathway genes to tissue
+pathway = "R-HSA-6798163" ## //chloine catabolism
+# where main related pathway genes are expressed 
+query = paste0(
+"MATCH (n:Pathway)-[]-(p:Protein)-[]-(g:Gene)-[gene_to_tissue:EXPRESSED_IN]->(tissue:Tissue)
+where n.id = '", pathway ,"'
+AND gene_to_tissue.tpm > 1
+WITH   gene_to_tissue, g, tissue
+ORDER BY gene_to_tissue.tpm  desc, tissue.name
+RETURN g.name, count(tissue.name) as N_tissues, 
+collect(tissue.name) as Tissues, collect(gene_to_tissue.tpm) as TPM_vals
+")
+path_to_tissue = query_epigraphdb_as_table(query)
+path_to_tissue
+
+```
+
+```{r echo=F, eval=F}
+#Show top 5 tissues for each gene:
+query = paste0(
+    "MATCH (n:Pathway)-[]-(p:Protein)-[]-(g:Gene)-[gene_to_tissue:EXPRESSED_IN]->(tissue:Tissue)
+    where n.id = '", pathway ,"'
+    AND gene_to_tissue.tpm > 1
+    WITH   gene_to_tissue, g, tissue
+    RETURN g.name, tissue.name, gene_to_tissue.tpm
+    ORDER BY g.name, gene_to_tissue.tpm  desc")
+
+path_to_tissue_tbl = query_epigraphdb_as_table(query)
+
+path_to_tissue_tbl_top5<-data_frame()
+for (i in unique(path_to_tissue_tbl$g.name)){
+  tmp<- path_to_tissue_tbl %>% filter(g.name == i) %>% head(5)
+  path_to_tissue_tbl_top5 <-bind_rows(path_to_tissue_tbl_top5, tmp)}
+path_to_tissue_tbl_top5
+```
+
+
+
+<br>
+
+## Part 3. Enrichment analysis in pathways and tissues
+
+
+```{r, message=F}
+library(enrichR)
+#alldbs<-listEnrichrDbs()
+pathway_dbs <- c("Reactome_2016", "KEGG_2019_Human", "KEGG_2019_Mouse")
+#gwas_dbs <-     c("GWAS_Catalog_2019", "UK_Biobank_GWAS_v1")
+tissue_dbs<-    c("GTEx_Tissue_Sample_Gene_Expression_Profiles_up", 
+                 "GTEx_Tissue_Sample_Gene_Expression_Profiles_down")
+```
+
+
+<br>
+
+### Pathways enrichment analysis
+
+#### Enrichment: GWAS genes (VEP) in pathways, using enrichR
+
+```{r}
+enriched_df<-enrich_dbs(gwas_genes2, pathway_dbs)
+enriched_df_wo_db<-enriched_df %>% select(-db) %>% distinct()
+plotEnrich(enriched_df_wo_db, showTerms = 20, numChar = 50, y = "Count", orderBy = "P.value")
+```
+
+Table sorted by odds ratio:
+```{r , echo=F}
+numChar=30
+enriched_df %>% 
+  select(Term, Overlap, 'P.value','Adjusted.P.value', 'Odds.Ratio', Genes, db) %>% 
+  arrange(desc(Odds.Ratio)) %>% 
+  mutate(Term = paste(substr(Term, 1, numChar), ifelse(nchar(Term) > numChar, "...", ""), sep = ""),
+         Odds.Ratio = round(Odds.Ratio, digits=1), 
+         P.value= scales::scientific(P.value, digits = 2),
+         Adjusted.P.value= scales::scientific(Adjusted.P.value, digits = 2)) %>% 
+  rename(Adj.P.value= Adjusted.P.value) %>% 
+  kable_it()
+```
+
+#### Enrichment: GWAS-eQTL genes in pathways , using enrichR
+
+```{r}
+enriched_df<-enrich_dbs(unique(eqtl2$hgnc_symbol), pathway_dbs)
+enriched_df_wo_db<-enriched_df %>% select(-db) %>% distinct()
+plotEnrich(enriched_df_wo_db, showTerms = 20, numChar = 50, y = "Count", orderBy = "P.value")
+```
+
+Table sorted by odds ratio:
+```{r , echo=F}
+numChar=30
+enriched_df %>% 
+  select(Term, Overlap, 'P.value','Adjusted.P.value', 'Odds.Ratio', Genes, db) %>% 
+  arrange(desc(Odds.Ratio)) %>% 
+  mutate(Term = paste(substr(Term, 1, numChar), ifelse(nchar(Term) > numChar, "...", ""), sep = ""),
+         Odds.Ratio = round(Odds.Ratio, digits=1), 
+         P.value= scales::scientific(P.value, digits = 2),
+         Adjusted.P.value= scales::scientific(Adjusted.P.value, digits = 2)) %>% 
+  rename(Adj.P.value= Adjusted.P.value) %>% 
+  kable_it()
+```
+
+
+#### Enrichment GWAS-eQTL genes in pathways, using g:Profiler
+```{r}
+library(gprofiler2)
+gostres <- gost(query = var_to_gene2$v.name,
+                organism = "hsapiens")
+p <- gostplot(gostres, capped = FALSE, interactive = T)
+p
+```
+
+g:Profiler resulr as a table:
+```{r}
+# recall = intersection_size/term_size
+gostres$result %>% arrange(-recall) %>% 
+  select("source", "term_name",p_value,  "term_size", "intersection_size", recall) %>% 
+  mutate(recall=round(recall,2),
+         p_value= scales::scientific(p_value, digits = 2)) %>% 
+  kable_it()
+```
+
+
+
+<br>
+
+
+```{r eval=F}
+
+### Enrichment: GWAS genes in other GWAS 
+enriched_df<-enrich_dbs(gwas_genes2, gwas_dbs)
+enriched_df_wo_db<-enriched_df %>% select(-db) %>% distinct()
+plotEnrich(enriched_df_wo_db, showTerms = 30, numChar = 50, y = "Count", orderBy = "P.value")
+```
+
+
+```{r eval=F, echo=F}
+#ao<-available_outcomes()
+#ao<-ao %>% filter(!grepl('ukb-e-', id)) %>% 
+#      filter(population == 'European')
+#snp_in_opengwas <- associations(variants=c("rs16876394"), id=ao$id[1:1000] )
+```
+
+
+<br>
+
+
+
+```{r eval = F, echo =F}
+### Enrichment: GWAS genes in tissues (GTEx)
+enriched_df<-enrich_dbs(gwas_genes2, tissue_dbs, adjpval_filter = 1)
+enriched_df_wo_db<-enriched_df %>% 
+      separate(Term, into = c("id", "tissue", "sex", "age"), sep = "\\s",extra = "merge") %>% 
+      filter(Adjusted.P.value < 0.05) %>%  ### NB high theshold
+      mutate(direction = ifelse(grepl("down", db), "downregulated", "upregulated"))
+#dim(enriched_df_wo_db) 97
+enriched_df_wo_db %>% count(tissue,direction, sort=T)
+```
+
+```{r eval = F, echo =F}
+# all tissues
+dim(enriched_df_wo_db) 
+# in breast tissue
+enriched_df_wo_db %>% count(tissue,direction, sort=T) %>% filter(tissue == 'breast')
+```
+
+
+
+
+
+## Part 4. Literature evidence
+
+### Manual search
+
+Pubmed search 'betaine' + 'breast cancer' for years **2000-2021: 50 results**
+
+<br>
+
+#### Most relevant papers exporing the connection/mechanism (external file)
+
+```{r echo=F, warning=F ,message=F}
+litfile <- paste0("../trait_literature_manual/", risk_investigated, ".csv")
+if (file.exists(litfile)){
+  littable <- read_csv(paste0("../trait_literature_manual/", risk_investigated, ".csv"))
+  littable %>% kable_it()
+} else{
+  print("No manually extracted data available")
+}
+```
+
+
+Summary:
+
+* betaine intake/levels is inversely associated with breast cancer risk
+* betaine has been tested as an agent to reduce mammographic density, which is a strong but modifiable BC risk
+* betaine may be reducing the effects of alcohol-triggered breast cancer development
+* betaine has anti-proliferative effects and may have a positive effect on mitochondrial respiration
+* betaine as a supplement reduces fat mass in females
+
+
+### Literature triples from sematic search
+
+
+
+```{r warning=F ,message=F}
+source("literature_related/functions_literature.R")
+
+# breast cancer literature space
+bc_gwas <- read_tsv('../query_results/lit_bc_to_other_litterms_upd.tsv') %>%
+           mutate(lit.id = as.character(lit.id)) %>% select(-lit.dp)
+
+bc_triples_tidy <- bc_gwas %>% filter(gwas.id == 'ieu-a-1126') %>% 
+                            tidy_gwas_to_lit_output() %>%  distinct() 
+
+bc_triples_tidy_count<-bc_triples_tidy %>% 
+  select(lit.id, term1, predicate, term2)  %>% distinct() %>% 
+    group_by(term1, predicate, term2) %>% 
+    count() %>% ungroup() %>% 
+    distinct() 
+
+# betaine litearture space
+other_gwas<-read_tsv('../query_results/lit_betaine_triples.tsv')  
+
+other_gwas_tidy<-tidy_gwas_to_lit_output(other_gwas) %>% 
+                  #select(-c("lit.id", "lit.year")) %>% 
+                  distinct() 
+
+# other gwas only network
+other_gwas_tidy_count<-other_gwas_tidy %>% 
+  select(lit.id, term1, predicate, term2)  %>% distinct() %>% 
+    group_by(term1, predicate, term2) %>% 
+    count() %>% ungroup() %>% 
+    distinct() 
+```
+
+Preview betaine literature space
+```{r}
+other_gwas_tidy_count %>% 
+  mutate (triple = paste0(term1," ", predicate, " ",term2)) %>% 
+  select( triple, n) %>% 
+  arrange(-n)
+```
+
+
+
+
+Get overalapping terms with betaine
+```{r}
+overlap1 <- intersect( other_gwas_tidy %>% 
+                         filter(term1 == 'betaine') %>% 
+                         pull(term2) , 
+                       bc_triples_tidy$term1) 
+
+
+overlap1_tidy <-as.data.frame(overlap1) %>% 
+  # add data types
+  left_join(other_gwas_tidy %>% filter(term1 == 'betaine') %>% select(term2, st.type), by = c("overlap1"= "term2")) %>% distinct() %>% 
+  filter(!st.type  %in% c("['dsyn']" )) %>%  arrange(st.type) %>% 
+  # add triple counts
+  left_join(other_gwas_tidy_count %>% filter(term1 == 'betaine') %>% select(predicate, term2, n), by=c('overlap1'='term2') ) %>% arrange(-n) %>% distinct() %>% 
+  select(predicate, overlap1,  n, st.type)
+
+overlap1_tidy
+```
+The list of terms that betaine has a direct relationship with, that are also found in breast cancer space.
+(sorted by publication count)
+```{r}
+overlap1_tidy %>% select(overlap1) %>% distinct()
+```
+
+
+```{r eval =F, echo=F}
+## Part 5. Related traits check
+if (!exists('ao')) {
+  ao <- TwoSampleMR::available_outcomes()
+  ao<-ao %>% filter(!grepl('ukb-e-', id)) %>% 
+      filter(sex!= 'Males') %>% 
+      filter(population == 'European')
+}
+
+related_terms <- c("folate|folic|choline|vitamin b|methionine|cysteine")
+ao_sub<- ao %>% mutate(keep = ifelse(grepl(related_terms, trait,ignore.case = T), 1,0)) %>%
+      filter(keep ==1) %>% 
+      select(id, trait, sample_size, author, consortium)
+
+for (i in 1:length(ao_sub$id)){
+  inst <- TwoSampleMR::extract_instruments(ao_sub$id[i])
+  if (!is.null(inst)){
+    ao_sub$n_instruments[i]<- dim(inst)[1]
+  } else{
+    ao_sub$n_instruments[i]<- 0
+  }
+}
+```
+
+```{r eval=F, echo=F}
+ao_sub<-ao_sub %>% arrange(desc(n_instruments))
+ao_sub %>% kable_it()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
