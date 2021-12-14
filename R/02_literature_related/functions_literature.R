@@ -17,6 +17,53 @@ tidy_gwas_to_lit_output <- function(dat){
     filter(!(term2==term1)) 
 }  
 
+
+
+
+# add type to disease and drug nodes (selective)
+make_node_types <- function(dat){
+  
+  drug_list <- c('fulvestrant', 'vinorelbine')
+  generic_list <-c('Membrane Transport Proteins', 'Small Molecule')
+  
+  node_types<-bind_rows(dat %>% select(name = term1, type =st1.type),
+                        dat %>% select(name = term2, type = st.type)) 
+  
+  terms_w_multp_types <- node_types %>% group_by(name, type) %>% count() %>% count(name) %>% filter(n>1) 
+  if (dim(terms_w_multp_types)[1] > 0){
+    node_types <- node_types %>% keep_one_type()
+  }
+  node_types %>% 
+  mutate(type_verbose= case_when(grepl('dsyn', type) ~ 'disease',
+                                 #type == "['orch']|['phsu']|['orch', 'phsu']|['hops']|['orch', 'phsu', 'hops']|['orch', 'hops']" ~ 'drug_or_compound',
+                                 type == "orch" ~ 'drug_or_compound',
+                                 type == "phsu" ~ 'drug_or_compound',
+                                 type == "hops" ~ 'drug_or_compound',
+                                 type == "orch/phsu" ~ 'drug_or_compound',
+                                 type == "orch/phsu/hops" ~ 'drug_or_compound',
+                                 type == "orch/hops" ~ 'drug_or_compound',
+                                 grepl('mab$',name) ~ 'drug_or_compound',
+                                 grepl('tinib',name) ~ 'drug_or_compound',
+                                 grepl('cisplatin',name) ~ 'drug_or_compound',
+                                 grepl('methotrexate polyglutamate',name) ~ 'drug_or_compound',
+                                 grepl('herceptin',name, ignore.case = T) ~ 'drug_or_compound',
+                                 grepl('capecitabine',name) ~ 'drug_or_compound',
+                                 grepl('fluorouracil',name) ~ 'drug_or_compound',
+                                 grepl('cyclophosphamide',name) ~ 'drug_or_compound',
+                                 grepl('exemestane',name) ~ 'drug_or_compound',
+                                 grepl('ado-trastuzumab emtansine',name) ~ 'drug_or_compound',
+                                 grepl('megestrol acetate',name) ~ 'drug_or_compound',
+                                 grepl('thiotepa',name) ~ 'drug_or_compound',
+                                 grepl('tamoxifen',name) ~ 'drug_or_compound',
+                                 grepl('zole$',name) ~ 'drug_or_compound',
+                                 grepl('taxel$',name) ~ 'drug_or_compound',
+                                 name %in% drug_list ~ 'drug_or_compound',
+                                 name %in% generic_list ~ 'generic',
+                                 TRUE ~ 'any')) %>% 
+  distinct()
+}
+
+
 keep_one_type <- function(node_types){
   
   node_types_count <- node_types %>% group_by(name, type) %>% count() %>% ungroup()
@@ -49,43 +96,6 @@ keep_one_type <- function(node_types){
     bind_rows(., selected_types %>% select(-n))
 }
 
-
-# add type to disease and drug nodes (selective)
-make_node_types <- function(dat){
-  
-  drug_list <- c('fulvestrant', 'vinorelbine')
-  generic_list <-c('Membrane Transport Proteins', 'Small Molecule')
-  
-  node_types<-bind_rows(dat %>% select(name = term1, type =st1.type),
-                        dat %>% select(name = term2, type = st.type)) %>% 
-    keep_one_type() %>% 
-    mutate(type_verbose= case_when(grepl('dsyn', type) ~ 'disease',
-                                   #type == "['orch']|['phsu']|['orch', 'phsu']|['hops']|['orch', 'phsu', 'hops']|['orch', 'hops']" ~ 'drug_or_compound',
-                                   type == "orch" ~ 'drug_or_compound',
-                                   type == "phsu" ~ 'drug_or_compound',
-                                   type == "hops" ~ 'drug_or_compound',
-                                   type == "orch/phsu" ~ 'drug_or_compound',
-                                   type == "orch/phsu/hops" ~ 'drug_or_compound',
-                                   type == "orch/hops" ~ 'drug_or_compound',
-                                   grepl('mab$',name) ~ 'drug_or_compound',
-                                   grepl('tinib',name) ~ 'drug_or_compound',
-                                   grepl('cisplatin',name) ~ 'drug_or_compound',
-                                   grepl('methotrexate polyglutamate',name) ~ 'drug_or_compound',
-                                   grepl('herceptin',name, ignore.case = T) ~ 'drug_or_compound',
-                                   grepl('capecitabine',name) ~ 'drug_or_compound',
-                                   grepl('fluorouracil',name) ~ 'drug_or_compound',
-                                   grepl('cyclophosphamide',name) ~ 'drug_or_compound',
-                                   grepl('exemestane',name) ~ 'drug_or_compound',
-                                   grepl('ado-trastuzumab emtansine',name) ~ 'drug_or_compound',
-                                   grepl('megestrol acetate',name) ~ 'drug_or_compound',
-                                   grepl('thiotepa',name) ~ 'drug_or_compound',
-                                   grepl('tamoxifen',name) ~ 'drug_or_compound',
-                                   grepl('zole$',name) ~ 'drug_or_compound',
-                                   grepl('taxel$',name) ~ 'drug_or_compound',
-                                   name %in% drug_list ~ 'drug_or_compound',
-                                   name %in% generic_list ~ 'generic',
-                                   TRUE ~ 'any'))
-}
 
 
 select_network <- function(full_data, key_term, network_dir,

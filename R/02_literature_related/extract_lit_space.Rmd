@@ -234,21 +234,5 @@ tidy_litspace[["ukb-d-30770_irnt"]] %>% View()
 ```
 
 
-```{r}
-library(neo4r)
 
-con <- neo4j_api$new(
-  url = "http://crashdown.epi.bris.ac.uk:38474",
-  user = "api",
-  password = "***REMOVED***"
-  )
-
-con <- neo4j_api$new(
-  url = "http://localhost:7474",
-  user = "neo4j", 
-  password = "password"
-  )
-con$ping()
-
-```
 
