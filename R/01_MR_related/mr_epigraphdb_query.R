@@ -8,7 +8,8 @@ bc_gwas <- c( 'ieu-a-1126', 'ieu-a-1127', 'ieu-a-1128', 'ieu-a-1129', 'ieu-a-113
               'ukb-a-55', 'ukb-b-16890', 'ukb-d-C3_BREAST_3')
 
 
-# MR
+### MR  -- stringent with pval < 1e-05 for all
+
 # get traits that have pval < 1e-05
 query = 
   paste0("
@@ -26,10 +27,10 @@ query =
     
 
 out<-query_epigraphdb_as_table(query)
-dim(out)# 746
+dim(out)# 746 #w/o 2015 669
 
 
-# now those traits that appered at least once in something at <1e05, 
+# now those traits that appeared at least once in something at <1e05, 
 # get MR results for those traits with all BC datasets
 
 query = paste0("
@@ -45,13 +46,13 @@ query = paste0("
       ")
         
 out2<-query_epigraphdb_as_table(query)
-dim(out2)#16277
+dim(out2)#16277 #13884
 
 write_tsv(out2, "explore_MR-EvE_app/data_copy/bc_all_mr_madewR.tsv")
 
      
 
-### ALTRENATIVE
+### ALTRENATIVE --- using this one
 
 query = 
   paste0("
@@ -65,7 +66,7 @@ query =
     RETURN exposure.id, exposure.trait, exposure.sample_size, exposure.sex, exposure.note,
           toInteger(exposure.year) as year, exposure.author as author, exposure.consortium as consortium,
               outcome.id, outcome.sample_size, toInteger(outcome.ncase) as N_case, outcome.year, outcome.nsnp,
-              mr.pval, mr.b, mr.se, mr.method, mr.moescore
+              mr.pval, mr.b, mr.se,mr.nsnp,mr.method, mr.moescore
     ") 
 
 
@@ -102,14 +103,14 @@ query = paste0("
       RETURN exposure.id, exposure.trait, exposure.sample_size, exposure.sex, exposure.note,
       toInteger(exposure.year) as year, exposure.author as author, exposure.consortium as consortium,
               outcome.id, outcome.sample_size, toInteger(outcome.ncase) as N_case, outcome.year, outcome.nsnp,
-              mr.pval, mr.b, mr.se, mr.method, mr.moescore
+              mr.pval, mr.b, mr.se, mr.nsnp, mr.method, mr.moescore
       ")
 
 out3<-query_epigraphdb_as_table(query)
 dim(out3) #44631 #40475
 length(unique(out3$exposure.id)) #
 
-write_tsv(out3, "explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv")
+write_tsv(out3, "01_MR_related/explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv")
 
 
 badgwas <- read_tsv("external_files/gwas_that_may_have_wrong_instr.txt", col_names = F)

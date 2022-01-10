@@ -24,20 +24,20 @@ dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>%
         #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_madewR.tsv") %>% 
       read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>% 
       # subset 
-  filter(exposure.sex != 'Males') %>% 
-  filter(!outcome.id %in% c('ebi-a-GCST007236', 'ebi-a-GCST004988')) %>% 
-  filter(mr.method != 'Steiger null') %>% 
-  # convert MR results to OR
-  tidy_display_numbers()%>% 
-  # deal ith al outcome related changes
-  process_bc_outcomes() %>% 
-  # create categories of exposure traits
-  create_exposure_categories() %>% 
-  add_exposure_labels() %>% 
-  # drop really weird cases when CIs are weird
-  filter(!or_loci > or_upci) %>% 
-  # remove very small effects
-  filter(OR_CI != "0 [0:0]")
+      filter(exposure.sex != 'Males') %>% 
+      filter(!outcome.id %in% c('ebi-a-GCST007236', 'ebi-a-GCST004988')) %>% 
+      filter(mr.method != 'Steiger null') %>% 
+      # convert MR results to OR
+      tidy_display_numbers()%>% 
+      # deal ith al outcome related changes
+      process_bc_outcomes() %>% 
+      # create categories of exposure traits
+      create_exposure_categories() %>% 
+      add_exposure_labels() %>% 
+      # drop really weird cases when CIs are weird
+      filter(!or_loci > or_upci) %>% 
+      # remove very small effects
+      filter(OR_CI != "0 [0:0]")
 
 ```
 
@@ -112,6 +112,11 @@ dat %>%
 ```
 
 
+```{r}
+tidy_traits_by_cat <- data.frame()
+```
+
+
 
 
 ### 1. Anthophometric traits
@@ -126,6 +131,11 @@ antro_blacklist <- c('ieu-a-81','ieu-a-74', "ieu-a-73" ,"ieu-a-79" ,"ieu-a-72" ,
 input <- dat %>% filter(exposure_cat %in% c('Antrophometric')) %>% 
     filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
     filter(!exposure.id %in% antro_blacklist)
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 
 # deal with duplicated from UKB
 ukb_diff_sources<-input %>%
@@ -154,6 +164,10 @@ p_gg$layout$showlegend = "TRUE"
 input <- dat %>% filter(exposure_cat %in% c('Physical activity')) %>% 
              filter(!grepl("leisure|mental", exposure, ignore.case = T))
 
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 p<-plot_bubble_plot(input)
 p
 ```
@@ -163,6 +177,11 @@ p
 ```{r fig.width=10, fig.height=5}
 input <- dat %>% filter(exposure_cat %in% c('Diet and supplements')) %>% 
                 filter(!grepl("questionnaire", exposure))
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 p<-plot_bubble_plot(input)
 p
 ```
@@ -172,6 +191,10 @@ p
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Reproductive')) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
 
 p<-plot_bubble_plot(input)
 p
@@ -184,6 +207,10 @@ p
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Alcohol')) 
 
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 p<-plot_bubble_plot(input)
 p
 ```
@@ -192,6 +219,10 @@ p
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c( "Smoking")) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
 
 p<-plot_bubble_plot(input)
 p
@@ -204,6 +235,13 @@ p
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Metabolites')) 
+
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+
 p<-plot_bubble_plot(input)
 p
 
@@ -225,6 +263,11 @@ ply<-plotly::ggplotly(p)
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Proteins')) %>% 
         arrange(exposure.trait)
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 dim(input)[1]/9
 length(unique(input$exposure.trait))
 
@@ -250,6 +293,12 @@ ply<-plotly::ggplotly(p)
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Other biomarkers')) %>% 
         filter(!grepl("FEV",exposure.trait)) 
+
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 p<-plot_bubble_plot(input)
 ```
 
@@ -259,6 +308,11 @@ p<-plot_bubble_plot(input)
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Sleep'))
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 p<-plot_bubble_plot(input)
 p
 ```
@@ -266,394 +320,20 @@ p
 ### 11. Drugs
 ```{r fig.width=12}
 input <- dat %>% filter(exposure_cat %in% c('Drugs')) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
 p<-plot_bubble_plot(input)
 p
 ```
 
 
-
-#### Method for finding interesting things
-
-
 ```{r}
-
-traits_for_follow_up <- function(input, dat) {
-  # this is a method to select trait have effect in 2/3 of main dataset in a subtype
-  ids <- input %>% pull(exposure.id) %>% unique()
-  res <- list()
-  
-  for (i in ids){
-    # pre-set of results to use for selection
-    x <- dat %>% 
-      filter(chip %in% c('Meta', "OncArray",  "iCOG2017")) %>% 
-      select(exposure.id, exposure.trait, exposure_cat, outcome.id, outcome, mr.pval, starts_with('or'),
-             effect_direction, mr.method, mr.moescore) %>%
-      filter(exposure.id == i) 
-    
-    if (dim(x)[1] != 0) {
-      # continue id these outcomes have been tested
-    
-      # drop results that 'overlap null' for all selected outcomes
-      effect <-x %>% pull(effect_direction) %>% unique()
-      if (length(effect) == 1){
-          if (effect == "overlaps null"){
-            #print(paste0(i, ": nope"))
-          }
-      } else {
-        #get counts per BC type
-        y <- x %>% group_by(outcome) %>% 
-          janitor::tabyl(outcome, effect_direction) %>% 
-          as_tibble()
-        
-        rm(tmp)
-        # identify cases when traits have >=2 effects in positive or negative direction
-        if ('positive' %in% colnames(y) & 'negative' %in% colnames(y)){
-          dir <- 'both'
-          tmp <- bind_rows(
-            y %>% filter(positive >  `overlaps null`),
-            y %>% filter(negative > `overlaps null` )) %>% 
-                  distinct()
-          if (sum(tmp$negative) == 0){dir <- 'positive'
-          } else if (sum(tmp$positive) == 0){dir <- 'negative'
-          } else if (sum(tmp$negative) > sum(tmp$positive) ){dir <- 'negative'
-          } else if (sum(tmp$negative) < sum(tmp$positive)){dir <- 'positive'}
-          
-          
-        } else if ('positive' %in% colnames(y)){
-          tmp <- y %>% filter(positive >  `overlaps null`)
-          dir <- 'positive'
-          
-        } else if ('negative' %in% colnames(y)){
-          tmp <-  y %>% filter(negative > `overlaps null` )
-           dir <- 'negative'
-        }
-    
-        if (dim(tmp)[1] != 0) {
-          # collect results for trait in a vector and keep in a list
-          trait_tmp<-c(unique(x$exposure_cat), unique(x$exposure.id),  unique(x$exposure.trait), 0,0,0, dir)
-          names(trait_tmp)<-c('exposure_cat', 'id', 'trait', 'all', "ER+", "ER-", 'dir')
-            
-          if ("Breast cancer (all)" %in% tmp$outcome){ trait_tmp[["all"]] <- 1 }
-          if ("ER+ postmeno"        %in% tmp$outcome){ trait_tmp[["ER+"]] <- 1 }
-          if ("ER- premeno"          %in% tmp$outcome){ trait_tmp[["ER-"]] <- 1 }
-          res[[unique(x$exposure.id)]] <- trait_tmp
-        }
-        }
-    }
-  }
-  
-  
-  #list to df
-  out<- bind_rows(res) 
-  return(out)
-}
+#SAVE
+tidy_traits_by_cat %>% count(exposure_cat)
+tidy_traits_by_cat %>% write_tsv("mr_evidence_outputs/tidy_traits_by_cat.tsv")
 ```
-
-```{r}
-
-# all_cats<-tibble() # run once
-
-# run for each category input
-u <- traits_for_follow_up(input, dat)
-all_cats<-bind_rows(all_cats, u) %>% distinct()
-all_cats %>% select(exposure_cat, trait, id) %>% distinct() %>% count(exposure_cat)
-
-
-write_tsv(all_cats, "mr_evidence_outputs/trait_for_followup.tsv")
-```
-
-```{r}
-dat %>% 
-  filter(exposure_cat %in% keep) %>% 
-  filter(exposure.id %in% all_cats$id) %>% 
-  filter(chip %in% c('Meta', 'iCOG2017', 'OncArray')) %>% 
-  select(exposure.id, outcome.id, mr.method) %>% 
-  distinct() %>% 
-  count(mr.method) %>% arrange(-n) %>% 
-  mutate(pct =  round(n/sum(n)*100, 2)) 
-
-```
-
-
-```{r}
-
-do_MR <- function(trait, bc_type){
-  
-  if (bc_type == 'all')      {bc.id <- 'ieu-a-1126'
-  }else if (bc_type == 'ER+'){bc.id <- 'ieu-a-1127'
-  }else if (bc_type == 'ER-'){bc.id <- 'ieu-a-1128'}
-  
-  instruments <- extract_instruments(trait)
-  out <- extract_outcome_data(snps = instruments$SNP,
-                              outcome = bc.id)
-  harmonised<- harmonise_data(exposure_dat = instruments, 
-                              outcome_dat = out)
-  res <- mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
-    split_outcome() %>% 
-    split_exposure() %>% 
-    generate_odds_ratios() %>% 
-    mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
-    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
-                              ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
-    select(exposure, id.exposure ,id.outcome, OR_CI, effect_direction , nsnp)
-
- return(res) 
-} 
-
-
-
-exp_help_names <- dat %>% select(exposure_name=exposure, id.exposure=exposure.id, exposure_cat) %>% distinct()
-
-## validate results using basic IVW
-
-ids <-all_cats %>% filter(all ==1) %>% pull(id)
-res <- lapply(ids, do_MR, 'all')
-res_all_df<-bind_rows(res)%>% left_join(exp_help_names)
-
-ids <-all_cats %>% filter(`ER+` == 1) %>% pull(id)
-res <- lapply(ids, do_MR, 'ER+')
-res_df_pos<-bind_rows(res)%>% left_join(exp_help_names)
-
-ids <-all_cats %>% filter(`ER-` == 1) %>% pull(id)
-res <- lapply(ids, do_MR, 'ER-')
-res_df_neg<-bind_rows(res) %>% left_join(exp_help_names)
-
-
-redone <- bind_rows(res_all_df, res_df_pos,res_df_neg ) %>% 
-          filter(effect_direction != "overlaps null")
-
-write_tsv(redone, "mr_evidence_outputs/trait_manual_ivw.tsv")
-
-redone %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)
-
-
-# create wide form of reult to view by subtype
-redone_wide <- redone %>%
-  select(id.outcome, id.exposure, exposure_name, effect_direction) %>% 
-  mutate(effect_dir_binary = ifelse(effect_direction == 'negative', -1, 1)) %>% 
-  pivot_wider(names_from = id.outcome, values_from = effect_dir_binary) %>% 
-  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
-  select(-effect_direction)
-
-
-```
-
-```{r}
-library(eulerr)
-
-s4 <- list(`All` = redone %>% filter(id.outcome == 'ieu-a-1126') %>% pull(label) %>% sort(),
-           `ER+` = redone %>% filter(id.outcome == 'ieu-a-1127') %>% pull(label)%>% sort(),
-           `ER-` = redone %>% filter(id.outcome == 'ieu-a-1128') %>% pull(label)%>% sort())
-plot(euler(s4, shape = "ellipse"), quantities = TRUE)
-
-
-# get items by type
-tmp<- redone %>% count(id.exposure) %>% filter(n ==1)
-onlyERneg<-redone %>% filter(id.exposure %in% tmp$id.exposure & id.outcome == 'ieu-a-1128')
-onlyERpos<-redone %>% filter(id.exposure %in% tmp$id.exposure & id.outcome == 'ieu-a-1127')
-onlyFull<-redone %>% filter(id.exposure %in% tmp$id.exposure & id.outcome == 'ieu-a-1126')
-```
-
-# load results from subtype analysis
-```{r message =F}
-exp_help_names <- dat %>% select(exposure_name=exposure, id.exposure=exposure.id, exposure_cat) %>% distinct()
-res_subtypes <- read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/02_Results/new_bcac/all_merged.tsv") %>% 
-  filter(effect_direction != 'overlaps null',
-         method %in% c('Inverse variance weighted', 'Wald ratio')) %>%
-   distinct()
-
-
-res_subtypes_wide<- res_subtypes %>% 
-  select(outcome, exposure.id,  effect_direction) %>% 
-  mutate(outcome =   case_when(outcome == 'Luminal B-HER2 negative' ~ 'Luminal B1: ER+PR+HER-',
-                               outcome == 'Luminal B'        ~ 'Luminal B2: ER+PR+HER+',
-                               outcome == 'Luminal A'        ~ 'Luminal A: ER+PR+HER-',
-                               outcome == 'HER2 enriched'    ~ 'HER2-enriched: ER-PR-HER+',
-                               outcome == 'TNBC Basal-like'  ~ 'Basal-like TNBC: ER-PR-HER-',
-                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'BRCA1_CIMBA TNBC: ER-PR-HER-',
-                               TRUE ~ outcome)) %>% 
-  mutate(effect_dir_binary = ifelse(effect_direction == 'negative', -1, 1)) %>% 
-  pivot_wider(names_from = outcome, values_from = effect_dir_binary) %>% 
-  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
-  select( exposure.id, 'Breast cancer (overall BCAC 2020)', 'Basal-like TNBC: ER-PR-HER-','BRCA1_CIMBA TNBC: ER-PR-HER-', everything() , -effect_direction )
-
-#merge subtypes and validation
-
-merged <- left_join(redone_wide, res_subtypes_wide, c('id.exposure'='exposure.id')) %>% 
-          mutate(across(everything(), ~replace_na(.x, 0))) %>% 
-          left_join(exp_help_names, c('id.exposure', 'exposure_name') ) %>% 
-          mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
-          select(exposure_cat, label, everything()) 
-
-
-
-write_tsv(merged, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
-
-
-
-
-heatmap(data, Colv = NA, Rowv = NA, scale="column", col = coul, xlab="variable", ylab="car", main="heatmap")
-
-
-
-only_ER_neg <- merged %>%
-  filter(`ieu-a-1128` ==1 & `Basal-like TNBC: ER-PR-HER-` ==1 & `BRCA1_CIMBA TNBC: ER-PR-HER-` ==1) 
-
-
-only_ER_pos <- merged %>%
-  filter(`ieu-a-1127` ==1 & `Luminal B1: ER+PR+HER-` ==1 & `Luminal B2: ER+PR+HER+` ==1 & `Luminal A: ER+PR+HER-`==1 ) 
-
-only_HER_pos <- merged %>%
-  filter(`Luminal B2: ER+PR+HER+` ==1 & `HER2-enriched: ER-PR-HER+` ==1) 
-
-
-# only in old BCAC
-merged %>%
-  filter(`ieu-a-1126` ==1) %>% 
-  filter_at(vars(-`ieu-a-1126`,-exposure_cat, -label, -id.exposure, -exposure_name ), all_vars(. == 0))%>% View()
-
-merged %>%
-  filter(`ieu-a-1126` ==1 | `ieu-a-1128` ==1 | `ieu-a-1127` ==1 ) %>% 
-  filter_at(vars(-contains('ieu'),-exposure_cat, -label, -id.exposure, -exposure_name ), all_vars(. == 0))%>% View()
-# same but count
-merged %>%
-  filter(`ieu-a-1126` ==1 | `ieu-a-1128` ==1 | `ieu-a-1127` ==1 ) %>% 
-  filter_at(vars(-contains('ieu'),-exposure_cat, -label, -id.exposure, -exposure_name ), all_vars(. == 0))%>% count(exposure_cat)
-
-
-merged_lipids<- merged %>% filter(exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers")) %>% 
-          filter(grepl("LDL|HDL|cholest|trigl", exposure_name, ignore.case = T))
-
-write_tsv(merged_lipids, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged_LIPIDS.tsv")
-
-
-not_lipids<- merged %>% filter(exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers")) %>% 
-          filter(!grepl("LDL|HDL|cholest|trigl", exposure_name, ignore.case = T))
-
-write_tsv(not_lipids, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged_NOTLIPIDS.tsv")
-
-```
-
-
-```{r}
-##### NEXT: need to decide how to use this info to make any further decisions
-# https://cran.r-project.org/web/packages/dendextend/vignettes/Cluster_Analysis.html
-
-library(dendextend)
-
-merged <- read_tsv("mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") %>% 
-  filter(!exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers"))
-
-merged <- read_tsv("mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") %>% 
-  filter(exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers")) %>% 
-  filter(!grepl("LDL|HDL|cholest|trigl", exposure_name, ignore.case = T)) #%>% 
-  #mutate(exposure_cat = ifelse(grepl("HDL", label), "HDL", "not HDL"))
-  
-
-merged<- merged %>% mutate(overall = case_when(`ieu-a-1126` ==1 | `ieu-a-1128` ==1 | `ieu-a-1127` ==1 ~ 1,
-                                       `ieu-a-1126` ==-1 | `ieu-a-1128` ==-1 | `ieu-a-1127` ==-1 ~ 2 ))
-
-#merged_data <- merged %>% select(5:14)
-
-merged_data <- merged %>% select("Basal-like TNBC: ER-PR-HER-",#"BRCA1_CIMBA TNBC: ER-PR-HER-",  
-                                 "HER2-enriched: ER-PR-HER+" , "Luminal A: ER+PR+HER-" ,
-                                 "Luminal B2: ER+PR+HER+" , "Luminal B1: ER+PR+HER-"  )
-
-merged_data <- merged %>% select("ieu-a-1126" , "ieu-a-1127" ,"ieu-a-1128" ) %>% 
-   mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-   mutate(direction = case_when(sum < 0 ~ "negative",
-                          sum > 0 ~ "positive",
-                          TRUE ~ "no effect")) %>% select(-sum)
-
-merged_data <- merged %>% select("ieu-a-1126" , "ieu-a-1127" ,"ieu-a-1128" , "exposure_cat")
-
-
-merged_data <- merged %>% select( "ieu-a-1127" ,"ieu-a-1128",
-                                  "Basal-like TNBC: ER-PR-HER-","BRCA1_CIMBA TNBC: ER-PR-HER-",  
-                                 "HER2-enriched: ER-PR-HER+" , "Luminal A: ER+PR+HER-" ,
-                                 "Luminal B2: ER+PR+HER+" , "Luminal B1: ER+PR+HER-" )
-
-merged_data <- merged %>% select("ieu-a-1126" ,  "Breast cancer (overall BCAC 2020)")
-
-
-d <- dist(merged_data) # method="man" # is a bit better
-hc <- hclust(d, method = "complete")
-dat <- levels(unclass(factor(merged %>% pull(1))))
-
-dend <- as.dendrogram(hc)
-# order it the closest we can to the order of the observations:
-dend <- rotate(dend, 1:dim(merged_data)[1])
-
-# for conveniet viewing
-merged_data$exposure_name <- merged %>% pull(exposure_name)
-
-# Color the branches based on the clusters:
-dend <- color_branches(dend, k=1, col= 'black')
-
-#mypal <- RColorBrewer::brewer.pal(10,"Paired")[c(2,6, 4)]
-#mypal <- c("black","black","black" )
-
-mypal <- c( "#4D9221", "#C51B7D") #  green pink
-#mypal <- c("orange", "purple")
-
-# Manually match the labels, as much as possible, to the real classification of the flowers:
-labels_colors(dend) <-
-   mypal[sort_levels_values(as.numeric(unclass(factor(merged_data %>% pull(exposure_cat))))[order.dendrogram(dend)])]
-
-
-# We shall add the flower type to the labels:
-labels(dend) <- paste(as.character(merged %>% pull(4))[order.dendrogram(dend)])
-
-# We hang the dendrogram a bit:
-dend <- hang.dendrogram(dend,hang_height=0.1)
-# reduce the size of the labels:
-# dend <- assign_values_to_leaves_nodePar(dend, 0.5, "lab.cex")
-dend <- set(dend, "labels_cex", 0.6)
-# And plot:
-par(mar = c(2.5,0.5,2,25))
-plot(dend, 
-     horiz =  TRUE,  nodePar = list(cex = .007))
-#mytitle = "Clustered based on"
-#mysubtitle = paste0(rev(colnames(merged_data))[-1], collapse=", ")
-mtext(side=3, line=0.8, at=1, adj=1, cex=1.2, mytitle)
-#mtext(side=3, line=-0.2, at=1, adj=1, cex=0.9, mysubtitle) # meta
-mtext(side=3, line=-0.2, at=-2.5, adj=1, cex=0.6, mysubtitle)
-
-legend("topleft", legend = dat, fill = mypal)
-
-
-# circular diagram 
-library(circlize)
-par(mar = rep(0,4))
-circlize_dendrogram(dend)
-
-
-## with heatmap
-
-# scaled_iris2 <- iris2 %>% as.matrix %>% scale
-# library(gplots)
-
-
-merged_data<-merged_data %>% tibble::column_to_rownames('exposure_name')
-
-gplots::heatmap.2(as.matrix(merged_data), 
-          main = "Heatmap",
-          srtCol = 20,
-          dendrogram = "row",
-          Rowv = dend,
-          Colv = "NA", # this to make sure the columns are not ordered
-          trace="none",          
-          margins =c(5,10),      
-          key.xlab = "Cm",
-          denscol = "grey",
-          density.info = "density",
-          #RowSideColors = rev(labels_colors(dend)), # to add nice colored strips        
-          col = brewer.pal(n=7, name = "PiYG")
-         )
-
-```
-
-
 
 
 
