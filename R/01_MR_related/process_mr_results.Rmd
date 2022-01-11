@@ -219,7 +219,7 @@ write_tsv(redone_MR_sens, "mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
 redone_MR%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)
 
 redoneMR_tidy <- redone_MR %>%  
-  select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, effect_direction , nsnp, method) %>% 
+  select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
   filter(effect_direction != "overlaps null") %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
 
@@ -229,6 +229,8 @@ write_tsv(redoneMR_tidy, "mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv")
 
 
 # create wide form of results to view by subtype
+redone_MR <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
+
 redone_wide <- redone_MR %>%
   select(id.outcome, id.exposure, exposure_name, effect_direction, method) %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
@@ -252,17 +254,20 @@ plot(euler(s4, shape = "ellipse"), quantities = TRUE)
 
 ```
 
-# load results from subtype analysis
-```{r message =F}
-exp_help_names <- dat %>% select(exposure_name=exposure, id.exposure=exposure.id, exposure_cat) %>% distinct()
-res_subtypes <- read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/02_Results/new_bcac/all_merged.tsv") %>% 
-  filter(effect_direction != 'overlaps null',
-         method %in% c('Inverse variance weighted', 'Wald ratio')) %>%
-   distinct()
 
+
+NEXT, in other script `mr_results_for_bcac_subtypes.Rmd` we create MR results for those traits in subtypes
+
+
+
+
+## Load results from subtype analysis
+
+```{r message =F}
+
+res_subtypes <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv")
 
 res_subtypes_wide<- res_subtypes %>% 
-  select(outcome, exposure.id,  effect_direction) %>% 
   mutate(outcome =   case_when(outcome == 'Luminal B-HER2 negative' ~ 'Luminal B1: ER+PR+HER-',
                                outcome == 'Luminal B'        ~ 'Luminal B2: ER+PR+HER+',
                                outcome == 'Luminal A'        ~ 'Luminal A: ER+PR+HER-',
@@ -270,28 +275,39 @@ res_subtypes_wide<- res_subtypes %>%
                                outcome == 'TNBC Basal-like'  ~ 'Basal-like TNBC: ER-PR-HER-',
                                outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'BRCA1_CIMBA TNBC: ER-PR-HER-',
                                TRUE ~ outcome)) %>% 
-  mutate(effect_dir_binary = ifelse(effect_direction == 'negative', -1, 1)) %>% 
-  pivot_wider(names_from = outcome, values_from = effect_dir_binary) %>% 
-  mutate(across(everything(), ~replace_na(.x, 0))) %>% 
-  select( exposure.id, 'Breast cancer (overall BCAC 2020)', 'Basal-like TNBC: ER-PR-HER-','BRCA1_CIMBA TNBC: ER-PR-HER-', everything() , -effect_direction )
+  select(outcome, id.exposure, exposure_name, effect_direction, method) %>% 
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
+  mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
+                                       effect_direction == 'positive' ~  1,
+                                       effect_direction == 'overlaps null' ~  0)) %>% 
+  select(-effect_direction, -method) %>% 
+  pivot_wider(names_from = outcome, values_from = effect_dir_binary)
+
+ 
 
 #merge subtypes and validation
-
-merged <- left_join(redone_wide, res_subtypes_wide, c('id.exposure'='exposure.id')) %>% 
-          mutate(across(everything(), ~replace_na(.x, 0))) %>% 
-          left_join(exp_help_names, c('id.exposure', 'exposure_name') ) %>% 
+merged <- left_join(redone_wide, 
+                    res_subtypes_wide,
+                    by = c('id.exposure'='exposure.id')) %>% 
           mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
           select(exposure_cat, label, everything()) 
 
 
-
 write_tsv(merged, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
+```
 
 
 
+
+
+
+
+
+
+```{r}
+### variaous viz attempts
 
 heatmap(data, Colv = NA, Rowv = NA, scale="column", col = coul, xlab="variable", ylab="car", main="heatmap")
-
 
 
 only_ER_neg <- merged %>%
