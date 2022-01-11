@@ -10,7 +10,7 @@ R/htmls*
 *.html
 
 R/external_figures/
-
+R/01_MR_related/mr_evidence_outputs/*
 
 query_results/*
 
