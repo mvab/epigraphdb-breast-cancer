@@ -197,11 +197,11 @@ exp_help_names <- dat %>%
 
 ## MR -- doing all outcomes validaton, even if mr-eve had sign result only for one or two types
 ids <-all_cats %>% pull(id)
-res_df_all <- bind_rows(lapply(ids, do_MR, 'all')) %>% left_join(exp_help_names)
-res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+')) %>% left_join(exp_help_names)
-res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-')) %>% left_join(exp_help_names)
+res_df_all <- bind_rows(lapply(ids, do_MR, 'all')) 
+res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+')) 
+res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-'))
 
-redone_MR_full <- bind_rows(res_df_all,res_df_pos,res_df_neg)
+redone_MR_full <- bind_rows(res_df_all,res_df_pos,res_df_neg) %>% left_join(exp_help_names)
 
 # split into MR and sens and save
 redone_MR <- redone_MR_full %>% 
@@ -232,7 +232,7 @@ write_tsv(redoneMR_tidy, "mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv")
 redone_MR <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
 
 redone_wide <- redone_MR %>%
-  select(id.outcome, id.exposure, exposure_name, effect_direction, method) %>% 
+  select(id.outcome, id.exposure, exposure_name, effect_direction, method, exposure_cat) %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
   mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
                                        effect_direction == 'positive' ~  1,
@@ -275,7 +275,7 @@ res_subtypes_wide<- res_subtypes %>%
                                outcome == 'TNBC Basal-like'  ~ 'Basal-like TNBC: ER-PR-HER-',
                                outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'BRCA1_CIMBA TNBC: ER-PR-HER-',
                                TRUE ~ outcome)) %>% 
-  select(outcome, id.exposure, exposure_name, effect_direction, method) %>% 
+  select(outcome, id.exposure, effect_direction, method) %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
   mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
                                        effect_direction == 'positive' ~  1,
@@ -287,8 +287,8 @@ res_subtypes_wide<- res_subtypes %>%
 
 #merge subtypes and validation
 merged <- left_join(redone_wide, 
-                    res_subtypes_wide,
-                    by = c('id.exposure'='exposure.id')) %>% 
+                    res_subtypes_wide) %>% 
+          left_join(exp_help_names) %>% 
           mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
           select(exposure_cat, label, everything()) 
 

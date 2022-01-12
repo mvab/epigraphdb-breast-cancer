@@ -45,11 +45,11 @@ for (i in bcac_lookup$full_data){
 ```{r}
 
 # load traits that have been validated in 'process_mr_results.Rmd'
-traits_df <- read_tsv("mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv") 
+traits_df<-read_tsv("mr_evidence_outputs/trait_for_followup.tsv")
 
-traits<- traits_df%>%  pull(id.exposure) %>% unique()
+traits<- traits_df%>%  pull(id) %>% unique()
 
-length(traits) # 174
+length(traits) # 314
 
 ```
 
@@ -100,6 +100,7 @@ for (i in 1:length(traits)){
               res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
               print(paste0("Can't do sensitivity tests for ", trait))
             }
+            rm(harmonised)
         }  
             # join mr and sens in one table
             out <- full_join(res_tidy, res_sens)
@@ -109,8 +110,7 @@ for (i in 1:length(traits)){
         }
 
          # add useful cols
-         trait_vs_subtypes <- trait_vs_subtypes  %>% select(-id.outcome) %>%
-                              left_join(traits_df %>% select(id.exposure, exposure_name, exposure_cat)) %>% distinct()
+         trait_vs_subtypes <- trait_vs_subtypes  %>% select(-id.outcome) %>% distinct()
 
          
          mr_res <- trait_vs_subtypes   %>% select(-starts_with('egger_intercept'), -starts_with('Q'))
@@ -136,6 +136,7 @@ l <- lapply(all.files, read_tsv)
 all_res<- bind_rows(l)
 
 all_res<- all_res %>% 
+  select(-exposure_name, -exposure_cat) %>% 
   mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
   mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                             ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
