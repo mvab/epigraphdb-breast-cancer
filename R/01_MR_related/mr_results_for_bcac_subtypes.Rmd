@@ -56,9 +56,9 @@ length(traits) # 174
 
 ```{r message=F,  warnings=F}
 
-
-for (trait in traits){
-    print(paste0("====", trait, "===="))
+for (i in 1:length(traits)){
+    trait = traits[i]
+    print(paste0("==== ", trait, " / ", i,  " ===="))
   
     # load instruments
     trait1_exp <- extract_instruments(trait) #### NB not clumping??
@@ -87,7 +87,7 @@ for (trait in traits){
                         arrange(method)
             
               # sensitivity
-            if (dim(harmonised)[1]>1){
+            if (dim(harmonised)[1]>1 & unique(res$method) != "Wald ratio"){
               res_sens <-
                 full_join(mr_pleiotropy_test(harmonised),
                         mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
@@ -98,6 +98,7 @@ for (trait in traits){
             } else {
               # making dummy sens analysis table as a placeholder
               res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+              print(paste0("Can't do sensitivity tests for ", trait))
             }
         }  
             # join mr and sens in one table
@@ -130,7 +131,7 @@ for (trait in traits){
 ```{r}
 # join all files into one df
 
-all.files <- list.files(path = paste0("mr_evidence_outputs/mr_subtypes/"), pattern = paste0("MR*"), full.names = T)
+all.files <- list.files(path = paste0("mr_evidence_outputs/mr_subtypes/"), pattern = paste0("^MR*"), full.names = T)
 l <- lapply(all.files, read_tsv)
 all_res<- bind_rows(l)
 
