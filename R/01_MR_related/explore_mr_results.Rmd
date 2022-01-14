@@ -32,6 +32,7 @@ dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>%
       # deal ith al outcome related changes
       process_bc_outcomes() %>% 
       # create categories of exposure traits
+      filter(!grepl("_raw",exposure.id)) %>% 
       create_exposure_categories() %>% 
       add_exposure_labels() %>% 
       # drop really weird cases when CIs are weird

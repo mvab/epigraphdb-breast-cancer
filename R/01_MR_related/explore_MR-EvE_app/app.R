@@ -30,6 +30,7 @@ dat <-
   # deal ith al outcome related changes
   process_bc_outcomes() %>% 
   # create categories of exposure traits
+  filter(!grepl("_raw",exposure.id)) %>% 
   create_exposure_categories() %>%
   # split several hundreds of proteins and metabolites in smaller chunks
   split_protein_exposures() %>% 
