@@ -1,47 +1,16 @@
 library(tidyverse)
 library(epigraphdb)
 source("helper_functions.R")
+source("01_MR_related/explore_MR-EvE_app/functions.R")
 
-
+# testing
 exposure = "met-a-362"
 outcome = "ieu-a-1128"
 pval_threshold = 1e-04
-
-confounder_query = paste0("
-    MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
-    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
-    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
-          ")
-
-collider_query = paste0("
-    MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
-    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
-    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
-          ")
-
-mediator_query = paste0("
-    MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
-    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
-    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
-          ")
-
-reverse_mediator_query = paste0("
-    MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
-    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
-    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
-          ")
-
-# testing
 #test<-query_epigraphdb_as_table(mediator_query)
 #xx<-tidy_conf_query_output(test, type = "mediator")
+
+
 
 tidy_conf_query_output <- function(df, type){
   
@@ -86,45 +55,149 @@ tidy_conf_query_output <- function(df, type){
     
 }
 
+query_and_tidy_conf <- function(exposure, outcome,pval_threshold ){
+  
+
+  # construct queries
+  confounder_query = paste0("
+    MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
+    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
+          ")
+  
+  collider_query = paste0("
+    MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
+    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
+          ")
+  
+  mediator_query = paste0("
+    MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
+    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
+          ")
+  
+  reverse_mediator_query = paste0("
+    MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
+    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
+          ")
+  
+  # run queries
+  res_list <- list(
+    colliders = query_epigraphdb_as_table(collider_query),
+    confounders = query_epigraphdb_as_table(confounder_query),
+    mediators = query_epigraphdb_as_table(mediator_query),
+    rev_mediators = query_epigraphdb_as_table(reverse_mediator_query)
+  )
+  
+  # tidy query outputs
+  res_list_tidy <- list(
+    colliders = tidy_conf_query_output(res_list$colliders, type = "collider"),
+    confounders = tidy_conf_query_output(res_list$confounders, type = "confounder"),
+    mediators =  tidy_conf_query_output(res_list$mediators, type = "mediator"),
+    rev_mediators = tidy_conf_query_output(res_list$rev_mediators, type = "reverse_mediator")
+  )
+  
+  res_list_tidy_df <- bind_rows(res_list_tidy)
+  return(res_list_tidy_df)
+  
+}
 
 
-res_list <- list(
-  colliders = query_epigraphdb_as_table(collider_query),
-  confounders = query_epigraphdb_as_table(confounder_query),
-  mediators = query_epigraphdb_as_table(mediator_query),
-  rev_mediators = query_epigraphdb_as_table(reverse_mediator_query)
-)
+#### 
 
-res_list_tidy <- list(
-  colliders = tidy_conf_query_output(res_list$colliders, type = "collider"),
-  confounders = tidy_conf_query_output(res_list$confounders, type = "confounder"),
-  mediators =  tidy_conf_query_output(res_list$mediators, type = "mediator"),
-  rev_mediators = tidy_conf_query_output(res_list$rev_mediators, type = "reverse_mediator")
-)
+traits_df <- read_tsv("01_MR_related/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") 
 
-res_list_tidy_df <- bind_rows(res_list_tidy)
-res_list_tidy_df %>% select(exposure.trait, med.trait, outcome.trait, r1.b, r2.b, r3.b, type) %>% View()
+# wxtract pairs of exp-out with effect
+traits_all <- bind_rows(
+  traits_df %>%filter(`ieu-a-1126` !=0) %>%  select(id.exposure) %>% mutate(id.outcome = "ieu-a-1126"),
+  traits_df %>%filter(`ieu-a-1127` !=0) %>%  select(id.exposure) %>% mutate(id.outcome = "ieu-a-1127"),
+  traits_df %>%filter(`ieu-a-1128` !=0) %>%  select(id.exposure) %>% mutate(id.outcome = "ieu-a-1128")) %>% distinct()
 
 
+# for each pair collect intermediates
+all_results <- tibble()
+for (i in 1:length(traits_all$id.exposure)){
+  
+  out <- query_and_tidy_conf(exposure = traits_all$id.exposure[i], 
+                             outcome = traits_all$id.outcome[i], 
+                             pval_threshold =  1e-04)
+  all_results<- bind_rows(all_results, out)
+  
+}
 
+# add trait category to intermediate items
+all_results_trait_cats <- 
+  all_results %>%  
+ select(exposure.trait = med.trait, exposure.id = med.id) %>% 
+ create_exposure_categories() %>% 
+ select(med_cat = exposure_cat, med.trait = exposure.trait, med.id = exposure.id ) %>% distinct()
+                
+all_results <- all_results %>% left_join(all_results_trait_cats) 
+dim(all_results)
 
-
-# getting the category of the third variable + excluding thing that don't make sense
-source("01_MR_related/explore_MR-EvE_app/functions.R")
-res_list_tidy_df_cats <- res_list_tidy_df %>% #filter(type == 'mediator') %>% 
-                  select(exposure.trait = med.trait, 
-                         exposure.id = med.id, r3.OR_CI, r3.effect_direction, type) %>% 
-                 create_exposure_categories() 
-
-res_list_tidy_df_cats %>% select(type, exposure_cat) %>% group_by(type, exposure_cat) %>% count(type, exposure_cat)
-
-res_list_tidy_df %>% 
-  select(exposure.trait, med.trait, outcome.trait, r1.OR_CI, r2.OR_CI, r3.OR_CI, r1.b, r2.b, r3.b, type) %>%
-  left_join(res_list_tidy_df_cats %>% select(med.trait = exposure.trait, med_cat = exposure_cat), by='med.trait' ) %>% 
-  select(exposure.trait, med.trait, outcome.trait, r1.OR_CI, r2.OR_CI, r3.OR_CI,  type, med_cat, r1.b, r2.b, r3.b) %>% 
+# filter
+results_subset <- all_results %>% 
+  filter(!r1.OR_CI %in% c("0 [0:0]", "1 [1:1]")) %>% 
+  filter(!r3.OR_CI %in% c("0 [0:0]", "1 [1:1]")) %>% 
+  select(exposure.trait, med.trait, outcome.id, r1.OR_CI, r2.OR_CI, r3.OR_CI,  type, med_cat, r1.b, r2.b, r3.b, exposure.id, med.id) %>% 
   distinct() %>% 
-  filter(!med_cat %in% c('Diseases', 'Medical Procedures', 'other', "Education", "Psychology", "CHD")) %>% View() 
+  filter(!grepl("arm|leg", med.trait, ignore.case = T)) %>% 
+  filter(!med_cat %in% c('Diseases', 'Medical Procedures', 'other', "eye_hearing_teeth"))#, "Education", "Psychology", "CHD")) # other??
+dim(results_subset)
 
+
+write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted.csv")
+
+
+## rules of mediaotrs
+results_subset %>%  filter(type == 'mediator') %>% View()
+
+mediators <- results_subset %>% 
+  filter(type == 'mediator') %>% 
+  # keep only those meds that have proven effect on outcome
+  filter(med.id %in% traits_df$id.exposure) %>% 
+  mutate(med_version = case_when(
+    r1.b < 0 & r2.b < 0 & r3.b > 0 ~ "med1",
+    r1.b > 0 & r2.b < 0 & r3.b < 0 ~ "med2",
+    r1.b > 0 & r2.b > 0 & r3.b > 0 ~ "med3",
+    r1.b < 0 & r2.b > 0 & r3.b < 0 ~ "med4",
+    
+    r1.b > 0 & r2.b < 0 & r3.b > 0 ~ "med5",
+    r1.b < 0 & r2.b > 0 & r3.b > 0 ~ "med6",
+    r1.b < 0 & r2.b < 0 & r3.b < 0 ~ "med7",
+    r1.b > 0 & r2.b > 0 & r3.b < 0 ~ "med8",
+    TRUE ~ "med_other"))
+mediators %>% count(med_version)
+
+
+## rules of conf
+confounders <- results_subset %>% 
+  filter(type == 'confounder') %>% 
+  # keep only those meds that have proven effect on outcome
+  filter(med.id %in% traits_df$id.exposure) 
+
+
+
+
+
+#in mediaotrs/conf , we can keep onaly those that do have IVW confirmed effect on BC? 
+
+
+
+
+
+
+###
 
 
 in_final <- read_tsv("01_MR_related/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") %>% 
