@@ -254,11 +254,11 @@ plot(euler(s4, shape = "ellipse"), quantities = TRUE)
 
 ```
 
-
-
+#
+#
 NEXT, in other script `mr_results_for_bcac_subtypes.Rmd` we create MR results for those traits in subtypes
-
-
+#
+#
 
 
 ## Load results from subtype analysis
@@ -268,13 +268,6 @@ NEXT, in other script `mr_results_for_bcac_subtypes.Rmd` we create MR results fo
 res_subtypes <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv")
 
 res_subtypes_wide<- res_subtypes %>% 
-  mutate(outcome =   case_when(outcome == 'Luminal B-HER2 negative' ~ 'Luminal B1: ER+PR+HER-',
-                               outcome == 'Luminal B'        ~ 'Luminal B2: ER+PR+HER+',
-                               outcome == 'Luminal A'        ~ 'Luminal A: ER+PR+HER-',
-                               outcome == 'HER2 enriched'    ~ 'HER2-enriched: ER-PR-HER+',
-                               outcome == 'TNBC Basal-like'  ~ 'Basal-like TNBC: ER-PR-HER-',
-                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'BRCA1_CIMBA TNBC: ER-PR-HER-',
-                               TRUE ~ outcome)) %>% 
   select(outcome, id.exposure, effect_direction, method) %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
   mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
@@ -297,12 +290,158 @@ write_tsv(merged, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
 ```
 
 
+### Sensitivity analysis review
+
+
+### PLAN
+
+
+# 1, >2 snps (so that sens tests are possible)
+# 2. IVW must have effect 
+# 3. egger and median must hve same effect direction
+# 4. one egger or median also has to be signidicant
+
+#. egger intecent must be low ~0.002 + large Pval =OK
+#  flag low Q pval - is Q high? 
+
+
+
+```{r}
+# add sensitivity analysis cols 
+
+add_sensitivity_cols <- function(main_results, sens_results, outcome_name){
+  
+  
+  # main results
+  all <- main_results %>% mutate(low_SNP_num = ifelse(nsnp < 5 , T, F))
+  type <- all %>% filter(id.outcome == outcome_name)
+  type_filtered<- type  %>% 
+                 filter(method %in%  c('Inverse variance weighted', "Wald ratio")  & effect_direction != "overlaps null") 
+  print(paste( outcome_name, ":::", length(unique(type_filtered$id.exposure)), "/",  length(unique(type$id.exposure)) ) )
+
+  type <- type %>% filter(id.exposure %in% type_filtered$id.exposure) 
+  
+  ##count alt MR success
+  effect_count <- type %>% 
+    filter(effect_direction != "overlaps null") %>% 
+    group_by( exposure, id.exposure) %>% count( exposure, id.exposure) %>% 
+    rename(num_mr_effect = n) %>% ungroup()
+  
+  type <- type %>%
+    left_join(effect_count) %>%
+    filter(method %in%  c('Inverse variance weighted', "Wald ratio"))
+  
+  # sens results 
+  sens_type <- sens_results %>% 
+        filter(id.outcome == outcome_name) %>% 
+        filter(method ==  'Inverse variance weighted')
+
+  sens_type <- sens_type %>%   
+    mutate(`egger_intercept_less_than_0.05` = ifelse(egger_intercept < 0.05, T, F) ) %>%  # pleio 1?
+    mutate(`egger_intercept_pval_more_than_0.05` = ifelse(egger_intercept_pval > 0.05, T, F) ) %>%  # pleio 2?
+    mutate(`Q_pval_less_than_0.05` = ifelse(Q_pval < 0.05, T, F) )  # heterogeniety 
+
+  
+  # merge into one df
+  merged<- left_join(type, sens_type) %>% 
+          select(everything(), -low_SNP_num, low_SNP_num, -num_mr_effect, num_mr_effect)
+
+}
+
+
+## old outcomes
+main_results <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
+sens_results <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
+
+res_w_sens <- list()
+
+outcomes1<- c('ieu-a-1126', 'ieu-a-1127', 'ieu-a-1128')
+
+for (outcome_name in outcomes1){
+  res_w_sens[[outcome_name]] <- add_sensitivity_cols(main_results, sens_results, outcome_name)
+}
+
+# new outcomes <- will add to the same list
+
+main_results <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>%  mutate(id.outcome = outcome)
+sens_results <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020.tsv") %>%  mutate(id.outcome = outcome)
+
+outcomes2 <- unique(main_results$id.outcome)
+
+for (outcome_name in outcomes2){
+  res_w_sens[[outcome_name]] <- add_sensitivity_cols(main_results, sens_results, outcome_name)
+}
+
+# "ieu-a-1126 ::: 117 / 314"
+# "ieu-a-1127 ::: 126 / 314"
+# "ieu-a-1128 ::: 61 / 314"
+# "Breast cancer BCAC 2020 ::: 108 / 313"
+# "Luminal A: ER+PR+HER- ::: 104 / 313"
+# "Luminal B1: ER+PR+HER- ::: 37 / 313"
+# "Luminal B2: ER+PR+HER+ ::: 31 / 313"
+# "HER2-enriched: ER-PR-HER+ ::: 42 / 313"
+# "TNBC: ER-PR-HER- ::: 52 / 313"
+# "TNBC BRCA1: ER-PR-HER- ::: 37 / 314"
+
+
+writexl::write_xlsx(res_w_sens, "mr_evidence_outputs/mr_subtypes/all_data_with_sens_filters.xlsx")
+
+
+x %>% count(`egger_intercept_less_than_0.05`, `egger_intercept_pval_more_than_0.05`)
+
+x %>%  filter(`egger_intercept_less_than_0.05` == F & `egger_intercept_pval_more_than_0.05` == T) %>% View()
+
+x %>%  filter(`egger_intercept_less_than_0.05` == T & `egger_intercept_pval_more_than_0.05` == F) %>% View()
+
+  
+  
+  
+
+```
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+x %>% count(`egger_intercept_less_than_0.05`, `egger_intercept_pval_more_than_0.05`)
+
+x %>%  filter(`egger_intercept_less_than_0.05` == F & `egger_intercept_pval_more_than_0.05` == T) %>% View()
+
+x %>%  filter(`egger_intercept_less_than_0.05` == T & `egger_intercept_pval_more_than_0.05` == F) %>% View()
 
 ```{r}
 ### variaous viz attempts
