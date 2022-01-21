@@ -132,7 +132,7 @@ for (i in 1:length(traits)){
 # join all files into one df
 
 all.files <- list.files(path = paste0("mr_evidence_outputs/mr_subtypes/"), pattern = paste0("^MR*"), full.names = T)
-l <- lapply(all.files, read_tsv)
+l <- lapply(all.files, read_tsv, show_col_types = FALSE)
 all_res<- bind_rows(l)
 
 all_res<- all_res %>% 
@@ -140,11 +140,41 @@ all_res<- all_res %>%
   mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
   mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                             ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
-    # fix issue with rounding negative effect to 1 
-    mutate(OR_CI = ifelse(effect_direction == 'negative' & OR_CI == '1 [1:1]', "0.99 [0.99:0.99]", OR_CI))
+  # fix issue with rounding negative effect to 1 
+  mutate(OR_CI = ifelse(effect_direction == 'negative' & OR_CI == '1 [1:1]', "0.99 [0.99:0.99]", OR_CI)) %>% 
+  mutate(outcome =  case_when(outcome == 'Luminal B-HER2 negative' ~ 'LuminalB1 ER+PR+HER-',
+                               outcome == 'Luminal B'        ~ 'LuminalB2 ER+PR+HER+',
+                               outcome == 'Luminal A'        ~ 'LuminalA ER+PR+HER-',
+                               outcome == 'HER2 enriched'    ~ 'HER2-enriched ER-PR-HER+',
+                               outcome == 'TNBC Basal-like'  ~ 'TNBC ER-PR-HER-',
+                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'TNBC_BRCA1 ER-PR-HER-',
+                               outcome == 'Breast cancer (overall BCAC 2020)' ~ 'Breast cancer BCAC 2020',
+                               TRUE ~ outcome))
 
 
 write_tsv(all_res, paste0("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv"))
+```
+
+
+
+```{r}
+# join all SENS files into one df
+
+all.files <- list.files(path = paste0("mr_evidence_outputs/mr_subtypes/"), pattern = paste0("^sens*"), full.names = T)
+l <- lapply(all.files, read_tsv, show_col_types = FALSE)
+all_res<- bind_rows(l)
+
+all_res <- all_res %>%   mutate(outcome =
+                     case_when(outcome == 'Luminal B-HER2 negative' ~ 'LuminalB1 ER+PR+HER-',
+                               outcome == 'Luminal B'        ~ 'LuminalB2 ER+PR+HER+',
+                               outcome == 'Luminal A'        ~ 'LuminalA ER+PR+HER-',
+                               outcome == 'HER2 enriched'    ~ 'HER2-enriched ER-PR-HER+',
+                               outcome == 'TNBC Basal-like'  ~ 'TNBC ER-PR-HER-',
+                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'TNBC_BRCA1 ER-PR-HER-',
+                               outcome == 'Breast cancer (overall BCAC 2020)' ~ 'Breast cancer BCAC 2020',
+                               TRUE ~ outcome))
+
+write_tsv(all_res, paste0("mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020.tsv"))
 ```
 
 
