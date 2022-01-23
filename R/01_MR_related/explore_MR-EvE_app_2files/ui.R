@@ -28,8 +28,9 @@ shinyUI(
         
         # Output: Tabsets
         tabsetPanel(type = "tabs",
-                    tabPanel("Static plot", plotOutput("bubbleplot1", height = "700px", width = "900px")),
-                    tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "700px", width = "900px"))),
+                    tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "700px", width = "900px")),
+                    tabPanel("Static plot", plotOutput("bubbleplot1", height = "700px", width = "900px"))
+                    ),
         
         
         hr(),

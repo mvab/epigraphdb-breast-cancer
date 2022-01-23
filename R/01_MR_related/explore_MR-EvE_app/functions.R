@@ -92,7 +92,8 @@ create_exposure_categories <- function(dat){
       grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|Iron|cystatin|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'Other biomarkers',
       grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic|education", exposure, ignore.case = T) ~ 'Education',
       grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves", exposure, ignore.case = T) ~ 'Psychology',
-      TRUE ~ 'other')) 
+      TRUE ~ 'other')) %>% 
+    mutate(exposure_cat = ifelse(grepl("LDL|HDL|cholest|trigl", exposure.trait, ignore.case = T) & exposure_cat %in% c('Metabolites', 'Other biomarkers'), "Lipids", exposure_cat))
   
   return(dat)
   
@@ -125,7 +126,7 @@ split_protein_exposures <- function(dat){
   
 }
 
-split_metabolite_exposures <- function(dat){
+split_metabolite_exposures_old <- function(dat){
   # splitting proteins into 6 subgroups
   tmp<-dat %>% 
     filter(exposure_cat == 'Metabolites') %>% 
@@ -147,6 +148,14 @@ split_metabolite_exposures <- function(dat){
   
 }
 
+split_metabolite_exposures <- function(dat){
+  
+  dat <- dat %>% mutate(exposure_cat = 
+      ifelse(exposure_cat == 'Metabolites' & author == 'Shin', 'Metabolites (pt. 1)',
+      ifelse(exposure_cat == 'Metabolites' & author != 'Shin', 'Metabolites (pt. 2)', exposure_cat)))
+  
+  return(dat)
+}
 
 
 add_exposure_labels <-function(dat){
@@ -157,6 +166,8 @@ add_exposure_labels <-function(dat){
   separate(exposure.ss, into=c('exposure.ss', 'tmp'), sep=",") %>% 
   mutate(exposure.ss_label = paste0(" [",exposure.ss,"K]"),
          exposure.ss_label = gsub("   NA", "NA ", exposure.ss_label)) %>% 
+  mutate(exposure.ss_label = ifelse(exposure.sample_size < 1000, paste0(" [",exposure.sample_size,"]"), exposure.ss_label)) %>% 
+    
   # add other exposure details
   mutate(exposure = case_when(
     exposure.sex == 'Females' ~ paste0(exposure, " (F) ", coalesce(consortium, author),"/" , year, exposure.ss_label),

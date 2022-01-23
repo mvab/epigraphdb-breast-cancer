@@ -56,8 +56,9 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 
                 # Output: Tabsets
                 tabsetPanel(type = "tabs",
-                            tabPanel("Static plot", plotOutput("bubbleplot1", height = "800px", width = "1000px")),
-                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "800px", width = "1000px"))
+                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "800px", width = "1000px")),
+                            tabPanel("Static plot", plotOutput("bubbleplot1", height = "800px", width = "1000px"))
+ 
                             ),
                 
                 
@@ -78,9 +79,11 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                                     "Alcohol" = 'Alcohol',
                                                     "Smoking" = 'Smoking',
                                                     "Sleep" = 'Sleep',
-                                                    'Metabolites (met-) (pt. 1)'       = 'Metabolites (pt. 1)', 
-                                                    'Metabolites (met-) (pt. 2)'       = 'Metabolites (pt. 2)', 
-                                                    'Metabolites (met-) (pt. 3)'       = 'Metabolites (pt. 3)', 
+                                                    "Lipids" = 'Lipids',
+                                                    #"Metabolites" = 'Metabolites',
+                                                    'Metabolites (pt. 1)'       = 'Metabolites (pt. 1)', 
+                                                    'Metabolites (pt. 2)'       = 'Metabolites (pt. 2)', 
+                                                    #'Metabolites (met-) (pt. 3)'       = 'Metabolites (pt. 3)', 
                                                     'Proteins (prot-) (pt. 1)' = "Proteins (pt. 1)",
                                                     'Proteins (prot-) (pt. 2)' = "Proteins (pt. 2)",
                                                     'Proteins (prot-) (pt. 3)' = "Proteins (pt. 3)",
