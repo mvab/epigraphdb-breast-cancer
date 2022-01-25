@@ -55,7 +55,10 @@ create_exposure_categories <- function(dat){
          exposure = str_replace(exposure, "Never eat eggs, dairy, wheat, sugar:", "Never eat:"),
          exposure = str_replace(exposure, "Types of physical activity in last 4 weeks", "Physical activity")) %>% 
     mutate(exposure = gsub("Comparative ", "", exposure)) %>% 
+    mutate(exposure = gsub(" (last menstrual period)", "", exposure, fixed=T)) %>% 
+    mutate(exposure = gsub("hormone-replacement therapy (HRT)", "HRT", exposure, fixed=T)) %>% 
     mutate(exposure = gsub("\\(eg.*)", "", exposure)) %>% 
+    mutate(exposure = gsub("Other (e.g. ", "(", exposure, fixed = T)) %>% 
     mutate(exposure = gsub(", because of other reasons", "", exposure)) %>% 
     mutate(exposure = gsub("or pain relief  constipation  heartburn", "", exposure)) %>%
     mutate(exposure = gsub("or pain relief, constipation, heartburn", "", exposure)) %>%
