@@ -91,7 +91,7 @@ create_exposure_categories <- function(dat){
       grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing|walk|spend outdoors", exposure, ignore.case = T) ~ "Physical activity",
       grepl("sleep|Snoring|chronotype|Getting up in morning|Nap during day", exposure, ignore.case = T) ~ "Sleep",
       grepl("intake|diet|food|milk|dairy|coffee|cereal|butter|bread|Never eat", exposure, ignore.case = T) ~ "Diet and supplements",
-      grepl("cholesterol|glyc|phosphatase|IGF|LDL direct|SHBG|bilirubin|reticulocyte|count|percentage|volume|Total protein|HDL", exposure, ignore.case = T) ~ 'Other biomarkers',
+      grepl("cholesterol|glyc|phosphatase|IGF|LDL direct|SHBG|bilirubin|count|percentage|Total protein|HDL", exposure, ignore.case = T) ~ 'Other biomarkers',
       grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|Iron|cystatin|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'Other biomarkers',
       grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic|education", exposure, ignore.case = T) ~ 'Education',
       grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves", exposure, ignore.case = T) ~ 'Psychology',
