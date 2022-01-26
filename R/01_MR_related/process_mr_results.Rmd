@@ -45,11 +45,12 @@ traits_for_follow_up <- function(input) {
     
       # drop results that 'overlap null' for all selected outcomes
       effect <-input_subset_array %>% pull(effect_direction) %>% unique()
-      if (length(effect) == 1){
-          if (effect == "overlaps null"){
+      
+      if (length(effect) == 1 & "overlaps null" %in% effect){
             # Skipping this trait
-            #print(paste0(i, ": nope"))
-          }
+            i_name <- input %>% filter(exposure.id == i) %>% pull(exposure.trait) %>% unique()
+            print(paste0(i," / ", i_name))
+
       } else {
         #get counts per BC type
         counts_per_type <- 
@@ -57,15 +58,15 @@ traits_for_follow_up <- function(input) {
           group_by(outcome) %>% 
           janitor::tabyl(outcome, effect_direction) %>% 
           as_tibble()
-        
+       
         
         
         # identify cases when traits have >=2 effects in positive or negative direction
         if ('positive' %in% colnames(counts_per_type) & 'negative' %in% colnames(counts_per_type)){
           dir <- 'both'
           tmp <- bind_rows(
-                    counts_per_type %>% filter(positive >  `overlaps null`),
-                    counts_per_type %>% filter(negative > `overlaps null` )) %>% 
+                    counts_per_type %>% filter(positive >= 2),
+                    counts_per_type %>% filter(negative >= 2)) %>% 
                  distinct()
           
           if (sum(tmp$negative) == 0){dir <- 'positive'
@@ -75,11 +76,11 @@ traits_for_follow_up <- function(input) {
           
           
         } else if ('positive' %in% colnames(counts_per_type)){
-          tmp <- counts_per_type %>% filter(positive >  `overlaps null`)
+          tmp <- counts_per_type %>% filter(positive >=  2)
           dir <- 'positive'
           
         } else if ('negative' %in% colnames(counts_per_type)){
-          tmp <-  counts_per_type %>% filter(negative > `overlaps null` )
+          tmp <-  counts_per_type %>% filter(negative >=2 )
           dir <- 'negative'
         }
     
@@ -95,7 +96,7 @@ traits_for_follow_up <- function(input) {
         }
         
       }
-      rm(tmp)
+      if (exists("tmp")){ rm(tmp) }
       
     }
   }
