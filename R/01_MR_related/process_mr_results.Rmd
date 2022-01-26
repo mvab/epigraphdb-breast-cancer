@@ -16,9 +16,14 @@ library(TwoSampleMR)
 
 ```{r, message = FALSE, include=F}
 rm(dat)
-dat <-  read_tsv("mr_evidence_outputs/tidy_traits_by_cat.tsv")  # made in explore_mr_results.Rmd
+dat <-  read_tsv("mr_evidence_outputs/tidy_traits_by_cat.tsv") %>%  # made in explore_mr_results.Rmd
+        # update exposure categories 
+        create_exposure_categories() %>%  filter(exposure_cat != 'other')
+  
 
+dat %>% select(exposure_cat, exposure.trait, exposure.id) %>% distinct() %>% filter(exposure_cat == 'Other biomarkers') %>% View()
 
+dat %>% select(exposure_cat, exposure.trait, exposure.id) %>% distinct() %>%count(exposure_cat) 
 ```
 
 #### Method for finding interesting things
@@ -212,17 +217,31 @@ redone_MR_sens <- redone_MR_full %>%
                      starts_with('egger_intercept'), starts_with('Q'), exposure_name, exposure_cat) %>% 
               filter(method != 'Weighted median')
 
+
+## category update tmp fix (needed unless rerun MR)
+#redone_MR<- redone_MR %>%rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
+#  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
+#  select(-exposure ) %>% 
+#  rename(id.exposure = exposure.id , exposure = exposure.trait) 
 write_tsv(redone_MR,      "mr_evidence_outputs/redone_MR_fulloutput.tsv")
+
+
+## category update tmp fix (needed unless rerun MR)
+#redone_MR_sens<- redone_MR_sens %>%rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
+#  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
+#  select(-exposure ) %>% 
+#  rename(id.exposure = exposure.id , exposure = exposure.trait) 
 write_tsv(redone_MR_sens, "mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
 
 
 ##
-redone_MR%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)
-
 redoneMR_tidy <- redone_MR %>%  
   select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
   filter(effect_direction != "overlaps null") %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
+
+redoneMR_tidy%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)#total
+redoneMR_tidy%>% filter(id.outcome == 'ieu-a-1127') %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat) # selected outcome
 
 #write_tsv(redoneMR_tidy, "mr_evidence_outputs/trait_manual_ivw.tsv") #### OLD NAME
 write_tsv(redoneMR_tidy, "mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv")
@@ -233,7 +252,7 @@ write_tsv(redoneMR_tidy, "mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv")
 redone_MR <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
 
 redone_wide <- redone_MR %>%
-  select(id.outcome, id.exposure, exposure_name, effect_direction, method, exposure_cat) %>% 
+  select(id.outcome, id.exposure,exposure, exposure_name, effect_direction, method, exposure_cat) %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
   mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
                                        effect_direction == 'positive' ~  1,
