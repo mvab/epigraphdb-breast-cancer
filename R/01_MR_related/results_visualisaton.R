@@ -5,21 +5,22 @@ source("01_MR_related/explore_MR-EvE_app/functions.R")
 
 redone_MR <- read_tsv("01_MR_related/mr_evidence_outputs/redone_MR_fulloutput.tsv") %>% 
               filter(method == "Inverse variance weighted") %>% 
-              select(id.exposure, id.outcome, OR_CI, pval) %>% 
+              select(id.exposure, id.outcome, OR_CI, pval, exposure_name, nsnp) %>% 
               mutate(outcome = case_when(id.outcome =="ieu-a-1126" ~ "BCAC 2017",
                                          id.outcome =="ieu-a-1127"    ~ "ER+",   
                                          id.outcome =="ieu-a-1128"   ~ "ER-" )) %>% select(-id.outcome)
 
 res_subtypes <- read_tsv("01_MR_related/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>% 
                 filter(method == "Inverse variance weighted") %>% 
-                select(id.exposure, outcome, OR_CI, pval) %>% 
+                select(id.exposure, outcome, OR_CI, pval,  nsnp) %>% 
                 mutate(outcome = case_when(outcome =="Breast cancer BCAC 2020" ~ "BCAC 2020",
                                            outcome =="LuminalA ER+PR+HER-"    ~ "Luminal A",   
                                            outcome =="LuminalB1 ER+PR+HER-"   ~ "Luminal B1",  
                                            outcome =="LuminalB2 ER+PR+HER+" ~ "Luminal B2" ,
                                            outcome =="HER2-enriched ER-PR-HER+"  ~ "HER2-enriched" ,
                                            outcome =="TNBC ER-PR-HER-"  ~ "TNBC" ,
-                                           outcome =="TNBC_BRCA1 ER-PR-HER-" ~ "TNBC_BRCA1" ))
+                                           outcome =="TNBC_BRCA1 ER-PR-HER-" ~ "TNBC_BRCA1" )) %>% 
+              left_join(redone_MR %>% select(id.exposure, exposure_name ))
 
 or_ci_data <- bind_rows(redone_MR,res_subtypes ) %>% rename('exposure.id'= 'id.exposure') 
 
@@ -36,8 +37,7 @@ merged <- merged %>% rename("BCAC 2017" = "ieu-a-1126",
                             "Luminal B2" = "LuminalB2 ER+PR+HER+", 
                             "HER2-enriched" = "HER2-enriched ER-PR-HER+" ,
                             "TNBC" = "TNBC ER-PR-HER-" ,
-                            "TNBC_BRCA1"  ="TNBC_BRCA1 ER-PR-HER-") %>% 
-  filter(!exposure %in% c("Putamen volume", "Reticulocyte percentage"))
+                            "TNBC_BRCA1"  ="TNBC_BRCA1 ER-PR-HER-") 
   
 
 
@@ -55,33 +55,6 @@ data_sub <- merged %>%
   filter(!exposure_cat %in% c('Proteins', "Metabolites", "Other biomarkers")) %>%
   select(id.exposure, contains('BCAC'), "ER+", contains("Luminal"), "ER-", "HER2-enriched","TNBC" ) %>% 
   filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0 & `ER-` == 0  & `ER+` == 0 & `Luminal A` == 0 & `Luminal B1` == 0 & `Luminal B2` == 0 &`HER2-enriched` == 0 & `TNBC` == 0 ))
-
-## BCAC proteins
-data_sub <- merged %>% 
-  filter(exposure_cat %in% c('Proteins')) %>%
-  select(id.exposure, contains('BCAC')) %>% 
-  filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0))
-
-## BCAC metabolites
-data_sub <- merged %>% 
-  filter(exposure_cat %in% c('Metabolites')) %>%
-  filter(!grepl("LDL|HDL|cholest|trigl", exposure, ignore.case = T)) %>% 
-  select(id.exposure, contains('BCAC')) %>% 
-  filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0))
-
-## BCAC lipids
-data_sub <- merged %>% 
-  filter(exposure_cat %in% c( "Metabolites", "Other biomarkers")) %>%
-  filter(grepl("LDL|HDL|cholest|trigl", exposure, ignore.case = T)) %>% 
-  select(id.exposure, contains('BCAC')) %>% 
-  filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0))
-
-## BCAC + ER+/ER- lipids
-data_sub <- merged %>% 
-  filter(exposure_cat %in% c( "Metabolites", "Other biomarkers")) %>%
-  filter(grepl("LDL|HDL|cholest|trigl", exposure, ignore.case = T)) %>% 
-  select(id.exposure, contains('BCAC'), starts_with("ER")) %>% 
-  filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0 & `ER+` == 0  & `ER-` == 0 ))
 
 ## all:  proteins
 data_sub <- merged %>% 
@@ -129,7 +102,9 @@ data_sub3 <- data_sub2 %>%
   #mutate(exposure_cat2 = ifelse(exposure_cat == 'Antrophometric', 'Antrophometric', 'Other lifestyle'))
   
 
-p<-ggplot(data_sub3, aes( y=exposure, x=outcome, fill = effect_direction, id = exposure.id , or_ci= OR_CI, pval =  pval, cat = exposure_cat)) + 
+p<-ggplot(data_sub3, aes( y=exposure, x=outcome, fill = effect_direction, 
+                          id = exposure.id ,name = exposure_name,
+                          or_ci= OR_CI, pval =  pval, nsnp=nsnp, cat = exposure_cat)) + 
   geom_tile(colour = "grey") + 
   scale_fill_manual(values=c("#4D9221","white", "#C51B7D"))+
   #facet_grid(~ exposure_cat2,scales = "free_x", space='free_x')+
