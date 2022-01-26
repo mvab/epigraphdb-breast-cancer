@@ -287,8 +287,40 @@ NEXT, in other script `mr_results_for_bcac_subtypes.Rmd` we create MR results fo
 
 res_subtypes <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv")
 
+## category update 
+res_subtypes <- res_subtypes %>% 
+  rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
+  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
+  select(-exposure ) %>% 
+  rename(id.exposure = exposure.id , exposure = exposure.trait) 
+
+#res_subtypes_for_count <- res_subtypes %>% 
+#  select(exposure, id.exposure , outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
+#  filter(effect_direction != "overlaps null") %>% 
+#  filter(method %in% c('Inverse variance weighted', 'Wald ratio')) 
+#
+#counts_by_outcome <- list(
+#  total = res_subtypes_for_count %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total=n) %>% 
+#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+#  all = res_subtypes_for_count %>% filter(outcome =="Breast cancer BCAC 2020")%>% count(exposure_cat) %>% rename(all=n)%>%
+#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+#  lumA = res_subtypes_for_count %>% filter(outcome =="LuminalA ER+PR+HER-")%>% count(exposure_cat) %>% rename(lumA=n)%>% 
+#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+#  lumB1 = res_subtypes_for_count %>% filter(outcome =="LuminalB1 ER+PR+HER-")%>% count(exposure_cat) %>% rename(lumB1=n)%>% 
+#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+#  lumB2 = res_subtypes_for_count %>% filter(outcome =="LuminalB2 ER+PR+HER+")%>% count(exposure_cat) %>% rename(lumB2=n)%>% 
+#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+#  her2 = res_subtypes_for_count %>% filter(outcome =="HER2-enriched ER-PR-HER+")%>% count(exposure_cat) %>% rename(her2=n)%>% 
+#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+#  tnbc = res_subtypes_for_count %>% filter(outcome =="TNBC ER-PR-HER-")%>% count(exposure_cat) %>% rename(tnbc=n)%>% 
+#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
+#
+#counts_by_outcome_df <- bind_rows(counts_by_outcome) %>% t() %>% as.data.frame() %>% rownames_to_column('exposure_cat') %>% mutate(across(everything(), ~replace_na(.x, 0))) 
+#colnames(counts_by_outcome_df)[2:8] <- names(counts_by_outcome)
+#write_tsv(counts_by_outcome_df, "mr_evidence_outputs/mr_subtypes/counts_by_exposure_cat.tsv")
+
 res_subtypes_wide<- res_subtypes %>% 
-  select(outcome, id.exposure, effect_direction, method) %>% 
+  select(outcome, id.exposure,exposure,  effect_direction, method) %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
   mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
                                        effect_direction == 'positive' ~  1,
