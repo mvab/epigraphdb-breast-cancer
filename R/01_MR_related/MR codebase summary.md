@@ -4,7 +4,7 @@ _very rough draft_
 
 1. `mr_epigraphdb_query.R` - MR-EvE data collection for all MR outcomes:
 
-	The approach: get all MR relationship for all BC outcomes, calualate CIs, keep only those exposure for which the effect CIs don't overlap the null, regardless of p-val. _(We get about 35 relationships where pval >0.05, but most of there are random traits and won't make it to the final analysis anyway)._
+	The approach: get all MR relationships for all BC outcomes, calculate CIs, keep only those exposures for which the effect CIs don't overlap the null, regardless of the p-value. _(We get about 35 relationships where pval >0.05, but most of there are random traits and won't make it to the final analysis anyway)._
 	
 	Re-extract data for only those exposures from all BC outcomes.
 
@@ -14,7 +14,7 @@ _very rough draft_
 
 2. `explore_mr_results.Rmd` - tidy up MR-EvE output and split into categories
 
-	This takes input from the previous step, adds exposure/outcome labels, performs minor filtering, and allows exploring each trait category in interactive plots. The interactive plots are equivalent to RShiny app, but less refined. Also drops a bunch of not needed traits in several categories. The output df can be used for more directed filtering (ignoring actual trait names) (done in the next script).
+	This takes input from the previous step, adds exposure/outcome labels, performs minor filtering, and allows exploring each trait category in interactive plots. The interactive plots are equivalent to the RShiny app, but less refined. Also drops a bunch of not needed traits in several categories. The output df can be used for more directed filtering (ignoring actual trait names) (done in the next script).
 	
 	Output: `tidy_traits_by_cat.tsv`
 	
@@ -59,3 +59,14 @@ _very rough draft_
 
 
 5. `query_confounders.R`
+
+For the final set of traits in `trait_manual_ivw_subtypes_merged.tsv`, we run MR-EvE queries to extract confounders, mediators, colliders, reverse intermediates. For each trait, we only extract data for those meta-analysis BC outcomes where the effect was observed in previous analyses. 
+
+Initially, we extract all relationships with a high p-value threshold (all results will be manually validated later, so it does not matter).
+
+
+
+
+
+
+
