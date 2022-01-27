@@ -9,18 +9,22 @@ output: html_notebook
 library(epigraphdb)
 library(tidyverse)
 source("../helper_functions.R")
+source("functions_literature.R")
 ```
 
+This is a raw cypher query to  extract a literature space
+```{}
 MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
-WHERE gwas.id = '", id, "'
+WHERE gwas.id = '...'
 AND gs1.pval < 0.01
 MATCH (s1)-[:SEMMEDDB_SUB]-(st1:LiteratureTerm) 
 MATCH (gwas)-[:GWAS_TO_LITERATURE]-(lit:Literature)-[]-(s1)
 RETURN lit.id, lit.year,  gwas {.id, .trait}, 
 gs1 {.pval, .localCount}, st1 {.name, .type}, s1 {.id, .subject_id, .object_id, .predicate}, st {.name, .type}
-```{r}    
-# extract literatur space
+```
 
+```{r}    
+# extract literature space R function
 
 extract_literature_space <- function(id){
   
@@ -39,9 +43,9 @@ extract_literature_space <- function(id){
  # dim(out)
 
   
-  # so we're going to split it in two parts
+  # so we're going to split it in two parts (tested that this approach delivers the same result)
   
-  # 1: extract GWAS triples and theit terms
+  # 1: extract GWAS triples and their terms
   query1 =  paste0("
       MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
       WHERE gwas.id = '", id, "'
@@ -79,7 +83,8 @@ extract_literature_space <- function(id){
     triple_id_list2 <- unique(out2$s1.id) #23142
     length(triple_id_list2)
     
-    litspace <- full_join(out1, out2, by = c("s1.subject_id"="s1.subject_id",
+    litspace <- full_join(out1, out2, 
+                              by = c("s1.subject_id"="s1.subject_id",
                                     "s1.predicate"="s1.predicate",
                                     "s1.id" = "s1.id" ,
                                     'gwas.id' = 'gwas.id',
@@ -102,6 +107,8 @@ extract_literature_space <- function(id){
 
 
 ```{r}
+### Apply to breast cancer 
+
 id = 'ieu-a-1126' 
 space1<-extract_literature_space(id)
 dim(space1) #77496 (63907 w/o gwas cols?)
@@ -124,37 +131,65 @@ bc_space %>%  write_csv("breast_cancer_litspace_prod.csv")
 
 ```{r}
 # read list of traits for follow up
+trait_df_all <- read_tsv("../01_MR_related/mr_evidence_outputs/trait_for_followup.tsv") %>% 
+            select(id, trait, exposure_cat) %>% distinct()
 
-trait_df <- read_tsv("../01_MR_related/mr_evidence_outputs/trait_manual_ivw.tsv") %>% 
-            select(id.exposure,exposure, exposure_cat) %>% distinct()
-ignore_traits<- c('ieu-a-95', 'ieu-a-974', 'ukb-a-248', 'ukb-b-4650', 'ukb-a-34', 'ukb-a-35', 'ukb-d-30760_irnt', 	
-                  'ieu-a-299', 	'ukb-a-388', 'ieu-a-101', 'prot-a-2396', 'ieu-a-62', 	'ukb-b-9405', 'ieu-a-105', 'ieu-a-109')
-trait_df<- trait_df %>% filter(!id.exposure %in% ignore_traits) %>%
-             filter(!grepl("X-", exposure)) %>%
-             filter(!grepl("HDL|VLDL", exposure)) 
+# traits with the same name or trait that ar eunlike to match to something meaningful
+ignore_traits<- c('ieu-a-95', 'ieu-a-974', 'ukb-a-248', 'ukb-b-4650', 'ukb-a-34', 'ukb-a-35', 'ukb-d-30760_irnt', 'ukb-b-16881','ukb-a-316', 'ukb-a-317',
+                  'ieu-a-299', 	'ukb-a-388', 'ieu-a-101','ieu-a-51', 'prot-a-2396', 'prot-a-1541','ieu-a-62', 	'ukb-b-9405', 'ieu-a-105', 'ieu-a-109', 'ieu-a-783')
 
+trait_df_all<- trait_df_all %>% 
+   mutate(lit_analysis = case_when(
+             id %in% ignore_traits ~ F,
+             grepl("^X-", trait) ~ F,
+             grepl("HDL|VLDL|LDL", trait) ~ F, ## ignoring all lipids at this time (may need to extract for them separately)
+             TRUE ~ T) )
+
+write_tsv(trait_df_all, "trits_marked_for_lit_analysis.tsv")
+
+
+# select we want to keep
+trait_df <- trait_df_all %>%  filter(lit_analysis == T)
 
 lit_spaces<-list()
-id_list <- trait_df$id.exposure
-length(id_list)
+id_list <- trait_df$id
+length(id_list) # 238
 
 for ( id in id_list){
   lit_spaces[[id]] <-extract_literature_space(id)
 }
 save(lit_spaces, file="lit_spaces_finalset.RData")
 
-# save dim to table
-for (i in 1:length(trait_df$id.exposure)){
-  id <- trait_df$id.exposure[i]
-  if (id %in% names(lit_spaces)){
-    trait_df$lit[i]<-dim(lit_spaces[[id]])[1]
-  }else{
-    trait_df$lit[i]<-NA
-  }
-  
-}
 
 ```
+
+
+```{r}
+# identify traits with empty lit spaces
+zero_lit <- c()
+
+for (i in 1:length(lit_spaces)){
+  if (dim(lit_spaces[[i]])[1] == 0){
+    zero_lit <- c(zero_lit, names(lit_spaces)[i])
+  }
+}
+trait_df %>% filter(id %in% zero_lit) %>% View()
+
+# save dim of spaces to trait_df_all table
+for (i in 1:length(trait_df_all$id)){
+  id <- trait_df_all$id[i]
+  
+  if (id %in% names(lit_spaces)){
+    trait_df_all$lit_space_size[i]<-dim(lit_spaces[[id]])[1]
+  }else{
+    trait_df_all$lit_space_size[i]<-NA
+  }
+}
+write_tsv(trait_df_all, "trits_marked_for_lit_analysis.tsv")
+
+```
+
+
 
 ```{r}
 ## test tidying lit space on one
@@ -176,9 +211,9 @@ tidy_lit_space <- function(dat){
   # add type to disease and drug nodes (selective)
   node_types<-triples_tidy %>% 
         # optional - only required if not rerun main extraction function
-        rowwise() %>% 
-        mutate(st1.type = paste0(unlist(st1.type), collapse="/")) %>%  
-        mutate(st.type = paste0(unlist(st.type), collapse="/")) %>% 
+        #rowwise() %>% 
+        #mutate(st1.type = paste0(unlist(st1.type), collapse="/")) %>%  
+        #mutate(st.type = paste0(unlist(st.type), collapse="/")) %>% 
         #
         make_node_types()
   
@@ -192,16 +227,39 @@ tidy_lit_space <- function(dat){
     left_join(node_types, by=c('term2'='name')) %>% 
     rename('term2.type'='type', 'term2.type_verbose'='type_verbose') 
   
+  # calculate counts by pairs
+  pair_counts <- triples_tidy_count %>% 
+    group_by(term1, term2) %>% 
+    summarise(n_pair = sum(n)) %>%
+    ungroup() %>% distinct() %>% 
+    mutate(pair = paste0(term1," / ",term2)) # counts by pairs
+
+  triples_tidy_count  <- triples_tidy_count %>% 
+    left_join(pair_counts) %>% 
+    select(term1, predicate, term2, n_triple = n, n_pair, pair, everything())
+  
   return(triples_tidy_count)
 }
 
-dat<-lit_spaces[["ukb-d-30630_irnt"]] 
+```
+
+```{r}
+#load("lit_spaces_finalset.RData")
+
+## testing tidying function
+
+dat<-lit_spaces[["met-a-652"]] 
+dim(dat)
 datout<- tidy_lit_space(dat)
+
+datout %>% select(term1, predicate, term2) %>% distinct() %>% dim() # unique triples
+datout %>% select(term1, term2) %>% distinct() %>% dim() # unique pairs
 
 ```
 
 
 ```{r}
+## tidtying lit sapces for loop
 
 tidy_litspace <- list()
 
@@ -212,25 +270,40 @@ for (i in 1:length(lit_spaces)){
     tidy_litspace[[names(lit_spaces)[i]]] <- tidy_lit_space(lit_spaces[[i]])
   }
 }
-
-
 save(tidy_litspace, file="lit_spaces_finalset_tidy.RData")
-
-# save dim to table
-for (i in 1:length(trait_df$id.exposure)){
-  id <- trait_df$id.exposure[i]
-  if (id %in% names(tidy_litspace)){
-    trait_df$lit_tidy[i]<-dim(tidy_litspace[[id]])[1]
-  }else{
-    trait_df$lit_tidy[i]<-NA
-  }
-  
-}
 
 ```
 
 ```{r}
-tidy_litspace[["ukb-d-30770_irnt"]] %>% View()
+# read prev version
+trait_df_all <- read_tsv("trits_marked_for_lit_analysis.tsv") %>% select(1:5)
+
+# save dim to table
+for (i in 1:length(trait_df_all$id)){
+  id <- trait_df_all$id[i]
+  
+  if (id %in% names(tidy_litspace)){
+    
+    trait_df_all$lit_space_size_tidy[i] <- dim(tidy_litspace[[id]])[1]
+    
+    trait_df_all$unique_triples[i] <- dim(tidy_litspace[[id]] %>% select(term1, predicate, term2) %>% distinct() )[1]
+    
+    trait_df_all$unique_pairs[i] <- dim(tidy_litspace[[id]] %>% select(term1, term2) %>% distinct() )[1]
+
+  }else{
+    trait_df_all$lit_space_size_tidy[i]<-NA
+    trait_df_all$unique_triples[i]<-NA
+    trait_df_all$unique_pairs[i]<-NA
+  }
+}
+
+write_tsv(trait_df_all %>%  mutate(across(everything(), ~replace_na(.x, 0))),
+          "trits_marked_for_lit_analysis.tsv")
+
+```
+
+```{r}
+tidy_litspace[["met-a-652"]] %>% View()
 ```
 
 
