@@ -26,13 +26,27 @@ make_node_types <- function(dat){
   drug_list <- c('fulvestrant', 'vinorelbine')
   generic_list <-c('Membrane Transport Proteins', 'Small Molecule')
   
-  node_types<-bind_rows(dat %>% select(name = term1, type =st1.type),
-                        dat %>% select(name = term2, type = st.type)) 
+  node_types_full<-bind_rows(dat %>% select(name = term1, type =st1.type),
+                        dat %>% select(name = term2, type = st.type))
   
-  terms_w_multp_types <- node_types %>% group_by(name, type) %>% count() %>% count(name) %>% filter(n>1) 
+  node_types <- node_types_full%>% distinct()
+  
+  node_type_counts <- node_types %>%  count(name)
+  
+  terms_w_single_type <- node_type_counts %>% filter(n == 1) 
+  
+  terms_w_multp_types <- node_type_counts %>% filter(n > 1) 
+  
   if (dim(terms_w_multp_types)[1] > 0){
-    node_types <- node_types %>% keep_one_type()
+    terms_w_multp_types_to_keep <-  keep_one_type(terms_w_multp_types, node_types_full)
+    
+    node_types <- bind_rows(
+      node_types %>% filter(name %in% terms_w_single_type$name),
+      terms_w_multp_types_to_keep %>% select(-n)
+    )
   }
+  
+  
   node_types %>% 
   mutate(type_verbose= case_when(grepl('dsyn', type) ~ 'disease',
                                  #type == "['orch']|['phsu']|['orch', 'phsu']|['hops']|['orch', 'phsu', 'hops']|['orch', 'hops']" ~ 'drug_or_compound',
@@ -64,24 +78,29 @@ make_node_types <- function(dat){
 }
 
 
-keep_one_type <- function(node_types){
+keep_one_type <- function(terms_w_multiple_types, node_types_full){
   
-  node_types_count <- node_types %>% group_by(name, type) %>% count() %>% ungroup()
-  terms_w_multiple_types<- node_types_count %>% count(name) %>% filter(n>1) %>% pull(name)
-  node_types_count_w_mulp<-node_types_count %>% filter(name %in% terms_w_multiple_types) 
+  node_types_count_w_mulp<-node_types_full %>% 
+    filter(name %in% terms_w_multiple_types) %>% 
+    group_by(name, type) %>% 
+    count() %>% ungroup()
   
   selected_types <- tibble()
   for (i in terms_w_multiple_types){
     
-    tmp1<-node_types_count_w_mulp %>% filter(name == i)
+    tmp1 <- node_types_count_w_mulp %>% filter(name == i)
     
-    if (length(unique(tmp1$n))!=1){
-      # sort by freq and get the top one
+    if (length(unique(tmp1$n))!=1){ 
+      # types appear with different frequencies:
+      
+      # sort by freq of type to get the top one
       tmp2<- tmp1 %>% 
         arrange(-n) %>% 
         filter(row_number()==1)
+      
     } else {
-      # all types appear with the same freq
+      # all types appear with the same freq:
+      
       # order by type, to keep the longer name
       tmp2<-tmp1 %>%
         mutate(len_type = str_length(type)) %>%
@@ -92,8 +111,7 @@ keep_one_type <- function(node_types){
     selected_types<-bind_rows(selected_types, tmp2)
   }
   
-  node_types_new<-node_types %>% filter(!name %in% terms_w_multiple_types) %>% 
-    bind_rows(., selected_types %>% select(-n))
+  return(selected_types)
 }
 
 
