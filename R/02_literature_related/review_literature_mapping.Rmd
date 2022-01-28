@@ -25,7 +25,7 @@ dat <- vroom('../../query_results/lit_bc_to_other_litterms_upd.tsv', show_col_ty
       filter(gwas.id %in% keep_gwas) 
 
 ## prod data
-dat<- vroom("breast_cancer_litspace_prod.csv",show_col_types = FALSE) %>%  mutate(lit.id = as.character(lit.id))
+dat<- vroom("literature_outputs/breast_cancer_litspace_prod.csv",show_col_types = FALSE) %>%  mutate(lit.id = as.character(lit.id))
 
 
 ## compare prod vs v1.2
@@ -44,46 +44,28 @@ dat<- vroom("breast_cancer_litspace_prod.csv",show_col_types = FALSE) %>%  mutat
 # check drug overlap with : https://www.cancer.gov/about-cancer/treatment/drugs/breast#3
 #bc_drugs <- read_tsv("../external_files/breast_cancer_drug_list.tsv", col_names = c('name')) %>% distinct()
 
-# load predicate direction
-#predicate_ref <- read_csv("../external_files/predicates_direction.csv")
+
 ```
 
-**Breast cancer space - simple explore **
+**Breast cancer space**
 
 ```{r}
+# tidy space -- not actually used? 
+bc_triples_tidy_count <- tidy_lit_space(dat)
 
-bc_triples_tidy <- dat %>% 
-                    #filter(lit.year >=1990) %>% 
-                    tidy_gwas_to_lit_output() %>%  distinct() 
 
-length(unique(bc_triples_tidy$lit.id))# unique papers
 
-bc_triples_tidy_count<-bc_triples_tidy %>% 
-  select(lit.id, term1, predicate, term2)  %>% distinct() %>% 
-    group_by(term1, predicate, term2) %>% 
-    count() %>% ungroup() %>% 
-    distinct() 
+
+
+bc_triples_tidy <- dat %>% tidy_gwas_to_lit_output() %>%  distinct() 
 
 # add type to disease and drug nodes (selective)
 node_types<-bc_triples_tidy %>% make_node_types()
-#node_types %>% count(type, sort=T) %>% View()
-
 
 # find most common things
 node_type_counts<-node_types %>% count(name, name='size', sort=T)
 
 
-# add term types to counts
-bc_triples_tidy_count<-bc_triples_tidy_count %>%
-  left_join(node_types, by=c('term1'='name')) %>% 
-  rename('term1.type'='type', 'term1.type_verbose'='type_verbose') %>%  
-  left_join(node_types, by=c('term2'='name')) %>% 
-  rename('term2.type'='type', 'term2.type_verbose'='type_verbose') 
-
-
-#node_type_counts %>% View()
-common_nodes <- node_type_counts %>% filter(size > 300) %>% pull(name) # arbitrary threshold
-#write_tsv(node_type_counts, "common_terms_reading_list.tsv")
 ```
 
 
@@ -92,6 +74,9 @@ common_nodes <- node_type_counts %>% filter(size > 300) %>% pull(name) # arbitra
 
 library("wordcloud")
 library("RColorBrewer")
+
+common_nodes <- node_type_counts %>% filter(size > 300) %>% pull(name) # arbitrary threshold
+#write_tsv(node_type_counts, "common_terms_reading_list.tsv")
 
 test <- node_type_counts %>% 
   left_join(node_types %>% distinct(), by='name') %>% 
@@ -118,9 +103,12 @@ wordcloud(words = test$name, freq = test$size_rounded, min.freq = 1,
 
 
 
-
+**Visualizing network around a key term using a 'local network part/direction' appraoch**
 
 ```{r}
+# load predicate direction
+predicate_ref <- read_csv("../external_files/predicates_direction.csv")
+
 key_term = 'Obesity'
 network_subset <-  select_network(full_data = bc_triples_tidy,
                                   key_term = key_term,
@@ -150,7 +138,6 @@ dim(node_counts)
 
 ```
 
-
 ```{r}
 
 b<-build_networkD3(network_subset, node_counts)
@@ -158,9 +145,9 @@ b#htmlwidgets::saveWidget(b, file=paste0( getwd(), "/htmls/cyclinD1_backwards.ht
 ```
 
 
+
+
  **other GWAS**
-
-
 ```{r}
 other_gwas<-vroom('../../query_results/lit_betaine_triples.tsv')  
 dim(other_gwas)
