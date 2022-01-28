@@ -18,15 +18,25 @@ source("functions_literature.R")
 
 ```{r message=F}
 
-## data extarcte from v1.2
-keep_gwas<-c('ieu-a-1126','finn-a-C3_BREAST', 'finn-a-CD2_BENIGN_BREAST',
-             'ukb-a-519', 'ukb-d-C3_BREAST_3', 'ukb-d-D05') # can query with neo4j just for these
-dat <- vroom('../../query_results/lit_bc_to_other_litterms_upd.tsv') %>%
+## data extracted from v1.2
+keep_gwas<-c('ieu-a-1126','finn-a-C3_BREAST') # can query with neo4j just for these
+dat <- vroom('../../query_results/lit_bc_to_other_litterms_upd.tsv', show_col_types = FALSE) %>%
       mutate(lit.id = as.character(lit.id)) %>% select(-lit.dp) %>% 
       filter(gwas.id %in% keep_gwas) 
 
 ## prod data
-dat <- vroom("breast_cancer_litspace_prod.csv") %>%  mutate(lit.id = as.character(lit.id))
+dat<- vroom("breast_cancer_litspace_prod.csv",show_col_types = FALSE) %>%  mutate(lit.id = as.character(lit.id))
+
+
+## compare prod vs v1.2
+#dat<- dat %>% select(-gwas.id, -gwas.trait, -gs1.localCount, -gs1.pval) %>% distinct()
+#dim(dat)#74333
+#dim(dat2)#65738
+#length(unique(dat$lit.id))#26392
+#length(unique(dat2$lit.id))#23809  -- 3032 missing, but also 449 in prod but not in v1.2
+#missing_litids<- setdiff(dat$lit.id, dat2$lit.id)
+#dat %>%  filter(lit.id %in% missing_litids) %>% select(lit.id, lit.year) %>% distinct() %>%  count(lit.year) %>% View()  # ~1000 out of 3032  from 2020/2019 
+
 
 
 ## other stuff
