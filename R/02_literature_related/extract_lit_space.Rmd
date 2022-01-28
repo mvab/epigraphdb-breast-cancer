@@ -122,7 +122,7 @@ bc_space <- bind_rows(space1, space2) %>% select(-gwas.id, -gwas.trait, -gs1.loc
 dim(bc_space) #65738
 
 
-bc_space %>%  write_csv("breast_cancer_litspace_prod.csv")
+bc_space %>%  write_csv("literature_outputs/breast_cancer_litspace_prod.csv")
 ```
 
 
@@ -142,7 +142,7 @@ trait_df_all<- trait_df_all %>%
              grepl("HDL|VLDL|LDL", trait) ~ F, ## ignoring all lipids at this time (may need to extract for them separately)
              TRUE ~ T) )
 
-write_tsv(trait_df_all, "trits_marked_for_lit_analysis.tsv")
+write_tsv(trait_df_all, "traits_marked_for_lit_analysis.tsv")
 
 
 # select we want to keep
@@ -155,7 +155,7 @@ length(id_list) # 238
 for ( id in id_list){
   lit_spaces[[id]] <-extract_literature_space(id)
 }
-save(lit_spaces, file="lit_spaces_finalset.RData")
+save(lit_spaces, file="literature_outputs/lit_spaces_finalset.RData")
 
 
 ```
@@ -182,66 +182,14 @@ for (i in 1:length(trait_df_all$id)){
     trait_df_all$lit_space_size[i]<-NA
   }
 }
-write_tsv(trait_df_all, "trits_marked_for_lit_analysis.tsv")
+write_tsv(trait_df_all, "literature_outputs/traits_marked_for_lit_analysis.tsv")
 
 ```
 
 
 
 ```{r}
-## test tidying lit space on one
-
-tidy_lit_space <- function(dat){
-  
-  triples_tidy <- dat %>% 
-                #filter(lit.year >=1990) %>% 
-                tidy_gwas_to_lit_output() %>%  distinct() 
-  
-  #length(unique(triples_tidy$lit.id))# unique papers
-  
-  triples_tidy_count<-triples_tidy %>% 
-    select(lit.id, term1, predicate, term2)  %>% distinct() %>% 
-      group_by(term1, predicate, term2) %>% 
-      count() %>% ungroup() %>% 
-      distinct() 
-  
-  # add type to disease and drug nodes (selective)
-  node_types<-triples_tidy %>% 
-        # optional - only required if not rerun main extraction function
-        #rowwise() %>% 
-        #mutate(st1.type = paste0(unlist(st1.type), collapse="/")) %>%  
-        #mutate(st.type = paste0(unlist(st.type), collapse="/")) %>% 
-        #
-        make_node_types()
-  
-  # find most common things
-  #node_type_counts<-node_types %>% count(name, name='size', sort=T)
-  
-  # add term types to counts
-  triples_tidy_count<-triples_tidy_count %>%
-    left_join(node_types, by=c('term1'='name')) %>% 
-    rename('term1.type'='type', 'term1.type_verbose'='type_verbose') %>%  
-    left_join(node_types, by=c('term2'='name')) %>% 
-    rename('term2.type'='type', 'term2.type_verbose'='type_verbose') 
-  
-  # calculate counts by pairs
-  pair_counts <- triples_tidy_count %>% 
-    group_by(term1, term2) %>% 
-    summarise(n_pair = sum(n)) %>%
-    ungroup() %>% distinct() %>% 
-    mutate(pair = paste0(term1," / ",term2)) # counts by pairs
-
-  triples_tidy_count  <- triples_tidy_count %>% 
-    left_join(pair_counts) %>% 
-    select(term1, predicate, term2, n_triple = n, n_pair, pair, everything())
-  
-  return(triples_tidy_count)
-}
-
-```
-
-```{r}
-#load("lit_spaces_finalset.RData")
+#load("literature_outputs/lit_spaces_finalset.RData")
 
 ## testing tidying function
 
@@ -267,13 +215,13 @@ for (i in 1:length(lit_spaces)){
     tidy_litspace[[names(lit_spaces)[i]]] <- tidy_lit_space(lit_spaces[[i]])
   }
 }
-save(tidy_litspace, file="lit_spaces_finalset_tidy.RData")
+save(tidy_litspace, file="literature_outputs/lit_spaces_finalset_tidy.RData")
 
 ```
 
 ```{r}
 # read prev version
-trait_df_all <- read_tsv("trits_marked_for_lit_analysis.tsv") %>% select(1:5)
+trait_df_all <- read_tsv("literature_outputs/traits_marked_for_lit_analysis.tsv") %>% select(1:5)
 
 # save dim to table
 for (i in 1:length(trait_df_all$id)){
@@ -295,7 +243,7 @@ for (i in 1:length(trait_df_all$id)){
 }
 
 write_tsv(trait_df_all %>%  mutate(across(everything(), ~replace_na(.x, 0))),
-          "trits_marked_for_lit_analysis.tsv")
+          "literature_outputs/traits_marked_for_lit_analysis.tsv")
 ```
 
 ```{r}
@@ -310,7 +258,7 @@ counts_by_cat <- list(
 counts_by_cat_df <- bind_rows(counts_by_cat) %>% t() %>% as.data.frame() %>% rownames_to_column('exposure_cat') %>% mutate(across(everything(), ~replace_na(.x, 0))) 
 
 colnames(counts_by_cat_df)[2:6] <- names(counts_by_cat)
-write_tsv(counts_by_cat_df, "available_litspace_counts_by_exposure_cat.tsv")
+write_tsv(counts_by_cat_df, "literature_outputs/available_litspace_counts_by_exposure_cat.tsv")
 ```
 
 ```{r}
@@ -335,7 +283,7 @@ FLNA
 ```{r}
 # combining lit space of related traits
 
-#load("lit_spaces_finalset.RData")
+#load("literature_outputs/lit_spaces_finalset.RData")
 
 combine_lit_spaces <- function(lit_spaces, names){
   lit_spaces_subset <- lit_spaces[names]
@@ -362,7 +310,7 @@ for (i in names(related_traits)) {
   combined_lit_spaces[[i]] <- combine_lit_spaces(lit_spaces, related_traits[[i]])
 }
 
-save(combined_lit_spaces, file="lit_spaces_combined_traits.RData")
+save(combined_lit_spaces, file="literature_outputs/lit_spaces_combined_traits.RData")
 ```
 
 

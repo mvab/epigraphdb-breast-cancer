@@ -1,4 +1,50 @@
 ### functions
+
+
+tidy_lit_space <- function(dat){
+  
+  triples_tidy <- dat %>% 
+    #filter(lit.year >=1990) %>% 
+    tidy_gwas_to_lit_output() %>%  distinct() 
+  
+  #length(unique(triples_tidy$lit.id))# unique papers
+  
+  triples_tidy_count<-triples_tidy %>% 
+    select(lit.id, term1, predicate, term2)  %>% distinct() %>% 
+    group_by(term1, predicate, term2) %>% 
+    count() %>% ungroup() %>% 
+    distinct() 
+  
+  # add type to disease and drug nodes (selective)
+  node_types<-triples_tidy %>%  make_node_types()
+  
+  # find most common things
+  #node_type_counts<-node_types %>% count(name, name='size', sort=T)
+  
+  # add term types to counts
+  triples_tidy_count<-triples_tidy_count %>%
+    left_join(node_types, by=c('term1'='name')) %>% 
+    rename('term1.type'='type', 'term1.type_verbose'='type_verbose') %>%  
+    left_join(node_types, by=c('term2'='name')) %>% 
+    rename('term2.type'='type', 'term2.type_verbose'='type_verbose') 
+  
+  # calculate counts by pairs
+  pair_counts <- triples_tidy_count %>% 
+    group_by(term1, term2) %>% 
+    summarise(n_pair = sum(n)) %>%
+    ungroup() %>% distinct() %>% 
+    mutate(pair = paste0(term1," / ",term2)) # counts by pairs
+  
+  triples_tidy_count  <- triples_tidy_count %>% 
+    left_join(pair_counts) %>% 
+    select(term1, predicate, term2, n_triple = n, n_pair, pair, everything())
+  
+  return(triples_tidy_count)
+}
+
+
+
+
 tidy_gwas_to_lit_output <- function(dat){  
   dat %>% 
     select(-one_of(
@@ -78,15 +124,16 @@ make_node_types <- function(dat){
 }
 
 
-keep_one_type <- function(terms_w_multiple_types, node_types_full){
+keep_one_type <- function(terms_w_multp_types, node_types_full){
   
   node_types_count_w_mulp<-node_types_full %>% 
-    filter(name %in% terms_w_multiple_types) %>% 
+    filter(name %in% terms_w_multp_types$name) %>% 
     group_by(name, type) %>% 
     count() %>% ungroup()
   
   selected_types <- tibble()
-  for (i in terms_w_multiple_types){
+  
+  for (i in terms_w_multp_types$name){
     
     tmp1 <- node_types_count_w_mulp %>% filter(name == i)
     
