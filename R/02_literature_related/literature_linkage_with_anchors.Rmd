@@ -1,0 +1,348 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r message=F}
+library(readr)
+library(tidyr)
+library(stringr)
+library(vroom)
+library(dplyr)
+library(networkD3)
+
+source("functions_literature.R")
+```
+
+```{r message=F}
+
+## prod data
+dat<- vroom("literature_outputs/breast_cancer_litspace_prod.csv",show_col_types = FALSE) %>%  mutate(lit.id = as.character(lit.id))
+
+# tidy space -- not actually used? 
+bc_triples_tidy_count <- tidy_lit_space(dat)
+
+```
+
+
+```{r}
+# breast cancer
+
+bc_triple1 <- bc_triples_tidy_count %>%  
+  filter(term2 %in% c("Breast Diseases","malignant disease")) %>% 
+  filter(!predicate %in% c("COEXISTS_WITH", 'NEG_ISA')) %>%
+  filter(term1.type_verbose != "drug_or_compound") %>% 
+  filter(term1.type != 'inch/phsu') %>% 
+  filter(term1 != 'Prostate-Specific Antigen') %>% 
+  mutate(term2 = ifelse(term2 == "malignant disease","Breast Diseases", term2 )) %>% 
+  select(1:5) %>% 
+  group_by(term1,predicate, term2) %>% 
+  summarise_all(sum) %>% ungroup()
+
+bc_triple1 %>% select(term1, term2) %>% distinct() %>% dim() # total 46
+
+bc_triple2 <- bc_triples_tidy_count %>%  
+  filter(term2 %in% bc_triple1$term1) %>% #& !term1 %in% bc_triple1$term1) %>%
+  filter(term1.type_verbose != "drug_or_compound") %>%  
+  filter(term1.type != 'inch/phsu') %>%   
+  filter(!predicate %in% c("COEXISTS_WITH", 'NEG_COEXISTS_WITH'))
+
+bc_triple2 %>% select(term1, term2) %>% distinct() %>% dim() # total 1291
+
+```
+
+```{r}
+
+bc_triple1_tidy <- bc_triple1 %>% 
+  tidy_terms_for_viz() %>% 
+  select(term1,term2,n_pair) %>% 
+  filter(term1 !=term2) %>% 
+  group_by(term1, term2) %>% 
+  slice(which.max(n_pair)) %>%
+  ungroup()  %>% 
+  rename(n=n_pair) 
+
+    
+bc_triple2_tidy <- bc_triple2 %>% 
+  tidy_terms_for_viz() %>% 
+  # after tidying names you get almost duplicates: keep the one with highest n
+  select(term1,term2,n_pair) %>% 
+  filter(term1 !=term2) %>% 
+  group_by(term1, term2) %>% 
+  slice(which.max(n_pair)) %>%
+  ungroup()  %>% 
+  rename(n=n_pair) 
+
+## single path 
+# pick terms linked to anchor
+bc_x<- bc_triple1_tidy %>% filter(n>1)
+# make sure they are term1 in triple2 and not in term2 (so that it does not create loops and levels)
+bc_y<- bc_triple2_tidy %>% filter(term2 %in% bc_x$term1 & !term1 %in% bc_x$term2)  %>% filter(n>10)
+bc_y<- bc_triple2_tidy %>% filter(term2 %in% bc_x$term1 )  %>% filter(n>10)
+# drop triple 1 term2 that ends up not linked to anything because of previous filteting step
+bc_x2 <- bc_x %>%  filter(term1 %in% bc_y$term2)
+
+bc_twostep_triples<- bind_rows(bc_x2, bc_y)
+bc_s_n<- make_sankey(bc_twostep_triples, fontSize=13)
+
+```
+
+
+
+```{r}
+#### IGF
+
+load("literature_outputs/lit_spaces_finalset_tidy.RData")
+trait_tidy <- tidy_litspace$`ukb-d-30770_irnt`
+rm(tidy_litspace)
+# view diseases
+
+## triple 1
+
+trait_triple1 <- trait_tidy %>% 
+  filter(term1 %in% c('Insulin-Like Growth Factor I', 'IGF1') ) %>% 
+  filter(term2.type_verbose != 'disease') %>% 
+  filter(!predicate %in% c("COEXISTS_WITH", 'NEG_ISA', 'NEG_COEXISTS_WITH')) %>%
+  filter(term2.type_verbose != "drug_or_compound") %>% 
+  mutate(term1 = case_when(term1 == 'Insulin-Like Growth Factor I' ~ 'IGF1',
+                           TRUE ~ term1)) %>% 
+  select(1:5) %>% 
+  group_by(term1, predicate, term2) %>% 
+  summarise_all(sum) %>% ungroup()
+
+  
+trait_triple1 %>% select(term1, term2) %>% distinct() %>% dim() # total 638 
+
+trait_triple1_tidy <- trait_triple1 %>% 
+  tidy_terms_for_viz() %>% 
+  select(term1,term2,n_pair) %>% 
+  filter(term1 !=term2) %>% 
+  group_by(term1, term2) %>% 
+  slice(which.max(n_pair)) %>%
+  ungroup()  %>% 
+  rename(n=n_pair) 
+
+trait_triple1_tidy %>% select(term1, term2) %>% distinct() %>% dim()  #624
+
+trait_trip_1s<- make_sankey(trait_triple1_tidy %>% filter(n>50), fontSize=13)
+
+
+## triple 2
+trait_triple2 <- trait_tidy %>% 
+    filter(term1 %in% trait_triple1$term2) %>% 
+    filter(term2.type_verbose != 'disease') %>% 
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_ISA', 'NEG_COEXISTS_WITH')) %>%
+    filter(term2.type_verbose != "drug_or_compound") %>% 
+    filter(!term1 %in% c("Insulin-Like Growth Factor I", 'IGF1')) %>% 
+    filter(!term2 %in% c("Insulin-Like Growth Factor I", 'IGF1'))
+
+trait_triple2 %>% select(term1, term2) %>% distinct() %>% dim() # total 2509
+
+# need to drop reverse connections: keep A-B or B-A depending which one is more common
+trait_triple2_onedir<- trait_triple2 %>% 
+  # forward count
+  rename(n_pair_f = n_pair) %>% 
+  # join col that will show reverse pair count
+  left_join(trait_triple2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+  distinct() %>% 
+  # if rel does not exist uin reverse, set it to 0
+  mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+  # if f more common, keep it, else, keep reverse
+  mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+  filter(keep==T) %>%  rename(n_pair=n_pair_f)
+
+trait_triple2_onedir %>% select(term1, term2) %>% distinct() %>% dim() # total 2240
+    
+trait_triple2_tidy <- trait_triple2_onedir %>% 
+  tidy_terms_for_viz() %>% 
+  # after tidying names you get almost duplicates: keep the one with highest n
+  select(term1,term2,n_pair) %>% 
+  filter(term1 !=term2) %>% 
+  group_by(term1, term2) %>% 
+  slice(which.max(n_pair)) %>%
+  ungroup()  %>% 
+  rename(n=n_pair) 
+
+trait_triple2_tidy %>% select(term1, term2) %>% distinct() %>% dim() # 1900
+
+trait_trip_2s<- make_sankey(trait_triple2_tidy %>% filter(n > 30), fontSize=13)
+
+### testing paths
+
+# with triple 1 key words
+keys = c("Somatotropin", "Insulin")
+test1<-
+  bind_rows(
+    trait_triple1_tidy %>% filter(term2 %in% keys),
+    trait_triple2_tidy %>% filter(term1 %in% keys)) %>% filter(n>10)
+
+trait_s_key<- make_sankey(test1, fontSize=13)
+
+
+## single path 
+# pick terms linked to anchor
+trait_x<- trait_triple1_tidy %>% filter(n>15)
+# make sure they are term1 in triple2 and not in term2 (so that it does not create loops and levels)
+trait_y<- trait_triple2_tidy %>% filter(term1 %in% trait_x$term2 & !term2 %in% trait_x$term2)  %>% filter(n>3)
+# drop triple 1 term2 that ends up not linked to anything because of previous filteting step
+trait_x2 <- trait_x %>%  filter(term2 %in% trait_y$term1)
+
+trait_twostep_triples<- bind_rows(trait_x2, trait_y)
+trait_s_n<- make_sankey(trait_twostep_triples, fontSize=13)
+
+
+```
+
+```{r}
+intersect(trait_x$term2, bc_x$term1)
+[1] "cytokine"            "estradiol"           "estrogens"           "IGF1R"               "interleukin-1, beta" "progesterone"        "Prolactin"          
+[8] "Somatotropin"        "testosterone"       
+intersect(trait_y$term2, bc_x$term1)
+"Progesterone receptor"   "Estrogen Receptors"      "Aromatase"               "Estrogen Receptor alpha"
+intersect(trait_y$term2, bc_y$term1)
+ "Androstenedione" "MYC"  
+
+
+intersect(trait_twostep_triples$term2, bc_twostep_triples$term1)
+trait_twostep_triples
+
+bc_twostep_triples
+```
+
+
+
+```{r}
+
+# trait triple 1 and 2 terms that are in BC full space, subset only to those terms that are in bc triples 1 and 2
+tmp <- bc_triples_tidy_count %>% tidy_terms_for_viz() %>% # just so term names match with the tidy triples
+    filter(term1 %in% trait_triple1_tidy$term2 | term1 %in% trait_triple2_tidy$term2 ) %>% 
+    filter(term1 %in% bc_triple1_tidy$term1 | term1 %in% bc_triple2_tidy$term1) 
+
+# subset bc triples to 
+bc_xxx<- bc_twostep_triples %>%  filter(term1 %in% tmp$term1)
+
+trait_xxx<- trait_twostep_triples %>%  filter(term2 %in% tmp$term2)
+
+
+xxx<- bind_rows(bc_xxx %>% filter(term1 %in% trait_xxx$term2| term2 == 'Breast Diseases'), 
+                trait_xxx %>%  filter(term2 %in% bc_xxx$term1 | n >15))
+  
+# need to drop reverse connections: keep A-B or B-A depending which one is more common
+xxx_onedir<- xxx %>% 
+  # forward count
+  rename(n_f = n) %>% 
+  # join col that will show reverse pair count
+  left_join(xxx %>% select(term1,term2,n_b = n), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+  distinct() %>% 
+  # if rel does not exist uin reverse, set it to 0
+  mutate(across(n_b, ~replace_na(.x, 0))) %>% 
+  # if f more common, keep it, else, keep reverse
+  mutate(keep = ifelse(n_f >= n_b ,T,F)) %>% 
+  filter(keep==T) %>%  rename(n=n_f)
+
+
+### NB there are same pairs from two data sets that are the same, but have diff numbers, need to still keep only one? 
+
+
+## need to find a way to keep 
+
+
+
+xxx_s<- make_sankey(xxx_onedir, fontSize=13)
+```
+
+
+
+
+
+```{r}
+# overlap of anchored triples
+overlap1 <- intersect(trait_triple1$term2, bc_triple1$term1) # 1548 + 49
+length(unique(overlap1)) # 27
+overlap_level1 <-
+  bind_rows(trait_triple1 %>% filter(term2 %in% overlap1) %>% select(term1, term2, n_pair),
+             bc_triple1 %>% filter(term1 %in% overlap1) %>% select(term1, term2, n_pair)) %>% rename(n=n_pair) %>% distinct()
+
+overlap_level1_tidy<-overlap_level1 %>% 
+  tidy_terms_for_viz() %>% 
+  # after tidying names you get almost duplicates: keep the one with highest n
+  group_by(term1, term2) %>% slice(which.max(n)) 
+
+length(unique(overlap_level1_tidy$term1))# 26: IGF, IGFR + things directly linking to BC
+length(unique(overlap_level1_tidy$term2)) # 26 things linking to BC  + BC
+
+x<-  make_sankey(overlap_level1_tidy, fontSize=13)
+
+```
+
+```{r}
+# overlap of (1) anchored trait and (2) terms linked to terms anchored to BC
+overlap12 <- intersect(trait_triple1$term2, bc_triple2$term1) # 775 + 696
+length(unique(overlap12)) #211
+overlap_level12 <-
+      bind_rows(trait_triple1 %>% filter(term2 %in% overlap12) %>% select(term1, term2, n_pair),
+                 bc_triple2 %>% filter(term1 %in% overlap12) %>% select(term1, term2, n_pair)) %>% 
+      rename(n=n_pair) %>% distinct() 
+
+overlap_level12_tidy <- overlap_level12 %>% 
+   tidy_terms_for_viz() %>% 
+  filter(term1 != 'IGF1R', term2 != 'IGF1') %>% 
+  # after tidying names you get almost duplicates: keep the one with highest n
+  group_by(term1, term2) %>% slice(which.max(n)) 
+length(unique(overlap_level12_tidy$term1))# 208 minus IGF
+length(unique(overlap_level12_tidy$term2)) # 200 thing that via 1 step connect to BC 
+
+
+x2<-   make_sankey(overlap_level12_tidy, fontSize=13)
+
+```
+
+```{r}
+
+# overlap : (2) + (1)
+overlap21 <- intersect(trait_triple2$term2, bc_triple1$term1) # 626 + 46
+length(unique(overlap21)) #22
+
+overlap_level21 <-
+      bind_rows(trait_triple2 %>% filter(term2 %in% overlap21) %>% select(term1, term2, n_pair),
+                 bc_triple1 %>% filter(term1 %in% overlap21) %>% select(term1, term2, n_pair)) %>% 
+      rename(n=n_pair) %>% distinct() 
+
+overlap_level21_tidy <- overlap_level21 %>% 
+   tidy_terms_for_viz() %>% 
+  filter(term1 != 'IGF1R', term2 != 'IGF1') %>% 
+  # after tidying names you get almost duplicates: keep the one with highest n
+  group_by(term1, term2) %>% slice(which.max(n)) 
+length(unique(overlap_level21_tidy$term1))# 126: thing that are linked to IGF via something
+length(unique(overlap_level21_tidy$term2)) # 21 things, linked to those 126 things, that  connect to BC 
+
+
+x3<-   make_sankey(overlap_level21_tidy, fontSize=13)
+
+```
+
+
+```{r}
+# overlap (2) + (2)
+
+overlap2 <- intersect(trait_triple2$term2, bc_triple2$term1) # 626 + 696
+length(unique(overlap2)) #176
+
+overlap_level2 <-
+      bind_rows(trait_triple2 %>% filter(term2 %in% overlap2) %>% select(term1, term2, n_pair),
+                 bc_triple2 %>% filter(term1 %in% overlap2) %>% select(term1, term2, n_pair)) %>% 
+      rename(n=n_pair) %>% distinct() 
+
+overlap_level2_tidy <- overlap_level2 %>% 
+   tidy_terms_for_viz() %>% 
+  ##filter(term1 != 'IGF1R', term2 != 'IGF1') %>% 
+  # after tidying names you get almost duplicates: keep the one with highest n
+  group_by(term1, term2) %>% slice(which.max(n)) 
+
+length(unique(overlap_level2_tidy$term1))# 349: thing that are linked to IGF via something
+length(unique(overlap_level2_tidy$term2)) # 182 things, linked to BC via something
+
+
+x4<-   make_sankey(overlap_level2_tidy, fontSize=13)
+```
+
