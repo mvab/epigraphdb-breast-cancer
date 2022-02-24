@@ -53,7 +53,9 @@ dat<- vroom("literature_outputs/breast_cancer_litspace_prod.csv",show_col_types 
 # tidy space -- not actually used? 
 bc_triples_tidy_count <- tidy_lit_space(dat)
 
-
+# try sankey
+links_bc<- bc_triples_tidy_count %>% select(term1, term2, n=n_pair) %>% distinct() 
+bc_s<- make_sankey(links_bc %>% filter(n>30))
 
 
 
@@ -103,7 +105,7 @@ wordcloud(words = test$name, freq = test$size_rounded, min.freq = 1,
 
 
 
-**Visualizing network around a key term using a 'local network part/direction' appraoch**
+**Visualizing network around a key term using a 'local network part/direction' approach**
 
 ```{r}
 # load predicate direction
@@ -145,10 +147,668 @@ b#htmlwidgets::saveWidget(b, file=paste0( getwd(), "/htmls/cyclinD1_backwards.ht
 ```
 
 
+**trying GWAS from prod**
+
+
+
+```{r}
+
+#### MENOPAUSE
+
+load("literature_outputs/lit_spaces_combined_traits_tidy.RData")
+trait_tidy <- tidy_combined_litspace$menopause
+rm(tidy_combined_litspace)
+
+# view diseases
+trait_tidy %>% filter(term2.type_verbose == 'disease') %>% count(term2, sort=T)
+
+key_word = "menopaus"
+
+trait_tidy %>% filter(term2.type_verbose != 'disease') %>% View()
+
+# exclude dsyb in term2, except key_word related
+trait_tidy2 <- trait_tidy %>% filter(!(term2.type_verbose == 'disease' & !grepl(key_word, term2, ignore.case = T))) 
+
+
+#  try sankey
+links_meno<- trait_tidy %>% select(term1, term2, n=n_pair) %>% distinct() 
+
+s<- make_sankey(links_meno%>% filter(n>10))
+
+
+
+load("literature_outputs/lit_spaces_combined_traits.RData")
+trait_triples_tidy <- combined_lit_spaces$menopause %>% tidy_gwas_to_lit_output() %>%  distinct() 
+rm(combined_lit_spaces)
+
+x <- trait_triples_tidy %>%  select(term1, term2, lit.id) %>% distinct() 
+bind_rows(trait_triples_tidy %>% select(term=term2),
+          trait_triples_tidy %>% select(term=term1)) %>%  count(term, sort=T) %>% View()
+
+bind_rows(trait_triples_tidy %>% select(term=term2),
+          trait_triples_tidy %>% select(term=term1)) %>%  count(term, sort=T) %>% pull(n) %>% sum() #18268
+
+
+```
+1) any common terms / overlap of the most common terms?
+2) identical triples/pairs between two spaces?
+3) term2 to term1 
+    - keep key word
+    - filter by predicate 
+4) 3 + keep 
+5) predicate direction? exclude neutral?
+6) sankey plot? 
+
+
+```{r}
+
+# 1. any common terms  --- very rough estimate
+bc_terms <- c(as.character(bc_triples_tidy_count$term1), as.character(bc_triples_tidy_count$term2)) %>% unique()
+length(bc_terms) #4989
+trait_terms <- c(as.character(trait_tidy$term1), as.character(trait_tidy$term2)) %>% unique()
+length(trait_terms) #meno 1044
+
+shared_terms <- intersect(bc_terms, trait_terms) ## these are terms that are related to both menopause and BC
+length(shared_terms) #624
+
+links_meno %>% dim() # 2595
+links_meno %>% filter(term1 %in% shared_terms | term2 %in% shared_terms  ) %>% dim() #2498
+# 2498/2595 =  0.96 menopause lit is related to BC
+
+links_bc %>% dim() # 16103
+links_bc %>% filter(term1 %in% shared_terms | term2 %in% shared_terms  ) %>% dim() #10170
+# 10170/16103 =  0.63 BC lit is related to menopause mechanism
+
+
+
+# 2.1 identical *pairs* between spaces  - more stringent
+
+# unique pairs
+bc_triples_tidy_count$pair %>% unique() %>% length() #16103
+trait_tidy$pair %>% unique() %>% length() #2595
+
+# join pair counts into a table
+pair_count_summary<- 
+  full_join(bc_triples_tidy_count %>% select(pair, n_pair_bc=n_pair),
+            trait_tidy %>% select(pair, n_pair_trait=n_pair) ) %>% distinct() %>% 
+   mutate(across(everything(), ~replace_na(.x, 0))) 
+dim(pair_count_summary) # all pairs:  18073
+
+shared_pairs <- pair_count_summary %>% filter(n_pair_bc != 0 & n_pair_trait !=0) %>% pull(pair)
+length(shared_pairs) #625
+
+# from all 18073 pair between two lit space, 625 are shared
+
+# shared pairs if we further exclude rare things in both 
+pair_count_summary_sub <-pair_count_summary %>% 
+  filter(pair %in% shared_pairs) %>% 
+  filter(n_pair_bc >1 | n_pair_trait >1) %>% pull(pair) # this drops things that are less important for either one of those
+
+length(pair_count_summary_sub) # 540
+
+# out of these, unique terms:
+tmp <- bc_triples_tidy_count %>% filter(pair %in% pair_count_summary_sub) 
+unique_filter1.1 <- c(as.character(tmp$term1), as.character(tmp$term2)) %>% unique() 
+length(unique_filter1.1) # 239
+
+
+# test sankey of SHARED PAIRS BC vs meno:
+
+x<-trait_tidy %>%  filter(pair %in% pair_count_summary_sub) %>% select(term1, term2, n=n_pair) %>% distinct() 
+test<- make_sankey(x %>% filter(n>5))
+
+
+# 2.2 identical *triples* between spaces  - even more stringent
+
+# unique pairs
+bc_triples_tidy_count %>% select(term1,predicate, term2) %>% distinct() %>% dim()#18848
+trait_tidy%>% select(term1,predicate, term2) %>% distinct() %>% dim()#3195
+
+# join pair counts into a table
+triple_count_summary<- 
+  full_join(bc_triples_tidy_count %>% select(term1,predicate, term2, n_triple_bc=n_triple),
+            trait_tidy %>% select(term1,predicate, term2, n_triple_trait=n_triple) ) %>% distinct() %>% 
+   mutate(across(everything(), ~replace_na(.x, 0))) 
+dim(triple_count_summary) # all pairs:  21331
+
+shared_triples <- triple_count_summary %>% filter(n_triple_bc != 0 & n_triple_trait !=0) 
+dim(shared_triples) #712
+
+# from all 21331 triples between two lit space, 712 are shared
+
+# shared triples if we further exclude rare things in both 
+triple_count_summary_sub <-triple_count_summary %>% 
+  right_join(shared_triples) %>% 
+  filter(n_triple_bc >1 | n_triple_trait >1) # this drops things that are less important for either one of those
+
+dim(triple_count_summary_sub) # 617
+
+
+# 3. test term 2 to term 1 overlap 
+
+bc_triples_tidy_count %>% count(predicate, sort=T)
+
+# exclude dsyb in term2, except key_word related
+key_word = 'menopaus'
+trait_tidy2 <- trait_tidy %>% filter(!(term2.type_verbose == 'disease' & !grepl(key_word, term2, ignore.case = T))) 
+
+basic_overlap <- intersect(trait_tidy2            %>% filter(predicate != 'COEXISTS_WITH') %>% pull(term2),
+                           bc_triples_tidy_count %>% filter(predicate != 'COEXISTS_WITH') %>% pull(term1))
+
+trait_tidy %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term2 %in% basic_overlap ) %>% View()
+bc_triples_tidy_count  %>% filter(predicate != 'COEXISTS_WITH') %>% filter(term1 %in%basic_overlap ) %>% View()
+
+trait_sub_df <- trait_tidy %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term2 %in% basic_overlap ) 
+bc_sub_df <- bc_triples_tidy_count %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term1 %in% basic_overlap ) 
+
+
+
+
+# trait: collapse predicates in into a list 
+trait_df_wide <- data_frame()
+for (i in trait_sub_df$pair){
+  
+  tmp <- trait_sub_df %>% filter(pair == i)
+  pair_predicates <- tmp %>%  arrange(-n_triple ) %>% pull(predicate) 
+  row1<- tmp %>%  filter(row_number()==1) %>% select(term1, term2, n_pair, pair)
+  trait_df_wide<- bind_rows(trait_df_wide, tibble(row1$term1,row1$term2, row1$n_pair,  row1$pair, paste0(pair_predicates, collapse = ", "))) %>% distinct()
+}
+colnames(trait_df_wide) <- c('term1', 'term2', 'n_pair', 'pair', 'predicates_list')
+
+trait_df_wide <- trait_df_wide %>% mutate(common = ifelse(n_pair>3, 1, 0))
+trait_df_wide %>% count(common)
+
+
+# bc: collapse predicates in into a list 
+bc_df_wide <- data_frame()
+for (i in bc_sub_df$pair){
+  
+  tmp <- bc_sub_df %>% filter(pair == i)
+  pair_predicates <- tmp %>%  arrange(-n_triple ) %>% pull(predicate) 
+  row1<- tmp %>%  filter(row_number()==1) %>% select(term1, term2, n_pair, pair)
+  bc_df_wide<- bind_rows(bc_df_wide, tibble(row1$term1,row1$term2, row1$n_pair,  row1$pair, paste0(pair_predicates, collapse = ", "))) %>% distinct()
+}
+colnames(bc_df_wide) <- c('term1', 'term2', 'n_pair', 'pair', 'predicates_list')
+
+bc_df_wide <- bc_df_wide %>% mutate(common = ifelse(n_pair>3, 1, 0))
+bc_df_wide %>% count(common)
+
+
+# see shared pairs in both
+
+length(shared_pairs) # 625
+
+dim(trait_df_wide) #856
+dim(bc_df_wide) #4022
+
+# if both have these pairs, then they are related mechanisms in both TRAIT and BC - but mif term overlap based on those does not make sense
+trait_df_wide_shared <- trait_df_wide %>% filter(pair %in% shared_pairs) # 390 
+bc_df_wide_shared <- bc_df_wide %>% filter(pair %in% shared_pairs)# 441 
+
+trait_df_wide_wo_shared <- trait_df_wide %>% filter(!pair %in% shared_pairs) 
+bc_df_wide_wo_shared <- bc_df_wide %>% filter(!pair %in% shared_pairs)
+
+overlap<-left_join(
+trait_df_wide_wo_shared %>% select(trait_pair =pair , trait_pair_predicates = predicates_list, trait_n_pair = n_pair, intermediate = term2),
+bc_df_wide_wo_shared %>% select(bc_pair =pair , bc_pair_predicates = predicates_list,  bc_n_pair = n_pair, intermediate = term1)) %>% arrange (-trait_n_pair, -bc_n_pair) %>% 
+  drop_na() %>% 
+  filter(bc_n_pair > 1 & trait_n_pair > 1)
+
+
+write_csv(overlap, "literature_outputs/lit_overlap_menopause.csv")
+
+
+tmp<-bind_rows(
+overlap %>%  select(trait_pair, n= trait_n_pair) %>% separate(trait_pair, sep = " / ", into=c('term1', 'term2')) %>% distinct(),
+overlap %>%  select(bc_pair, n=bc_n_pair) %>% separate(bc_pair, sep = " / ", into=c('term1', 'term2')) %>% distinct() )
+
+
+s<- make_sankey(tmp%>% filter(n>15))
+
+```
+
+
+
+
+
+
+```{r}
+
+#### IGF
+
+load("literature_outputs/lit_spaces_finalset_tidy.RData")
+trait_tidy <- tidy_litspace$`ukb-d-30770_irnt`
+rm(tidy_litspace)
+# view diseases
+trait_tidy %>% filter(term2.type_verbose == 'disease') %>% count(term2, sort=T)
+
+key_word = c('IGF', 'Insulin-like')
+
+trait_tidy %>% filter(term2.type_verbose != 'disease') %>% View()
+
+# exclude dsyb in term2, except key_word related
+trait_tidy2 <- trait_tidy %>% filter(!(term2.type_verbose == 'disease' & !grepl(key_word, term2, ignore.case = T))) 
+
+
+#  try sankey
+links_trait<- trait_tidy %>% select(term1, term2, n=n_pair) %>% distinct() 
+
+s<- make_sankey(links_trait%>% filter(n>10))
+
+
+
+load("literature_outputs/lit_spaces_finalset.RData")
+trait_triples_tidy <- lit_spaces$`ukb-d-30770_irnt` %>% tidy_gwas_to_lit_output() %>%  distinct() 
+rm(lit_spaces)
+
+x <- trait_triples_tidy %>%  select(term1, term2, lit.id) %>% distinct() 
+bind_rows(trait_triples_tidy %>% select(term=term2),
+          trait_triples_tidy %>% select(term=term1)) %>%  count(term, sort=T) %>% View()
+
+bind_rows(trait_triples_tidy %>% select(term=term2),
+          trait_triples_tidy %>% select(term=term1)) %>%  count(term, sort=T) %>% pull(n) %>% sum() #92488
+
+
+```
+
+```{r}
+
+# 1. any common terms  --- very rough estimate
+bc_terms <- c(as.character(bc_triples_tidy_count$term1), as.character(bc_triples_tidy_count$term2)) %>% unique()
+length(bc_terms) #4989
+trait_terms <- c(as.character(trait_tidy$term1), as.character(trait_tidy$term2)) %>% unique()
+length(trait_terms) #igf 2165
+
+shared_terms <- intersect(bc_terms, trait_terms) ## these are terms that are related to both IGF1 and BC
+length(shared_terms) #1188
+
+links_trait %>% dim() # 6609
+links_trait %>% filter(term1 %in% shared_terms | term2 %in% shared_terms  ) %>% dim() #6323
+# 6323/6609 =  0.95 IGF lit is related to BC
+
+links_bc %>% dim() # 16103
+links_bc %>% filter(term1 %in% shared_terms | term2 %in% shared_terms  ) %>% dim() #13783
+# 13783/16103 =  0.85 BC lit is related to menopause mechanism
+
+
+
+# 2.1 identical *pairs* between spaces  - more stringent
+
+# unique pairs
+bc_triples_tidy_count$pair %>% unique() %>% length() #16103
+trait_tidy$pair %>% unique() %>% length() #6609
+
+# join pair counts into a table
+pair_count_summary<- 
+  full_join(bc_triples_tidy_count %>% select(pair, n_pair_bc=n_pair),
+            trait_tidy %>% select(pair, n_pair_trait=n_pair) ) %>% distinct() %>% 
+   mutate(across(everything(), ~replace_na(.x, 0))) 
+dim(pair_count_summary) # all pairs:  22123
+
+shared_pairs <- pair_count_summary %>% filter(n_pair_bc != 0 & n_pair_trait !=0) %>% pull(pair)
+length(shared_pairs) #589
+
+# from all 18073 pair between two lit space, 625 are shared
+
+# shared pairs if we further exclude rare things in both 
+pair_count_summary_sub <-pair_count_summary %>% 
+  filter(pair %in% shared_pairs) %>% 
+  filter(n_pair_bc >1 | n_pair_trait >1) %>% pull(pair) # this drops things that are less important for either one of those
+
+length(pair_count_summary_sub) # 508
+
+# out of these, unique terms:
+tmp <- bc_triples_tidy_count %>% filter(pair %in% pair_count_summary_sub) 
+unique_filter1.1 <- c(as.character(tmp$term1), as.character(tmp$term2)) %>% unique() 
+length(unique_filter1.1) # 242
+
+
+# test sankey of SHARED PAIRS BC vs IGF:
+
+x<-trait_tidy %>%  filter(pair %in% pair_count_summary_sub) %>% select(term1, term2, n=n_pair) %>% distinct() 
+test<- make_sankey(x %>% filter(n>5))
+
+
+# 2.2 identical *triples* between spaces  - even more stringent
+
+# unique pairs
+bc_triples_tidy_count %>% select(term1,predicate, term2) %>% distinct() %>% dim()#18848
+trait_tidy%>% select(term1,predicate, term2) %>% distinct() %>% dim()#9095
+
+# join pair counts into a table
+triple_count_summary<- 
+  full_join(bc_triples_tidy_count %>% select(term1,predicate, term2, n_triple_bc=n_triple),
+            trait_tidy %>% select(term1,predicate, term2, n_triple_trait=n_triple) ) %>% distinct() %>% 
+   mutate(across(everything(), ~replace_na(.x, 0))) 
+dim(triple_count_summary) # all pairs:  27378
+
+shared_triples <- triple_count_summary %>% filter(n_triple_bc != 0 & n_triple_trait !=0) 
+dim(shared_triples) #565
+
+# from all 27378 triples between two lit space, 565 are shared
+
+# shared triples if we further exclude rare things in both 
+triple_count_summary_sub <-triple_count_summary %>% 
+  right_join(shared_triples) %>% 
+  filter(n_triple_bc >1 | n_triple_trait >1) # this drops things that are less important for either one of those
+
+dim(triple_count_summary_sub) # 463
+
+
+
+
+# 3. test term 2 to term 1 overlap 
+
+bc_triples_tidy_count %>% count(predicate, sort=T)
+
+# exclude dsyb in term2, except key_word related
+#key_word = 'menopaus'
+trait_tidy2 <- trait_tidy %>% filter(!(term2.type_verbose == 'disease'))# & !grepl(key_word, term2, ignore.case = T))) 
+
+basic_overlap <- intersect(trait_tidy2            %>% filter(predicate != 'COEXISTS_WITH') %>% pull(term2),
+                           bc_triples_tidy_count %>% filter(predicate != 'COEXISTS_WITH') %>% pull(term1))
+
+trait_tidy %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term2 %in% basic_overlap ) %>% View()
+bc_triples_tidy_count  %>% filter(predicate != 'COEXISTS_WITH') %>% filter(term1 %in%basic_overlap ) %>% View()
+
+trait_sub_df <- trait_tidy %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term2 %in% basic_overlap ) 
+bc_sub_df <- bc_triples_tidy_count %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term1 %in% basic_overlap ) 
+
+
+
+
+# trait: collapse predicates in into a list 
+trait_df_wide <- data_frame()
+for (i in trait_sub_df$pair){
+  
+  tmp <- trait_sub_df %>% filter(pair == i)
+  pair_predicates <- tmp %>%  arrange(-n_triple ) %>% pull(predicate) 
+  row1<- tmp %>%  filter(row_number()==1) %>% select(term1, term2, n_pair, pair)
+  trait_df_wide<- bind_rows(trait_df_wide, tibble(row1$term1,row1$term2, row1$n_pair,  row1$pair, paste0(pair_predicates, collapse = ", "))) %>% distinct()
+}
+colnames(trait_df_wide) <- c('term1', 'term2', 'n_pair', 'pair', 'predicates_list')
+
+trait_df_wide <- trait_df_wide %>% mutate(common = ifelse(n_pair>3, 1, 0))
+trait_df_wide %>% count(common)
+
+
+# bc: collapse predicates in into a list 
+bc_df_wide <- data_frame()
+for (i in bc_sub_df$pair){
+  
+  tmp <- bc_sub_df %>% filter(pair == i)
+  pair_predicates <- tmp %>%  arrange(-n_triple ) %>% pull(predicate) 
+  row1<- tmp %>%  filter(row_number()==1) %>% select(term1, term2, n_pair, pair)
+  bc_df_wide<- bind_rows(bc_df_wide, tibble(row1$term1,row1$term2, row1$n_pair,  row1$pair, paste0(pair_predicates, collapse = ", "))) %>% distinct()
+}
+colnames(bc_df_wide) <- c('term1', 'term2', 'n_pair', 'pair', 'predicates_list')
+
+bc_df_wide <- bc_df_wide %>% mutate(common = ifelse(n_pair>3, 1, 0))
+bc_df_wide %>% count(common)
+
+
+# see shared pairs in both
+
+length(shared_pairs) # 589
+
+dim(trait_df_wide) #3857
+dim(bc_df_wide) #7451
+
+# if both have these pairs, then they are related mechanisms in both TRAIT and BC - but mif term overlap based on those does not make sense
+trait_df_wide_shared <- trait_df_wide %>% filter(pair %in% shared_pairs) # 519 
+bc_df_wide_shared <- bc_df_wide %>% filter(pair %in% shared_pairs)# 488 
+
+trait_df_wide_wo_shared <- trait_df_wide %>% filter(!pair %in% shared_pairs) 
+bc_df_wide_wo_shared <- bc_df_wide %>% filter(!pair %in% shared_pairs)
+
+overlap<-left_join(
+trait_df_wide_wo_shared %>% select(trait_pair =pair , trait_pair_predicates = predicates_list, trait_n_pair = n_pair, intermediate = term2),
+bc_df_wide_wo_shared %>% select(bc_pair =pair , bc_pair_predicates = predicates_list,  bc_n_pair = n_pair, intermediate = term1)) %>% arrange (-trait_n_pair, -bc_n_pair) %>% 
+  drop_na() %>% 
+  filter(bc_n_pair > 1 & trait_n_pair > 1)
+
+
+write_csv(overlap, "literature_outputs/overlap_tables/lit_overlap_IGF.csv")
+
+
+tmp<-bind_rows(
+overlap %>%  select(trait_pair, n= trait_n_pair) %>% separate(trait_pair, sep = " / ", into=c('term1', 'term2')) %>% distinct(),
+overlap %>%  select(bc_pair, n=bc_n_pair) %>% separate(bc_pair, sep = " / ", into=c('term1', 'term2')) %>% distinct() )
+
+
+s_igf<- make_sankey(tmp%>% filter(n>30))
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+#### IL1RA
+
+load("literature_outputs/lit_spaces_finalset_tidy.RData")
+trait_tidy <- tidy_litspace$`prot-b-38`
+rm(tidy_litspace)
+# view diseases
+trait_tidy %>% filter(term2.type_verbose == 'disease') %>% count(term2, sort=T)
+
+
+trait_tidy %>% filter(term2.type_verbose != 'disease') %>% View()
+
+# exclude dsyb in term2, except key_word related
+trait_tidy2 <- trait_tidy %>% filter(!(term2.type_verbose == 'disease'))# & !grepl(key_word, term2, ignore.case = T))) 
+
+
+#  try sankey
+links_trait<- trait_tidy %>% select(term1, term2, n=n_pair) %>% distinct() 
+
+s<- make_sankey(links_trait%>% filter(n>3))
+
+
+
+load("literature_outputs/lit_spaces_finalset.RData")
+trait_triples_tidy <- lit_spaces$`prot-b-38` %>% tidy_gwas_to_lit_output() %>%  distinct() 
+rm(lit_spaces)
+
+x <- trait_triples_tidy %>%  select(term1, term2, lit.id) %>% distinct() 
+bind_rows(trait_triples_tidy %>% select(term=term2),
+          trait_triples_tidy %>% select(term=term1)) %>%  count(term, sort=T) %>% View()
+
+bind_rows(trait_triples_tidy %>% select(term=term2),
+          trait_triples_tidy %>% select(term=term1)) %>%  count(term, sort=T) %>% pull(n) %>% sum() #92488
+
+
+```
+
+```{r}
+
+# 1. any common terms  --- very rough estimate
+bc_terms <- c(as.character(bc_triples_tidy_count$term1), as.character(bc_triples_tidy_count$term2)) %>% unique()
+length(bc_terms) #4989
+trait_terms <- c(as.character(trait_tidy$term1), as.character(trait_tidy$term2)) %>% unique()
+length(trait_terms) #IL1 486
+
+shared_terms <- intersect(bc_terms, trait_terms) ## these are terms that are related to both IGF1 and BC
+length(shared_terms) #275
+
+links_trait %>% dim() # 973
+links_trait %>% filter(term1 %in% shared_terms | term2 %in% shared_terms  ) %>% dim() #799
+# 799/973 =  0.82 IL1 lit is related to BC
+
+links_bc %>% dim() # 16103
+links_bc %>% filter(term1 %in% shared_terms | term2 %in% shared_terms  ) %>% dim() #5062
+# 5062/16103 =  0.31 BC lit is related to menopause mechanism
+
+
+
+# 2.1 identical *pairs* between spaces  - more stringent
+
+# unique pairs
+bc_triples_tidy_count$pair %>% unique() %>% length() #16103
+trait_tidy$pair %>% unique() %>% length() #973
+
+# join pair counts into a table
+pair_count_summary<- 
+  full_join(bc_triples_tidy_count %>% select(pair, n_pair_bc=n_pair),
+            trait_tidy %>% select(pair, n_pair_trait=n_pair) ) %>% distinct() %>% 
+   mutate(across(everything(), ~replace_na(.x, 0))) 
+dim(pair_count_summary) # all pairs:  17057
+
+shared_pairs <- pair_count_summary %>% filter(n_pair_bc != 0 & n_pair_trait !=0) %>% pull(pair)
+length(shared_pairs) #19
+
+# from all 18073 pair between two lit space, 625 are shared
+
+# shared pairs if we further exclude rare things in both 
+pair_count_summary_sub <-pair_count_summary %>% 
+  filter(pair %in% shared_pairs) %>% 
+  filter(n_pair_bc >1 | n_pair_trait >1) %>% pull(pair) # this drops things that are less important for either one of those
+
+length(pair_count_summary_sub) # 15
+
+# out of these, unique terms:
+tmp <- bc_triples_tidy_count %>% filter(pair %in% pair_count_summary_sub) 
+unique_filter1.1 <- c(as.character(tmp$term1), as.character(tmp$term2)) %>% unique() 
+length(unique_filter1.1) # 18
+
+
+# test sankey of SHARED PAIRS BC vs IGF:
+
+x<-trait_tidy %>%  filter(pair %in% pair_count_summary_sub) %>% select(term1, term2, n=n_pair) %>% distinct() 
+test<- make_sankey(x %>% filter(n>5))
+
+
+# 2.2 identical *triples* between spaces  - even more stringent
+
+# unique pairs
+bc_triples_tidy_count %>% select(term1,predicate, term2) %>% distinct() %>% dim()#18848
+trait_tidy%>% select(term1,predicate, term2) %>% distinct() %>% dim()#1102
+
+# join pair counts into a table
+triple_count_summary<- 
+  full_join(bc_triples_tidy_count %>% select(term1,predicate, term2, n_triple_bc=n_triple),
+            trait_tidy %>% select(term1,predicate, term2, n_triple_trait=n_triple) ) %>% distinct() %>% 
+   mutate(across(everything(), ~replace_na(.x, 0))) 
+dim(triple_count_summary) # all pairs:  19935
+
+shared_triples <- triple_count_summary %>% filter(n_triple_bc != 0 & n_triple_trait !=0) 
+dim(shared_triples) #15
+
+# from all 19935 triples between two lit space, 15 are shared
+
+# shared triples if we further exclude rare things in both 
+triple_count_summary_sub <-triple_count_summary %>% 
+  right_join(shared_triples) %>% 
+  filter(n_triple_bc >1 | n_triple_trait >1) # this drops things that are less important for either one of those
+
+dim(triple_count_summary_sub) # 11
+
+
+
+
+# 3. test term 2 to term 1 overlap 
+
+bc_triples_tidy_count %>% count(predicate, sort=T)
+
+# exclude dsyb in term2, except key_word related
+#key_word = 'menopaus'
+trait_tidy2 <- trait_tidy %>% filter(!(term2.type_verbose == 'disease'))# & !grepl(key_word, term2, ignore.case = T))) 
+
+basic_overlap <- intersect(trait_tidy2            %>% filter(predicate != 'COEXISTS_WITH') %>% pull(term2),
+                           bc_triples_tidy_count %>% filter(predicate != 'COEXISTS_WITH') %>% pull(term1))
+
+trait_tidy %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term2 %in% basic_overlap ) %>% View()
+bc_triples_tidy_count  %>% filter(predicate != 'COEXISTS_WITH') %>% filter(term1 %in%basic_overlap ) %>% View()
+
+trait_sub_df <- trait_tidy %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term2 %in% basic_overlap ) 
+bc_sub_df <- bc_triples_tidy_count %>% filter(predicate != 'COEXISTS_WITH') %>%  filter(term1 %in% basic_overlap ) 
+
+
+
+
+# trait: collapse predicates in into a list 
+trait_df_wide <- data_frame()
+for (i in trait_sub_df$pair){
+  
+  tmp <- trait_sub_df %>% filter(pair == i)
+  pair_predicates <- tmp %>%  arrange(-n_triple ) %>% pull(predicate) 
+  row1<- tmp %>%  filter(row_number()==1) %>% select(term1, term2, n_pair, pair)
+  trait_df_wide<- bind_rows(trait_df_wide, tibble(row1$term1,row1$term2, row1$n_pair,  row1$pair, paste0(pair_predicates, collapse = ", "))) %>% distinct()
+}
+colnames(trait_df_wide) <- c('term1', 'term2', 'n_pair', 'pair', 'predicates_list')
+
+trait_df_wide <- trait_df_wide %>% mutate(common = ifelse(n_pair>3, 1, 0))
+trait_df_wide %>% count(common)
+
+
+# bc: collapse predicates in into a list 
+bc_df_wide <- data_frame()
+for (i in bc_sub_df$pair){
+  
+  tmp <- bc_sub_df %>% filter(pair == i)
+  pair_predicates <- tmp %>%  arrange(-n_triple ) %>% pull(predicate) 
+  row1<- tmp %>%  filter(row_number()==1) %>% select(term1, term2, n_pair, pair)
+  bc_df_wide<- bind_rows(bc_df_wide, tibble(row1$term1,row1$term2, row1$n_pair,  row1$pair, paste0(pair_predicates, collapse = ", "))) %>% distinct()
+}
+colnames(bc_df_wide) <- c('term1', 'term2', 'n_pair', 'pair', 'predicates_list')
+
+bc_df_wide <- bc_df_wide %>% mutate(common = ifelse(n_pair>3, 1, 0))
+bc_df_wide %>% count(common)
+
+
+# see shared pairs in both
+
+length(shared_pairs) # 19
+shared_pairs<- shared_pairs[!grepl("nterleukin-1",shared_pairs )] #15
+
+dim(trait_df_wide) #483
+dim(bc_df_wide) #1752
+
+# if both have these pairs, then they are related mechanisms in both TRAIT and BC - but mif term overlap based on those does not make sense
+trait_df_wide_shared <- trait_df_wide %>% filter(pair %in% shared_pairs) # 519 
+bc_df_wide_shared <- bc_df_wide %>% filter(pair %in% shared_pairs)# 488 
+
+trait_df_wide_wo_shared <- trait_df_wide %>% filter(!pair %in% shared_pairs) 
+bc_df_wide_wo_shared <- bc_df_wide %>% filter(!pair %in% shared_pairs)
+
+overlap<-left_join(
+trait_df_wide_wo_shared %>% select(trait_pair =pair , trait_pair_predicates = predicates_list, trait_n_pair = n_pair, intermediate = term2),
+bc_df_wide_wo_shared %>% select(bc_pair =pair , bc_pair_predicates = predicates_list,  bc_n_pair = n_pair, intermediate = term1)) %>% arrange (-trait_n_pair, -bc_n_pair) %>% 
+  drop_na() %>% 
+  filter(bc_n_pair > 1 & trait_n_pair > 1)
+
+
+write_csv(overlap, "literature_outputs/overlap_tables/lit_overlap_IL1.csv")
+
+
+tmp<-bind_rows(
+overlap %>%  select(trait_pair, n= trait_n_pair) %>% separate(trait_pair, sep = " / ", into=c('term1', 'term2')) %>% distinct(),
+overlap %>%  select(bc_pair, n=bc_n_pair) %>% separate(bc_pair, sep = " / ", into=c('term1', 'term2')) %>% distinct() )
+
+
+s_IL1<- make_sankey(tmp%>% filter(n>15))
+
+
+
+```
+
+
+
+
 
 
  **other GWAS**
 ```{r}
+### THIS is old explorations of [betaine] data from v1.2
+# mostly with the network, but also using the key word
+# some ideas on using node type to extract genes? 
+
+
 other_gwas<-vroom('../../query_results/lit_betaine_triples.tsv')  
 dim(other_gwas)
 
@@ -311,9 +971,47 @@ c<-build_networkD3(overlap1_merged, node_counts)
 #htmlwidgets::saveWidget(c, file=paste0( getwd(), "/htmls/bc_w_betaine_new.html"))
 
 
+```
 
+
+```{r}
+## sankey plot! 
+
+
+# combined via terms and key term
+links<-bind_rows(other_gwas_tidy %>% filter(term2 %in% overlap1) %>% select(term1, predicate, term2),
+                           other_gwas_tidy %>% filter(term2 == 'betaine' | term1 == 'betaine') %>% select(term1, predicate, term2),
+                           bc_triples_tidy %>% filter(term1 %in% overlap1) %>% select(term1, predicate, term2))%>% 
+  select(term1,term2)  %>% 
+  group_by(term1,  term2) %>% 
+    count() %>% ungroup() %>% 
+    distinct() %>% 
+    filter(n>5) %>% 
+    rename(source = term1, target = term2, value =n)
+
+
+# betaine only
+
+links<- other_gwas_tidy %>% 
+  select(term1,term2)  %>% 
+  group_by(term1,  term2) %>% 
+    count() %>% ungroup() %>% 
+    distinct() %>% 
+      filter(n>5) 
+
+s<- make_sankey(links)
+
+
+
+
+```
+
+
+
+
+
+```{r}
 # trying other type of overlap
-
 
 tmp <- other_gwas_tidy %>% filter(term1 == 'betaine' ,#| term2 == 'betaine',
                            st.type !="['dsyn']")
