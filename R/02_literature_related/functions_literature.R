@@ -163,6 +163,68 @@ keep_one_type <- function(terms_w_multp_types, node_types_full){
 
 
 
+tidy_terms_for_viz <- function(df){
+  
+  df %>% mutate_at(
+    vars(one_of('term1', 'term2')),
+    funs(case_when(
+      . == 'Insulin-Like Growth Factor I' ~ 'IGF1',
+      . == 'Insulin-Like Growth Factor II' ~ 'IGF2',
+      . == 'Insulin-Like-Growth Factor I Receptor'~ 'IGF1R',
+      . == 'Insulin-Like Growth Factor Receptor'~ 'IGFR',
+      . == 'Insulin-Like-Growth Factor II Receptor'~ 'IGF2R',
+      . == 'Receptor, IGF Type 2'~ 'IGF2R',
+      . == 'INS' ~ 'Insulin',
+      . == 'INSR' ~ 'Insulin Receptor',
+      . == 'Insulin-Like Growth-Factor-Binding Proteins' ~ 'IGFBP',
+      . == 'Insulin-Like Growth Factor Binding Protein 3' ~ 'IGFBP3',
+      . == 'Insulin-Like Growth Factor Binding Protein 4' ~ 'IGFBP4',
+      . == "Insulin-Like Growth-Factor Binding Protein 1" ~ 'IGFBP1',
+      . == 'Insulin-Like Growth Factor Binding Protein 5' ~ 'IGFBP5',
+      . == "Insulin-Like Growth Factor Binding Protein 6" ~ 'IGFBP6',
+      . == 'EGF' ~ 'epidermal growth factor',
+      . == 'GHR' ~ 'Growth Hormone Receptor',
+      . == 'LEP' ~ 'Leptin',
+      . == 'leptin' ~ 'Leptin',
+      . == 'IRS1' ~  'insulin receptor substrate 1 protein',
+      . == 'PRL' ~ 'Prolactin',
+      . == 'AR'~ 'Androgen Receptor',
+      . == 'PGR'~ 'Progesterone receptor',
+      . == 'CRP' ~  'C-reactive protein',
+      . == 'Receptors, Steroid' ~ 'Steroid receptor',
+      . == 'Receptors, LH' ~ 'luteinizing hormone receptor',
+      . == 'Receptors, Progesterone'~ 'Progesterone receptor',
+      TRUE ~ .)))
+  
+}
+
+make_sankey <- function(links, fontSize=10){
+  
+  links <- links %>% rename(source = term1, target = term2, value = n)
+  
+  nodes <- data.frame(
+    name=c(as.character(links$source), as.character(links$target)) %>% 
+      unique()
+  )
+  # With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
+  links$IDsource <- match(links$source, nodes$name)-1 
+  links$IDtarget <- match(links$target, nodes$name)-1
+  
+  # Make the Network
+  p <- sankeyNetwork(Links = links, Nodes = nodes,
+                     Source = "IDsource", Target = "IDtarget",
+                     Value = "value", NodeID = "name", 
+                     fontSize = fontSize,
+                     sinksRight=FALSE)
+  
+  p
+  
+}
+
+
+
+
+
 select_network <- function(full_data, key_term, network_dir,
                            lowest_count_rel_to_keep = 10,
                            exclude_neutral = F, 
