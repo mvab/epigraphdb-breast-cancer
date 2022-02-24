@@ -215,7 +215,6 @@ for (i in 1:length(lit_spaces)){
     tidy_litspace[[names(lit_spaces)[i]]] <- tidy_lit_space(lit_spaces[[i]])
   }
 }
-save(tidy_litspace, file="literature_outputs/lit_spaces_finalset_tidy.RData")
 
 ```
 
@@ -284,6 +283,7 @@ FLNA
 # combining lit space of related traits
 
 #load("literature_outputs/lit_spaces_finalset.RData")
+#view(lit_spaces)
 
 combine_lit_spaces <- function(lit_spaces, names){
   lit_spaces_subset <- lit_spaces[names]
@@ -312,5 +312,50 @@ for (i in names(related_traits)) {
 
 save(combined_lit_spaces, file="literature_outputs/lit_spaces_combined_traits.RData")
 ```
+
+
+
+```{r}
+## tidying lit sapces for loop
+#load("literature_outputs/lit_spaces_combined_traits.RData")
+View(combined_lit_spaces)
+
+tidy_combined_litspace <- list()
+
+for (i in 1:length(combined_lit_spaces)){
+  if (dim(combined_lit_spaces[[i]])[1] > 0){
+    print(paste("tidying... " , i, names(combined_lit_spaces)[i] ))
+    
+    tidy_combined_litspace[[names(combined_lit_spaces)[i]]] <- tidy_lit_space(combined_lit_spaces[[i]])
+  }
+}
+save(tidy_combined_litspace, file="literature_outputs/lit_spaces_combined_traits_tidy.RData")
+
+```
+
+```{r}
+# calculate lit spce / triples/ pair for combined spaces
+
+#load("literature_outputs/lit_spaces_combined_traits_tidy.RData")
+
+trait_df_comb <- data_frame(trait= names(tidy_combined_litspace))
+
+for (i in 1:length(trait_df_comb$trait)){
+  
+  trait_comb_name <- trait_df_comb$trait[i]
+
+  trait_df_comb$lit_space_size_tidy[i] <- dim(combined_lit_spaces[[trait_comb_name]])[1]
+  
+  trait_df_comb$unique_triples[i] <- dim(tidy_combined_litspace[[trait_comb_name]] %>% select(term1, predicate, term2) %>% distinct() )[1]
+  
+  trait_df_comb$unique_pairs[i] <- dim(tidy_combined_litspace[[trait_comb_name]] %>% select(term1, term2) %>% distinct() )[1]
+
+}
+
+write_tsv(trait_df_comb, "literature_outputs/traits_marked_for_lit_analysis_combined.tsv")
+
+```
+
+
 
 
