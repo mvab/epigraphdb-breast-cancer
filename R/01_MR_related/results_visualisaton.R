@@ -58,7 +58,7 @@ data_sub <- merged %>%
 
 ## all:  proteins
 data_sub <- merged %>% 
-  filter(exposure_cat %in% c('Proteins', "Other biomarkers")) %>%
+  filter(exposure_cat %in% c('Proteins', "Other biomarkers", "Drugs")) %>%
   filter(!grepl("LDL|HDL|cholest|trigl", exposure, ignore.case = T)) %>% 
   select(id.exposure, contains('BCAC'), "ER+", contains("Luminal"), "ER-", "HER2-enriched","TNBC" ) %>% 
   filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0 & `ER-` == 0  & `ER+` == 0 & `Luminal A` == 0 & `Luminal B1` == 0 & `Luminal B2` == 0 &`HER2-enriched` == 0 & `TNBC` == 0 ))
@@ -77,6 +77,13 @@ data_sub <- merged %>%
   select(id.exposure, contains('BCAC'), "ER+", contains("Luminal"), "ER-", "HER2-enriched","TNBC" ) %>% 
   filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0 & `ER-` == 0  & `ER+` == 0 & `Luminal A` == 0 & `Luminal B1` == 0 & `Luminal B2` == 0 &`HER2-enriched` == 0 & `TNBC` == 0 ))
 
+
+## tmp subsets
+
+to_keep <- c('ukb-d-30770_irnt', 'prot-a-670', 'prot-a-1397', 'prot-a-1097', 'prot-a-831', 'prot-a-1486', 	'prot-a-1148')
+to_keep <- c('prot-a-710', 'prot-a-2629', 'prot-a-366', 'prot-a-2395', 'prot-a-1117', 'prot-b-38', 'prot-a-2892', 	'ukb-a-132')
+
+data_sub<- data_sub %>% filter(id.exposure %in% to_keep)
 
 
 ##### THE REST
@@ -106,7 +113,9 @@ p<-ggplot(data_sub3, aes( y=exposure, x=outcome, fill = effect_direction,
                           id = exposure.id ,name = exposure_name,
                           or_ci= OR_CI, pval =  pval, nsnp=nsnp, cat = exposure_cat)) + 
   geom_tile(colour = "grey") + 
-  scale_fill_manual(values=c("#4D9221","white", "#C51B7D"))+
+  scale_fill_manual(values=c("#4D9221","white", "#C51B7D"))+ ### normal
+  #scale_fill_manual(values=c("white", "#C51B7D"))+
+  
   #facet_grid(~ exposure_cat2,scales = "free_x", space='free_x')+
   ggh4x::force_panelsizes(cols = c(0.5, 1)) +
   theme_bw()+
@@ -115,11 +124,22 @@ p<-ggplot(data_sub3, aes( y=exposure, x=outcome, fill = effect_direction,
   #coord_flip()
   
   # for vertical:
-  theme(axis.text.y = element_text( size=7),
-        axis.text.x = element_text(angle=40, size=6))
-
- 
-
+  theme(axis.text.y = element_text( size=8), #7
+        axis.text.x = element_text(angle=40, size=7, hjust = 1)) #  40 , 6
 
 ggplotly(p)
 
+
+
+
+####
+
+merged %>% select(exposure, id.exposure, exposure_cat) %>% distinct() %>%
+  arrange(exposure_cat, exposure) %>% write_tsv("01_MR_related/mr_evidence_outputs/trait_names_for_grouping.tsv")
+
+
+dat <-  read_tsv("01_MR_related/mr_evidence_outputs/tidy_traits_by_cat.tsv") %>%  # made in explore_mr_results.Rmd
+  # update exposure categories 
+  create_exposure_categories() %>%  filter(exposure_cat != 'other')
+
+dat %>% filter(exposure_cat == "Alcohol") %>% select(exposure.trait, exposure.id) %>% distinct() %>% View()
