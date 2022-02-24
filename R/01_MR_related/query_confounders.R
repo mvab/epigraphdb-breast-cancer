@@ -4,9 +4,9 @@ source("helper_functions.R")
 source("01_MR_related/explore_MR-EvE_app/functions.R")
 
 # testing
-exposure = "met-a-362"
-outcome = "ieu-a-1128"
-pval_threshold = 1e-04
+exposure = "ukb-b-4650"
+outcome = "ieu-a-1126"
+pval_threshold = 1e-01
 #test<-query_epigraphdb_as_table(mediator_query)
 #xx<-tidy_conf_query_output(test, type = "mediator")
 
@@ -115,14 +115,14 @@ query_and_tidy_conf <- function(exposure, outcome,pval_threshold ){
 
 #### 
 
-traits_df <- read_tsv("01_MR_related/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") 
+traits_df <- read_tsv("01_MR_related/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") %>%  select(id.exposure, contains('ieu'))
 
 # wxtract pairs of exp-out with effect
 traits_all <- bind_rows(
   traits_df %>%filter(`ieu-a-1126` !=0) %>%  select(id.exposure) %>% mutate(id.outcome = "ieu-a-1126"),
   traits_df %>%filter(`ieu-a-1127` !=0) %>%  select(id.exposure) %>% mutate(id.outcome = "ieu-a-1127"),
   traits_df %>%filter(`ieu-a-1128` !=0) %>%  select(id.exposure) %>% mutate(id.outcome = "ieu-a-1128")) %>% distinct()
-
+traits_all %>% pull(id.exposure) %>%  unique() %>% length() # 175
 
 # for each pair collect intermediates
 all_results <- tibble()
@@ -130,10 +130,12 @@ for (i in 1:length(traits_all$id.exposure)){
   
   out <- query_and_tidy_conf(exposure = traits_all$id.exposure[i], 
                              outcome = traits_all$id.outcome[i], 
-                             pval_threshold =  1e-04)
+                             pval_threshold =  0.01) ##### keeping all 
   all_results<- bind_rows(all_results, out)
   
 }
+
+
 
 # add trait category to intermediate items
 all_results_trait_cats <- 
@@ -152,11 +154,81 @@ results_subset <- all_results %>%
   select(exposure.trait, med.trait, outcome.id, r1.OR_CI, r2.OR_CI, r3.OR_CI,  type, med_cat, r1.b, r2.b, r3.b, exposure.id, med.id) %>% 
   distinct() %>% 
   filter(!grepl("arm|leg", med.trait, ignore.case = T)) %>% 
-  filter(!med_cat %in% c('Diseases', 'Medical Procedures', 'other', "eye_hearing_teeth"))#, "Education", "Psychology", "CHD")) # other??
+  filter(!med_cat %in% c('Diseases', 'Medical Procedures', 'other', "eye_hearing_teeth", "Education", "Psychology", "CHD")) %>% 
+  filter(med.id %in% traits_df$id.exposure)   # this keeps only those mediaotrs that are accepted exposure in main analysis validation
+  
 dim(results_subset)
 
+# next need to validate E->M for mediators and M->E for confounders
 
-write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted.csv")
+#
+#
+#
+
+
+
+
+dim(results_subset)
+
+#write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted.csv") # p<10e4
+write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted_all.csv") # p<0.05
+
+
+
+protein_names <- read_csv("01_MR_related/mr_evidence_outputs/protein_names.csv", col_names = F) %>% rename(name = X1, gene = X2)
+results_subset<- read_csv("01_MR_related/mr_evidence_outputs/conf_med_extracted_all.csv") %>% 
+                filter(type %in% c('confounder', 'mediator')) %>%
+                create_exposure_categories() %>%
+                left_join(protein_names, by = c("med.trait" = 'name')) %>% 
+                select(exposure.trait, med.trait, gene, everything())
+
+
+counts <- left_join(
+  # no conf per trait
+  results_subset %>% filter(type == 'confounder')  %>% 
+    select(exposure_cat, exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(conf_count=n),
+  
+  # no med per trait
+  results_subset %>% filter(type == 'mediator')  %>% 
+    select(exposure_cat,exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
+)
+
+# in antro
+x<- counts %>% filter(exposure_cat == 'Antrophometric')  
+mean(x$conf_count)# 38
+mean(x$med_count)# 43
+
+
+
+
+## we're interested in menopause
+test <- results_subset %>%  filter(exposure.trait %in% c("Age at menopause (last menstrual period)")) 
+test %>% select (med.trait, type) %>% distinct() %>% count(type)
+
+mol_med<- test %>% filter(med_cat %in% c("Proteins", "Metabolites")) %>% select(med.trait, gene) %>% distinct()
+
+
+test <- results_subset %>%  filter(exposure.trait %in% c("IGF-1")) 
+test %>% select (med.trait, type) %>% distinct() %>% count(type)
+
+
+
+test %>% group_by (med.trait, type) %>%  count (med.trait, type, sort=T)
+
+
+test <- results_subset %>%  filter(exposure.trait %in% c("Comparative body size at age 10") & exposure.id =='ukb-b-4650') 
+test %>% select (med.trait, type) %>% distinct() %>% count(type)
+
+## we're interested in FGF
+test <- results_subset %>%  filter(exposure.trait %in% c("Fibroblast growth factor 7")) 
+test %>% select (med.trait, type) %>% distinct() %>% count(type)
+
+
+test <- results_subset %>%  filter(exposure.trait %in% c("Ferritin")) 
+test %>% select (med.trait, type) %>% distinct() %>% count(type)
+
+
+
 
 
 ## rules of mediaotrs
@@ -165,7 +237,7 @@ results_subset %>%  filter(type == 'mediator') %>% View()
 mediators <- results_subset %>% 
   filter(type == 'mediator') %>% 
   # keep only those meds that have proven effect on outcome
-  filter(med.id %in% traits_df$id.exposure) %>% 
+ 
   mutate(med_version = case_when(
     r1.b < 0 & r2.b < 0 & r3.b > 0 ~ "med1",
     r1.b > 0 & r2.b < 0 & r3.b < 0 ~ "med2",
