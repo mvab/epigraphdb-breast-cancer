@@ -194,6 +194,67 @@ tidy_terms_for_viz <- function(df){
       . == 'Receptors, Steroid' ~ 'Steroid receptor',
       . == 'Receptors, LH' ~ 'luteinizing hormone receptor',
       . == 'Receptors, Progesterone'~ 'Progesterone receptor',
+      
+      
+      . == 'Interleukin-1' ~ "IL1", 
+      . == 'Interleukin 2 Receptor' ~ "IL2R", 
+      . == 'interleukin-1 receptor accessory protein' ~ "IL1RAP", 
+      . == 'Interleukin-1 Receptor-Associated Kinase 2' ~ "IL1RAK2", 
+      . == 'Interleukin-1 Receptor-Associated Kinases' ~ "IL1RAK", 
+      . == 'interleukin-1, beta' ~ "IL1b", 
+      . == 'IL1B' ~ "IL1b", 
+      . == 'Receptors, Interleukin-1' ~ "IL1", 
+      . == 'Interleukin 2 Receptor' ~ "IL2R", 
+      . == 'Interleukin-1 alpha' ~ "IL1a", 
+      . == 'interleukin-10' ~ "IL10", 
+      . == 'Interleukin-2' ~ "IL2", 
+      . == 'interleukin-4' ~ "IL4", 
+      . == 'Interleukin-5' ~ "IL5", 
+      . == 'interleukin-6' ~ "IL6", 
+      . == 'interleukin-8' ~ "IL8", 
+      . == 'Interleukin-12' ~ "IL12", 
+      . == 'Interleukin-13' ~ "IL13", 
+      . == 'Interleukin-17' ~ "IL17", 
+      . == 'interleukin-18' ~ "IL18", 
+      . == 'Interleukin-18' ~ "IL18", 
+      . == 'Tumor Necrosis Factors' ~ 'TNF',
+      
+      . == 'Tumor Necrosis Factor Receptor Superfamily, Member 10B' ~ 'TNFRSF10B',
+      . == 'tumor necrosis factor receptor 1A' ~ 'TNFRSF1A',
+      . == 'Tumor necrosis factor receptor 11b' ~ 'TNFRSF11B',
+
+      . == 'Intercellular adhesion molecule 1' ~ "ICAM1", 
+      . == 'Intercellular cell adhesion molecule' ~ "ICAM1", 
+      . == 'Intercellular Adhesion Molecules' ~ "ICAM1", 
+      
+      . == 'Toll-Like Receptor 5' ~ 'TLR5',
+      . == 'Toll-Like Receptor 2' ~ 'TLR2',
+      . == 'toll-like receptor 4' ~ 'TLR4',
+      . == 'Toll-Like Receptor 9' ~ 'TLR9',
+      . == 'Toll-Like Receptor 6' ~ 'TLR6',
+      . == 'Toll-Like Receptor 7' ~ 'TLR7',
+      . == 'Toll-like receptors' ~ 'TLR',
+      
+      
+      . == 'Fibroblast Growth Factor 7' ~ 'FGF7',
+      . == 'Fibroblast Growth Factor 2' ~ 'FGF2',
+      . == 'Fibroblast Growth Factor 1' ~ 'FGF1',
+      . == 'Fibroblast Growth Factor Receptor 1' ~ 'FGFR1',
+      . == 'Fibroblast Growth Factor Receptor 2' ~ 'FGFR2',
+      . == 'Fibroblast Growth Factor Receptors' ~ 'FGFR',
+      . == 'Fibroblast Growth Factor' ~ 'FGF',
+      
+      
+      
+      . ==  'TFRC' ~ "Transferrin Receptor",
+      . ==  'TF' ~ "Transferrin",
+      
+      . == 'OSM' ~ 'oncostatin M',
+      
+      . == 'CTF1' ~ "cardiotrophin 1",
+      . == 'CD40LG' ~ 'CD40 Ligand',
+     
+      
       TRUE ~ .)))
   
 }
