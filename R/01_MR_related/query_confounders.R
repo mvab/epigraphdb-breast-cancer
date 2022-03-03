@@ -179,17 +179,66 @@ protein_names <- read_csv("01_MR_related/mr_evidence_outputs/protein_names.csv",
 results_subset<- read_csv("01_MR_related/mr_evidence_outputs/conf_med_extracted_all.csv") %>% 
                 filter(type %in% c('confounder', 'mediator')) %>%
                 create_exposure_categories() %>%
-                left_join(protein_names, by = c("med.trait" = 'name')) %>% 
-                select(exposure.trait, med.trait, gene, everything())
+                left_join(protein_names, by = c("med.trait" = 'name')) %>% rename(med.gene = gene) %>% 
+                left_join(protein_names, by = c("exposure.trait" = 'name')) %>% rename(exp.gene = gene) %>% 
+                select(exposure.trait,exp.gene, med.trait, med.gene, everything()) 
+dim(results_subset)# 10308    17
+                
+
+## bringing in validated  results for trait-trait
+# id.exposure , id.outcome, OR_CI, effect_direction , nsnp, 
+validated <- read_tsv("01_MR_related/mr_evidence_outputs/redone_MRconf_subsetoutput_ivw.tsv") %>% 
+              select(id.exp_val = id.exposure , id.out_val = id.outcome, r1.OR_CI_val = OR_CI, r1.nsnp_val=nsnp)
+
+# need to do left_join with conf and med separately
+
+mediators <- results_subset %>% filter(type == 'mediator') %>% left_join(validated, by = c("exposure.id"= 'id.exp_val' , 'med.id'= 'id.out_val'))
+confounders <- results_subset %>% filter(type == 'confounder') %>% left_join(validated, by = c("exposure.id"= 'id.out_val', 'med.id'= 'id.exp_val'))
+
+results_validated <-bind_rows(mediators, confounders)
+      # remove na here
+
+
+## bringing in validated  results for trait-BC
+
+traits_bc_validated <- read_tsv("01_MR_related/mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv") %>%  
+                      select(id.trait = id.exposure, id.outcome, OR_CI_val = OR_CI, nsnp_val =nsnp) 
+
+
+validated_with_BC <- results_validated %>% 
+                    left_join(traits_bc_validated, by = c("exposure.id" = "id.trait", "outcome.id" = "id.outcome" )) %>% rename('r2.OR_CI_val' = 'OR_CI_val', "r2.nsnp_val"="nsnp_val") %>% 
+                    left_join(traits_bc_validated, by = c("med.id" = "id.trait", "outcome.id" = "id.outcome" )) %>% rename('r3.OR_CI_val' = 'OR_CI_val', "r3.nsnp_val"="nsnp_val") %>% 
+                    filter(!is.na(r1.OR_CI_val)) %>% 
+                    filter(!is.na(r3.OR_CI_val)) %>% 
+                    select(-r1.OR_CI, -r2.OR_CI,-r3.OR_CI, -r1.b, -r2.b, -r3.b)
+    
+dim(validated_with_BC) #4859   23
+
+## add lit size
+
+lit <- read_tsv("02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv") %>% select(id, unique_pairs)
+
+validated_with_BC <- validated_with_BC %>%
+  left_join(lit, by = c("exposure.id" = "id")) %>% rename('exposure_lit_pairs' = 'unique_pairs') %>% 
+  left_join(lit, by = c("med.id" = "id")) %>% rename('med_lit_pairs' = 'unique_pairs')
+
+# rearrange
+validated_with_BC <- validated_with_BC %>%
+select(type, outcome.id, 
+       exposure.trait, exp.gene, med.trait, med.gene, 
+       r1.OR_CI_val, r1.nsnp_val, r2.OR_CI_val, r2.nsnp_val, r3.OR_CI_val, r3.nsnp_val,
+       exposure_lit_pairs, med_lit_pairs, 
+       exposure_cat, exposure.id,med_cat, med.id)
+
 
 
 counts <- left_join(
   # no conf per trait
-  results_subset %>% filter(type == 'confounder')  %>% 
+  validated_with_BC %>% filter(type == 'confounder')  %>% 
     select(exposure_cat, exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(conf_count=n),
   
   # no med per trait
-  results_subset %>% filter(type == 'mediator')  %>% 
+  validated_with_BC %>% filter(type == 'mediator')  %>% 
     select(exposure_cat,exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
 )
 
