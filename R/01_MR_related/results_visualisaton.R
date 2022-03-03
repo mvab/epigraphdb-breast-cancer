@@ -82,8 +82,35 @@ data_sub <- merged %>%
 
 to_keep <- c('ukb-d-30770_irnt', 'prot-a-670', 'prot-a-1397', 'prot-a-1097', 'prot-a-831', 'prot-a-1486', 	'prot-a-1148')
 to_keep <- c('prot-a-710', 'prot-a-2629', 'prot-a-366', 'prot-a-2395', 'prot-a-1117', 'prot-b-38', 'prot-a-2892', 	'ukb-a-132')
+to_keep <- c( "met-c-841", "prot-a-1930", "prot-a-3076", "ieu-a-302", "ukb-d-30770_irnt", "ieu-a-1049", "prot-a-670", "met-a-355", "ukb-a-132",
+              "prot-a-3193", "prot-a-1397", "prot-a-655", "prot-a-2720", "ieu-a-1", "prot-a-1148", "met-a-316", "prot-a-67", "prot-b-38", 
+              "prot-a-387", "ukb-a-142", "prot-b-71", "prot-a-1486", "prot-a-1542", "prot-a-1166", "prot-a-1313", "prot-a-2395", "prot-a-2007", 
+              "prot-b-55", "prot-a-394", "prot-a-2889", "prot-a-366", "prot-a-1097")
 
-data_sub<- data_sub %>% filter(id.exposure %in% to_keep)
+## custom
+data_sub <- merged %>% 
+  filter(id.exposure %in% to_keep) %>%
+  filter(!grepl("LDL|HDL|cholest|trigl", exposure, ignore.case = T)) %>% 
+  select(id.exposure, contains('BCAC'), "ER+", contains("Luminal"), "ER-", "HER2-enriched","TNBC" ) %>% 
+  filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0 & `ER-` == 0  & `ER+` == 0 & `Luminal A` == 0 & `Luminal B1` == 0 & `Luminal B2` == 0 &`HER2-enriched` == 0 & `TNBC` == 0 ))
+
+
+## effect in many
+
+lit <-read_tsv("02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv") %>% 
+  filter(unique_triples > 50) %>%  pull(id)
+
+data_sub <- merged %>%
+  filter(!grepl("LDL|HDL|cholest|trigl", exposure, ignore.case = T)) %>% 
+  filter(exposure_cat != 'Antrophometric') %>% 
+  filter(id.exposure %in% lit) %>% 
+  select(id.exposure, `BCAC 2017`:`TNBC`) %>% 
+  rowwise() %>%
+  mutate(`N_zeros` = sum(c_across(`BCAC 2017`:`TNBC`) == 0)) %>% 
+  filter(N_zeros >= 1 & N_zeros <8 )
+
+
+
 
 
 ##### THE REST
