@@ -205,6 +205,8 @@ tidy_terms_for_viz <- function(df){
       . == 'IL1B' ~ "IL1b", 
       . == 'Receptors, Interleukin-1' ~ "IL1", 
       . == 'Interleukin 2 Receptor' ~ "IL2R", 
+      . == 'Interleukin 2 Receptor, Alpha' ~ "IL2Ra",
+      . == 'interleukin-7 receptor, alpha chain' ~ "IL7Ra",
       . == 'Interleukin-1 alpha' ~ "IL1a", 
       . == 'interleukin-10' ~ "IL10", 
       . == 'Interleukin-2' ~ "IL2", 
@@ -216,7 +218,10 @@ tidy_terms_for_viz <- function(df){
       . == 'Interleukin-13' ~ "IL13", 
       . == 'Interleukin-17' ~ "IL17", 
       . == 'interleukin-18' ~ "IL18", 
+      . == 'interleukin-22' ~ "IL22", 
+      . == 'interleukin-23' ~ "IL23", 
       . == 'Interleukin-18' ~ "IL18", 
+      
       . == 'Tumor Necrosis Factors' ~ 'TNF',
       
       . == 'Tumor Necrosis Factor Receptor Superfamily, Member 10B' ~ 'TNFRSF10B',
@@ -244,12 +249,19 @@ tidy_terms_for_viz <- function(df){
       . == 'Fibroblast Growth Factor Receptors' ~ 'FGFR',
       . == 'Fibroblast Growth Factor' ~ 'FGF',
       
+      . == 'Sex Hormone-Binding Globulin' ~ 'SHBG',
       
+      
+      . == 'ALB' ~ 'Albumin',
+      . == 'Albumins' ~ 'Albumin',
+
       
       . ==  'TFRC' ~ "Transferrin Receptor",
       . ==  'TF' ~ "Transferrin",
       
       . == 'OSM' ~ 'oncostatin M',
+      
+      . == 'HGF' ~ 'Hepatocyte Growth Factor',
       
       . == 'CTF1' ~ "cardiotrophin 1",
       . == 'CD40LG' ~ 'CD40 Ligand',
