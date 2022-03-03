@@ -250,31 +250,64 @@ mean(x$med_count)# 43
 
 
 
-## we're interested in menopause
-test <- results_subset %>%  filter(exposure.trait %in% c("Age at menopause (last menstrual period)")) 
+## adhoc checking
+test <- validated_with_BC %>%  filter(exposure.trait %in% c("Age at menopause (last menstrual period)")) 
+test <- validated_with_BC %>%  filter(exposure.trait %in% c("IGF-1")) 
+test <- validated_with_BC %>%  filter(exposure.trait %in% c("Intercellular adhesion molecule 1")) 
+test3 <- validated_with_BC %>%  filter(exposure.trait %in% c("Ferritin")) 
+test <- validated_with_BC %>%  filter(exposure.trait %in% c("Albumin")) 
+test2 <- validated_with_BC %>%  filter(exposure.trait %in% c("C-reactive protein")) 
+test4 <- validated_with_BC %>%  filter(exposure.trait %in% c("Fibroblast growth factor 7")) 
 test %>% select (med.trait, type) %>% distinct() %>% count(type)
 
 mol_med<- test %>% filter(med_cat %in% c("Proteins", "Metabolites")) %>% select(med.trait, gene) %>% distinct()
 
 
-test <- results_subset %>%  filter(exposure.trait %in% c("IGF-1")) 
-test %>% select (med.trait, type) %>% distinct() %>% count(type)
+
+
+# e.g. we'refocussing only on those:
+
+exposure_to_extract<- c("met-c-841",
+                        "ukb-d-30770_irnt",
+                        "prot-a-670",
+                        "prot-a-1397",
+                        "prot-a-1148",
+                        "prot-b-38",
+                        "prot-a-1486",
+                        "prot-a-366",
+                        "prot-a-1097",
+                        "prot-a-710")
+out <- list()
+
+for (i in exposure_to_extract){
+  sub <- validated_with_BC %>%  filter(exposure.id == i)
+  out[[i]] <- sub
+}
+writexl::write_xlsx(out, "01_MR_related/mr_evidence_outputs/med-conf-table.xlsx")
 
 
 
-test %>% group_by (med.trait, type) %>%  count (med.trait, type, sort=T)
+## collelcting all mr-eve involved things
+
+exp_mol <- validated_with_BC %>% filter(exposure.id %in% exposure_to_extract) %>% 
+  filter(exposure_cat %in% c("Proteins", "Metabolites")) %>%
+  select(trait = exposure.trait, gene=exp.gene) %>% distinct()
+med_mol <- validated_with_BC %>%  filter(exposure.id %in% exposure_to_extract) %>% 
+  filter(med_cat %in% c("Proteins", "Metabolites")) %>%
+  select(trait = med.trait, gene = med.gene) %>% distinct()
+
+all_mol = bind_rows(exp_mol, med_mol) %>% distinct() %>% 
+  filter(!grepl("^X-|bonds|groups", trait))
+
+all_mol %>% write_csv("01_MR_related/mr_evidence_outputs/molecular_traits_involved_in_conf_med_subset_upd.csv")
+
+  
 
 
-test <- results_subset %>%  filter(exposure.trait %in% c("Comparative body size at age 10") & exposure.id =='ukb-b-4650') 
-test %>% select (med.trait, type) %>% distinct() %>% count(type)
-
-## we're interested in FGF
-test <- results_subset %>%  filter(exposure.trait %in% c("Fibroblast growth factor 7")) 
-test %>% select (med.trait, type) %>% distinct() %>% count(type)
 
 
-test <- results_subset %>%  filter(exposure.trait %in% c("Ferritin")) 
-test %>% select (med.trait, type) %>% distinct() %>% count(type)
+
+
 
 
 
