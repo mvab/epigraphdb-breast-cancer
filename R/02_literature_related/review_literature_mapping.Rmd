@@ -148,7 +148,14 @@ b#htmlwidgets::saveWidget(b, file=paste0( getwd(), "/htmls/cyclinD1_backwards.ht
 
 
 **trying GWAS from prod**
-
+1) any common terms / overlap of the most common terms?
+2) identical triples/pairs between two spaces?
+3) term2 to term1 
+    - keep key word
+    - filter by predicate 
+4) 3 + keep 
+5) predicate direction? exclude neutral?
+6) sankey plot? 
 
 
 ```{r}
@@ -190,14 +197,6 @@ bind_rows(trait_triples_tidy %>% select(term=term2),
 
 
 ```
-1) any common terms / overlap of the most common terms?
-2) identical triples/pairs between two spaces?
-3) term2 to term1 
-    - keep key word
-    - filter by predicate 
-4) 3 + keep 
-5) predicate direction? exclude neutral?
-6) sankey plot? 
 
 
 ```{r}
