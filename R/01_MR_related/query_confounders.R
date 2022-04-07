@@ -57,12 +57,13 @@ tidy_conf_query_output <- function(df, type){
 
 query_and_tidy_conf <- function(exposure, outcome,pval_threshold ){
   
-
+  pval_threshold_outcome = 1
+  
   # construct queries
   confounder_query = paste0("
     MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
     WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
     RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
@@ -70,7 +71,7 @@ query_and_tidy_conf <- function(exposure, outcome,pval_threshold ){
   collider_query = paste0("
     MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
     WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
     RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
@@ -78,7 +79,7 @@ query_and_tidy_conf <- function(exposure, outcome,pval_threshold ){
   mediator_query = paste0("
     MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
     WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
     RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
@@ -86,7 +87,7 @@ query_and_tidy_conf <- function(exposure, outcome,pval_threshold ){
   reverse_mediator_query = paste0("
     MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
     WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
-    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold, " 
+    AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
     RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
@@ -130,7 +131,7 @@ for (i in 1:length(traits_all$id.exposure)){
   
   out <- query_and_tidy_conf(exposure = traits_all$id.exposure[i], 
                              outcome = traits_all$id.outcome[i], 
-                             pval_threshold =  0.01) ##### keeping all 
+                             pval_threshold =  0.01) ##### keeping almost all ( NB med->BC has no threshold)
   all_results<- bind_rows(all_results, out)
   
 }
@@ -145,7 +146,7 @@ all_results_trait_cats <-
  select(med_cat = exposure_cat, med.trait = exposure.trait, med.id = exposure.id ) %>% distinct()
                 
 all_results <- all_results %>% left_join(all_results_trait_cats) 
-dim(all_results)
+dim(all_results) # 68557 after not restrictin r3
 
 # filter
 results_subset <- all_results %>% 
@@ -157,7 +158,7 @@ results_subset <- all_results %>%
   filter(!med_cat %in% c('Diseases', 'Medical Procedures', 'other', "eye_hearing_teeth", "Education", "Psychology", "CHD")) %>% 
   filter(med.id %in% traits_df$id.exposure)   # this keeps only those mediaotrs that are accepted exposure in main analysis validation
   
-dim(results_subset)
+dim(results_subset) # 10890 prev # 18877 after not restrictin r3
 
 # next need to validate E->M for mediators and M->E for confounders
 
@@ -171,18 +172,20 @@ dim(results_subset)
 dim(results_subset)
 
 #write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted.csv") # p<10e4
-write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted_all.csv") # p<0.05
+write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted_all_r3.csv") # p<0.05 # r3 all is not pval restricted
 
 
 
 protein_names <- read_csv("01_MR_related/mr_evidence_outputs/protein_names.csv", col_names = F) %>% rename(name = X1, gene = X2)
-results_subset<- read_csv("01_MR_related/mr_evidence_outputs/conf_med_extracted_all.csv") %>% 
+results_subset<- read_csv("01_MR_related/mr_evidence_outputs/conf_med_extracted_all_r3.csv") %>% 
                 filter(type %in% c('confounder', 'mediator')) %>%
                 create_exposure_categories() %>%
                 left_join(protein_names, by = c("med.trait" = 'name')) %>% rename(med.gene = gene) %>% 
                 left_join(protein_names, by = c("exposure.trait" = 'name')) %>% rename(exp.gene = gene) %>% 
                 select(exposure.trait,exp.gene, med.trait, med.gene, everything()) 
-dim(results_subset)# 10308    17
+dim(results_subset)# 10308    # 17505  r3
+
+length(unique(results_subset$exposure.id))
                 
 
 ## bringing in validated  results for trait-trait
@@ -209,11 +212,12 @@ validated_with_BC <- results_validated %>%
                     left_join(traits_bc_validated, by = c("exposure.id" = "id.trait", "outcome.id" = "id.outcome" )) %>% rename('r2.OR_CI_val' = 'OR_CI_val', "r2.nsnp_val"="nsnp_val") %>% 
                     left_join(traits_bc_validated, by = c("med.id" = "id.trait", "outcome.id" = "id.outcome" )) %>% rename('r3.OR_CI_val' = 'OR_CI_val', "r3.nsnp_val"="nsnp_val") %>% 
                     filter(!is.na(r1.OR_CI_val)) %>% 
+                    filter(!is.na(r2.OR_CI_val)) %>% 
                     filter(!is.na(r3.OR_CI_val)) %>% 
                     select(-r1.OR_CI, -r2.OR_CI,-r3.OR_CI, -r1.b, -r2.b, -r3.b)
     
-dim(validated_with_BC) #4859   23
-
+dim(validated_with_BC) #4859   23 # 7614   17
+ 
 ## add lit size
 
 lit <- read_tsv("02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv") %>% select(id, unique_pairs)
