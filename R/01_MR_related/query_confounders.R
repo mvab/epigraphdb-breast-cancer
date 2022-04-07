@@ -4,8 +4,8 @@ source("helper_functions.R")
 source("01_MR_related/explore_MR-EvE_app/functions.R")
 
 # testing
-exposure = "ukb-b-4650"
-outcome = "ieu-a-1126"
+exposure = "prot-a-670"
+outcome = "ieu-a-1127"
 pval_threshold = 1e-01
 #test<-query_epigraphdb_as_table(mediator_query)
 #xx<-tidy_conf_query_output(test, type = "mediator")
@@ -234,7 +234,7 @@ select(type, outcome.id,
        exposure_lit_pairs, med_lit_pairs, 
        exposure_cat, exposure.id,med_cat, med.id)
 
-
+length(unique(validated_with_BC$exposure.id))
 
 counts <- left_join(
   # no conf per trait
@@ -246,10 +246,17 @@ counts <- left_join(
     select(exposure_cat,exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
 )
 
+# no med per trait 154
+counts <- validated_with_BC %>% filter(type == 'mediator')  %>% 
+  select(exposure_cat,exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
+
+
+counts %>% write_tsv("01_MR_related/mr_evidence_outputs/supl_table8_counts_med.csv")
+
 # in antro
 x<- counts %>% filter(exposure_cat == 'Antrophometric')  
-mean(x$conf_count)# 38
-mean(x$med_count)# 43
+mean(x$conf_count)# 19
+mean(x$med_count)# 31
 
 
 
@@ -257,6 +264,7 @@ mean(x$med_count)# 43
 ## adhoc checking
 test <- validated_with_BC %>%  filter(exposure.trait %in% c("Age at menopause (last menstrual period)")) 
 test <- validated_with_BC %>%  filter(exposure.trait %in% c("IGF-1")) 
+test %>% select (med.trait, type) %>% distinct() %>% count(type)
 test <- validated_with_BC %>%  filter(exposure.trait %in% c("Intercellular adhesion molecule 1")) 
 test3 <- validated_with_BC %>%  filter(exposure.trait %in% c("Ferritin")) 
 test <- validated_with_BC %>%  filter(exposure.trait %in% c("Albumin")) 
@@ -280,14 +288,19 @@ exposure_to_extract<- c("met-c-841",
                         "prot-a-1486",
                         "prot-a-366",
                         "prot-a-1097",
-                        "prot-a-710")
+                        "prot-a-710",
+                        'ukb-b-4424',
+                        'ukb-b-18105',
+                        'ukb-b-17422',
+                        'ieu-a-1096', 
+                        'ukb-b-4650')
 out <- list()
 
 for (i in exposure_to_extract){
   sub <- validated_with_BC %>%  filter(exposure.id == i)
   out[[i]] <- sub
 }
-writexl::write_xlsx(out, "01_MR_related/mr_evidence_outputs/med-conf-table.xlsx")
+writexl::write_xlsx(out, "01_MR_related/mr_evidence_outputs/med-conf-table_upd.xlsx")
 
 
 
