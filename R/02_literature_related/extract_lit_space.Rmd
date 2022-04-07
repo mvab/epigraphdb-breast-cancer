@@ -357,5 +357,42 @@ write_tsv(trait_df_comb, "literature_outputs/traits_marked_for_lit_analysis_comb
 ```
 
 
+### Visualise lit space sizes
+
+
+```{r}
+lid_data<- read_tsv( "literature_outputs/traits_marked_for_lit_analysis.tsv")
+lid_data<-lid_data %>% mutate(exposure_cat = ifelse(trait == 'Albumin', "Proteins", exposure_cat)) %>% 
+  mutate(usable = ifelse(unique_triples >50 ,T, F)) %>% 
+  mutate(exposure_cat = factor(exposure_cat, levels = rev(c("Antrophometric", "Diet and supplements", "Physical activity", "Reproductive", "Sleep", "Drugs", "Alcohol", "Smoking", "Proteins", "Lipids", "Metabolites", "Other biomarkers"))))
+
+merged <- read_tsv("01_MR_related/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
+keep_mr<- merged %>% filter_at(vars("ieu-a-1126":"TNBC ER-PR-HER-"), any_vars(. != 0) ) 
+
+lid_data <- lid_data %>% filter(id %in% keep_mr$id.exposure)
+
+
+p<- ggplot(lid_data, aes(y = unique_triples, x= exposure_cat, label = trait))+
+  #geom_boxplot()+
+  geom_violin()+
+  geom_jitter(aes(colour = usable, alpha=0.3))+
+  #ggrepel::geom_label_repel(size = 1)+
+  scale_y_log10(breaks = c(0, 50, 100, 1000, 5000,10000, 50000))+
+  coord_flip()+
+  theme_bw()+
+  labs(y = "Unique triples count", x= "Trait category")+
+  theme(axis.text.x = element_text(angle=40, size=7, hjust = 1))
+
+  
+plotly::ggplotly(p)
+
+
+
+# exckude stuff that is not in validated MR
+# add repel labels? proteins - genenames?
+# add joined groups ?
+# lipids? 
+
+```
 
 
