@@ -185,6 +185,7 @@ tidy_terms_for_viz <- function(df){
       . == 'EGF' ~ 'epidermal growth factor',
       . == 'GHR' ~ 'Growth Hormone Receptor',
       . == 'LEP' ~ 'Leptin',
+      . == 'LEPR' ~ 'leptin receptor',
       . == 'leptin' ~ 'Leptin',
       . == 'IRS1' ~  'insulin receptor substrate 1 protein',
       . == 'PRL' ~ 'Prolactin',
@@ -194,7 +195,9 @@ tidy_terms_for_viz <- function(df){
       . == 'Receptors, Steroid' ~ 'Steroid receptor',
       . == 'Receptors, LH' ~ 'luteinizing hormone receptor',
       . == 'Receptors, Progesterone'~ 'Progesterone receptor',
-      
+      . == 'MC4R' ~ 'Melanocortin 4 Receptor',
+      . == 'MC3R' ~ 'Melanocortin 3 Receptor',
+      . == 'RETN' ~ 'resistin',
       
       . == 'Interleukin-1' ~ "IL1", 
       . == 'Interleukin 2 Receptor' ~ "IL2R", 
@@ -223,6 +226,9 @@ tidy_terms_for_viz <- function(df){
       . == 'Interleukin-18' ~ "IL18", 
       
       . == 'Tumor Necrosis Factors' ~ 'TNF',
+      
+      
+      . == 'LIF' ~ 'leukemia inhibitory factor',
       
       . == 'Tumor Necrosis Factor Receptor Superfamily, Member 10B' ~ 'TNFRSF10B',
       . == 'tumor necrosis factor receptor 1A' ~ 'TNFRSF1A',
@@ -254,6 +260,9 @@ tidy_terms_for_viz <- function(df){
       
       . == 'ALB' ~ 'Albumin',
       . == 'Albumins' ~ 'Albumin',
+      
+      . == 'VEGF' ~ 'VEGFA',
+      . == 'Vascular Endothelial Growth Factor Receptor-2'~ 'VEGFR2',
 
       
       . ==  'TFRC' ~ "Transferrin Receptor",
@@ -263,15 +272,38 @@ tidy_terms_for_viz <- function(df){
       
       . == 'HGF' ~ 'Hepatocyte Growth Factor',
       
+      . == 'Proto-Oncogene Proteins c-akt' ~ "AKT1",
+      . == 'Epidermal Growth Factor Receptor' ~ "EGFR",
+      
+      . == 'Urokinase Plasminogen Activator Receptor' ~ 'PLAUR',
+      
       . == 'CTF1' ~ "cardiotrophin 1",
       . == 'CD40LG' ~ 'CD40 Ligand',
-     
+      
+      . == "CCND1" ~ 'Cyclin D1',
+      . == "BCL2L11" ~ 'BCL2-Related Protein 11',
+      . == 'CLU' ~ 'Clusterin',
+      
+      . == 'CTSD' ~ "CATHEPSIN D",
+      . == 'MSTN' ~ "myostatin",
+      . == 'SST' ~ "Somatostatin", 
+      . == 'SRC' ~ "src-Family Kinases",
+      . == 'TXN' ~ "Thioredoxin",
+      . == 'TYR' ~ "tyrosine",
+      . == 'VIM' ~ "Vimentin",
+      
+      . == 'ADIPOQ' ~ "Adiponectin",
+      . == 'APOB' ~ "Apolipoproteins B",
+      . == 'C3' ~ "Complement 3",
+
+      
+
       
       TRUE ~ .)))
   
 }
 
-make_sankey <- function(links, fontSize=10){
+make_sankey <- function(links, fontSize=10, colour_links = F){
   
   links <- links %>% rename(source = term1, target = term2, value = n)
   
@@ -279,16 +311,38 @@ make_sankey <- function(links, fontSize=10){
     name=c(as.character(links$source), as.character(links$target)) %>% 
       unique()
   )
+  
   # With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
   links$IDsource <- match(links$source, nodes$name)-1 
   links$IDtarget <- match(links$target, nodes$name)-1
   
+  if (colour_links){
+    # Add a 'group' column to each node. Here I decide to put all of them in the same group to make them grey
+    nodes$group <- as.factor(c("my_unique_group"))
+    # Give a color for each group:
+    my_color <- 'd3.scaleOrdinal() .domain(["trait", "BC", "shared", "my_unique_group"]) .range(["#4FB3D9", "#B19AC1", "blue", "grey"])'
+    
+
+    
+    # Make the Network
+    p <- sankeyNetwork(Links = links, Nodes = nodes,
+                       Source = "IDsource", Target = "IDtarget",
+                       Value = "value", NodeID = "name", 
+                       fontSize = fontSize,
+                       colourScale=my_color,
+                       LinkGroup="group", 
+                       NodeGroup="group",
+                       sinksRight=FALSE)
+  } else{ 
+
   # Make the Network
   p <- sankeyNetwork(Links = links, Nodes = nodes,
                      Source = "IDsource", Target = "IDtarget",
                      Value = "value", NodeID = "name", 
                      fontSize = fontSize,
+                
                      sinksRight=FALSE)
+  }
   
   p
   
