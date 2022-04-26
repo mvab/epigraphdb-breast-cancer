@@ -250,14 +250,14 @@ mvmr_mixed_sources <- function(id1, outcome.id, id2_tophits_file, id2_gwas_file 
   # MVMR
   
   instruments1 <- extract_instruments(id1)
-  instruments2 <-read_tsv(paste0(path, "01_Data/GWAS_tophits/", id2_tophits_file))
+  instruments2 <-id2_tophits_file
   
   exposure_list <- list(instruments1, instruments2)
   
   gwas1 <- extract_outcome_data(snps = exposure_list %>% purrr::reduce(bind_rows) %>% pull(SNP), 
                                 outcomes = id1)
   
-  gwas2 <- vroom::vroom(paste0(path, "01_Data/GWAS_results_tidy/", id2_gwas_file))
+  gwas2 <- id2_gwas_file
   
   
   full_gwas_list <- list(gwas1, gwas2)

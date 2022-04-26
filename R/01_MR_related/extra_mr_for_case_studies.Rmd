@@ -32,15 +32,16 @@ set_flextable_defaults(big.mark = " ",
 
 
 ```{r  set_params,  include=F}
-main <- "ukb-d-30770_irnt"
+main <- "ukb-a-34"
+main_lit <- "ieu-a-1096"
 trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
+trait_name <- "Childhood body size"
 
-
-case_terms<- read_csv("../02_literature_related/literature_outputs/sankey_terms_storage/lit_terms_IGF1.csv")# %>% filter(value != 'cardiotrophin 1')
+case_terms<- read_csv("../02_literature_related/literature_outputs/sankey_terms_storage/lit_terms_childhood_obesity.csv")# %>% filter(value != 'cardiotrophin 1')
 
 all =T
 pos = T
-neg = F
+neg = T
 ```
 
 **Report for: `r trait_name`**
@@ -70,7 +71,7 @@ mr_results %>% kable_it()
 ```{r, include =F}
 lit_df<- read_tsv("../02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv")
 
-lit_trait <-lit_df %>% filter(id == main)
+lit_trait <-lit_df %>% filter(id == main_lit)
 
 ```
 
@@ -161,11 +162,24 @@ redone_MR <- redone_MR_full %>%
 redoneMR_tidy <- redone_MR %>%  
   select(exposure, id.exposure , id.outcome, OR_CI, effect_direction , nsnp, method) %>% 
   filter(effect_direction != "overlaps null") %>% 
-  filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio')) %>% arrange(id.outcome) %>% 
+  filter(id.exposure != "finn-b-E4_OBESITY")
 
 #redoneMR_tidy %>%  select(1:2) %>% distinct() %>% View() # for adding T
 
 ```
+
+
+Traits that have effect on breast cancer:
+```{r echo=F}
+ft<-flextable(redoneMR_tidy)
+ft<-width(ft, j = c(1,3,7,4), width=3)
+ft
+
+
+```
+
+
 
 ```{r , include=F, cache =TRUE}
 
@@ -190,8 +204,15 @@ for (bc_out in outcomes){
       select(test, exposure, everything()) %>% 
       mutate(outcome = gsub("(Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) 
     
-    x <- x %>% mutate(likely_mediator = ifelse(x$effect_direction[1] != 'overlaps null' & x$effect_direction[6] == 'overlaps null',T, F ) )
-    
+      trait_name <-  x$exposure[1]
+      
+      if (x$exposure[5] == trait_name){
+         x <- x %>%
+           mutate(likely_mediator = ifelse(x$effect_direction[1] != 'overlaps null' & x$effect_direction[5] == 'overlaps null',T, F ) )
+      } else if (x$exposure[6] == trait_name){
+        x <- x %>% 
+          mutate(likely_mediator = ifelse(x$effect_direction[1] != 'overlaps null' & x$effect_direction[6] == 'overlaps null',T, F ) )
+      }
     
     results_list[[interm]] <- x
   }  
@@ -217,7 +238,7 @@ Only for the traits that have effect on breast cancer:
 ```{r echo =F}
 total_res_out <- as_grouped_data(x = total_res_out, groups = c("group"), columns = NULL)
 ft<-flextable(total_res_out)
-ft<-width(ft, j = c(2,3,4,6), width=1.5)
+ft<-width(ft, j = c(2,3,4,6), width=2)
 ft
 ```
 
@@ -370,58 +391,43 @@ ft
 
 #### MVMR
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval =F}
 
 
-x1 <- mvmr_mixed_sources(id1 = 'ukb-b-16881',
-                   outcome.id = 'ieu-a-1127',
-                   id2_tophits_file = "igf_tophits.tsv",
-                   id2_gwas_file = "igf_GWAS_tidy_outcome.txt.gz")
-x1 %>% kable_it()
+#id2_tophits_file  <- "igf_tophits.tsv"
+#id2_gwas_file <- "igf_GWAS_tidy_outcome.txt.gz"
+library(vroom)
+id2_tophits_file  <-  vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/early_bmi_adj_tophits.tsv")
 
-x2 <- mvmr_mixed_sources(id1 = 'ukb-a-269',
-                   outcome.id = 'ieu-a-1127',
-                   id2_tophits_file = "igf_tophits.tsv",
-                   id2_gwas_file = "igf_GWAS_tidy_outcome.txt.gz")
+id2_gwas_file <- vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/early_bmi_adj_GWAS_tidy_outcome.txt.gz")
 
-x2 %>% kable_it()
 
-x3 <- mvmr_mixed_sources(id1 = 'prot-b-20',
-                   outcome.id = 'ieu-a-1127',
-                   id2_tophits_file = "igf_tophits.tsv",
-                   id2_gwas_file = "igf_GWAS_tidy_outcome.txt.gz")
-x3 %>% kable_it()
+# to try: redoneMR_tidy
 
-x4 <- mvmr_mixed_sources(id1 = 'prot-b-20',
+igf1_meds <-c('ukb-b-16881', 'ukb-a-269','prot-b-20','ieu-b-4869','finn-b-E4_OBESITY','ieu-a-974')
+
+med_list <- unique(redoneMR_tidy$id.exposure)
+
+all_res <- tibble()
+
+for (i in med_list){
+  x1 <- mvmr_mixed_sources(id1 = i,
                    outcome.id = 'ieu-a-1126',
-                   id2_tophits_file = "igf_tophits.tsv",
-                   id2_gwas_file = "igf_GWAS_tidy_outcome.txt.gz")
-
-x4 %>% kable_it()
-
-x5<- mvmr_mixed_sources(id1 = 'ieu-b-4869',
+                   id2_tophits_file,
+                   id2_gwas_file)
+  
+  x2 <- mvmr_mixed_sources(id1 = i,
                    outcome.id = 'ieu-a-1127',
-                   id2_tophits_file = "igf_tophits.tsv",
-                   id2_gwas_file = "igf_GWAS_tidy_outcome.txt.gz")
-
-x5 %>% kable_it()
-
-
-x6<- mvmr_mixed_sources(id1 = 'finn-b-E4_OBESITY',
-                   outcome.id = 'ieu-a-1127',
-                   id2_tophits_file = "igf_tophits.tsv",
-                   id2_gwas_file = "igf_GWAS_tidy_outcome.txt.gz")
-
-x6 %>% kable_it()
-
-x7<- mvmr_mixed_sources(id1 = 'ieu-a-974',
-                   outcome.id = 'ieu-a-1127',
-                   id2_tophits_file = "igf_tophits.tsv",
-                   id2_gwas_file = "igf_GWAS_tidy_outcome.txt.gz")
-
-x7 %>% kable_it()
-
-
+                   id2_tophits_file,
+                   id2_gwas_file)
+  x3 <- mvmr_mixed_sources(id1 = i,
+                   outcome.id = 'ieu-a-1128',
+                   id2_tophits_file,
+                   id2_gwas_file)
+  
+  
+  all_res<- bind_rows(all_res, x1, x2, x3)
+}
 
 
 
@@ -431,7 +437,8 @@ x7 %>% kable_it()
 
 ```{r echo =F,  eval =T}
 interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
-instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
+#instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
+instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/early_bmi_adj_tophits.tsv")
 
 out_df<-tibble()
 
@@ -464,7 +471,9 @@ out_df %>% kable_it()
 
 interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
 
-gwas<- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/igf_GWAS_tidy_outcome.txt.gz")
+#gwas<- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/igf_GWAS_tidy_outcome.txt.gz")
+gwas<- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/early_bmi_adj_GWAS_tidy_outcome.txt.gz")
+
 
 
 out_df2<-tibble()
