@@ -19,8 +19,10 @@ source("functions_literature.R")
 ## prod data
 dat<- vroom("literature_outputs/breast_cancer_litspace_prod.csv",show_col_types = FALSE) %>%  mutate(lit.id = as.character(lit.id))
 
-# tidy space -- not actually used? 
-bc_triples_tidy_count <- tidy_lit_space(dat)
+# tidy space 
+bc_triples_tidy_count <- tidy_lit_space(dat) %>%    
+    mutate(term1.type_verbose  = ifelse(grepl("obesity", term1, ignore.case = T), 'antro', term1.type_verbose)) %>%
+    mutate(term2.type_verbose  = ifelse(grepl("obesity", term2, ignore.case = T), 'antro', term2.type_verbose))
 
 ```
 
@@ -98,10 +100,11 @@ bc_x2 <- bc_x %>%  filter(term1 %in% bc_y$term2)
 bc_twostep_triples<- bind_rows(bc_x2, bc_y)
 bc_s_n<- make_sankey(bc_twostep_triples, fontSize=13)
 
-```
 
 
-```{r}
+
+
+
 
 bc_triple3 <- bc_triples_tidy_count %>%  
   filter(term2 %in% bc_triple2$term1 & !term1 %in% bc_triple2$term1) %>%
@@ -178,6 +181,7 @@ bc_triple4_tidy %>% select(term1, term2) %>% distinct() %>% dim() # 375
 
 
 ```
+
 # functions
 
 ```{r}
@@ -258,14 +262,23 @@ overlap_trait_and_bc_NEW <- function(trait_twostep_triples, KEY_TERM, n_filter =
   y <- bc_triple2_tidy %>% filter(term1 %in% x$term2 | term1 %in% q$term2 | term1 %in% triple2) 
   z <- bc_triple1_tidy %>% filter(term1 %in% y$term2 |term1 %in% x$term2 | term1 %in% q$term2 | term1 %in% triple1) 
   
+  # any trait triples in any BC triples
+  shared <- bind_rows(x,y,z, q) %>%  inner_join(trait_twostep_triples, by = c("term1"="term1", "term2"="term2")) 
+  
+
   # full 
-  a <-bind_rows(trait_twostep_triples,x,y,z, q) %>%
-      distinct()
+  a <-bind_rows(x,y,z, q) %>% mutate(group = "BC") %>% 
+     bind_rows(., trait_twostep_triples %>% mutate(group = "trait")) %>% distinct() %>% 
+    left_join(shared %>% mutate(group2 = "shared"), by = c("term1"="term1", "term2"="term2")) %>% 
+    mutate(group = ifelse(!is.na(group2), group2, group)) %>% 
+    select(term1, term2, n, group) %>% distinct() %>% 
+    mutate(group = as.factor(group)) %>% distinct()
+    
   a_sankey<- a %>% 
       filter(!(!term2 %in% term1 & term2 != 'Breast Diseases')) %>% 
       filter(!(!term2 %in% term1 & term2 != 'Breast Diseases'))# exclude loose terms
   
-  full_sankey<- make_sankey(a_sankey, fontSize=13)
+  full_sankey<- make_sankey(a_sankey, fontSize=13, colour_links = T)
   
   # exclude  links with specified low n
   
@@ -296,54 +309,170 @@ overlap_trait_and_bc_NEW <- function(trait_twostep_triples, KEY_TERM, n_filter =
   }
   print(dim(a_sub))
   
-  subset_sankey<- make_sankey(a_sub, fontSize=sankey_font)
+  subset_sankey<- make_sankey(a_sub, fontSize=sankey_font, colour_links = T)
+  
+  
+  # get full raw data
+  
+  terms_list <- unique(c(a_sankey$term1, a_sankey$term2))
   
   return(list(full_sankey = full_sankey,
-              subset_sankey = subset_sankey))
+              subset_sankey = subset_sankey,
+              terms_list = terms_list))
 }
-```
-
-```{r}
-
-INTERMEDIATE= 'testosterone'
-
-INTERMEDIATE= 'C-reactive protein'
-
-INTERMEDIATE= 'SHBG'
 
 
-X <- a_sub %>% filter(term1 == INTERMEDIATE | term2 == INTERMEDIATE)
-
-Y <- X %>% filter(!(term1 == KEY_TERM | term2 == 'Breast Diseases' ))
-y <- c(Y$term2)
-y <- y[y !='Breast Diseases'  ]
 
 
-Y1 <- a_sub %>% filter(term1 %in% Y$term2) %>%  filter(!term2 %in% y)
-y1 <- c(Y1$term2, Y$term2)
-y1 <- y1[y1 !='Breast Diseases'  ]
+overlap_lifestyle_trait_and_bc <- function(trait_triples, 
+                    bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy,sankey_font = 13, n_filter = 1 ){
 
-Y2 <- a_sub %>% filter(term1 %in% Y1$term2) %>%  filter(!term2 %in% y1)
-y2 <- c(Y2$term2, Y1$term2, Y$term2)
-y2 <- y2[y2 !='Breast Diseases'  ]
-
-Y3 <- a_sub %>% filter(term1 %in% Y2$term2) %>%  filter(!term2 %in% y2)
-
-test <- bind_rows(X, Y1, Y2, Y3)
-test_sankey<- make_sankey(test, fontSize=18)
-
-```
-
-
-```{r}
-#### 
-
-
-extract_two_triples_for_trait <- function(id, KEY_TERM){
+  bc_triples<-
+  bind_rows(
+    bc_triple1_tidy %>% mutate(triple = 1),
+    bc_triple2_tidy %>% mutate(triple = 2), 
+    bc_triple3_tidy %>% mutate(triple = 3),
+    bc_triple4_tidy %>% mutate(triple = 4)
+  )
   
+    
+  # any trait triples in any BC triples
+  shared <- bc_triples %>%  inner_join(trait_triples, by = c("term1"="term1", "term2"="term2")) %>% select(term1, term2) %>% distinct()
+  
+  # any trait term2 are term 1 in bc?
+  tr_term2_is_bc_term1 <- intersect(trait_triples$term2, bc_triples$term1) 
+  
+  # get trait triples that can be linked to bc (except via obesity)
+  trait_triples_linked_to_bc <- 
+    trait_triples %>%
+    filter(term2 %in% tr_term2_is_bc_term1) %>% 
+    filter(n>0) %>% 
+    filter(term2!='Obesity')
+  
+  # also collect trait triples linked to triples collected to BC space
+  terms_A <- trait_triples %>% filter(term2 %in% tr_term2_is_bc_term1) %>% pull(term1)
+  triples_X_A <- trait_triples %>% filter(term2 %in% terms_A) %>% 
+                                  filter(!(grepl('Obesity', term2, ignore.case = T) & n <= 3)) 
+  
+  
+  ## get BC chains of triples connected to the extracted trait terms; 
+  bc_triples_linked <- bc_triples %>%  filter(term1 %in% tr_term2_is_bc_term1)
+   
+  bc_triple4_tidy_sub <- bc_triple4_tidy %>% right_join(bc_triples_linked %>% filter(triple == 4), by = c("term1"="term1", "term2"="term2", "n"="n"))
+  bc_triple3_tidy_sub <- bc_triple3_tidy %>% right_join(bc_triples_linked %>% filter(triple == 3), by = c("term1"="term1", "term2"="term2", "n"="n"))
+  bc_triple2_tidy_sub <- bc_triple2_tidy %>% right_join(bc_triples_linked %>% filter(triple == 2), by = c("term1"="term1", "term2"="term2", "n"="n"))    
+  bc_triple1_tidy_sub <- bc_triple1_tidy %>% right_join(bc_triples_linked %>% filter(triple == 1), by = c("term1"="term1", "term2"="term2", "n"="n"))
+  
+  # make sure all subsequesnt steps are collected 
+  bc_triple3_tidy_sub <- bind_rows(bc_triple3_tidy_sub,
+                                   bc_triple3_tidy %>% filter(term1 %in% bc_triple4_tidy_sub$term2))
+  bc_triple2_tidy_sub <- bind_rows(bc_triple2_tidy_sub,
+                                   bc_triple2_tidy %>% filter(term1 %in% bc_triple3_tidy_sub$term2))
+  bc_triple1_tidy_sub <- bind_rows(bc_triple1_tidy_sub,
+                                   bc_triple1_tidy %>% filter(term1 %in% bc_triple2_tidy_sub$term2))
+  
+  bc_triples_subset <- bind_rows(bc_triple4_tidy_sub,
+                                 bc_triple3_tidy_sub,
+                                 bc_triple2_tidy_sub,
+                                 bc_triple1_tidy_sub) %>% select(-triple) %>% distinct()
+  
+  # join trait and BC triples
+  trait_tr_and_bc <- bind_rows(trait_triples_linked_to_bc %>% mutate(group = "trait"), 
+                               bc_triples_subset %>% mutate(group = "BC"),
+                               triples_X_A %>% mutate(group = "trait")) %>% 
+                    left_join(shared %>% mutate(group2 = "shared"), by = c("term1"="term1", "term2"="term2")) %>% 
+                    mutate(group = ifelse(!is.na(group2), group2, group)) %>% 
+                    select(term1, term2, n, group) %>% distinct() %>% 
+                    mutate(group = as.factor(group)) %>% distinct()
+  
+  # keep the one with hiher n
+  trait_tr_and_bc <- 
+   trait_tr_and_bc %>% 
+   group_by(term1, term2) %>% 
+    slice(which.max(n)) %>%
+    ungroup() 
+  
+  
+   # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  trait_tr_and_bc<- trait_tr_and_bc %>% 
+    #filter(term1 %in% c("cytokine", "estrogens") & term2 %in% c("cytokine", "estrogens")) %>% 
+    # forward count
+    rename(n_pair_f = n) %>% 
+    # join col that will show reverse pair count
+    left_join(trait_tr_and_bc %>% select(term1,term2,n_pair_b = n),
+              by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n=n_pair_f)
+      
+  
+  remove_loose_terms2 =T
+  while (remove_loose_terms2) {
+    print("term 2 while loop filtering")
+    trait_tr_and_bc <- trait_tr_and_bc %>% filter(!(!term2 %in% term1 & term2 != 'Breast Diseases'))
+    tmp <- trait_tr_and_bc %>% filter((!term2 %in% term1 & term2 != 'Breast Diseases'))
+    if (dim(tmp)[1]==0){
+      remove_loose_terms2 =F
+    }
+  }
+
+  
+  if (n_filter > 1) {
+    ## filtering by n
+    print(paste0("Using n=", n_filter))
+    a_sub <- trait_tr_and_bc %>% filter(n >= n_filter | term2 == 'Breast Diseases') 
+    
+    remove_loose_terms1 =T
+    while (remove_loose_terms1) {
+      print("term1 while loop filtering")
+      a_sub <- a_sub %>% filter(!(!term1 %in% term2 )) 
+      tmp <- a_sub %>% filter((!term1 %in% term2 )) 
+      if (dim(tmp)[1]==0){
+        remove_loose_terms1 =F
+      }
+    }
+  
+    
+    remove_loose_terms2 =T
+    while (remove_loose_terms2) {
+      print("term 2 while loop filtering")
+      a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast Diseases'))
+      tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast Diseases'))
+      if (dim(tmp)[1]==0){
+        remove_loose_terms2 =F
+      }
+    }
+    
+    
+    print(dim(a_sub))
+  } else{
+    a_sub <-tibble()
+  }
+  
+  
+  
+  
+  # get full raw data
+  
+  terms_list <- unique(c(trait_tr_and_bc$term1, trait_tr_and_bc$term2))
+  
+  return(list(sankey_data = trait_tr_and_bc,
+              sankey_data_filtered = a_sub,
+              terms_list = terms_list))
+}
+
+
+
+
+extract_two_triples_for_trait <- function(id, KEY_TERM, ignore_terms = c() ){#, keep_only = c()){
   
   load("literature_outputs/lit_spaces_finalset_tidy.RData")
-  trait_tidy <- tidy_litspace[[id]]
+  trait_tidy <- tidy_litspace[[id]] %>% 
+      mutate(term1.type_verbose  = ifelse(grepl("obesity", term1, ignore.case = T), 'antro', term1.type_verbose)) %>%
+      mutate(term2.type_verbose  = ifelse(grepl("obesity", term2, ignore.case = T), 'antro', term2.type_verbose)) 
   rm(tidy_litspace)
  
   ## triple 1
@@ -367,7 +496,11 @@ extract_two_triples_for_trait <- function(id, KEY_TERM){
     group_by(term1, term2) %>% 
     slice(which.max(n_pair)) %>%
     ungroup()  %>% 
-    rename(n=n_pair) 
+    rename(n=n_pair) %>% 
+    filter(!term2 %in% ignore_terms) #%>% 
+    #filter(term2 %in% keep_only)
+  
+  
   
   print("Triple 1 tidy")
   print(trait_triple1_tidy %>% select(term1, term2) %>% distinct() %>% dim())
@@ -438,9 +571,101 @@ extract_two_triples_for_trait <- function(id, KEY_TERM){
               joined_triples = trait_twostep_triples))
 
 }
+
+
+extract_lifestyle_main_triples <- function(space = "single", id=NA, name=NA ){
+  
+  
+  if (space == 'single' & !is.na(id)){
+    load("literature_outputs/lit_spaces_finalset_tidy.RData")
+  #load("literature_outputs/lit_spaces_finalset.RData")
+  trait_tidy <- tidy_litspace[[id]] %>% 
+      mutate(term1.type_verbose  = ifelse(grepl("obesity", term1, ignore.case = T), 'antro', term1.type_verbose)) %>%
+      mutate(term2.type_verbose  = ifelse(grepl("obesity", term2, ignore.case = T), 'antro', term2.type_verbose)) 
+  rm(tidy_litspace)
+  
+  } else if (space == "combined" & !is.na(name)){
+  
+  load("literature_outputs/lit_spaces_combined_traits_tidy.RData")
+  trait_tidy <- tidy_combined_litspace[[name]]%>% 
+      mutate(term1.type_verbose  = ifelse(grepl("obesity", term1, ignore.case = T), 'antro', term1.type_verbose)) %>%
+      mutate(term2.type_verbose  = ifelse(grepl("obesity", term2, ignore.case = T), 'antro', term2.type_verbose)) 
+  rm(tidy_combined_litspace)
+  
+  } else{
+    stop ("check the input arguments")
+  }
+
+ 
+  ## triple 1
+  
+  trait_triple1 <- trait_tidy %>% 
+    filter(term2.type_verbose != 'disease') %>% filter(term1.type_verbose != 'disease') %>% 
+    #filter(!predicate %in% c("COEXISTS_WITH", 'NEG_ISA', 'NEG_COEXISTS_WITH')) %>%
+    filter(term2.type_verbose != "drug_or_compound") %>% filter(term1.type_verbose != "drug_or_compound") %>% 
+    select(1:5) %>% 
+    group_by(term1, predicate, term2) %>% 
+    summarise_all(sum) %>% ungroup()
+  
+  print(trait_triple1 %>% select(term1, term2) %>% distinct() %>% dim())
+  
+  trait_triple1_tidy <- trait_triple1 %>% 
+    tidy_terms_for_viz() %>% 
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair)
+
+  
+  print("Triple 1 tidy")
+  print(trait_triple1_tidy %>% select(term1, term2) %>% distinct() %>% dim())
+  
+  
+
+  return(trait_triple1_tidy)
+
+
+}
+
 ```
 
-# Traits 
+
+## testing path extraction 
+```{r}
+
+INTERMEDIATE= 'testosterone'
+
+INTERMEDIATE= 'C-reactive protein'
+
+INTERMEDIATE= 'SHBG'
+
+
+X <- a_sub %>% filter(term1 == INTERMEDIATE | term2 == INTERMEDIATE)
+
+Y <- X %>% filter(!(term1 == KEY_TERM | term2 == 'Breast Diseases' ))
+y <- c(Y$term2)
+y <- y[y !='Breast Diseases'  ]
+
+
+Y1 <- a_sub %>% filter(term1 %in% Y$term2) %>%  filter(!term2 %in% y)
+y1 <- c(Y1$term2, Y$term2)
+y1 <- y1[y1 !='Breast Diseases'  ]
+
+Y2 <- a_sub %>% filter(term1 %in% Y1$term2) %>%  filter(!term2 %in% y1)
+y2 <- c(Y2$term2, Y1$term2, Y$term2)
+y2 <- y2[y2 !='Breast Diseases'  ]
+
+Y3 <- a_sub %>% filter(term1 %in% Y2$term2) %>%  filter(!term2 %in% y2)
+
+test <- bind_rows(X, Y1, Y2, Y3)
+test_sankey<- make_sankey(test, fontSize=18)
+
+```
+
+
+# Molecular traits 
 
 ## IGF
 
@@ -456,8 +681,11 @@ trait_s_n<- make_sankey(trait_triples$joined_triples, fontSize=13)
 
 
 KEY_TERM= 'IGF1'
-out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
-                                 bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+
+out2 <- overlap_trait_and_bc_NEW(trait_triples$joined_triples, KEY_TERM =KEY_TERM, n_filter=2,sankey_font = 13,bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+write_tsv(as_tibble(out2$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
 
 ```
 
@@ -479,6 +707,10 @@ trait_s_n<- make_sankey(trait_triples$joined_triples, fontSize=13)
 KEY_TERM= 'IL1RL1'
 out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
                                  bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+out2 <- overlap_trait_and_bc_NEW(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
+                                 bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
 
 ```
 
@@ -516,7 +748,7 @@ out2 <- overlap_trait_and_bc_NEW(trait_triples$joined_triples, KEY_TERM = KEY_TE
 
 ```{r}
 
-trait_triples <- extract_two_triples_for_trait(id='prot-a-710',  KEY_TERM = c('cardiotrophin 1'))
+trait_triples <- extract_two_triples_for_trait(id='prot-a-710',  KEY_TERM = c('cardiotrophin 1'))#, ignore_terms = c("AKT1"))
 
 trait_trip_1s<- make_sankey(trait_triples$triple1_tidy %>% filter(n>0), fontSize=13)
 trait_trip_2s<- make_sankey(trait_triples$triple2_tidy %>% filter(n > 0), fontSize=13)
@@ -525,8 +757,12 @@ trait_s_n<- make_sankey(trait_triples$joined_triples, fontSize=13)
 
 
 KEY_TERM = 'cardiotrophin 1'
-'cardiotrophin 1' <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
+
+out2 <- overlap_trait_and_bc_NEW(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
                                  bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+
+write_tsv(as_tibble(out2$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
 
 ```
 
@@ -555,7 +791,7 @@ out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n
 
 ```{r}
 
-trait_triples <- extract_two_triples_for_trait(id='prot-a-670',  KEY_TERM = c('CRP',  'C-reactive protein'))
+trait_triples <- extract_two_triples_for_trait(id='prot-a-670',  KEY_TERM = c('CRP',  'C-reactive protein'))#, keep_only = c("CD40", "CD40 Ligand"))
 
 trait_trip_1s<- make_sankey(trait_triples$triple1_tidy %>% filter(n>8), fontSize=13)
 trait_trip_2s<- make_sankey(trait_triples$triple2_tidy %>% filter(n > 0), fontSize=13)
@@ -566,6 +802,10 @@ trait_s_n<- make_sankey(trait_triples$joined_triples, fontSize=13)
 KEY_TERM = 'C-reactive protein'
 out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM ='C-reactive protein' , n_filter=1,
                                  bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+out2 <- overlap_trait_and_bc_NEW(trait_triples$joined_triples, KEY_TERM ='C-reactive protein' , n_filter=1,
+                                 bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+write_tsv(as_tibble(out2$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
 
 ```
 
@@ -584,6 +824,11 @@ trait_s_n<- make_sankey(trait_triples$joined_triples, fontSize=13)
 KEY_TERM = 'calpastatin'
 out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
                                  bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+out2 <- overlap_trait_and_bc_NEW(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
+                                 bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+write_tsv(as_tibble(out2$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
+
 
 ```
 
@@ -602,6 +847,14 @@ trait_s_n<- make_sankey(trait_triples$joined_triples, fontSize=13)
 KEY_TERM = 'FGF7'
 out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
                                  bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+
+out2 <- overlap_trait_and_bc_NEW(trait_triples$joined_triples, KEY_TERM =KEY_TERM , n_filter=1,
+                                 bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+
+write_tsv(as_tibble(out2$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
+
 
 ```
 
@@ -683,18 +936,85 @@ out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM = KEY_TERM , 
 ```
 
 
+# Lifestyle traits
+
+## childhood obesity
+
+```{r}
+
+trait_triples <- extract_lifestyle_main_triples(id='ieu-a-1096')
+
+trait_san<- make_sankey(trait_triples %>% filter(n>3), fontSize=13)
+
+
+overlap <- overlap_lifestyle_trait_and_bc(trait_triples, bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+sankey = make_sankey(overlap$sankey_data, colour_links = T, fontSize = 12)
+
+
+KEY_TERM="childhood_obesity"
+write_tsv(as_tibble(overlap$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
+
+
+```
+
+
+## sleep duration
+
+```{r}
+
+trait_triples <- extract_lifestyle_main_triples(id='ukb-b-4424')
+
+trait_san<- make_sankey(trait_triples %>% filter(n>0), fontSize=13)
+
+
+overlap <- overlap_lifestyle_trait_and_bc(trait_triples, bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+sankey = make_sankey(overlap$sankey_data, colour_links = T, fontSize = 13)
+
+
+KEY_TERM="sleep_duration"
+write_tsv(as_tibble(overlap$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
+
+
+```
+
+
+## menopause
+
+```{r}
+
+trait_triples <- extract_lifestyle_main_triples(space = 'combined', name='menopause')
+
+
+trait_san<- make_sankey(trait_triples %>% filter(n>3), fontSize=13)
+
+
+overlap <- overlap_lifestyle_trait_and_bc(trait_triples, bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy,  n_filter=2)
+sankey = make_sankey(overlap$sankey_data, colour_links = T, fontSize = 1, trait_col = "#7AC175", shared="#EF78E6")
+sankey_sub = make_sankey(overlap$sankey_data_filtered, colour_links = T, fontSize = 13, trait_col = "#7AC175", shared="#EF78E6")
+
+
+KEY_TERM="menopause"
+write_tsv(as_tibble(overlap$terms_list), paste0("literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
+
+
+```
+
+## testing others
+
+```{r}
+
+trait_triples <- extract_lifestyle_main_triples(id='ieu-a-1049')
+
+trait_san<- make_sankey(trait_triples %>% filter(n>0), fontSize=13)
+
+
+overlap <- overlap_lifestyle_trait_and_bc(trait_triples, bc_triple1_tidy, bc_triple2_tidy, bc_triple3_tidy,bc_triple4_tidy)
+
+sankey = make_sankey(overlap$sankey_data, colour_links = T)
 
 
 
-
-
-
-
-
-
-
-
-
+```
 
 
 
