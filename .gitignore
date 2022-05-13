@@ -8,7 +8,7 @@ __pycache__/*
 .Rhistory
 R/htmls*
 *.html
-
+R/01_MR_related/extra_mr_for_case_studies/html/*
 R/external_figures/
 R/01_MR_related/mr_evidence_outputs/*
 R/01_MR_related/heatmap_html/*
