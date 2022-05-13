@@ -140,6 +140,9 @@ redone_wide <- redone_MR %>%
   pivot_wider(names_from = id.outcome, values_from = effect_dir_binary)
  
 
+redone_MR %>% filter(method %in% c('Inverse variance weighted', 'Wald ratio') ) %>% 
+  arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) %>% View()
+
 
 ```
 
@@ -208,6 +211,11 @@ res_subtypes_wide<- res_subtypes %>%
   pivot_wider(names_from = outcome, values_from = effect_dir_binary)
 
  
+# testing MTC
+res_subtypes %>% 
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio') ) %>% 
+  arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) 
+
 
 #merge subtypes and validation 
 merged <- left_join(redone_wide, 
@@ -295,6 +303,9 @@ x %>%  filter(`egger_intercept_less_than_0.05` == T & `egger_intercept_pval_more
   
   
   
+bind_rows(res_w_sens) %>% filter(exposure_cat == 'Proteins' | exposure == 'Albumin') %>%  filter(nsnp >=3)  %>% View()
+
+bind_rows(res_w_sens) %>% filter(exposure_cat == 'Proteins' | exposure == 'Albumin') %>%  filter(nsnp >=3) %>% count(exposure,nsnp,  sort=T)
 
 ```
 
