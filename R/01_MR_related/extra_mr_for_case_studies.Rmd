@@ -36,8 +36,19 @@ main <- "ukb-a-34"
 main_lit <- "ieu-a-1096"
 trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
 trait_name <- "Childhood body size"
+#
 
-case_terms<- read_csv("../02_literature_related/literature_outputs/sankey_terms_storage/lit_terms_childhood_obesity.csv")# %>% filter(value != 'cardiotrophin 1')
+#main <- "prot-a-710"
+#main_lit <- "prot-a-710"
+#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
+
+#main <- "ukb-d-30770_irnt"
+#main_lit <- "ukb-d-30770_irnt"
+#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
+
+
+
+case_terms<- read_csv("../02_literature_related/literature_outputs/sankey_terms_storage/lit_terms_childhood_obesity.csv")#%>% filter(value != 'cardiotrophin 1')
 
 all =T
 pos = T
@@ -114,6 +125,9 @@ unique_lit_terms<- length(unique(lit_terms_df$lit_term)) #  lit terms with gwas 
 gwas_with_inst_total <-lit_terms_df %>% filter(nSNPs > 0) %>% pull(lit_term) %>% length()
 gwas_with_inst_unique <-lit_terms_df %>% filter(nSNPs > 0) %>% pull(lit_term) %>% unique() %>% length()
 
+# terms with at least 1 inst 
+
+lit_terms_df %>% filter(nSNPs >= 1) %>% select(lit_term, gwas.name) %>% distinct() 
 ```
 
 All lit terms: `r lit_terms`
@@ -170,13 +184,14 @@ redoneMR_tidy <- redone_MR %>%
 ```
 
 
-Traits that have effect on breast cancer:
+Traits that have effect on breast cancer (N = `r length(unique(redoneMR_tidy$exposure))`):
+
+`r paste0(unique(redoneMR_tidy$exposure), collapse = ", ") `
+
 ```{r echo=F}
 ft<-flextable(redoneMR_tidy)
 ft<-width(ft, j = c(1,3,7,4), width=3)
 ft
-
-
 ```
 
 
@@ -196,22 +211,26 @@ for (bc_out in outcomes){
   for (interm in interm_list){
   
     x<- bind_rows(
-      quick_mr(exp = main, out = interm) %>% select(3:4, OR_CI, effect_direction) %>% mutate(effect = "EM - as med"),# as mediator
-      quick_mr(exp = interm, out = main) %>% select(3:4, OR_CI, effect_direction) %>% mutate(effect = "ME - as conf"),# as confounder
-      quick_mr(exp = main, out = bc_out) %>% select(3:4, OR_CI, effect_direction) %>% mutate(effect = "EO"),# main to out
-      quick_mr(exp = interm, out = bc_out) %>% select(3:4, OR_CI, effect_direction) %>% mutate(effect = "MO"),# interm to out
-      quick_mvmr(exp1 = main, exp2 = interm, out = bc_out) %>% select(1:2, OR_CI, effect_direction) %>% mutate(effect = "direct") ) %>%       mutate(test = paste0(interm, " / ", bc_out)) %>% 
+      quick_mr(exp = main, out = interm) %>% select(3:4, OR_CI, effect_direction, or) %>% mutate(effect = "EM - as med"),# as mediator
+      quick_mr(exp = interm, out = main) %>% select(3:4, OR_CI, effect_direction, or) %>% mutate(effect = "ME - as conf"),# as confounder
+      quick_mr(exp = main, out = bc_out) %>% select(3:4, OR_CI, effect_direction, or) %>% mutate(effect = "EO"),# main to out
+      quick_mr(exp = interm, out = bc_out) %>% select(3:4, OR_CI, effect_direction, or) %>% mutate(effect = "MO"),# interm to out
+      quick_mvmr(exp1 = main, exp2 = interm, out = bc_out) %>% select(1:2, OR_CI, effect_direction, or) %>% mutate(effect = "direct") 
+      ) %>%
+      mutate(test = paste0(interm, " / ", bc_out) ) %>% 
       select(test, exposure, everything()) %>% 
       mutate(outcome = gsub("(Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) 
     
+      # try to record if main trair effect is attenuates or reduced; attempt to do fir 5 and 6 rows - the output differs because mvmr output alphabetically sorted
       trait_name <-  x$exposure[1]
-      
       if (x$exposure[5] == trait_name){
          x <- x %>%
-           mutate(likely_mediator = ifelse(x$effect_direction[1] != 'overlaps null' & x$effect_direction[5] == 'overlaps null',T, F ) )
+           mutate(attenuates_effect = ifelse(x$effect_direction[1] != 'overlaps null' & x$effect_direction[5] == 'overlaps null',T, F ) ) %>% 
+           mutate(reduces_effect = ifelse(x$or[1] >  x$or[5] , F, T ) ) 
       } else if (x$exposure[6] == trait_name){
         x <- x %>% 
-          mutate(likely_mediator = ifelse(x$effect_direction[1] != 'overlaps null' & x$effect_direction[6] == 'overlaps null',T, F ) )
+          mutate(attenuates_effect = ifelse(x$effect_direction[1] != 'overlaps null' & x$effect_direction[6] == 'overlaps null',T, F ) ) %>% 
+          mutate(reduces_effect = ifelse(x$or[1] >  x$or[6] , F, T ) ) 
       }
     
     results_list[[interm]] <- x
@@ -228,7 +247,7 @@ total_res_out<- total_res_out %>% select(group, everything(), -test) %>% arrange
 ```
 
 
-### MR valiadation results for tarits subset from literature intermediates list
+### MR valiadation results for traits subset from literature intermediates list
 
 Only for the traits that have effect on breast cancer:
 
@@ -260,6 +279,9 @@ unique_meds <- length(unique(meds_table$med.trait))
 Mediators from MR-EvE: `r unique_meds`
 
 Table of EM, MO, MO effects (validated)
+
+`r paste0(unique(meds_table$med.trait), collapse = ", ") `
+
 
 ```{r, echo=F}
 colnames(meds_table) <- c('exposure',	'outcome'	,	'mediator.id', 'mediator',	"exposure -> mediator",	'exposure -> outcome',	'mediator -> outcome')
@@ -352,11 +374,11 @@ ft
 ```
 
 ```{r echo =F}
-disrupts_all<- disrupts_all %>% distinct()
-ft<-flextable(disrupts_all)
-ft<-width(ft, j = c(1:5), width=1.5)
-ft<-width(ft, j = 4, width=2.5)
-ft
+#disrupts_all<- disrupts_all %>% distinct()
+#ft<-flextable(disrupts_all)
+#ft<-width(ft, j = c(1:5), width=1.5)
+#ft<-width(ft, j = 4, width=2.5)
+#ft
 ```
 
 
@@ -404,7 +426,7 @@ id2_gwas_file <- vroom("/Users/ny19205/OneDrive - University of Bristol/Document
 
 # to try: redoneMR_tidy
 
-igf1_meds <-c('ukb-b-16881', 'ukb-a-269','prot-b-20','ieu-b-4869','finn-b-E4_OBESITY','ieu-a-974')
+#igf1_meds <-c('ukb-b-16881', 'ukb-a-269','prot-b-20','ieu-b-4869','finn-b-E4_OBESITY','ieu-a-974')
 
 med_list <- unique(redoneMR_tidy$id.exposure)
 
@@ -435,7 +457,7 @@ for (i in med_list){
 
 #### trait -> mediator
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval =F}
 interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
 #instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
 instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/early_bmi_adj_tophits.tsv")
@@ -466,7 +488,7 @@ out_df %>% kable_it()
 ```
 #### mediator -> trait
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval =F}
 # opposite dir
 
 interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
