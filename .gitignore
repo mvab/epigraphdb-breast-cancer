@@ -13,6 +13,8 @@ R/external_figures/
 R/01_MR_related/mr_evidence_outputs/*
 R/01_MR_related/heatmap_html/*
 R/02_literature_related/literature_outputs/*
+R/01_MR_related/pathways/*
+
 
 query_results/*
 
