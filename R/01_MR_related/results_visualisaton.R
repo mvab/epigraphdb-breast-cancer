@@ -40,7 +40,6 @@ merged <- merged %>% rename("BCAC 2017" = "ieu-a-1126",
 
 
 merged <- merged %>% mutate(exposure_cat = ifelse(exposure == 'Albumin', 'Proteins', exposure_cat))
-  
 
 protein_path_data <- read_tsv("01_MR_related/pathways/proteins_w_pathways.tsv") %>% 
   mutate(name_len = nchar(name)) %>% 
@@ -61,7 +60,20 @@ antro_blacklist <- c('ieu-a-81','ieu-a-74', "ieu-a-73" ,"ieu-a-79" ,"ieu-a-72" ,
                      'ukb-b-18105', 'ieu-a-99', 'ieu-a-105', 'ieu-a-109', 'ukb-b-4650', 'ieu-a-95', 'ukb-a-248', 'ieu-a-68', 	
                      'ieu-a-101')
 
-
+# MR pairs that passed MTC
+passed_pairs <- read_tsv("01_MR_related/mr_evidence_outputs/passed_multiple_testing.tsv") %>% 
+       mutate(outcome = case_when(outcome =="Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)"  ~ "BCAC'17",
+                             outcome =="ER+ Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)"    ~ "ER+",   
+                             outcome =="ER- Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)"   ~ "ER-",  
+                             outcome =="Breast cancer BCAC 2020" ~ "BCAC'20",
+                             outcome =="LuminalA ER+PR+HER-"    ~ "Lum A",   
+                             outcome =="LuminalB1 ER+PR+HER-"   ~ "Lum B1",  
+                             outcome =="LuminalB2 ER+PR+HER+" ~ "Lum B2" ,
+                             outcome =="HER2-enriched ER-PR-HER+"  ~ "HER2" ,
+                             outcome =="TNBC ER-PR-HER-"  ~ "TNBC" ,
+                             outcome =="TNBC_BRCA1 ER-PR-HER-" ~ "TNBC_BRCA1" )) %>% 
+  mutate(mtc = "\n*") %>% select(exposure.id = id.exposure, outcome, mtc)
+  
 
 
 
@@ -142,13 +154,15 @@ data_sub3 <- data_sub2 %>%
   mutate(outcome = factor(outcome, 
                           levels = c("BCAC'17", "BCAC'20","ER+", "Lum A","Lum B1", 
                                      "Lum B2", "ER-", "HER2", "TNBC" ))) %>% 
-  left_join(or_ci_data) %>% distinct() 
+  left_join(or_ci_data) %>% distinct() %>% 
+  left_join(passed_pairs)
 
 
 p<-ggplot(data_sub3, aes( y=exposure, x=outcome, fill = effect_direction, 
                           id = exposure.id ,name = exposure_name,
                           or_ci= OR_CI, pval =  pval, nsnp=nsnp, cat = exposure_cat)) + 
   geom_tile(colour = "grey") + 
+  geom_text(aes(label=mtc,  vjust = 0.27)) +
   scale_fill_manual(values=c("#4D9221","white", "#C51B7D"))+ ### normal
   theme_minimal_grid(8) +
   panel_border() +
