@@ -229,6 +229,62 @@ write_tsv(merged, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
 ```
 
 
+### Multiple testing
+
+```{r}
+# create wide form of results to view by subtype
+redone_MR <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
+
+res_subtypes <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv")
+## category update 
+res_subtypes <- res_subtypes %>% 
+  rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
+  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
+  select(-exposure ) %>% 
+  rename(id.exposure = exposure.id , exposure = exposure.trait) 
+
+
+redone_MR %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat, sort=T)
+res_subtypes  %>% select(id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat, sort=T)
+
+all_mr_validation <- bind_rows(redone_MR, res_subtypes) %>% 
+    filter(method %in% c('Inverse variance weighted', 'Wald ratio') ) %>% 
+   arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) 
+
+write_tsv(all_mr_validation, "mr_evidence_outputs/all_multiple_testing.tsv")
+  
+
+tmp <- all_mr_validation %>% select(pval, qval) %>% 
+  mutate(pval_sign = ifelse(pval <0.05, T, F)) %>% 
+  mutate(qval_sign = ifelse(qval <0.05, T, F))
+
+tmp %>% count(pval_sign) # FALSE	2406	 TRUE	728	
+tmp %>% count(qval_sign) # FALSE	2802	TRUE	332	
+
+
+x<- all_mr_validation %>%  filter(pval < 0.05) %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
+length(unique(x$id.exposure)) # 220
+
+y<- all_mr_validation %>%  filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
+length(unique(y$id.exposure)) # 220
+
+z<- all_mr_validation %>%  filter(!is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
+length(unique(z$id.exposure)) # 175
+
+w<- all_mr_validation %>%  filter(is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
+length(unique(w$id.exposure)) # 178
+
+passed_pairs <- all_mr_validation %>%  filter(qval < 0.05) %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
+length(unique(passed_pairs$id.exposure)) # 103
+
+write_tsv(passed_pairs, "mr_evidence_outputs/passed_multiple_testing.tsv")
+
+```
+
+
+
+
+
 ### Sensitivity analysis review
 
 
@@ -247,6 +303,9 @@ write_tsv(merged, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
 
 ```{r}
 
+mtc <- read_tsv("mr_evidence_outputs/all_multiple_testing.tsv")  %>% 
+  select(id.exposure, outcome,qval )%>% rename(pval_FDR_adj = qval)
+
 ## old outcomes
 main_results <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
 sens_results <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
@@ -256,7 +315,7 @@ res_w_sens <- list()
 outcomes1<- c('ieu-a-1126', 'ieu-a-1127', 'ieu-a-1128')
 
 for (outcome_name in outcomes1){
-  res_w_sens[[outcome_name]] <- add_sensitivity_cols(main_results, sens_results, outcome_name)
+  res_w_sens[[outcome_name]] <- add_sensitivity_cols(main_results, sens_results, outcome_name, mtc)
 }
 
 # new outcomes <- will add to the same list
@@ -267,7 +326,7 @@ sens_results <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_B
 outcomes2 <- unique(main_results$id.outcome)
 
 for (outcome_name in outcomes2){
-  res_w_sens[[outcome_name]] <- add_sensitivity_cols(main_results, sens_results, outcome_name)
+  res_w_sens[[outcome_name]] <- add_sensitivity_cols(main_results, sens_results, outcome_name, mtc)
 }
 
 names(res_w_sens) <- c("All. BCAC 2017", "ER+. BCAC 2017 ", "ER-. BCAC 2017", 
