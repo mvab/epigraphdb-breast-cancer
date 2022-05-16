@@ -136,7 +136,7 @@ do_MR <- function(trait, bc_type){
 
 # add sensitivity analysis cols 
 
-add_sensitivity_cols <- function(main_results, sens_results, outcome_name){
+add_sensitivity_cols <- function(main_results, sens_results, outcome_name, mtc){
   
   
   # main results
@@ -146,7 +146,7 @@ add_sensitivity_cols <- function(main_results, sens_results, outcome_name){
     filter(method %in%  c('Inverse variance weighted', "Wald ratio")  & effect_direction != "overlaps null") 
   print(paste( outcome_name, ":::", length(unique(type_filtered$id.exposure)), "/",  length(unique(type$id.exposure)) ) )
   
-  type <- type %>% filter(id.exposure %in% type_filtered$id.exposure) 
+  ####type <- type %>% filter(id.exposure %in% type_filtered$id.exposure) 
   
   ##count alt MR success
   effect_count <- type %>% 
@@ -165,13 +165,16 @@ add_sensitivity_cols <- function(main_results, sens_results, outcome_name){
   
   sens_type <- sens_type %>%   
     mutate(`egger_intercept_less_than_0.05` = ifelse(egger_intercept < 0.05, T, F) ) %>%  # pleio 1?
-    mutate(`egger_intercept_pval_more_than_0.05` = ifelse(egger_intercept_pval > 0.05, T, F) ) %>%  # pleio 2?
-    mutate(`Q_pval_less_than_0.05` = ifelse(Q_pval < 0.05, T, F) )  # heterogeniety 
+    mutate(`egger_intercept_pval_less_than_0.05` = ifelse(egger_intercept_pval < 0.05, T, F) ) %>%  # pleio 2?
+    mutate(`heterogeneity_Q_pval_less_than_0.05` = ifelse(Q_pval < 0.05, T, F) ) %>%  # heterogeniety 
+    rename("heterogeneity_Q"="Q",
+           "heterogeneity_Q_df"="Q_df",
+           "heterogeneity_Q_pval"="Q_pval")
   
   
   # merge into one df
-  merged<- left_join(type, sens_type) %>% 
-    select(everything(), -low_SNP_num, low_SNP_num, -num_mr_effect, num_mr_effect)
+  merged<- left_join(type, sens_type) %>% left_join(mtc) %>% 
+    select(everything(), -low_SNP_num, low_SNP_num, -num_mr_effect, -pval_FDR_adj,  num_mr_effect, pval_FDR_adj)
   
 }
 
