@@ -274,21 +274,14 @@ length(unique(z$id.exposure)) # 175
 w<- all_mr_validation %>%  filter(is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
 length(unique(w$id.exposure)) # 178
 
-passed_pairs <- all_mr_validation %>%  filter(qval < 0.05) %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
+passed_pairs <- all_mr_validation %>%  mutate(mtc = ifelse(qval < 0.05, "*", NA))  %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction, OR_CI, pval, qval, mtc) %>% distinct() 
 length(unique(passed_pairs$id.exposure)) # 103
 
 write_tsv(passed_pairs, "mr_evidence_outputs/passed_multiple_testing.tsv")
 
 ```
 
-
-
-
-
 ### Sensitivity analysis review
-
-
-### PLAN
 
 
 # 1, >2 snps (so that sens tests are possible)
