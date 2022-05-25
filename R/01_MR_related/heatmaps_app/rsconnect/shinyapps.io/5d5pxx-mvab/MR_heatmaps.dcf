@@ -1,0 +1,13 @@
+name: MR_heatmaps
+title: MR_heatmaps
+username:
+account: 5d5pxx-mvab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6370570
+bundleId: 5943469
+url: https://mvab.shinyapps.io/MR_heatmaps/
+when: 1653484481.24901
+lastSyncTime: 1653484481.24903
+asMultiple: FALSE
+asStatic: FALSE
