@@ -164,7 +164,7 @@ add_sensitivity_cols <- function(main_results, sens_results, outcome_name, mtc){
     filter(method ==  'Inverse variance weighted')
   
   sens_type <- sens_type %>%   
-    mutate(`egger_intercept_less_than_0.05` = ifelse(egger_intercept < 0.05, T, F) ) %>%  # pleio 1?
+    mutate(`egger_intercept_less_than_0.05` = ifelse(abs(egger_intercept) < 0.05, T, F) ) %>%  # pleio 1?
     mutate(`egger_intercept_pval_less_than_0.05` = ifelse(egger_intercept_pval < 0.05, T, F) ) %>%  # pleio 2?
     mutate(`heterogeneity_Q_pval_less_than_0.05` = ifelse(Q_pval < 0.05, T, F) ) %>%  # heterogeniety 
     rename("heterogeneity_Q"="Q",
