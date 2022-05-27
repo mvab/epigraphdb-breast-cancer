@@ -11,7 +11,7 @@ library(vroom)
 library(dplyr)
 library(networkD3)
 
-source("functions_literature.R")
+source("sankey_app/functions_literature.R")
 ```
 
 ```{r message=F}
@@ -70,7 +70,13 @@ test_sankey<- make_sankey(test, fontSize=18)
 
 ```{r}
 
-trait_triples <- extract_two_triples_for_trait(id='ukb-d-30770_irnt',  KEY_TERM =c('Insulin-Like Growth Factor I', 'IGF1'))
+load(paste0(data_location, "lit_spaces_finalset_tidy.RData"))
+id = 'ukb-d-30770_irnt'
+trait_tidy <- tidy_litspace[[id]]
+rm(tidy_litspace)
+
+
+trait_triples <- extract_two_triples_for_trait(trait_tidy,  KEY_TERM =c('Insulin-Like Growth Factor I', 'IGF1'))
 
 trait_trip_1s<- make_sankey(trait_triples$triple1_tidy %>% filter(n>0), fontSize=13)
 trait_trip_2s<- make_sankey(trait_triples$triple2_tidy %>% filter(n > 0), fontSize=13)
@@ -375,8 +381,29 @@ out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM = KEY_TERM , 
 ## childhood obesity
 
 ```{r}
+space = 'single'
+id='ieu-a-1096'
 
-trait_triples <- extract_lifestyle_main_triples(id='ieu-a-1096')
+data_location = 'literature_outputs/'
+
+ if (space == 'single' & !is.na(id)){
+    load(paste0(data_location,"lit_spaces_finalset_tidy.RData"))
+    trait_tidy <- tidy_litspace[[id]] 
+    rm(tidy_litspace)
+    
+  } else if (space == "combined" & !is.na(name)){
+    
+    load(paste0(data_location,"lit_spaces_combined_traits_tidy.RData"))
+    trait_tidy <- tidy_combined_litspace[[name]]
+    rm(tidy_combined_litspace)
+    
+  } else{
+    stop ("check the input arguments")
+  }
+  
+
+
+trait_triples <- extract_lifestyle_main_triples(trait_tidy)
 
 trait_san<- make_sankey(trait_triples %>% filter(n>3), fontSize=13)
 
@@ -410,6 +437,7 @@ write_tsv(as_tibble(overlap$terms_list), paste0("literature_outputs/sankey_terms
 
 
 ```
+
 ```{r}
 
 trait_triples <- extract_lifestyle_main_triples(id='ukb-a-14')
