@@ -52,15 +52,39 @@ trait_tidy_subset <- append(trait_tidy_subset1, trait_tidy_subset2)
 ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 
                 
-                titlePanel("Sankey plots test"),
+                titlePanel("Sankey plot of literature triples overlap between a trait and breast cancer"),
+                br(),
+                #htmlOutput("selected_trait"),
                 
-                htmlOutput("selected_trait"),
-                
+                fluidRow(
+                  column(3, align="left",
+                         selectInput(inputId ="trait",
+                                     label = "Select trait", 
+                                     choices = names(trait_tidy_subset), 
+                                     
+                                     selected = 'IGF-1')),
+                  column(3, align="left",
+                         radioButtons("display_mode", 
+                                      label = "Display mode",
+                                      choices = list("Full" = 'full',
+                                                     "Subset" = 'subset'), 
+                                      selected = "full")),
+                  column(3, align="left",
+                         selectInput(inputId ="subset_cutoff",
+                                     label = "Subset includes links with min size", 
+                                     choices = list("2" = 2,
+                                                    "3" = 3,
+                                                    "4" = 4), 
+                                     selected = 2),
+                         
+                         
+                  ),
+                ),
                 br(),
                 
                 # Output: Tabsets
                 tabsetPanel(type = "tabs",
-                            tabPanel("Sankey plot", sankeyNetworkOutput("sankey_plot", height = "1200px", width="auto")),
+                            tabPanel("Sankey plot", uiOutput('sankey_plot')),#sankeyNetworkOutput("sankey_plot", width="auto", height = "1000px")),
                            
                             #tabPanel("Info", textOutput("info_text")) 
                             tabPanel("Info",
@@ -79,28 +103,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 hr(),
                 
                 
-                fluidRow(
-                  helpText("     Set display parameters:"),
-                  br(),
-                  
-                  column(3, align="left",
-                         selectInput(inputId ="trait",
-                                     label = "Select trait", 
-                                     choices = names(trait_tidy_subset), 
-                                     
-                                     selected = 'IGF-1'),
-                         br(),
-                         strong("Display mode (full):"), 
-                         checkboxInput("show_subset", 
-                                       label = "subset", 
-                                       value = FALSE)
-              
-                         
-                         
-                  ),
-                
-    
-                ),
+
                 hr(),
                 
                 br(), br(),
@@ -123,65 +126,60 @@ server <- function(input, output) {
   
   dataInput <- reactive({
    
+    trait_group <- available_traits %>% filter(trait_name == input$trait) %>% pull(group)
     
+    if (trait_group == 'molecular'){ 
     
-    key_term_expt <- available_traits %>% filter(trait_name == input$trait) %>% pull(key_term_extr) %>% str_split(",")
-    trait_tidy <- trait_tidy_subset[[input$trait]]
+      key_term_expt <- available_traits %>% filter(trait_name == input$trait) %>% pull(key_term_extr) %>% str_split(",")
+      key_term_anchor <- available_traits %>% filter(trait_name == input$trait) %>% pull(key_term_anchor)
+      
+      
+      trait_tidy <- trait_tidy_subset[[input$trait]]
+      trait_triples <- extract_two_triples_for_trait(trait_tidy,   KEY_TERM = key_term_expt[[1]])
+      
+      out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =key_term_anchor, n_filter=input$subset_cutoff,  bc_triples)
+      
+      
+      if (input$display_mode == 'full'){
+          return(out$full_sankey_data)
+      } else if (input$display_mode == 'subset'){
+          return(out$subset_sankey_data)
+      }
     
-    trait_triples <- extract_two_triples_for_trait(trait_tidy,  
-                                                   KEY_TERM = key_term_expt[[1]])
-    
-    key_term_anchor <- available_traits %>% filter(trait_name == input$trait) %>% pull(key_term_anchor)
-    
-    
-    out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =key_term_anchor, n_filter=2, sankey_font = 13, bc_triples)
-    
-    
-    return(out$full_sankey_data)
-  })
-  
-  
-  output$selected_trait <- renderText({ 
-    HTML(paste("Showing Sankey plot for trait:", "<b>", input$trait, "</b> (use the widget to change) \n\n" ))
-  })
-  
-  
-  
-  
-  
-  output$sankey_plot <- renderSankeyNetwork(
-   # width = function() 1000,
-    #height = function() 1000,
-   # res = 96,
-    
-    {
-      make_sankey(dataInput(), fontSize=13, colour_links = T)
+      
+    } else if (trait_group == 'lifestyle'){
+      
+      trait_tidy <- trait_tidy_subset[[input$trait]]
+      trait_triples <- extract_lifestyle_main_triples(trait_tidy)
+      
+      out <- overlap_lifestyle_trait_and_bc(trait_triples, bc_triples, n_filter = input$subset_cutoff)
+      
+      
+      if (input$display_mode == 'full'){
+          return(out$sankey_data)
+      } else if (input$display_mode == 'subset'){
+          return(out$sankey_data_filtered)
+      }
 
+      
+    }
+
+  })
+  
+  
+  #output$selected_trait <- renderText({ 
+  #  HTML(paste("Showing Sankey plot for trait:", "<b>", input$trait, "</b> \n\n" ))
+  #})
+  #
+  
+  output$sankey_plot_prep <- renderSankeyNetwork({
+      make_sankey(dataInput(), fontSize=13, colour_links = T)
     })
-  
-  
-  
- #output$heatmap1 <- renderPlot(
- #  width = function() 400 + (66 * length(unique(dataInput()$outcome))),
- #  height = function() 3 * 10 *length(unique(dataInput()$exposure.id)),
- #  
- #  #height = function() 3 * nrow(dataInput()),
- #  res = 96,
- #  
- #  {
- #    plot_heatmap(dataInput(), font_size = 11)  
- #  })
- #
- #output$heatmap2 <- renderPlotly(
- #  
- #  {
- #    plot <- plot_heatmap(dataInput(), font_size = 9)  
- #    plotly::ggplotly(plot , tooltip = c("text"), 
- #                     width = 400 + (66 * length(unique(dataInput()$outcome))),
- #                     height = 3 * 10 *length(unique(dataInput()$exposure.id))
- #    )
- #    
- #  })
+  #https://stackoverflow.com/questions/58208904/reactive-height-for-sankeynetworkoutput-from-networkd3
+  output$sankey_plot <- renderUI({
+    h <- 300 * log10(nrow(dataInput()))
+    sankeyNetworkOutput("sankey_plot_prep", height = h)
+  })
   
   
   

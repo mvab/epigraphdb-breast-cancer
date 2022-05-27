@@ -1,4 +1,5 @@
-﻿trait_name,id,key_term_extr,key_term_anchor,type
-IGF-1,ukb-d-30770_irnt,"Insulin-Like Growth Factor I,IGF1",IGF1,single
-Cardiotrophin-1,prot-a-710,cardiotrophin 1,cardiotrophin 1,single
-Menopause,menopause,,,combined
+﻿trait_name,id,key_term_extr,key_term_anchor,type,group
+IGF-1,ukb-d-30770_irnt,"Insulin-Like Growth Factor I,IGF1",IGF1,single,molecular
+Cardiotrophin-1,prot-a-710,cardiotrophin 1,cardiotrophin 1,single,molecular
+Menopause,menopause,NA,NA,combined,lifestyle
+Childhood obesity,ieu-a-1096,NA,NA,single,lifestyle

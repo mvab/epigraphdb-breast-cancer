@@ -450,6 +450,9 @@ get_breast_cancer_triples <- function(bc_triples_tidy_count){
   bc_triple4_tidy %>% select(term1, term2) %>% distinct() %>% dim() # 375
   
   
+  bc_triple1_tidy <- bc_triple1_tidy %>% mutate(term2 = ifelse(term2 == 'Breast Diseases', 'Breast cancer', term2))
+  
+  
   return(list(triple1 = bc_triple1_tidy,
               triple2 = bc_triple2_tidy,
               triple3 = bc_triple3_tidy,
@@ -492,8 +495,8 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
     mutate(group = as.factor(group)) %>% distinct()
   
   a_sankey<- a %>% 
-    filter(!(!term2 %in% term1 & term2 != 'Breast Diseases')) %>% 
-    filter(!(!term2 %in% term1 & term2 != 'Breast Diseases'))# exclude loose terms
+    filter(!(!term2 %in% term1 & term2 != 'Breast cancer')) %>% 
+    filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))# exclude loose terms
   
   full_sankey<- make_sankey(a_sankey, fontSize=13, colour_links = T)
   
@@ -501,7 +504,7 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
   
   print(paste0("Using n=", n_filter))
   #to_exl<- a %>%  filter(n <= n_filter & term2 != KEY_TERM) %>%  pull(term2) %>% unique()
-  a_sub <- a %>% filter(n > n_filter | term2 == 'Breast Diseases') #%>% filter(!term1 %in% to_exl) 
+  a_sub <- a %>% filter(n > n_filter | term2 == 'Breast cancer') #%>% filter(!term1 %in% to_exl) 
   
   remove_loose_terms1 =T
   while (remove_loose_terms1) {
@@ -518,8 +521,8 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
   remove_loose_terms2 =T
   while (remove_loose_terms2) {
     print("term 2 while loop filtering")
-    a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast Diseases'))
-    tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast Diseases'))
+    a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
+    tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
     if (dim(tmp)[1]==0){
       remove_loose_terms2 =F
     }
@@ -636,8 +639,8 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   remove_loose_terms2 =T
   while (remove_loose_terms2) {
     print("term 2 while loop filtering")
-    trait_tr_and_bc <- trait_tr_and_bc %>% filter(!(!term2 %in% term1 & term2 != 'Breast Diseases'))
-    tmp <- trait_tr_and_bc %>% filter((!term2 %in% term1 & term2 != 'Breast Diseases'))
+    trait_tr_and_bc <- trait_tr_and_bc %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
+    tmp <- trait_tr_and_bc %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
     if (dim(tmp)[1]==0){
       remove_loose_terms2 =F
     }
@@ -647,7 +650,7 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   if (n_filter > 1) {
     ## filtering by n
     print(paste0("Using n=", n_filter))
-    a_sub <- trait_tr_and_bc %>% filter(n >= n_filter | term2 == 'Breast Diseases') 
+    a_sub <- trait_tr_and_bc %>% filter(n >= n_filter | term2 == 'Breast cancer') 
     
     remove_loose_terms1 =T
     while (remove_loose_terms1) {
@@ -663,8 +666,8 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
     remove_loose_terms2 =T
     while (remove_loose_terms2) {
       print("term 2 while loop filtering")
-      a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast Diseases'))
-      tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast Diseases'))
+      a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
+      tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
       if (dim(tmp)[1]==0){
         remove_loose_terms2 =F
       }
@@ -841,7 +844,7 @@ extract_lifestyle_main_triples <- function(trait_tidy ){
 
 
 
-make_sankey <- function(links, fontSize=10, colour_links = F, 
+make_sankey <- function(links, fontSize=10, colour_links = F, height=NULL,
                         bars = 'grey',
                         shared = 'blue',
                         trait_col = "#4FB3D9",
@@ -874,7 +877,8 @@ make_sankey <- function(links, fontSize=10, colour_links = F,
                        colourScale=my_color,
                        LinkGroup="group", 
                        NodeGroup="group",
-                       sinksRight=T)
+                       sinksRight=T,
+                       height=height)
   } else{ 
 
   # Make the Network
@@ -883,7 +887,8 @@ make_sankey <- function(links, fontSize=10, colour_links = F,
                      Value = "value", NodeID = "name", 
                      fontSize = fontSize,
                      fontFamily = 'sans-serif',
-                     sinksRight=FALSE)
+                     sinksRight=FALSE,
+                     height=height)
   }
   
   p
