@@ -48,12 +48,26 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                             #tabPanel("Info", textOutput("info_text")) 
                             tabPanel("Info",
 
-                              p(style="text-align: justify;",
-                                strong("How to read the plot:"),br(),
-                                "text to be added",
-                                br(),br(),
+                              p(style="text-align: left; padding-left: 6cm; padding-right: 6cm; padding-top: 1cm; padding-bottom: 2cm",
+                                strong("About this app / how to read the plot:"),br(),
+                                "Heatmaps of Mendelian randomization (MR) effect direction for lifestyle and anthropometric traits,  metabolites, lipids, proteins 
+                                as exposures and breast cancer (BCAC 2017 and 2020, including subtypes) as outcomes.",
+                                br(), br(),
+                                "The effect direction in MR is represents as colours: pink – positive (causal) effect, green – negative (protective) effect, white – no 
+                                evidence of effect, based on 95% confidence intervals. The asterisk indicates results that passed FDR correction.",
+                                br(),br(), 
                                 strong("About source data:"),br(),
-                                "text to be added")
+                                
+                                "The displayed MR results were estimates using inverse-variance weighted (IVW) method (or Wald ratio if only 1 SNP was available).
+                                By hovering over any data point (square) in the interactive version of the plot, you can see each MR analysis details: exposure ID 
+                                in OpenGWAS, exposure details (sample size/sex, author/cohort name), OR and CIs, p-value and FDR-adjusted p-value, and number of 
+                                SNPs used in each MR analysis.)",
+                                br(), br(),
+                                "Widget options: select category; split by sub-category (for lifestyle traits and proteains only); don't show exposure that have 
+                                no evicdence of effect in any of the outcomes; for proteins only - show full names or abbreveations/gene names; select outcomes to display.",
+                                br(), 
+                                "All exposure traits are from mixed-sex samples unless otherwise specified (F: female-only) or are female-specific reproductive traits."
+                                )
                               )
             
                 ),
