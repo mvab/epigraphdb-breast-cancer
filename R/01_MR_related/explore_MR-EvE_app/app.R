@@ -12,8 +12,6 @@ source("functions.R")
 
 ####
 #current issue with the app:
-#- set plot size dynamically
-#- if nrow> x apply filters at display
 
 
 ###
@@ -56,8 +54,8 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 
                 # Output: Tabsets
                 tabsetPanel(type = "tabs",
-                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "800px", width = "1000px")),
-                            tabPanel("Static plot", plotOutput("bubbleplot1", height = "800px", width = "1000px"))
+                            tabPanel("Interactive plot", plotlyOutput("bubbleplot2", height = "auto", width = "1000px")),
+                            tabPanel("Static plot", plotOutput("bubbleplot1", height = "auto", width = "1000px"))
  
                             ),
                 
@@ -226,19 +224,24 @@ server <- function(input, output) {
   
   
   output$selected_cat <- renderText({ 
-    HTML(paste("Showing the results for exposure trait category:", "<b>", input$category, "</b>"))
+    HTML(paste("Showing the results for exposure trait category:", "<b>", input$category, "</b> (use the widget below to change) \n\n" ,
+    ))
   })
 
-  output$bubbleplot1 <- renderPlot({
+  output$bubbleplot1 <- renderPlot(
     
-    plot_bubble_plot(dataInput(), font_size = 11)  
-    
-  })
+    height = function() 3 * 10 *length(unique(dataInput()$exposure.id)) + 80,
+
+    {
+    plot_bubble_plot(dataInput(), font_size = 9)  
+    }
+  )
   
   output$bubbleplot2 <- renderPlotly({
     
     plot <- plot_bubble_plot(dataInput(), font_size = 8)  
-    plotly::ggplotly(plot , tooltip = c("text"))
+    plotly::ggplotly(plot , tooltip = c("text"),
+                     height = 3 * 10 *length(unique(dataInput()$exposure.id)) + 100)
     
   })
   
