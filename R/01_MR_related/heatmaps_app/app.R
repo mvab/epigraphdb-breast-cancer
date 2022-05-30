@@ -14,7 +14,7 @@ library(ggforce)
 source("heatmap_functions.R")
 source("functions_copy_from_mreveapp.R")
 ####
-#current issue with the app:
+#current issues with the app:
 
 
 ###
@@ -49,22 +49,25 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                             tabPanel("Info",
 
                               p(style="text-align: left; padding-left: 6cm; padding-right: 6cm; padding-top: 1cm; padding-bottom: 2cm",
-                                strong("About this app / how to read the plot:"),br(),
-                                "Heatmaps of Mendelian randomization (MR) effect direction for lifestyle and anthropometric traits,  metabolites, lipids, proteins 
-                                as exposures and breast cancer (BCAC 2017 and 2020, including subtypes) as outcomes.",
+                                strong("About this app / how to read the plots:"),br(),
+                                "The plots in this Shiny app are the heatmaps of the direction of effect from Mendelian randomization (MR) 
+                                analysis of risk factor traits as exposures (lifestyle traits, anthropometric traits, metabolites, lipids,
+                                proteins) and breast cancer as outcome (BCAC 2017 and 2020, including subtypes).",
                                 br(), br(),
-                                "The effect direction in MR is represents as colours: pink – positive (causal) effect, green – negative (protective) effect, white – no 
-                                evidence of effect, based on 95% confidence intervals. The asterisk indicates results that passed FDR correction.",
+                                "The effect direction in MR is represented as colours: pink – positive (causal) effect, green – negative 
+                                (protective) effect, white – no evidence of effect, based on 95% confidence intervals. The asterisk indicates
+                                the results that passed the FDR correction.",
                                 br(),br(), 
-                                strong("About source data:"),br(),
+                                strong("About the source data:"),br(),
                                 
-                                "The displayed MR results were estimates using inverse-variance weighted (IVW) method (or Wald ratio if only 1 SNP was available).
-                                By hovering over any data point (square) in the interactive version of the plot, you can see each MR analysis details: exposure ID 
-                                in OpenGWAS, exposure details (sample size/sex, author/cohort name), OR and CIs, p-value and FDR-adjusted p-value, and number of 
-                                SNPs used in each MR analysis.)",
+                                "The MR results are estimated using the inverse-variance weighted (IVW) method (or Wald ratio if only 1 SNP 
+                                was available). By hovering over any data point (square) in the interactive version of the plot, you can see
+                                the details of each MR analysis: exposure ID in OpenGWAS, exposure details (sample size/sex, author/cohort name),
+                                OR and CIs, p-value and FDR-adjusted p-value, and the number of SNPs).",
                                 br(), br(),
-                                "Widget options: select category; split by sub-category (for lifestyle traits and proteains only); don't show exposure that have 
-                                no evicdence of effect in any of the outcomes; for proteins only - show full names or abbreveations/gene names; select outcomes to display.",
+                                em("Widget options: "),"select category; split by sub-category (for lifestyle traits and proteins only); don't show exposures 
+                                that have no evidence of effect in any of the outcomes; for proteins only - show full names or abbreviations/gene names; 
+                                select outcomes to display.",
                                 br(), 
                                 "All exposure traits are from mixed-sex samples unless otherwise specified (F: female-only) or are female-specific reproductive traits."
                                 )

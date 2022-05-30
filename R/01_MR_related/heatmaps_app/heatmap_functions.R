@@ -106,7 +106,7 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
     mutate(exposure = ifelse(grepl("(F)", exposure_name, fixed = T), paste0(exposure, " (F)"), exposure)) %>% 
     mutate(exposure = ifelse(grepl("AdjBMI", exposure_name, fixed = T), paste0(exposure, " - AdjBMI"), exposure)) %>% 
     filter(!id.exposure %in% c("prot-a-2396", 'prot-a-1540')) %>%  # duplicates
-    filter(!grepl("Average|ratio ", exposure, ignore.case = T)) %>% 
+    filter(!grepl("Average number|ratio ", exposure, ignore.case = T)) %>% 
     mutate(exposure = gsub('chylomicrons', 'ULDLs', exposure)) %>% 
     select(id.exposure, contains('BCAC'), "ER+", contains("Luminal"), "ER-", "HER2-enriched","TNBC" ) %>% 
     #filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0 & `ER-` == 0  & `ER+` == 0 & `Luminal A` == 0 & `Luminal B1` == 0 & `Luminal B2` == 0 &`HER2-enriched` == 0 & `TNBC` == 0 ))

@@ -12,7 +12,7 @@ inputs <- load_and_merge_heatmap_inputs()
 
 saveRDS(inputs, "01_MR_related/heatmaps_app/data/inputs.rds")
 
-readRDS("01_MR_related/heatmaps_app/data/inputs.rds")
+inputs<- readRDS("01_MR_related/heatmaps_app/data/inputs.rds")
 merged <- inputs$merged
 or_ci_data <- inputs$or_ci_data
 protein_path_data <- inputs$protein_path_data
