@@ -102,7 +102,12 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                        likely to be correct for a specific MR analysis by predicting the model of pleiotropy. This ‘best 
                                        estimate’ for each pair of traits is then stored as a relationship between GWAS traits in EpiGraphDB. ",
                                        br(),  br(), 
-                                       "The table below shows the details about the included breast cancer outcomes. "
+                                       "The table below shows the details about the included breast cancer outcomes. ",
+                                       br(), br(),
+                                       h4("Breast cancer GWAS summary details ", align='center'),
+                                       tableOutput("outcome_table"),
+                                       
+                                      
                                     )
  
                             )
@@ -193,11 +198,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 ),
                 hr(),
                 
-                br(), br(),
-                h4("Breast cancer GWAS summary details ", align='center'),
-                tabPanel("Outcomes table", tableOutput("outcome_table")),
                 
-                hr(),
                 br(), br(),
                 helpText("MR-EvE (Mendelian Randomization Everything-vs-Everything) results were extarcted from EpiGraphDB (epigraphdb.org), and were generated using the MR mixture-of-experts model (Hemani et al 2017)"), 
                 
@@ -280,7 +281,7 @@ server <- function(input, output) {
     height = function() 3 * 10 *length(unique(dataInput()$exposure.id)) + 80,
 
     {
-    plot_bubble_plot(dataInput(), font_size = 9)  
+    plot_bubble_plot(dataInput(), font_size = 10)  
     }
   )
   
