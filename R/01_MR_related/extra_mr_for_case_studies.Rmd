@@ -1,5 +1,6 @@
 ---
-title: "Case study report"
+title: "Case study report for `r params$trait_name`"
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   html_document:
     df_print: paged
@@ -9,6 +10,11 @@ output:
     toc_float:
       collapsed: false
       smooth_scroll: true
+params:
+  main: main
+  main_lit: main_lit
+  trait_name: trait_name
+  lit_space_file: lit_space_file
 ---
 
 ```{r setup I, eval=TRUE, echo=F}
@@ -32,15 +38,56 @@ set_flextable_defaults(big.mark = " ",
   font.size = 8, theme_fun = theme_vanilla,
   background.color = "white")
 
+
+main <- params$main
+main_lit <- params$main_lit
+trait_name <- params$trait_name
+lit_space_file <- params$lit_space_file
 ```
 
-```{r  set_params,  include=F}
 
-# age at meno
-#main <- "ukb-b-17422"
-#main_lit <- "ukb-b-17422"
-#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-#
+
+```{r  set_params,  include=F, eval = F, echo=F}
+
+#### HOW TO generate a case study report: €
+# run one of this in console
+
+rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd", 
+  params = list(
+    trait_name = "Cardiotrophin-1",
+    main = "prot-a-710",
+    main_lit = "prot-a-710",
+    lit_space_file = "lit_terms_cardiotrophin1.csv"
+))
+
+
+rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd", 
+                  params = list(
+                    trait_name = "Age at menopause (last menstrual period)",
+                    main = "ukb-b-17422",
+                    main_lit = "ukb-b-17422",
+                    lit_space_file = "lit_terms_menopause.csv"
+                  ))
+
+
+rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd", 
+                  params = list(
+                    trait_name = "IGF-1",
+                    main = "ukb-d-30770_irnt",
+                    main_lit = "ukb-d-30770_irnt",
+                    lit_space_file = "lit_terms_IGF1.csv"
+                  ))
+
+rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd", 
+                  params = list(
+                    trait_name = "Childhood body size",
+                    main = "ukb-a-34",
+                    main_lit = "ieu-a-1096",
+                    lit_space_file = "lit_terms_childhood_obesity.csv"
+                  ))
+
+
+
 
 #main <- "prot-a-67"
 #main_lit <- "prot-a-67"
@@ -53,22 +100,7 @@ set_flextable_defaults(big.mark = " ",
 #main <- "prot-a-366"
 #main_lit <- "prot-a-366"
 #trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-#main <- "ukb-a-34"
-#main_lit <- "ieu-a-1096"
-#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-#trait_name <- "Childhood body size"
-
-main <- "prot-a-710"
-main_lit <- "prot-a-710"
-trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-lit_space_file <- "lit_terms_cardiotrophin1.csv"
-
-#main <- "ukb-d-30770_irnt"
-#main_lit <- "ukb-d-30770_irnt"
-#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-
-
-
+#
 ```
 
 **Report for: `r trait_name`**
@@ -478,14 +510,14 @@ cat(paste('-', unique(redoneMR_tidy$exposure)), sep = '\n')
 ```
 
 ```{r echo=F, eval =T}
-ft <- flextable(redoneMR_tidy %>% select(-outcome.id))
-ft <- width(ft, j = c(1,2,3,6), width=2)
+ft <- flextable(redoneMR_tidy %>% select(-id.outcome))
+ft <- width(ft, j = c(1,3,4), width=2)
 ft
 ```
 
-Bidirectional MR 
+## Bidirectional MR 
 
-```{r , include=F, eval =T}
+```{r , echo=F, eval =T, cache=T}
 step1_mr <- tibble()
 
 for (interm in unique(redoneMR_tidy$id.exposure)){
@@ -501,7 +533,7 @@ for (interm in unique(redoneMR_tidy$id.exposure)){
 potential_mediators <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(outcome)
 
 ft <- flextable(step1_mr)
-ft <- width(ft, j = c(1,2), width=3)
+ft <- width(ft, j = c(1,2,6), width=3)
 ft <- width(ft, j = c(3,4), width=1.5)
 ft %>% bg(
   ., i = ~ effect_direction != 'overlaps null', 
@@ -510,12 +542,12 @@ ft %>% bg(
 
 ```
 
-Potential mediators to test in MVMR: `r potential_mediators`
+Potential mediators: **`r paste0(potential_mediators, collapse=", ")`**
 
 
 ## MVMR
 
-```{r , include=F, cache =TRUE, eval =F}
+```{r , echo=F, cache =TRUE, eval =T}
 
 outcomes <- unique(redoneMR_tidy$id.outcome)  
 total_res <- data_frame()
@@ -549,31 +581,33 @@ for (bc_out in outcomes){
   }  
   
   all_res <- bind_rows(results_list)
-  total_res <-bind_rows(total_res, all_res)
+  total_res <-bind_rows(total_res, all_res) 
   
 }
 
-
+rm(total_res_out)
 total_res_out<- transform(total_res,group =as.numeric(factor(test)))
-total_res_out<- total_res_out %>% select(group, everything(), -test) %>% arrange(group)
+total_res_out_dips<- total_res_out %>%
+  select(group, everything(), -test) %>% 
+  arrange(group) %>%
+  select(-total_OR, -direct_OR) %>% 
+  rename("#" = "group", 
+         "total effect (MR)" = "total_OR_CI",  "direct effect (MVMR)" = "direct_OR_CI",
+         "total effect direction" = "total_ED",  "direct effect direction" = "direct_ED") 
 ```
 
 
 
 
-```{r echo =F, eval =F}
-
-### MR validation results for traits subset from literature intermediates list
-
-#Only for the traits that have effect on breast cancer:
-
-#`r unique(redoneMR_tidy$exposure)`
-
-
-total_res_out <- as_grouped_data(x = total_res_out, groups = c("group"), columns = NULL)
-ft<-flextable(total_res_out)
-ft<-width(ft, j = c(2,3,4,6), width=2)
-ft
+```{r echo =F, eval =T}
+total_res_out_dips <- as_grouped_data(x = total_res_out_dips, groups = c("#"), columns = NULL)
+ft<-flextable(total_res_out_dips)
+ft<-width(ft, j = c(2), width=2.5)
+ft<-width(ft, j = c(3:7), width=1.8)
+ft %>% bg(
+  ., i = ~ `direct effect direction` == 'overlaps null', 
+  j = "direct effect direction", 
+  bg = "#6CA3F8", part = "body")
 ```
 
 
@@ -605,7 +639,7 @@ ft
 
 # Optional: sensitivity analysis with female only data
 
-#### MVMR
+## MVMR
 
 ```{r echo =F,  eval =F}
 
@@ -649,7 +683,7 @@ for (i in med_list){
 
 ```
 
-#### trait -> mediator
+## trait -> mediator
 
 ```{r echo =F,  eval =F}
 interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
@@ -680,7 +714,7 @@ for (i in interm_list){
 out_df %>% kable_it()
 
 ```
-#### mediator -> trait
+## mediator -> trait
 
 ```{r echo =F,  eval =F}
 # opposite dir
