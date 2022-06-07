@@ -38,16 +38,21 @@ set_flextable_defaults(big.mark = " ",
   font.size = 8, theme_fun = theme_vanilla,
   background.color = "white")
 
+```
 
-main <- params$main
-main_lit <- params$main_lit
-trait_name <- params$trait_name
-lit_space_file <- params$lit_space_file
+```{r echo=F}
+# odd thing I have to do because `params` list object is acting weird
+params2<-params
+params2$main -> main 
+params2$main_lit -> main_lit
+params2$trait_name -> trait_name
+params2$lit_space_file -> lit_space_file
+print(main)
 ```
 
 
 
-```{r  set_params,  include=F, eval = F, echo=F}
+```{r ,  include=F, eval = F, echo=F}
 
 #### HOW TO generate a case study report: €
 # run one of this in console
@@ -71,12 +76,14 @@ rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd",
 
 
 rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd", 
-                  params = list(
+                  params  = list(
                     trait_name = "IGF-1",
                     main = "ukb-d-30770_irnt",
                     main_lit = "ukb-d-30770_irnt",
                     lit_space_file = "lit_terms_IGF1.csv"
-                  ))
+                  ),
+                   output_file = paste0("case_study_report_", gsub(" ", "_", trait_name, ".html"))
+)
 
 rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd", 
                   params = list(
@@ -107,7 +114,7 @@ rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd",
 
 # Main MR results
 
-`r trait_name` was identified in MR-EvE search as having evidence of effect on breast cancer and validated with IVW MR method in BCAC 2017 and BCAC 2020 breast cancer outcomes (including outcomes): 
+`r trait_name` was identified in MR-EvE search as having evidence of effect on breast cancer and validated with IVW MR method in BCAC 2017 and BCAC 2020 breast cancer outcomes: 
 
 
 ```{r echo =F, fig.height=3, fig.width=7}
@@ -162,7 +169,7 @@ p
 ```
 
 ```{r echo =F}
-
+ 
 if (mr_results[mr_results$outcome == "BCAC 2017",]$effect_direction == 'ok') {all =T} else{all =F}
 if (mr_results[mr_results$outcome == "ER+",]$effect_direction == 'ok') {pos =T} else{pos =F}
 if (mr_results[mr_results$outcome == "ER-",]$effect_direction == 'ok') {neg =T} else{neg =F}
@@ -217,11 +224,13 @@ Below is a table of two-step MR results for each mediator, including _exposure -
 
 ## Two-step MR
 
-```{r, echo=F}
-#`r paste0(unique(meds_table$mediator, collapse = ", ") `
-
+```{r echo=F, results='asis'}
 if (all){
-  cat("Full BCAC 2017 sample")
+  cat("Full BCAC 2017 sample")}
+```
+
+```{r, echo=F}
+if (all){
   ft<-flextable(meds_table %>% filter(outcome == "BCAC 2017") %>% select(-outcome.id) %>% arrange(desc(mediator.id)))
   ft<-width(ft, j = c(1), width=1.5)
   ft<-width(ft, j = c(4), width=3)
@@ -230,9 +239,13 @@ if (all){
 }
 ```
 
+```{r echo=F, results='asis'}
+if (pos){
+  cat("ER+ sample")}
+```
+
 ```{r echo =F}
 if (pos) {
-   cat("ER+ sample")
   ft<-flextable(meds_table %>% filter(outcome == "ER+") %>% select(-outcome.id) %>% arrange(desc(mediator.id)))
   ft<-width(ft, j = c(1), width=1.5)
   ft<-width(ft, j = c(4), width=3)
@@ -241,9 +254,14 @@ if (pos) {
   }
 ```
 
+
+```{r echo=F, results='asis'}
+if (neg){
+  cat("ER- sample")}
+```
+
 ```{r echo =F}
 if (neg) {
-   cat("ER- sample")
   ft<-flextable(meds_table %>% filter(outcome == "ER-")%>% select(-outcome.id) %>% arrange(desc(mediator.id)))
   ft<-width(ft, j = c(1), width=1.5)
   ft<-width(ft, j = c(4), width=3)
@@ -261,7 +279,7 @@ if (neg) {
 trait = unique(meds_table$exposure)
 outcomes <- unique(meds_table$outcome.id) 
 
-disrupted_by_all <- data_frame()
+disrupted_by_all <- tibble()
 
 for (bc_out in outcomes){
 
@@ -406,7 +424,7 @@ for (i in 1:length(lit_terms_df$gwas.id)){
 
 ids <- lit_terms_df %>% 
   filter(instruments > 0 ) %>% 
-  filter(!gwas.id %in% c("prot-a-81", "prot-a-1102", "ukb-b-8587", "prot-a-2694") )%>% 
+  filter(!gwas.id %in% c("prot-a-81", "prot-a-1102", "ukb-b-8587", "prot-a-2694", "prot-a-2363") )%>% 
   pull(gwas.id) %>% unique()
 ```
 
@@ -434,9 +452,11 @@ traits_can_use <- lit_terms_df %>% filter(instruments > 0 ) %>% pull(gwas.name) 
 ## Literature overlap Sankey plot
 
 ```{r}
-library(networkD3)
+#library(networkD3)
 
-### sankey plot of lit overlap goes here
+
+### subset of sankey plot of lit overlap goes here
+
 
 ```
 
@@ -473,9 +493,9 @@ ft %>% bg(
 
 
 ```{r , include=F, eval =T}
-res_df_all<-data_frame()
-res_df_pos<-data_frame()
-res_df_neg<-data_frame()
+res_df_all<-tibble()
+res_df_pos<-tibble()
+res_df_neg<-tibble()
 
 ## do MR for all gwas from the list; for outputs that were set
 if (all){ res_df_all <- bind_rows(lapply(ids, do_MR, 'all'))  }
@@ -523,9 +543,9 @@ step1_mr <- tibble()
 for (interm in unique(redoneMR_tidy$id.exposure)){
   biMR <- bind_rows(
       quick_mr(exp = main, out = interm) %>%
-        select(exposure, outcome, beta_CI, effect_direction, nsnp) %>% mutate(effect = "term trait as mediator"),
+        select(exposure,id.exposure,  outcome,id.outcome, beta_CI, effect_direction, nsnp) %>% mutate(effect = "term trait as mediator"),
       quick_mr(exp = interm, out = main) %>%
-        select(exposure, outcome, beta_CI, effect_direction, nsnp) %>% mutate(effect = "term trait as confounder")
+        select(exposure,id.exposure,  outcome,id.outcome,  beta_CI, effect_direction, nsnp) %>% mutate(effect = "term trait as confounder")
       )
   step1_mr <- bind_rows(step1_mr, biMR)
 }
@@ -533,12 +553,18 @@ for (interm in unique(redoneMR_tidy$id.exposure)){
 potential_mediators <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(outcome)
 
 ft <- flextable(step1_mr)
-ft <- width(ft, j = c(1,2,6), width=3)
-ft <- width(ft, j = c(3,4), width=1.5)
-ft %>% bg(
-  ., i = ~ effect_direction != 'overlaps null', 
-  j = colnames(step1_mr), 
-  bg = "#7CC5A7", part = "body")
+ft <- width(ft, j = c(1,3,5,8), width=3)
+
+border <- fp_border( width = 2)
+
+ft %>%
+  bg(., 
+      i = ~ effect_direction != 'overlaps null', 
+      j = colnames(step1_mr), 
+      bg = "#7CC5A7", part = "body") %>% 
+  hline(.,
+        i = ~ effect == "term trait as confounder", border = fp_border( width = 2), part = "body")
+  
 
 ```
 
@@ -550,7 +576,7 @@ Potential mediators: **`r paste0(potential_mediators, collapse=", ")`**
 ```{r , echo=F, cache =TRUE, eval =T}
 
 outcomes <- unique(redoneMR_tidy$id.outcome)  
-total_res <- data_frame()
+total_res <- tibble()
 
 
 for (bc_out in outcomes){
@@ -585,7 +611,7 @@ for (bc_out in outcomes){
   
 }
 
-rm(total_res_out)
+#rm(total_res_out)
 total_res_out<- transform(total_res,group =as.numeric(factor(test)))
 total_res_out_dips<- total_res_out %>%
   select(group, everything(), -test) %>% 
@@ -637,7 +663,80 @@ ft %>% bg(
 
 
 
-# Optional: sensitivity analysis with female only data
+# (Optional): sensitivity analysis with female only data (if available)
+
+
+
+## Bidirectional MR
+
+```{r echo =F,  eval =F}
+interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
+#instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
+instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/early_bmi_adj_tophits.tsv")
+
+out_df<-tibble()
+
+for (i in interm_list){
+  
+  out <- extract_outcome_data(
+    snps = instruments$SNP,
+    outcome = i)
+
+  harmonised<- harmonise_data(exposure_dat = instruments, 
+                              outcome_dat = out)
+  
+  res_early <- TwoSampleMR::mr(harmonised, method_list = c('mr_ivw')) %>% 
+    split_outcome() %>% 
+    split_exposure() %>% 
+    generate_odds_ratios() %>% 
+    select(exposure, outcome, starts_with("or"))
+  
+  out_df<-bind_rows(out_df, res_early)
+  
+}
+
+out_df %>% kable_it()
+
+```
+
+
+```{r echo =F,  eval =F}
+# opposite dir
+
+interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
+
+#gwas<- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/igf_GWAS_tidy_outcome.txt.gz")
+gwas<- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/early_bmi_adj_GWAS_tidy_outcome.txt.gz")
+
+
+
+out_df2<-tibble()
+
+for (i in interm_list){
+  
+  instruments <- extract_instruments(i)
+  
+  out <- gwas %>% 
+        filter(SNP %in%instruments$SNP)
+
+  harmonised<- harmonise_data(exposure_dat = instruments, 
+                              outcome_dat = out)
+  
+  res_early <- TwoSampleMR::mr(harmonised, method_list = c('mr_ivw')) %>% 
+    split_outcome() %>% 
+    split_exposure() %>% 
+    generate_odds_ratios() %>% 
+    select(exposure, outcome, starts_with("or"))
+  
+  out_df2<-bind_rows(out_df2, res_early)
+  
+}
+
+out_df2 %>% kable_it()
+
+
+```
+
 
 ## MVMR
 
@@ -679,77 +778,4 @@ for (i in med_list){
   all_res<- bind_rows(all_res, x1, x2, x3)
 }
 
-
-
 ```
-
-## trait -> mediator
-
-```{r echo =F,  eval =F}
-interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
-#instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
-instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/early_bmi_adj_tophits.tsv")
-
-out_df<-tibble()
-
-for (i in interm_list){
-  
-  out <- extract_outcome_data(
-    snps = instruments$SNP,
-    outcome = i)
-
-  harmonised<- harmonise_data(exposure_dat = instruments, 
-                              outcome_dat = out)
-  
-  res_early <- TwoSampleMR::mr(harmonised, method_list = c('mr_ivw')) %>% 
-    split_outcome() %>% 
-    split_exposure() %>% 
-    generate_odds_ratios() %>% 
-    select(exposure, outcome, starts_with("or"))
-  
-  out_df<-bind_rows(out_df, res_early)
-  
-}
-
-out_df %>% kable_it()
-
-```
-## mediator -> trait
-
-```{r echo =F,  eval =F}
-# opposite dir
-
-interm_list <- redoneMR_tidy %>% filter(id.outcome == bc_out) %>% filter(id.exposure !=  'prot-a-2363') %>% pull(id.exposure) %>% unique()
-
-#gwas<- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/igf_GWAS_tidy_outcome.txt.gz")
-gwas<- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/early_bmi_adj_GWAS_tidy_outcome.txt.gz")
-
-
-
-out_df2<-tibble()
-
-for (i in interm_list){
-  
-  instruments <- extract_instruments(i)
-  
-  out <- gwas %>% 
-        filter(SNP %in%instruments$SNP)
-
-  harmonised<- harmonise_data(exposure_dat = instruments, 
-                              outcome_dat = out)
-  
-  res_early <- TwoSampleMR::mr(harmonised, method_list = c('mr_ivw')) %>% 
-    split_outcome() %>% 
-    split_exposure() %>% 
-    generate_odds_ratios() %>% 
-    select(exposure, outcome, starts_with("or"))
-  
-  out_df2<-bind_rows(out_df2, res_early)
-  
-}
-
-out_df2 %>% kable_it()
-
-
-```
-
