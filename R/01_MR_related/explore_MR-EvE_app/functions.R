@@ -311,7 +311,7 @@ create_beta_ranges <- function(input){
 }
 
 create_outcomes_table <- function(dat){
-chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival', "UKBB")
+chip_list <- c('BCAC 2017 meta-analysis', "OncArray",  "iCOG2017",'iCOG2015','GWAS v1','GWAS v2', 'Survival', "UKBB")
   
  dat %>% 
     mutate(case_percent = round(N_case/outcome.sample_size*100, 2)) %>% 
@@ -319,11 +319,15 @@ chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2',
     mutate(chip=gsub("_","", chip),
            outcome.year = as.character(outcome.year)) %>% 
     distinct() %>%
+    mutate(chip = case_when(chip == 'GWASold1' ~ 'GWAS v1',
+                            chip == 'GWASold2' ~ 'GWAS v2',
+                            chip == 'Meta' ~ 'BCAC 2017 meta-analysis',
+                            TRUE ~ chip)) %>% 
     mutate(chip = factor(chip, levels = chip_list)) %>% 
     arrange(chip, outcome) %>% 
-    mutate(outcome = case_when(outcome == "ER- premeno" ~ "BCAC: ER- (pre-meno proxy)",
-                               outcome == "ER+ postmeno" ~ "BCAC: ER+ (post-meno  proxy)",
-                               outcome == "Breast cancer (all)" ~ "BCAC: full sample",
+    mutate(outcome = case_when(outcome == "ER- premeno" ~ "ER-",
+                               outcome == "ER+ postmeno" ~ "ER+",
+                               outcome == "Breast cancer (all)" ~ "Full sample",
                                outcome == "ER+ postmeno UKB" ~ "UK Biobank",
                                TRUE ~ outcome)) %>% 
     select(chip, outcome, outcome.id, outcome.year, outcome.nsnp, everything()) %>% 
@@ -331,7 +335,7 @@ chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2',
            Year = outcome.year,
            nSNPs = outcome.nsnp,
            ID = outcome.id,
-           `Chip/data version` = chip,
+           `Array/data version` = chip,
            `# of cases` = N_case,
            `% of cases` = case_percent,
            `Breast cancer GWAS` = outcome) 
