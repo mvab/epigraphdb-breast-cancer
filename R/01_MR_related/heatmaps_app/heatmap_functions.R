@@ -155,7 +155,7 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
 }
 
 
-plot_heatmap <- function(data_tidy, font_size){
+plot_heatmap <- function(data_tidy, font_size, star_size = 7){
   
   font_size_ax = font_size - 2
   
@@ -173,7 +173,7 @@ plot_heatmap <- function(data_tidy, font_size){
                                          '</br>nSNPs: ', nsnp)
   )) + 
     geom_tile(colour = "grey") + 
-    geom_text(aes(label=mtc,  vjust = 0.27)) +
+    geom_text(aes(label=mtc,  vjust = 0.27), size = star_size) +
     scale_fill_manual(values=c("#4D9221","white", "#C51B7D"))+ ### normal
     theme_minimal_grid(font_size) +
     panel_border() +

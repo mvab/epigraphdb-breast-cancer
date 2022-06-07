@@ -45,14 +45,13 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 tabsetPanel(type = "tabs",
                             tabPanel("Static plot", plotOutput("heatmap1", height = "auto", width="auto")),
                             tabPanel("Interactive plot", plotlyOutput("heatmap2", height = "auto", width="auto")),
-                            #tabPanel("Info", textOutput("info_text")) 
                             tabPanel("Info",
 
                               p(style="text-align: left; padding-left: 6cm; padding-right: 6cm; padding-top: 1cm; padding-bottom: 2cm",
                                 strong("About this app / how to read the plots:"),br(),
-                                "The plots in this Shiny app are the heatmaps of the direction of effect from Mendelian randomization (MR) 
-                                analysis of risk factor traits as exposures (lifestyle traits, anthropometric traits, metabolites, lipids,
-                                proteins) and breast cancer as outcome (BCAC 2017 and 2020, including subtypes).",
+                                "This Shiny app presents the heatmap plots of effect direction of Mendelian randomization (MR) estimates 
+                                from the analysis of various risk factor traits as exposures (lifestyle traits, anthropometric traits, 
+                                metabolites, lipids, proteins) and breast cancer as the outcome (BCAC 2017 and 2020, including subtypes).",
                                 br(), br(),
                                 "The effect direction in MR is represented as colours: pink – positive (causal) effect, green – negative 
                                 (protective) effect, white – no evidence of effect, based on 95% confidence intervals. The asterisk indicates
@@ -62,7 +61,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                 
                                 "The MR results are estimated using the inverse-variance weighted (IVW) method (or Wald ratio if only 1 SNP 
                                 was available). By hovering over any data point (square) in the interactive version of the plot, you can see
-                                the details of each MR analysis: exposure ID in OpenGWAS, exposure details (sample size/sex, author/cohort name),
+                                the details of each MR analysis: exposure ID in OpenGWAS (gwas.mrcieu.ac.uk), exposure details (sample size/sex, author/cohort name),
                                 OR and CIs, p-value and FDR-adjusted p-value, and the number of SNPs).",
                                 br(), br(),
                                 em("Widget options: "),"select category; split by sub-category (for lifestyle traits and proteins only); don't show exposures 
@@ -131,12 +130,10 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 br(), br(),
                 
                 hr(),
+                br(),   br(),
+                img(src='MRC_IEU_Bristol.png', align='centre', height = '50px')  , 
                 br(), br(),
-                helpText("help text here"), 
-                
-                img(src='MRC_IEU_Bristol.png', align='centre', height = '60px')  , 
-                br(),
-                span(uiOutput("twitter_link"), style="color:grey;font-size:12px;")
+                span(uiOutput("twitter_link"), style="color:grey;font-size:12px;"), br()
                 
                 
                 
@@ -205,7 +202,7 @@ server <- function(input, output) {
   output$heatmap2 <- renderPlotly(
     
     {
-    plot <- plot_heatmap(dataInput(), font_size = 9)  
+    plot <- plot_heatmap(dataInput(), font_size = 9, star_size = 4)  
     plotly::ggplotly(plot , tooltip = c("text"), 
                      width = 400 + (66 * length(unique(dataInput()$outcome))),
                      height = 3 * 10 *length(unique(dataInput()$exposure.id))
