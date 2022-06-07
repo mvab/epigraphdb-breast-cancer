@@ -293,14 +293,19 @@ exposure_to_extract<- c("met-c-841",
                         'ukb-b-18105',
                         'ukb-b-17422',
                         'ieu-a-1096', 
-                        'ukb-b-4650')
+                        'ukb-b-4650',
+                        "ukb-a-34",
+                        "ieu-a-1096")
+
+exposure_to_extract <- unique(validated_with_BC$exposure.id)
+
 out <- list()
 
 for (i in exposure_to_extract){
   sub <- validated_with_BC %>%  filter(exposure.id == i)
   out[[i]] <- sub
 }
-writexl::write_xlsx(out, "01_MR_related/mr_evidence_outputs/med-conf-table_upd.xlsx")
+writexl::write_xlsx(out, "01_MR_related/mr_evidence_outputs/med-conf-table_upd_ALL.xlsx")
 
 
 

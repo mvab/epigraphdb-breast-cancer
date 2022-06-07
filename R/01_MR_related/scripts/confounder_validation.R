@@ -3,8 +3,8 @@ library(TwoSampleMR)
 source("helper_functions.R")
 source("01_MR_related/explore_MR-EvE_app/functions.R")
 
-
-results_subset<- read_csv("01_MR_related/mr_evidence_outputs/conf_med_extracted_all.csv") %>% 
+conf_med_extracted_all_r3.csv
+results_subset<- read_csv("01_MR_related/mr_evidence_outputs/conf_med_extracted_all_r3.csv") %>% 
   filter(type %in% c('confounder', 'mediator'))
 
 
@@ -12,12 +12,14 @@ results_subset<- read_csv("01_MR_related/mr_evidence_outputs/conf_med_extracted_
 
 x<- results_subset %>% select(exposure.trait, exposure.id, med.trait, med.id, type) %>% distinct()
 dim(x)
-x1 <- x %>% filter(type == 'mediator') %>% select(exposure.trait, exposure.id, outcome.trait = med.trait,outcome.id = med.id)
-x2 <- x %>% filter(type == 'confounder') %>% select(outcome.trait = exposure.trait, outcome.id = exposure.id, exposure.trait = med.trait,exposure.id = med.id) # reverse
+x1 <- x %>% filter(type == 'mediator') %>% select(exposure.trait, exposure.id, outcome.trait = med.trait,outcome.id = med.id, type)
+x2 <- x %>% filter(type == 'confounder') %>% select(outcome.trait = exposure.trait, outcome.id = exposure.id, exposure.trait = med.trait,exposure.id = med.id, type) # reverse
 y <- bind_rows(x1, x2) %>% distinct()
 dim(y)
 
-
+#del 
+#old_y <- y
+#y<-bind_rows(old_y, y) %>%  count(exposure.trait, exposure.id, outcome.trait, outcome.id  ) %>% filter(n==1) %>% select(-n) %>% distinct()
 
 
 do_MR_trait_pairs <- function(exp_trait, out_trait){
@@ -28,7 +30,7 @@ do_MR_trait_pairs <- function(exp_trait, out_trait){
   harmonised<- harmonise_data(exposure_dat = instruments, 
                               outcome_dat = out)
   #mr
-  res <- mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
+  res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
     split_outcome() %>% 
     split_exposure() %>% 
     generate_odds_ratios() %>% 
@@ -57,7 +59,7 @@ do_MR_trait_pairs <- function(exp_trait, out_trait){
 
 
 #res_list<-list()
-for (i in 1765:dim(y)[1]){
+for (i in 1:dim(y)[1]){
   print(paste(i, y$exposure.id[i], y$outcome.id[i]))
   
   if (!y$outcome.id[i] %in% c("ieu-a-90", "ieu-a-93")){ # outcomes that fail
@@ -65,8 +67,6 @@ for (i in 1765:dim(y)[1]){
     res_list[[i]]<- do_MR_trait_pairs( y$exposure.id[i], y$outcome.id[i] )
   }
 }
-
-
 res <- bind_rows(res_list) %>% distinct()
 
 
@@ -80,7 +80,7 @@ redone_MR_sens <- res %>%
   filter(method != 'Weighted median')
 
 write_tsv(redone_MR,      "01_MR_related/mr_evidence_outputs/redone_MRconf_fulloutput.tsv")
-write_tsv(redone_MR_sens, "01_MR_related/mr_evidence_outputs/redone_MRconf_fulloutput_sens.tsv")
+write_tsv(redone_MR_sens, "01_MR_related/mr_evidence_outputs/redone_MRconf_fulloutput_sens.tsv") #### NB this data is incomplte: need to result all analysis to generate it
 
 
 

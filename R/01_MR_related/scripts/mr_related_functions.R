@@ -193,6 +193,7 @@ quick_mr <- function(exp, out){
     split_outcome() %>% 
     split_exposure() %>% 
     generate_odds_ratios() %>% 
+    mutate(beta_CI = paste0(round(b,3), " [",round(lo_ci,3) ,":",round(up_ci,3), "]")) %>% 
     mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
     mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                                      ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 

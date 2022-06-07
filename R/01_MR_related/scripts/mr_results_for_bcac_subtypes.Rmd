@@ -51,6 +51,7 @@ traits<- traits_df%>%  pull(id) %>% unique()
 
 length(traits) # 314
 
+traits <- c("ieu-a-1096", "ieu-a-99" ,"ieu-a-107")
 ```
 
 
@@ -150,6 +151,12 @@ all_res<- all_res %>%
                                outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'TNBC_BRCA1 ER-PR-HER-',
                                outcome == 'Breast cancer (overall BCAC 2020)' ~ 'Breast cancer BCAC 2020',
                                TRUE ~ outcome))
+# add categories
+all_res<- all_res %>% 
+  rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
+  create_exposure_categories() %>% 
+  select(-exposure ) %>% 
+  rename(id.exposure = exposure.id , exposure = exposure.trait)
 
 
 write_tsv(all_res, paste0("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv"))
@@ -182,7 +189,7 @@ write_tsv(all_res, paste0("mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_
 
 
 ```{r message=F}
-## Making plots  ---- old set-up does not work right now
+## Making plots  ---- old set-up : does not work right now
 
 for (trait in traits){
   

@@ -344,6 +344,34 @@ res_w_sens <-res_w_sens[names(res_w_sens)[1:9]]# drop seconf TNBC
 writexl::write_xlsx(res_w_sens, "mr_evidence_outputs/mr_subtypes/all_data_with_sens_filters.xlsx")
 
 
+# ok find robust stuff
+
+d<- res_w_sens %>% bind_rows %>%
+  filter(pval_FDR_adj < 0.054) %>% 
+  filter(abs(egger_intercept) < 0.05) %>% 
+  filter(exposure_cat %in% c("Proteins"))#, "Metabolites")) 
+  
+View(d)
+
+d %>% count(exposure, sort=T)
+
+
+p<-ggplot(d, aes(y=exposure, x=or, label=exposure , colour = outcome)) +
+  geom_errorbarh(aes(xmin=or_lci95, xmax=or_uci95), height=.3) +
+  geom_point(size=2, shape=20)+
+  #scale_color_manual(values=pal)+
+  #xlim(0.43, 2.5)+
+  geom_vline(xintercept=1, linetype='longdash') +
+  theme_minimal_grid(11) +
+  facet_grid(exposure ~ ., scales="free")+
+  theme(strip.text = element_text(face = 'bold'))+
+  #labs(color = "",y = "", x = "beta coefficient (1 SD change in mediator per body size category change)"
+       #subtitle="",
+       #title= paste0("                    Univariate MR: effect of childhood body size on mediators (effect size, 95% CI)") 
+       #)+
+  theme(legend.position = "right",  plot.title.position = "plot", axis.title.x=element_text(size=9))
+
+
 
 
 x %>% count(`egger_intercept_less_than_0.05`, `egger_intercept_pval_more_than_0.05`)
@@ -351,13 +379,6 @@ x %>% count(`egger_intercept_less_than_0.05`, `egger_intercept_pval_more_than_0.
 x %>%  filter(`egger_intercept_less_than_0.05` == F & `egger_intercept_pval_more_than_0.05` == T) %>% View()
 
 x %>%  filter(`egger_intercept_less_than_0.05` == T & `egger_intercept_pval_more_than_0.05` == F) %>% View()
-
-  
-  
-  
-bind_rows(res_w_sens) %>% filter(exposure_cat == 'Proteins' | exposure == 'Albumin') %>%  filter(nsnp >=3)  %>% View()
-
-bind_rows(res_w_sens) %>% filter(exposure_cat == 'Proteins' | exposure == 'Albumin') %>%  filter(nsnp >=3) %>% count(exposure,nsnp,  sort=T)
 
 ```
 
@@ -373,28 +394,28 @@ bind_rows(res_w_sens) %>% filter(exposure_cat == 'Proteins' | exposure == 'Album
 
 lit_space_sizes <- read_tsv("../02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv")
 
-mr_results_df <- read_tsv("mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
+mr_results_df <- read_tsv("mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") # 314
 
 emply_lit_spaces <- lit_space_sizes %>% filter(lit_analysis ==1 & lit_space_size == 0 ) 
 excluded_from_lit_query  <- lit_space_sizes %>% filter(lit_analysis ==0 ) 
 
 
 mr_results_sub <- mr_results_df %>% 
-  filter(!id.exposure %in% emply_lit_spaces$id) %>% 
+  filter(!id.exposure %in% c(emply_lit_spaces$id, excluded_from_lit_query$id)) %>% 
   tibble::column_to_rownames('id.exposure') %>%
   select(5:13) %>% 
-  mutate(across(everything(), ~replace(., . ==  0 , NA)))%>% 
-  filter(if_any(everything(), ~ !is.na(.))) %>% 
+  mutate(across(everything(), ~replace(., . ==  0 , NA))) %>% 
+  filter(if_any(everything(), ~ !is.na(.))) %>% # drop those with NA in all outcomes
   mutate(across(everything(), ~replace_na(.x, 0))) %>% 
   tibble::rownames_to_column('id.exposure') %>% 
-  left_join(mr_results_sub %>% select(id.exposure, exposure, exposure_cat)) %>% 
+  left_join(mr_results_df %>% select(id.exposure, exposure, exposure_cat)) %>% 
+  filter(exposure_cat != 'Lipids') %>% 
   select(exposure_cat, id.exposure, exposure, 
           "BCAC 2017"="ieu-a-1126",
           "BCAC 2020"="Breast cancer BCAC 2020",
           "ER+" = "ieu-a-1127" ,
           "ER-" = "ieu-a-1128" ,
-          everything() ) %>% 
-  filter(exposure_cat != 'Lipids')
+          everything() )
 
 # add protein names
 protein_names <- read_csv("mr_evidence_outputs/protein_names.csv", col_names = F) %>% rename(name = X1, gene = X2)
@@ -404,9 +425,17 @@ mr_results_sub<- mr_results_sub %>% left_join(protein_names, by = c('exposure'='
 mr_results_sub<- mr_results_sub %>% left_join(lit_space_sizes %>% select(id, unique_triples, unique_pairs), by =c("id.exposure"= 'id'))
   
 
-write_tsv(mr_results_sub, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged_Litspaces_available.tsv")
+# keep those that passed MTC
+passed_pairs <- read_tsv("mr_evidence_outputs/passed_multiple_testing.tsv") %>% mutate(passed_MTC = T) %>% select(id.exposure, passed_MTC)
+mr_results_sub<- mr_results_sub %>% left_join(passed_pairs) %>% # MB this is not a precise measure - MTC is different for different outcomes! 
+                                        mutate_at(vars(passed_MTC), ~replace_na(.x, 0))
+# add mediator counts 
+med_counts <- read_tsv("mr_evidence_outputs/supl_table8_counts_med.csv") %>% select(exposure.id, med_count)
+mr_results_sub<- mr_results_sub %>% left_join(med_counts, by=c("id.exposure"="exposure.id")) %>% distinct()
 
-  
+
+write_tsv(mr_results_sub, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged_Litspaces_available_MTCpassed.tsv")
+
 
 ```
 
