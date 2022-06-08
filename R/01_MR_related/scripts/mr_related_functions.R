@@ -103,7 +103,7 @@ do_MR <- function(trait, bc_type){
     split_outcome() %>% 
     split_exposure() %>% 
     generate_odds_ratios() %>% 
-    mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
     mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                                      ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
   # sensitivity
@@ -193,8 +193,8 @@ quick_mr <- function(exp, out){
     split_outcome() %>% 
     split_exposure() %>% 
     generate_odds_ratios() %>% 
-    mutate(beta_CI = paste0(round(b,3), " [",round(lo_ci,3) ,":",round(up_ci,3), "]")) %>% 
-    mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
+    mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
     mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                                      ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
   
@@ -281,10 +281,16 @@ mvmr_mixed_sources <- function(id1, outcome.id, id2_tophits_file, id2_gwas_file 
   
   mv_res<- res$result %>%
     split_outcome() %>% 
+    split_exposure() %>% 
     separate(outcome, "outcome", sep="[(]") %>% 
     generate_odds_ratios() %>% 
     select(-id.exposure, -id.outcome) %>% 
-    select(exposure, outcome, starts_with("or"))
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
+    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                                     ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
+    select(exposure, outcome, starts_with("or", ignore.case = T), effect_direction) 
+  
+  return(mv_res)
   
 }
 
