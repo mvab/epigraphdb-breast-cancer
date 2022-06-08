@@ -18,18 +18,26 @@ params:
 ---
 
 ```{r setup I, eval=TRUE, echo=F}
+library(cowplot)
+library(flextable)
+library(officer)
+library(readxl)
+library(tidyr)
+library(tidyverse)
+library(TwoSampleMR)
+library(vroom)
 knitr::opts_chunk$set(eval = TRUE, include = T, message = F, warning = F, comment="")
 ```
 
 ```{r include=F}
-library(tidyverse)
-library(TwoSampleMR)
-library(flextable)
-library(readxl)
-library(cowplot)
-library(tidyr)
 
-source("../helper_functions.R")
+
+
+
+
+
+
+source("../../helper_functions.R")
 source("explore_MR-EvE_app/functions.R")
 source("mr_related_functions.R")
 
@@ -47,7 +55,6 @@ params2$main -> main
 params2$main_lit -> main_lit
 params2$trait_name -> trait_name
 params2$lit_space_file -> lit_space_file
-print(main)
 ```
 
 
@@ -118,7 +125,7 @@ rmarkdown::render("01_MR_related/extra_mr_for_case_studies.Rmd",
 
 
 ```{r echo =F, fig.height=3, fig.width=7}
-path <- c("mr_evidence_outputs/mr_subtypes/all_data_with_sens_filters.xlsx")
+path <- c("../results/mr_evidence_outputs/mr_subtypes/all_data_with_sens_filters.xlsx")
 mr_df<- path %>% 
   excel_sheets() %>% 
   set_names() %>% 
@@ -188,11 +195,11 @@ ft
 ```
 
 
-# MR-EvE mediators
+# MR-EvE-mined mediators
 
 ```{r,  include=F}
 
-med_conf_table <- readxl::read_excel("mr_evidence_outputs/med-conf-table_upd_ALL.xlsx", sheet = main) %>% 
+med_conf_table <- readxl::read_excel("../results/mr_evidence_outputs/med-conf-table_upd_ALL.xlsx", sheet = main) %>% 
      mutate(outcome = case_when(outcome.id =="ieu-a-1126" ~ "BCAC 2017",
                              outcome.id =="ieu-a-1127" ~ "ER+",
                              outcome.id =="ieu-a-1128" ~ "ER-"))
@@ -209,8 +216,8 @@ meds_table <- med_conf_table %>%
   rename('exposure' = 'exposure.trait', 
          'mediator.id' = 'med.id',
          'mediator' = 'med.trait',
-         "exposure -> mediator" = 'r1.OR_CI_val', 
-         'mediator -> outcome' = 'r3.OR_CI_val') 
+         "exposure -> mediator \n (step1)" = 'r1.OR_CI_val', 
+         'mediator -> outcome \n (step2)' = 'r3.OR_CI_val') 
 
 
 unique_meds <- length(unique(meds_table$mediator.id))
@@ -226,7 +233,8 @@ Below is a table of two-step MR results for each mediator, including _exposure -
 
 ```{r echo=F, results='asis'}
 if (all){
-  cat("Full BCAC 2017 sample")}
+  med <- meds_table %>% filter(outcome == "BCAC 2017") %>% pull( mediator.id) %>% length()
+  cat(paste0("**Full sample**: ", med , " potential mediators from MR-EvE" ))}
 ```
 
 ```{r, echo=F}
@@ -241,7 +249,8 @@ if (all){
 
 ```{r echo=F, results='asis'}
 if (pos){
-  cat("ER+ sample")}
+  med <- meds_table %>% filter(outcome == "ER+") %>% pull( mediator.id) %>% length()
+  cat(paste0("**ER+ sample**: ", med , " potential mediators from MR-EvE" ))}
 ```
 
 ```{r echo =F}
@@ -257,7 +266,8 @@ if (pos) {
 
 ```{r echo=F, results='asis'}
 if (neg){
-  cat("ER- sample")}
+  med <- meds_table %>% filter(outcome == "ER-") %>% pull( mediator.id) %>% length()
+  cat(paste0("**ER- sample:** ", med , " potential mediators from MR-EvE" ))}
 ```
 
 ```{r echo =F}
@@ -392,11 +402,11 @@ if (neg){
 
 
 ```{r, include =F}
-lit_df<- read_tsv("../02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv")
+lit_df<- read_tsv("../../02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv")
 lit_trait <-lit_df %>% filter(id == main_lit)
 
 
-case_terms<- read_csv(paste0("../02_literature_related/literature_outputs/sankey_terms_storage/", lit_space_file)) 
+case_terms<- read_csv(paste0("../../02_literature_related/literature_outputs/sankey_terms_storage/", lit_space_file)) 
 if (main == "prot-a-710") {
   case_terms <-case_terms %>% filter(value != 'cardiotrophin 1')
 }
@@ -424,7 +434,7 @@ for (i in 1:length(lit_terms_df$gwas.id)){
 
 ids <- lit_terms_df %>% 
   filter(instruments > 0 ) %>% 
-  filter(!gwas.id %in% c("prot-a-81", "prot-a-1102", "ukb-b-8587", "prot-a-2694", "prot-a-2363") )%>% 
+  filter(!gwas.id %in% c("prot-a-81", "prot-a-1102", "ukb-b-8587", "prot-a-2694", "prot-a-2363", "finn-b-E4_OBESITY") )%>% 
   pull(gwas.id) %>% unique()
 ```
 
@@ -513,11 +523,10 @@ redoneMR_tidy <- redone_MR %>%
   tidyr::separate(col = outcome, into = c("outcome", "tmp"), sep = "\\(" ) %>% 
   filter(effect_direction != "overlaps null") %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio')) %>% arrange(outcome) %>% 
-  filter(id.exposure != "finn-b-E4_OBESITY") %>% 
-  select(exposure, id.exposure ,  outcome, id.outcome, OR_CI,  nsnp) 
+  select(exposure, id.exposure ,  outcome, id.outcome, OR_CI,  nsnp, effect_direction) 
 ```
 
-Then we performed two-step MR results for the traits with >=1 instruments:
+Then we performed two-step MR for the traits with >=1 instruments:
 
 ```{r unordered_list1, echo=FALSE, results='asis'}
 cat(paste('-', traits_can_use), sep = '\n')
@@ -529,13 +538,18 @@ Out of these traits, `r length(unique(redoneMR_tidy$exposure))` had evidence of 
 cat(paste('-', unique(redoneMR_tidy$exposure)), sep = '\n')
 ```
 
+**Mediator -> outcome (step2) MR results** for the traits with evidence of effect:
+
 ```{r echo=F, eval =T}
-ft <- flextable(redoneMR_tidy %>% select(-id.outcome))
+ft <- flextable(redoneMR_tidy %>% select(-id.outcome, -effect_direction))
 ft <- width(ft, j = c(1,3,4), width=2)
 ft
 ```
 
 ## Bidirectional MR 
+
+We next performed bidirectional MR to to establish the direction of the effect between the intermediate and the risk factor and identify the traits that are affected by the risk factor (i.e. likely mediator relationship) [**Exposure -> mediator (step1)**] and the other way around (i.e. potential confounder relationship). 
+
 
 ```{r , echo=F, eval =T, cache=T}
 step1_mr <- tibble()
@@ -584,7 +598,7 @@ for (bc_out in outcomes){
   results_list <- list()
   
   interm_list <- redoneMR_tidy %>% 
-              #filter(exposure %in% potential_mediators) %>%  ### only of do those that pass two-step MR
+              filter(exposure %in% potential_mediators) %>%  ### only of do those that pass two-step MR
               filter(id.outcome == bc_out) %>% 
               filter(!id.exposure %in% c('prot-a-2363', "prot-a-757")) %>% pull(id.exposure)
   
