@@ -6,14 +6,14 @@ library(tidyverse)
 #### functions ----
 load_and_merge_heatmap_inputs <- function() {
   
-  redone_MR <- read_tsv("01_MR_related/mr_evidence_outputs/redone_MR_fulloutput.tsv") %>% 
+  redone_MR <- read_tsv("01_MR_related/results/mr_evidence_outputs/redone_MR_fulloutput.tsv") %>% 
     filter(method %in% c("Inverse variance weighted", "Wald ratio")) %>% 
     select(id.exposure, id.outcome, OR_CI, pval, exposure_name, nsnp) %>% 
     mutate(outcome = case_when(id.outcome =="ieu-a-1126" ~ "BCAC 2017",
                                id.outcome =="ieu-a-1127"    ~ "ER+",   
                                id.outcome =="ieu-a-1128"   ~ "ER-" )) %>% select(-id.outcome)
   
-  res_subtypes <- read_tsv("01_MR_related/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>% 
+  res_subtypes <- read_tsv("01_MR_related/results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>% 
     filter(method %in% c("Inverse variance weighted", "Wald ratio")) %>% 
     select(id.exposure, outcome, OR_CI, pval,  nsnp) %>% 
     mutate(outcome = case_when(outcome =="Breast cancer BCAC 2020" ~ "BCAC 2020",
@@ -28,7 +28,7 @@ load_and_merge_heatmap_inputs <- function() {
   or_ci_data <- bind_rows(redone_MR,res_subtypes ) %>% rename('exposure.id'= 'id.exposure') 
   
   
-  merged <- read_tsv("01_MR_related/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
+  merged <- read_tsv("01_MR_related/results/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
   merged <- merged %>% rename("BCAC 2017" = "ieu-a-1126",
                               "ER+" = "ieu-a-1127",     
                               "ER-" = "ieu-a-1128",     
@@ -46,7 +46,7 @@ load_and_merge_heatmap_inputs <- function() {
   
   
   
-  protein_path_data <- read_tsv("01_MR_related/pathways/proteins_w_pathways.tsv") %>% 
+  protein_path_data <- read_tsv("external_files/pathways/proteins_w_pathways.tsv") %>% 
     mutate(name_len = nchar(name)) %>% 
     mutate(name_mix = ifelse(name_len > 36, gene, name)) %>% 
     mutate(name_mix = ifelse(name_mix %in% c("Dual specificity protein kinase CLK2",
@@ -65,7 +65,7 @@ load_and_merge_heatmap_inputs <- function() {
                        'ieu-a-101')
   
   # MR pairs that passed MTC
-  passed_pairs <- read_tsv("01_MR_related/mr_evidence_outputs/passed_multiple_testing.tsv") %>% 
+  passed_pairs <- read_tsv("01_MR_related/results/mr_evidence_outputs/passed_multiple_testing.tsv") %>% 
     mutate(outcome = case_when(outcome =="Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)"  ~ "BCAC'17",
                                outcome =="ER+ Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)"    ~ "ER+",   
                                outcome =="ER- Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)"   ~ "ER-",  
@@ -120,7 +120,7 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
                                     exposure_cat == 'Lipids' ~ 'Lipids', 
                                     TRUE ~ 'Lifestyle traits')) %>%  # should be after reshaping
     mutate(exposure_cat_sub = replace(exposure_cat_sub, exposure_cat_sub ==  'Proteins', NA)) %>%  # will add subgroups from path data
-    left_join(protein_path_data, by = c("exposure.id"="id.exposure", "exposure" = "name")) %>% 
+    left_join(protein_path_data, by = c("exposure.id"="id.exposure")) %>% 
     mutate(gene = factor(gene, levels = unique(protein_path_data$gene))) %>% 
     mutate(exposure_cat_sub = coalesce(exposure_cat_sub, main_path)) 
   
@@ -155,7 +155,7 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
 }
 
 
-plot_heatmap <- function(data_tidy, font_size, star_size = 7){
+plot_heatmap <- function(data_tidy, font_size = 11, star_size = 7){
   
   font_size_ax = font_size - 2
   

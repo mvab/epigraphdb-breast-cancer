@@ -1,0 +1,300 @@
+exposure_cat_sub,exposure.id,exposure.trait,exposure
+Alcohol,ukb-a-26,Average weekly red wine intake,Red wine intake
+Alcohol,ukb-b-1707,Average weekly spirits intake,Spirits intake
+Alcohol,ukb-d-20406,Ever addicted to alcohol,Ever addicted to alcohol
+Antrophometric,ieu-a-1096,Childhood obesity,Childhood obesity
+Antrophometric,ieu-a-107,Weight,Weight
+Antrophometric,ieu-a-974,Body mass index,Body mass index
+Antrophometric,ukb-b-19953,Body mass index (BMI),Body mass index (BMI)
+Antrophometric,ukb-a-34,Comparative body size at age 10,Body size at age 10
+Antrophometric,ieu-a-85,Extreme body mass index,Extreme body mass index
+Antrophometric,ieu-a-51,Hip circumference,Hip circumference
+Antrophometric,ukb-a-388,Hip circumference,Hip circumference
+Antrophometric,ieu-a-90,Obesity class 1,Obesity class 1
+Antrophometric,ieu-a-91,Obesity class 2,Obesity class 2
+Antrophometric,ieu-a-93,Overweight,Overweight
+Antrophometric,ukb-b-9405,Waist circumference,Waist circumference
+Antrophometric,ieu-a-62,Waist circumference,Waist circumference
+Antrophometric,ukb-a-266,Whole body fat-free mass,Whole body fat-free mass
+Antrophometric,ieu-a-1034,Height,Height
+Antrophometric,ukb-b-16881,Sitting height,Sitting height
+Antrophometric,ukb-a-195,Sitting height,Sitting height
+Antrophometric,ukb-b-10787,Standing height,Standing height
+Antrophometric,ukb-a-35,Comparative height size at age 10,Height size at age 10
+Antrophometric,ukb-a-269,Impedance of whole body,Impedance of whole body
+Developmental Biology,prot-a-2189,PAX-interacting protein 1,PAX-interacting protein 1
+Developmental Biology,prot-a-867,Desmocollin-3,Desmocollin-3
+Developmental Biology,prot-a-1360,Hepatocyte nuclear factor 4-alpha,Hepatocyte nuclear factor 4-alpha
+Developmental Biology,prot-a-1657,Kallikrein-12,Kallikrein-12
+Developmental Biology,prot-a-1659,Kallikrein-14,Kallikrein-14
+Diet and supplements,ukb-b-16576,Dried fruit intake,Dried fruit intake
+Diet and supplements,ukb-b-3881,Fresh fruit intake,Fresh fruit intake
+Diet and supplements,ukb-d-1418_3,Milk type used: Skimmed,Milk type used: Skimmed
+Diet and supplements,ukb-b-2221,Cherry intake,Cherry intake
+Diet and supplements,ukb-b-1004,Added milk to espresso,Added milk to espresso
+Diet and supplements,ukb-b-4955,Dairy smoothie intake,Dairy smoothie intake
+Diet and supplements,ukb-d-1418_1,Milk type used: Full cream,Milk type used: Full cream
+Diet and supplements,ukb-b-14238,Mineral and other dietary supplements: None of the above,Supplements: None
+Diet and supplements,ukb-b-5495,"Never eat eggs, dairy, wheat, sugar: Sugar or foods/drinks containing sugar",Never eat sugar or sugar-containing items
+Diet and supplements,ukb-b-3599,"Never eat eggs, dairy, wheat, sugar: Wheat products",Never eat wheat products
+Diet and supplements,ukb-b-6500,Pancake intake,Pancake intake
+Diet and supplements,ukb-b-8006,Poultry intake,Poultry intake
+Diet and supplements,ukb-d-1468_5,"Cereal type: Other (e.g. Cornflakes, Frosties)","Cereal type: Cornflakes, Frosties"
+Drugs,ukb-b-15895,Treatment/medication code: allopurinol,Drug: allopurinol
+Drugs,ukb-a-132,Treatment/medication code: aspirin,Drug: aspirin
+Drugs,ukb-a-153,Treatment/medication code: insulin product,Drug: insulin product
+Drugs,ukb-a-142,Treatment/medication code: allopurinol,Drug: allopurinol
+Drugs,ukb-a-117,Treatment/medication code: ramipril,Drug: ramipril
+Immune System,prot-a-710,Cardiotrophin-1,Cardiotrophin-1
+Immune System,prot-a-1530,Interleukin-3 receptor subunit alpha,Interleukin-3 receptor subunit alpha
+Immune System,prot-a-1117,Filamin-A,Filamin-A
+Immune System,prot-a-1655,Kelch-like protein 13,Kelch-like protein 13
+Immune System,prot-a-1541,Interleukin-6 receptor subunit alpha,Interleukin-6 receptor subunit alpha
+Immune System,prot-a-2393,Trypsin-3,Trypsin-3
+Immune System,prot-a-1166,Galanin peptides,Galanin peptides
+Immune System,prot-a-54,"Advanced glycosylation end product-specific receptor, soluble","Advanced glycosylation end product-specific receptor, soluble"
+Immune System,prot-b-38,interleukin 1 receptor like 1,interleukin 1 receptor like 1
+Immune System,prot-a-1414,Gamma-interferon-inducible protein 16,Gamma-interferon-inducible protein 16
+Immune System,prot-a-216,"Beta-1,4-galactosyltransferase 1","Beta-1,4-galactosyltransferase 1"
+Immune System,prot-a-670,C-reactive protein,C-reactive protein
+Immune System,prot-a-1148,Ferritin,Ferritin
+Immune System,prot-a-10,Histo-blood group ABO system transferase,Histo-blood group ABO system transferase
+Immune System,prot-a-1403,Inducible T-cell costimulator,Inducible T-cell costimulator
+Immune System,prot-a-1397,Intercellular adhesion molecule 1,Intercellular adhesion molecule 1
+Immune System,prot-a-1486,Interleukin-17 receptor A,Interleukin-17 receptor A
+Immune System,prot-a-1746,Leukocyte immunoglobulin-like receptor subfamily B member 4,Leukocyte immunoglobulin-like receptor subfamily B member 4
+Immune System,prot-a-2395,Myeloblastin,Myeloblastin
+Immune System,prot-a-3193,Vascular cell adhesion protein 1,Vascular cell adhesion protein 1
+Immune System,prot-a-518,Complement factor B,Complement factor B
+Immune System,prot-a-1898,MHC class I polypeptide-related sequence B,MHC class I polypeptide-related sequence B
+Immune System,prot-a-2337,Neutrophil-activating peptide 2,Neutrophil-activating peptide 2
+Immune System,prot-a-1506,Interleukin-21,Interleukin-21
+Lipids,met-c-887,Cholesterol esters in large VLDL,Cholesterol esters in large VLDL
+Lipids,met-c-910,Cholesterol esters in medium VLDL,Cholesterol esters in medium VLDL
+Lipids,met-c-958,Concentration of ULDLs and largest VLDL particles,Concentration of ULDLs and largest VLDL
+Lipids,met-c-890,Concentration of large VLDL particles,Concentration of large VLDL
+Lipids,met-c-913,Concentration of medium VLDL particles,Concentration of medium VLDL
+Lipids,met-c-922,Concentration of small HDL particles,Concentration of small HDL
+Lipids,met-c-930,Concentration of small VLDL particles,Concentration of small VLDL
+Lipids,met-c-950,Concentration of very large VLDL particles,Concentration of very large VLDL
+Lipids,met-c-888,Free cholesterol in large VLDL,Free cholesterol in large VLDL
+Lipids,met-c-911,Free cholesterol in medium VLDL,Free cholesterol in medium VLDL
+Lipids,met-c-928,Free cholesterol in small VLDL,Free cholesterol in small VLDL
+Lipids,met-c-941,Mean diameter for VLDL particles,Mean diameter for VLDL
+Lipids,met-c-959,Phospholipids in ULDLs and largest VLDL particles,Phospholipids in ULDLs and largest VLDL
+Lipids,met-c-891,Phospholipids in large VLDL,Phospholipids in large VLDL
+Lipids,met-c-914,Phospholipids in medium VLDL,Phospholipids in medium VLDL
+Lipids,met-c-931,Phospholipids in small VLDL,Phospholipids in small VLDL
+Lipids,met-c-951,Phospholipids in very large VLDL,Phospholipids in very large VLDL
+Lipids,met-c-886,Total cholesterol in large VLDL,Total cholesterol in large VLDL
+Lipids,met-c-909,Total cholesterol in medium VLDL,Total cholesterol in medium VLDL
+Lipids,met-c-957,Total lipids in ULDLs and largest VLDL particles,Total lipids in ULDLs and largest VLDL
+Lipids,met-c-889,Total lipids in large VLDL,Total lipids in large VLDL
+Lipids,met-c-912,Total lipids in medium VLDL,Total lipids in medium VLDL
+Lipids,met-c-929,Total lipids in small VLDL,Total lipids in small VLDL
+Lipids,met-c-949,Total lipids in very large VLDL,Total lipids in very large VLDL
+Lipids,met-c-960,Triglycerides in ULDLs and largest VLDL particles,Triglycerides in ULDLs and largest VLDL
+Lipids,met-c-892,Triglycerides in large VLDL,Triglycerides in large VLDL
+Lipids,met-c-915,Triglycerides in medium VLDL,Triglycerides in medium VLDL
+Lipids,met-c-923,Triglycerides in small HDL,Triglycerides in small HDL
+Lipids,met-c-932,Triglycerides in small VLDL,Triglycerides in small VLDL
+Lipids,met-c-952,Triglycerides in very large VLDL,Triglycerides in very large VLDL
+Lipids,met-c-956,Triglycerides in very small VLDL,Triglycerides in very small VLDL
+Lipids,ieu-a-783,Triglycerides,Triglycerides
+Lipids,met-c-927,Total cholesterol in small VLDL,Total cholesterol in small VLDL
+Lipids,ieu-a-302,Triglycerides,Triglycerides
+Lipids,met-c-896,Mean diameter for LDL particles,Mean diameter for LDL
+Lipids,met-c-878,Concentration of large HDL particles,Concentration of large HDL
+Lipids,met-c-877,Total lipids in large HDL,Total lipids in large HDL
+Lipids,met-c-944,Free cholesterol in very large HDL,Free cholesterol in very large HDL
+Lipids,met-c-945,Total lipids in very large HDL,Total lipids in very large HDL
+Lipids,met-c-875,Cholesterol esters in large HDL,Cholesterol esters in large HDL
+Lipids,met-c-876,Free cholesterol in large HDL,Free cholesterol in large HDL
+Lipids,met-c-900,Free cholesterol in medium HDL,Free cholesterol in medium HDL
+Lipids,met-c-864,Total cholesterol in HDL,Total cholesterol in HDL
+Lipids,met-c-874,Total cholesterol in large HDL,Total cholesterol in large HDL
+Lipids,met-c-898,Total cholesterol in medium HDL,Total cholesterol in medium HDL
+Lipids,met-c-942,Total cholesterol in very large HDL,Total cholesterol in very large HDL
+Lipids,ieu-a-780,HDL cholesterol,HDL cholesterol
+Lipids,ukb-d-30760_irnt,HDL cholesterol,HDL cholesterol
+Lipids,ieu-a-299,HDL cholesterol,HDL cholesterol
+Metabolism,prot-a-67,Alcohol dehydrogenase [NADP(+)],Alcohol dehydrogenase [NADP(+)]
+Metabolism,prot-a-1779,Low-density lipoprotein receptor-related protein 1B,LDL receptor-related protein 1B
+Metabolism,prot-a-1835,Epididymis-specific alpha-mannosidase,Epididymis-specific alpha-mannosidase
+Metabolism,met-c-841,Albumin,Albumin
+Metabolism,prot-a-99,Angiopoietin-related protein 4,Angiopoietin-related protein 4
+Metabolism,prot-a-212,"Beta-1,4-glucuronyltransferase 1","Beta-1,4-glucuronyltransferase 1"
+Metabolism,prot-a-2892,Estrogen sulfotransferase,Estrogen sulfotransferase
+Metabolism,prot-b-71,fatty acid binding protein 4,fatty acid binding protein 4
+Metabolism,prot-a-3093,Protein-tyrosine sulfotransferase 2,Protein-tyrosine sulfotransferase 2
+Metabolism,prot-a-3109,Thiosulfate sulfurtransferase,Thiosulfate sulfurtransferase
+Metabolism,prot-a-1411,Alpha-L-iduronidase,Alpha-L-iduronidase
+Metabolism,ukb-d-30630_irnt,Apoliprotein A,Apoliprotein A
+Metabolism,prot-a-550,Carbohydrate sulfotransferase 11,Carbohydrate sulfotransferase 11
+Metabolites,met-a-500,3-dehydrocarnitine*,3-dehydrocarnitine*
+Metabolites,met-a-513,X-11440,X-11440
+Metabolites,met-a-517,"X-11445--5-alpha-pregnan-3beta,20alpha-disulfate",X-11445
+Metabolites,met-a-652,Isovalerylcarnitine,Isovalerylcarnitine
+Metabolites,met-a-495,X-11315,X-11315
+Metabolites,met-a-362,Betaine,Betaine
+Metabolites,met-a-501,Pyroglutamine*,Pyroglutamine*
+Metabolites,met-a-558,1-arachidonoylglycerophosphocholine*,1-arachidonoylglycerophosphocholine*
+Metabolites,met-a-682,1-arachidonoylglycerophosphoethanolamine*,1-arachidonoylglycerophosphoethanolamine*
+Metabolites,met-a-634,1-arachidonoylglycerophosphoinositol*,1-arachidonoylglycerophosphoinositol*
+Metabolites,met-a-427,2-hydroxyisobutyrate,2-hydroxyisobutyrate
+Metabolites,met-a-573,Isobutyrylcarnitine,Isobutyrylcarnitine
+Metabolites,met-a-355,Proline,Proline
+Metabolites,met-a-316,Uridine,Uridine
+Metabolites,met-a-485,X-02269,X-02269
+Metabolites,met-a-373,X-03094,X-03094
+Metabolites,met-a-519,X-11469,X-11469
+Metabolites,met-a-629,X-12510--2-aminooctanoic acid,2-aminooctanoic acid
+Metabolites,met-a-464,Serine,Serine
+Metabolites,met-a-444,X-10510,X-10510
+NA,prot-a-674,Beta-crystallin B2,Beta-crystallin B2
+NA,prot-a-394,C-C motif chemokine 17,C-C motif chemokine 17
+NA,prot-a-399,C-C motif chemokine 23,C-C motif chemokine 23
+NA,prot-a-408,C-C motif chemokine 3-like 1,C-C motif chemokine 3-like 1
+NA,prot-a-643,Carboxypeptidase A4,Carboxypeptidase A4
+NA,prot-a-722,Cathepsin F,Cathepsin F
+NA,prot-a-532,Cell growth regulator with EF hand domain protein 1,Cell growth regulator with EF hand domain protein 1
+NA,prot-a-412,Cerebral cavernous malformations 2 protein,Cerebral cavernous malformations 2 protein
+NA,prot-a-322,Complement component C8,Complement component C8
+NA,prot-a-521,Complement factor H-related protein 5,Complement factor H-related protein 5
+NA,prot-a-608,Contactin-4,Contactin-4
+NA,prot-a-609,Contactin-5,Contactin-5
+NA,prot-a-500,Corneodesmosin,Corneodesmosin
+NA,prot-a-655,CREB-binding protein,CREB-binding protein
+NA,prot-a-2464,Dihydropteridine reductase,Dihydropteridine reductase
+NA,prot-a-836,DnaJ homolog subfamily B member 11,DnaJ homolog subfamily B member 11
+NA,prot-a-842,DnaJ homolog subfamily B member 9,DnaJ homolog subfamily B member 9
+NA,prot-a-892,Endothelin-2,Endothelin-2
+NA,prot-a-387,Eotaxin,Eotaxin
+NA,prot-a-2071,Epididymal secretory protein E1,Epididymal secretory protein E1
+NA,prot-a-1707,Epididymal-specific lipocalin-10,Epididymal-specific lipocalin-10
+NA,prot-a-1305,GDH/6PGL endoplasmic bifunctional protein,GDH/6PGL endoplasmic bifunctional protein
+NA,prot-a-1223,Glycolipid transfer protein domain-containing protein 2,Glycolipid transfer protein domain-containing protein 2
+NA,prot-a-1277,Granulins,Granulins
+NA,prot-b-55,growth differentiation factor 15,growth differentiation factor 15
+NA,prot-a-1313,Heparin-binding EGF-like growth factor,Heparin-binding EGF-like growth factor
+NA,prot-a-1347,"HLA class II histocompatibility antigen, DQ alpha 2 chain","HLA class II histocompatibility antigen, DQ alpha 2 chain"
+NA,prot-a-1115,Inactive peptidyl-prolyl cis-trans isomerase FKBP6,Inactive peptidyl-prolyl cis-trans isomerase FKBP6
+NA,prot-a-1542,Interleukin-6 receptor subunit beta,Interleukin-6 receptor subunit beta
+NA,prot-a-1666,Kallikrein-7,Kallikrein-7
+NA,prot-a-2824,Kunitz-type protease inhibitor 2,Kunitz-type protease inhibitor 2
+NA,prot-a-2666,L-Selectin,L-Selectin
+NA,prot-a-1792,Leucine-rich repeat neuronal protein 1,Leucine-rich repeat neuronal protein 1
+NA,prot-a-1744,Leukocyte immunoglobulin-like receptor subfamily B member 2,Leukocyte immunoglobulin-like receptor subfamily B member 2
+NA,prot-a-1074,Low affinity immunoglobulin gamma Fc region receptor II-a,Low affinity immunoglobulin gamma Fc region receptor II-a
+NA,prot-a-2356,Lysosomal Pro-X carboxypeptidase,Lysosomal Pro-X carboxypeptidase
+NA,prot-a-1931,MAGUK p55 subfamily member 6,MAGUK p55 subfamily member 6
+NA,prot-a-1854,MAP kinase-activated protein kinase 5,MAP kinase-activated protein kinase 5
+NA,prot-a-2815,Maspardin,Maspardin
+NA,prot-a-1930,Myeloperoxidase,Myeloperoxidase
+NA,prot-a-213,"N-acetyllactosaminide beta-1,3-N-acetylglucosaminyltransferase 2","N-acetyllactosaminide beta-1,3-N-acetylglucosaminyltransferase 2"
+NA,prot-a-2736,NAD-dependent protein deacetylase sirtuin-2,NAD-dependent protein deacetylase sirtuin-2
+NA,prot-a-2025,"NADH dehydrogenase [ubiquinone] iron-sulfur protein 4, mitochondrial","NADH dehydrogenase [ubiquinone] iron-sulfur protein 4, mitochondrial"
+NA,prot-a-2007,Neural cell adhesion molecule 1,Neural cell adhesion molecule 1
+NA,prot-a-2101,Neurensin-1,Neurensin-1
+NA,prot-a-2082,Neuropeptide W,Neuropeptide W
+NA,prot-a-2341,Peptidyl-prolyl cis-trans isomerase E,Peptidyl-prolyl cis-trans isomerase E
+NA,prot-a-2166,Platelet-activating factor acetylhydrolase IB subunit beta,Platelet-activating factor acetylhydrolase IB subunit beta
+NA,prot-a-1610,Potassium voltage-gated channel subfamily E member 2,Potassium voltage-gated channel subfamily E member 2
+NA,prot-a-1049,Protein FAM3B,Protein FAM3B
+NA,prot-a-2329,"Protein O-linked-mannose beta-1,4-N-acetylglucosaminyltransferase 2","Protein O-linked-mannose beta-1,4-N-acetylglucosaminyltransferase 2"
+NA,prot-a-2720,Protein shisa-3 homolog,Protein shisa-3 homolog
+NA,prot-a-2609,Reticulon-4 receptor,Reticulon-4 receptor
+NA,prot-a-2561,RING finger protein 122,RING finger protein 122
+NA,prot-a-2291,Secretory phospholipase A2 receptor,Secretory phospholipase A2 receptor
+NA,prot-a-2820,Serine protease inhibitor Kazal-type 6,Serine protease inhibitor Kazal-type 6
+NA,prot-a-2878,Serine/threonine-protein kinase 17B,Serine/threonine-protein kinase 17B
+NA,prot-a-2729,Sialic acid-binding Ig-like lectin 7,Sialic acid-binding Ig-like lectin 7
+NA,prot-a-2748,Solute carrier family 22 member 16,Solute carrier family 22 member 16
+NA,prot-a-2875,Stromal interaction molecule 1,Stromal interaction molecule 1
+NA,prot-a-2889,Syntaxin-7,Syntaxin-7
+NA,prot-a-1258,Transmembrane glycoprotein NMB,Transmembrane glycoprotein NMB
+NA,prot-a-3000,Transmembrane protein 132C,Transmembrane protein 132C
+NA,prot-a-2951,Trefoil factor 1,Trefoil factor 1
+NA,prot-a-2392,Trypsin-2,Trypsin-2
+NA,prot-a-3048,Tumor necrosis factor receptor superfamily member 1B,Tumor necrosis factor receptor superfamily member 1B
+NA,prot-a-1573,Ubiquitin-like protein ISG15,Ubiquitin-like protein ISG15
+NA,prot-a-2747,Urea transporter 2,Urea transporter 2
+NA,prot-a-3258,Zinc fingers and homeoboxes protein 3,Zinc fingers and homeoboxes protein 3
+NA,ieu-a-1,Adiponectin,Adiponectin
+Not mapped,prot-a-390,C-C motif chemokine 14,C-C motif chemokine 14
+Not mapped,prot-a-488,Cadherin-related family member 3,Cadherin-related family member 3
+Not mapped,prot-a-305,Complement C1q tumor necrosis factor-related protein 5,Complement C1q tumor necrosis factor-related protein 5
+Not mapped,prot-a-766,"Discoidin, CUB and LCCL domain-containing protein 2","Discoidin, CUB and LCCL domain-containing protein 2"
+Not mapped,prot-a-2891,Extracellular sulfatase Sulf-2,Extracellular sulfatase Sulf-2
+Not mapped,prot-a-2398,PH and SEC7 domain-containing protein 1,PH and SEC7 domain-containing protein 1
+Not mapped,prot-a-2877,Serine/threonine-protein kinase 16,Serine/threonine-protein kinase 16
+Not mapped,prot-a-2978,"Tyrosine-protein kinase receptor Tie-1, soluble","Tyrosine-protein kinase receptor Tie-1, soluble"
+Not mapped,prot-a-586,Dual specificity protein kinase CLK2,Dual specificity protein kinase CLK2
+Not mapped,prot-a-2030,Protein kinase C-binding protein NELL1,Protein kinase C-binding protein NELL1
+Not mapped,prot-a-995,Protein eva-1 homolog C,Protein eva-1 homolog C
+Not mapped,prot-a-2493,Retinoic acid receptor responder protein 1,Retinoic acid receptor responder protein 1
+Not mapped,prot-a-3123,Thioredoxin domain-containing protein 12,Thioredoxin domain-containing protein 12
+Not mapped,prot-a-381,Coiled-coil domain-containing protein 134,Coiled-coil domain-containing protein 134
+Not mapped,prot-a-706,Cystatin-8,Cystatin-8
+Not mapped,prot-a-1046,Glycosaminoglycan xylosylkinase,Glycosaminoglycan xylosylkinase
+Not mapped,prot-a-1317,Hemoglobin subunit zeta,Hemoglobin subunit zeta
+Not mapped,prot-a-1922,Multimerin-2,Multimerin-2
+Not mapped,prot-a-2308,Plexin-B2,Plexin-B2
+Not mapped,prot-a-2427,Prostaglandin F2 receptor negative regulator,Prostaglandin F2 receptor negative regulator
+Not mapped,prot-a-735,CUB and zona pellucida-like domain-containing protein 1,CUB and zona pellucida-like domain-containing protein 1
+Not mapped,prot-a-1644,Killer cell immunoglobulin-like receptor 2DL5A,Killer cell immunoglobulin-like receptor 2DL5A
+Not mapped,prot-a-2616,Protein S100-A13,Protein S100-A13
+Not mapped,prot-a-648,Probable carboxypeptidase X1,Probable carboxypeptidase X1
+Not mapped,prot-a-3243,Xyloside xylosyltransferase 1,Xyloside xylosyltransferase 1
+Other,prot-a-346,Calcium/calmodulin-dependent protein kinase type 1,Calcium/calmodulin-dependent protein kinase type 1
+Other,prot-a-2629,Diamine acetyltransferase 2,Diamine acetyltransferase 2
+Other,prot-a-1576,Immunoglobulin superfamily containing leucine-rich repeat protein 2,Immunoglobulin superfamily containing leucine-rich repeat protein 2
+Other,prot-a-486,Cadherin-7,Cadherin-7
+Other,prot-a-2573,E3 ubiquitin-protein ligase RNF8,E3 ubiquitin-protein ligase RNF8
+Other,prot-a-2904,Histone-lysine N-methyltransferase SUV420H2,Histone-lysine N-methyltransferase SUV420H2
+Other,prot-a-2575,"rRNA methyltransferase 3, mitochondrial","rRNA methyltransferase 3, mitochondrial"
+Other,prot-a-3180,Ubiquitin carboxyl-terminal hydrolase 25,Ubiquitin carboxyl-terminal hydrolase 25
+Other,prot-a-303,Complement C1q tumor necrosis factor-related protein 1,Complement C1q tumor necrosis factor-related protein 1
+Other,prot-a-2930,Tubulin-specific chaperone A,Tubulin-specific chaperone A
+Other,prot-a-1833,"Mannosyl-oligosaccharide 1,2-alpha-mannosidase IB","Mannosyl-oligosaccharide 1,2-alpha-mannosidase IB"
+Other,prot-a-3071,Tenascin-X,Tenascin-X
+Other,prot-a-366,Calpastatin,Calpastatin
+Other biomarkers,ieu-a-1049,Iron,Iron
+Physical activity,ukb-a-487,Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging),Physical activity: Heavy DIY 
+Physical activity,ukb-b-17557,Types of transport used (excluding work): Cycle,Type of transport used: Cycle
+Physical activity,ukb-b-7663,Types of physical activity in last 4 weeks: Strenuous sports,Physical activity: Strenuous sports
+Physical activity,ukb-b-14926,Types of transport used (excluding work): Walk,Types of transport used: Walk
+Physical activity,ukb-b-2346,Duration of moderate activity,Duration of moderate activity
+Physical activity,ukb-a-508,Number of days/week of moderate physical activity 10+ minutes,Days/week of moderate physical activity
+Physical activity,ukb-b-969,Time spend outdoors in summer,Time spend outdoors in summer
+Physical activity,ukb-b-8865,Time spent doing light physical activity,Time spent doing light physical activity
+Physical activity,ukb-a-482,Types of physical activity in last 4 weeks: Walking for pleasure (not as a means of transport),Physical activity: Walking for pleasure 
+Physical activity,ukb-b-16886,Types of transport used (excluding work): Car/motor vehicle,Types of transport used: Car/motor vehicle
+Physical activity,ukb-b-15957,Types of transport used (excluding work): Public transport,Types of transport used: Public transport
+Physical activity,ukb-b-4711,Usual walking pace,Usual walking pace
+Reproductive,ukb-a-320,Age at last live birth,Age at last live birth
+Reproductive,ukb-a-316,Had menopause,Had menopause
+Reproductive,ukb-b-18541,Ever used hormone-replacement therapy (HRT),Ever used HRT
+Reproductive,ukb-b-4643,Age at hysterectomy,Age at hysterectomy
+Reproductive,ukb-b-4564,Age last used hormone-replacement therapy (HRT),Age last used HRT
+Reproductive,ukb-b-9487,Age started hormone-replacement therapy (HRT),Age started HRT
+Reproductive,ukb-b-1209,Number of live births,Number of live births
+Reproductive,ukb-a-317,Number of live births,Number of live births
+Reproductive,ukb-b-17422,Age at menopause (last menstrual period),Age at menopause
+Signal Transduction,prot-a-149,Rho GTPase-activating protein 30,Rho GTPase-activating protein 30
+Signal Transduction,prot-a-2073,Pro-FMRFamide-related neuropeptide FF,Pro-FMRFamide-related neuropeptide FF
+Signal Transduction,prot-a-3076,Torsin-1A-interacting protein 1,Torsin-1A-interacting protein 1
+Signal Transduction,prot-a-1622,Vascular endothelial growth factor receptor 2,Vascular endothelial growth factor receptor 2
+Signal Transduction,prot-a-1129,Vascular endothelial growth factor receptor 3,Vascular endothelial growth factor receptor 3
+Signal Transduction,prot-a-831,Delta-like protein 1,Delta-like protein 1
+Signal Transduction,prot-a-1097,Fibroblast growth factor 7,Fibroblast growth factor 7
+Signal Transduction,prot-a-2357,PR domain zinc finger protein 1,PR domain zinc finger protein 1
+Signal Transduction,ukb-d-30770_irnt,IGF-1,IGF-1
+Sleep,ukb-b-4424,Sleep duration,Sleep duration
+Sleep,ukb-a-14,Snoring,Snoring
+Sleep,ukb-a-11,Morning/evening person (chronotype),Chronotype (evening person)
+Smoking,ukb-d-22506_114,Tobacco smoking: Never smoked,Smoking status: Never smoked
+Smoking,ukb-b-223,Current tobacco smoking,Smoking status: Currently smoking
+Smoking,ukb-b-17685,Maternal smoking around birth,Maternal smoking around birth
+Smoking,ukb-b-4801,Number of unsuccessful stop-smoking attempts,Number of unsuccessful stop-smoking attempts
+Smoking,ukb-a-225,Smoking status: Current,Smoking status: Current

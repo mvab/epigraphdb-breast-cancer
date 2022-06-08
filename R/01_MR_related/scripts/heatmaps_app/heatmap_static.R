@@ -2,7 +2,8 @@ library(cowplot)
 library(plotly)
 library(tidyverse)
 
-source("heatmap_functions.R")
+source("01_MR_related/scripts/heatmaps_app/heatmap_functions.R")
+source("01_MR_related/scripts/heatmaps_app/functions_copy_from_mreveapp.R")
 
 
 #### load data ----
@@ -10,9 +11,9 @@ source("heatmap_functions.R")
 
 inputs <- load_and_merge_heatmap_inputs()
 
-saveRDS(inputs, "01_MR_related/heatmaps_app/data/inputs.rds")
+saveRDS(inputs, "01_MR_related/scripts/heatmaps_app/data/inputs.rds")
 
-inputs<- readRDS("01_MR_related/heatmaps_app/data/inputs.rds")
+inputs<- readRDS("01_MR_related/scripts/heatmaps_app/data/inputs.rds")
 merged <- inputs$merged
 or_ci_data <- inputs$or_ci_data
 protein_path_data <- inputs$protein_path_data
@@ -21,54 +22,51 @@ passed_pairs <- inputs$passed_pairs
 
 # prep data ----
 
+# give better names
+#names <- data_full %>% select(exposure_cat_sub,exposure.id, exposure.trait, exposure) %>% distinct()
+#write_csv(names, "01_MR_related/results/mr_evidence_outputs/renaming_key_raw.csv")
+names_tidy <- read_csv("01_MR_related/scripts/heatmaps_app/data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
+merged<- merged %>%  select(-exposure) %>% left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% select(exposure, everything())  %>% filter(!is.na(exposure))
 
 data_full<- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs)
 
-#### select groups----
 
-if (panel == "lifestyle"){
-  data_full<- data_full %>% filter(exposure_cat %in% c("Antrophometric traits", "Lifestyle traits"))
-  
-}  else if (panel == 'metabolites'){
-  
-  data_full<- data_full %>% filter(exposure_cat %in% c("Lipids", "Metabolites"))
-  
-} else if (panel == 'proteins'){
-  
-  data_full<- data_full %>% filter(exposure_cat %in% c("Proteins"))
-}
+# drop exposures with no effect
+exposures_to_drop <- data_full %>% 
+                    group_by(exposure.id, value) %>%
+                    count(exposure.id, value) %>% 
+                    filter(value == 0 & n == 9) %>% # zero in all 9 outcomes
+                    pull(exposure.id)
+
+data_full <- data_full %>% filter(!exposure.id %in% exposures_to_drop)
 
 
+#### select groups and plot----
 
-# plot! ----
+font_size =8
+star_size = 3
 
-# for proteins: with subcats:
-data_full <- data_full %>% 
+# lifestyle
+data_sub<- data_full %>% filter(exposure_cat %in% c("Antrophometric traits", "Lifestyle traits"))
+lifestyle <- plot_heatmap(data_sub,font_size = font_size, star_size = star_size)
+
+
+# metabolites 
+data_sub<- data_full %>% filter(exposure_cat %in% c("Lipids", "Metabolites"))
+metabolites <- plot_heatmap(data_sub,font_size = font_size, star_size = star_size)
+
+
+# proteins  
+data_sub<- data_full %>% filter(exposure_cat %in% c("Proteins"))
+data_sub <- data_sub %>% 
+  arrange( value, outcome, main_path) %>%
+  select(-exposure) %>% rename(exposure= name_mix) %>% 
+  mutate(exposure = factor(exposure, levels = unique(data_sub$name_mix))) %>% 
   select(-exposure_cat) %>% rename(exposure_cat=exposure_cat_sub) %>% 
-  mutate(exposure_cat_sub = factor(exposure_cat, levels = c("Immune System", 'Metabolism', 'Signal Transduction','Developmental Biology', "Other", "Not mapped"))) %>% 
-  select(-exposure) %>% rename(exposure= name_mix)
-
-
-p <- plot_heatmap(data_full)
-p
-
-ggplotly(p)
-
-
-
-
-data_sub %>% left_join(merged %>% select(id.exposure, exposure)) %>%  write_tsv("01_MR_related/mr_evidence_outputs/protein_in_final_set.tsv")
-
-
-
-
-
-
-#### for static figure in the paper
-
-lifestyle <- p
-proteins <- p
-metabolites <- p
+  mutate(exposure_cat = factor(exposure_cat, levels = c("Immune System", 'Metabolism', 'Signal Transduction','Developmental Biology', "Other", "Not mapped")))
+  
+#data_sub %>% left_join(merged %>% select(id.exposure, exposure)) %>%  write_tsv("01_MR_related/mr_evidence_outputs/protein_in_final_set.tsv")
+proteins <- plot_heatmap(data_sub,ffont_size = font_size, star_size = star_size)
 
 
 leftcol <- plot_grid(lifestyle, metabolites , labels = c('A', 'B'), label_size = 12, ncol=1)
@@ -76,7 +74,7 @@ full_plot <- plot_grid(leftcol, proteins , labels = c('', 'C'), label_size = 12,
 full_plot
 
 
-ggsave(paste0("01_MR_related/heatmap_html/combined_heatmaps.png"),
+ggsave(paste0("01_MR_related/results/heatmap_html/combined_heatmaps.png"),
        plot=full_plot, scale=1, 
        width=17, height=26,
        units=c("cm"), dpi=300, limitsize=F)

@@ -27,7 +27,12 @@ antro_blacklist <- inputs$antro_blacklist
 passed_pairs <- inputs$passed_pairs
 or_ci_data <- inputs$or_ci_data
 
+
+names_tidy <- read_csv("data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
+merged<- merged %>%  select(-exposure) %>% left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% select(exposure, everything()) %>% filter(!is.na(exposure))
+
 data_full <- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs)
+
 
 outcome_list <- c("BCAC'17" ,"BCAC'20" ,"ER+" ,"ER-" , "Lum A",  "Lum B1",  "Lum B2" ,  "HER2", "TNBC" )  
 
@@ -153,7 +158,10 @@ server <- function(input, output) {
       if (input$exposure_name_type == 'gene'){
          dat_sub <- dat_sub %>%  select(-exposure) %>% rename(exposure= gene)
       } else if (input$exposure_name_type == 'mix'){
-        dat_sub <- dat_sub %>%  select(-exposure) %>% rename(exposure= name_mix)
+        dat_sub <- dat_sub %>%  
+                  arrange( value, outcome, main_path) %>%
+                  select(-exposure) %>% rename(exposure= name_mix) %>% 
+                  mutate(exposure = factor(exposure, levels = unique(data_sub$name_mix)))
       } else{
         # leave as as - full
       }
@@ -161,6 +169,7 @@ server <- function(input, output) {
     
     if (input$show_subcats){
       dat_sub <- dat_sub %>%  select(-exposure_cat) %>% rename(exposure_cat= exposure_cat_sub)
+      
       print(unique(dat_sub$exposure_cat))
     }
     
