@@ -237,7 +237,7 @@ quick_mvmr <- function(exp1, exp2, out){
     separate(outcome, "outcome", sep="[(]") %>% 
     generate_odds_ratios() %>% 
     select(-id.exposure, -id.outcome) %>% 
-    mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
     mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                                      ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
   
@@ -245,11 +245,60 @@ quick_mvmr <- function(exp1, exp2, out){
 }
 
 
+mr_exp_local <- function(exp_snps, out_id ) {
+  
+  out <- extract_outcome_data(
+    snps = exp_snps$SNP,
+    outcome = out_id)
+  
+  harmonised<- harmonise_data(exposure_dat = exp_snps, 
+                              outcome_dat = out)
+  
+  res <- mr(harmonised, method_list = c('mr_ivw')) %>% 
+    split_outcome() %>% 
+    split_exposure() %>% 
+    generate_odds_ratios() %>% 
+    mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
+    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                                     ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+  
+  if (dim(res)[1] == 0) {
+    # add row of NAs instead
+    res <- res %>%
+      bind_rows(set_names(rep(NA, ncol(.)), colnames(.)))
+  }
+  return(res)
+}
+
+
+mr_out_local <- function(exp_id, out_gwas ) {
+  
+  exp_snps <- extract_instruments(exp_id)
+  out <- out_gwas %>% filter(SNP %in% exp_snps$SNP)
+  
+  harmonised<- harmonise_data(exposure_dat = exp_snps, 
+                              outcome_dat = out)
+  
+  res <- mr(harmonised, method_list = c('mr_ivw')) %>% 
+    split_outcome() %>% 
+    split_exposure() %>% 
+    generate_odds_ratios() %>% 
+    mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
+    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                                     ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+  
+  if (dim(res)[1] == 0) {
+    # add row of NAs instead
+    res <- res %>%
+      bind_rows(set_names(rep(NA, ncol(.)), colnames(.)))
+  }
+  return(res)
+}
+
 
 mvmr_mixed_sources <- function(id1, outcome.id, id2_tophits_file, id2_gwas_file ){
-  
-  path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/"
-  source(paste0(path, "early-bmi-breast-cancer-mr/functions_mvmr.R"))
   
   # MVMR
   
