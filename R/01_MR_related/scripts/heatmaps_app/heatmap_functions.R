@@ -159,7 +159,7 @@ plot_heatmap <- function(data_tidy, font_size = 11, star_size = 7){
   
   font_size_ax = font_size - 2
   
-  p<-ggplot(data_tidy, aes( y=exposure, x=outcome, fill = effect_direction, 
+  p<-ggplot(data_tidy, aes( y=exposure, x=outcome, fill = value, 
                             id = exposure.id ,
                             or_ci= OR_CI, pval =  pval, nsnp=nsnp, cat = exposure_cat,
                             text = paste(" ", empty_col,
@@ -175,6 +175,46 @@ plot_heatmap <- function(data_tidy, font_size = 11, star_size = 7){
     geom_tile(colour = "grey") + 
     geom_text(aes(label=mtc,  vjust = 0.27), size = star_size) +
     scale_fill_manual(values=c("#4D9221","white", "#C51B7D"))+ ### normal
+    theme_minimal_grid(font_size) +
+    panel_border() +
+    labs(fill = "Effect direction", x="", y ="")+
+    theme(axis.text.y = element_text( size=font_size_ax), #7
+          axis.text.x = element_text(angle=40, size=font_size_ax, hjust = 1), legend.position = 'none') #  40 , 6
+  
+  p<- p + ggforce::facet_col(vars(exposure_cat), scales = "free_y", space = "free") 
+  
+  return(p)
+  
+}
+
+plot_heatmap2 <- function(data_tidy, font_size = 11, star_size = 7, col_order = "normal"){
+  
+  font_size_ax = font_size - 2
+  
+  if (col_order == 'normal'){
+    pal_values <- c( "#4D9221","#88C254", "white","#DE7BB2", "#C51B7D") # g, light g, w, light p, p 
+  } else if (col_order == "weird"){
+    pal_values <- c( "#88C254", "#4D9221", "white","#DE7BB2", "#C51B7D") #light g, g, w, light p, p 
+  }
+
+  
+  p<-ggplot(data_tidy, aes( y=exposure, x=outcome, fill = value_mtc, 
+                            id = exposure.id ,
+                            or_ci= OR_CI, pval =  pval, nsnp=nsnp, cat = exposure_cat,
+                            text = paste(" ", empty_col,
+                                         '</br>Exposure ID: ', exposure.id,
+                                         '</br>Exposure: ', exposure,
+                                         '</br>Exposure details: ', exposure_details,
+                                         '</br>Outcome: ',  outcome,
+                                         '</br>P-value: ', format(pval),
+                                         '</br>P-value (FDR adjusted): ', format(qval),
+                                         '</br>Odds ratio: ', OR_CI,
+                                         '</br>nSNPs: ', nsnp)
+  )) + 
+    geom_tile(colour = "grey") + 
+    geom_text(aes(label=mtc,  vjust = 0.27), size = star_size) +
+    scale_fill_manual(values = pal_values)+ 
+    
     theme_minimal_grid(font_size) +
     panel_border() +
     labs(fill = "Effect direction", x="", y ="")+

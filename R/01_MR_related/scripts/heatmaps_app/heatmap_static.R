@@ -40,6 +40,10 @@ exposures_to_drop <- data_full %>%
 
 data_full <- data_full %>% filter(!exposure.id %in% exposures_to_drop)
 
+# add column for sharing
+data_full <- data_full %>% mutate(value_mtc = ifelse(!is.na(mtc), paste0(value, "*"), value)) %>% 
+                        mutate(value_mtc = factor(value_mtc, levels = c("-1*" ,"-1" , "0" ,  "1" ,  "1*" )))
+
 
 #### select groups and plot----
 
@@ -48,12 +52,12 @@ star_size = 3
 
 # lifestyle
 data_sub<- data_full %>% filter(exposure_cat %in% c("Antrophometric traits", "Lifestyle traits"))
-lifestyle <- plot_heatmap(data_sub,font_size = font_size, star_size = star_size)
+lifestyle <- plot_heatmap2(data_sub,font_size = font_size, star_size = star_size, col_order = "normal")
 
 
 # metabolites 
 data_sub<- data_full %>% filter(exposure_cat %in% c("Lipids", "Metabolites"))
-metabolites <- plot_heatmap(data_sub,font_size = font_size, star_size = star_size)
+metabolites <- plot_heatmap2(data_sub,font_size = font_size, star_size = star_size)
 
 
 # proteins  
@@ -66,7 +70,7 @@ data_sub <- data_sub %>%
   mutate(exposure_cat = factor(exposure_cat, levels = c("Immune System", 'Metabolism', 'Signal Transduction','Developmental Biology', "Other", "Not mapped")))
   
 #data_sub %>% left_join(merged %>% select(id.exposure, exposure)) %>%  write_tsv("01_MR_related/mr_evidence_outputs/protein_in_final_set.tsv")
-proteins <- plot_heatmap(data_sub,ffont_size = font_size, star_size = star_size)
+proteins <- plot_heatmap2(data_sub,font_size = font_size, star_size = star_size)
 
 
 leftcol <- plot_grid(lifestyle, metabolites , labels = c('A', 'B'), label_size = 12, ncol=1)
@@ -74,9 +78,9 @@ full_plot <- plot_grid(leftcol, proteins , labels = c('', 'C'), label_size = 12,
 full_plot
 
 
-ggsave(paste0("01_MR_related/results/heatmap_html/combined_heatmaps.png"),
+ggsave(paste0("01_MR_related/results/heatmap_html/combined_heatmaps2.png"),
        plot=full_plot, scale=1, 
-       width=17, height=26,
+       width=18, height=26,
        units=c("cm"), dpi=300, limitsize=F)
 
 

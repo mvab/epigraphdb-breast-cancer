@@ -33,6 +33,10 @@ merged<- merged %>%  select(-exposure) %>% left_join(names_tidy, by =c("id.expos
 
 data_full <- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs)
 
+# add column for sharing
+data_full <- data_full %>% mutate(value_mtc = ifelse(!is.na(mtc), paste0(value, "*"), value)) %>% 
+       mutate(value_mtc = factor(value_mtc, levels = c("-1*" ,"-1" , "0" ,  "1" ,  "1*" )))
+
 
 outcome_list <- c("BCAC'17" ,"BCAC'20" ,"ER+" ,"ER-" , "Lum A",  "Lum B1",  "Lum B2" ,  "HER2", "TNBC" )  
 
@@ -211,13 +215,13 @@ server <- function(input, output) {
     res = 96,
     
     {
-    plot_heatmap(dataInput(), font_size = 11)  
+    plot_heatmap2(dataInput(), font_size = 11)  
   })
   
   output$heatmap2 <- renderPlotly(
     
     {
-    plot <- plot_heatmap(dataInput(), font_size = 9, star_size = 4)  
+    plot <- plot_heatmap2(dataInput(), font_size = 9, star_size = 4)  
     plotly::ggplotly(plot , tooltip = c("text"), 
                      width = 400 + (66 * length(unique(dataInput()$outcome))),
                      height = 3 * 10 *length(unique(dataInput()$exposure.id))
