@@ -156,12 +156,18 @@ server <- function(input, output) {
     if (input$category == 'Proteins'){
       
       if (input$exposure_name_type == 'gene'){
-         dat_sub <- dat_sub %>%  select(-exposure) %>% rename(exposure= gene)
+         dat_sub <- dat_sub %>% 
+                  arrange( value, outcome, main_path) %>%
+                  select(-exposure) %>% rename(exposure= gene)
+         dat_sub <- dat_sub %>% 
+           mutate(exposure = factor(exposure, levels = unique(dat_sub$exposure)))
+         
       } else if (input$exposure_name_type == 'mix'){
         dat_sub <- dat_sub %>%  
                   arrange( value, outcome, main_path) %>%
-                  select(-exposure) %>% rename(exposure= name_mix) %>% 
-                  mutate(exposure = factor(exposure, levels = unique(data_sub$name_mix)))
+                  select(-exposure) %>% rename(exposure = name_mix) 
+        dat_sub <- dat_sub %>% 
+                  mutate(exposure = factor(exposure, levels = unique(dat_sub$exposure)))
       } else{
         # leave as as - full
       }
