@@ -110,9 +110,15 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                          strong("Exposures with no effect"), 
                          checkboxInput("show_no_effect_exp", 
                                        label = "Don't show", 
-                                       value = TRUE)
+                                       value = TRUE),
+                  
+                         br(),
+                         strong("FDR correction"), 
+                         checkboxInput("rows_with_fdr", 
+                                       label = "Show passed", 
+                                       value = F)
                          
-                        
+   
                   ),
                
                   column(3, align="left",
@@ -196,9 +202,19 @@ server <- function(input, output) {
       dat_sub <- dat_sub %>% filter(!exposure.id %in% exposures_to_drop)
       
     }
+    if(input$rows_with_fdr){
+      
+      exposures_to_keep <- dat_sub %>% 
+        group_by(exposure.id, mtc) %>%
+        count(exposure.id, mtc) %>% 
+        filter(mtc =="\n*" & n >=1 ) %>% 
+        pull(exposure.id)
+      
+      dat_sub <- dat_sub %>% filter(exposure.id %in% exposures_to_keep)
+      
+    }
     
-    
-    
+
     return(dat_sub)
   })
   
