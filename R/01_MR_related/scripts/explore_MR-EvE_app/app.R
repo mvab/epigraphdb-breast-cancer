@@ -10,11 +10,6 @@ library(RColorBrewer)
 library(kableExtra)
 source("functions.R")
 
-####
-#current issue with the app:
-
-
-###
 
 dat <- 
   #read_tsv("data_copy/bc_all_mr_madewR.tsv") %>% 
@@ -30,14 +25,17 @@ dat <-
   # create categories of exposure traits
   filter(!grepl("_raw",exposure.id)) %>% 
   create_exposure_categories() %>%
-  # split several hundreds of proteins and metabolites in smaller chunks
-  split_protein_exposures() %>% 
-  split_metabolite_exposures() %>% 
+  # split several hundreds of proteins and metabolites in smaller chunks -- dont need these any more, as I fixed dynamic plot size
+  #split_protein_exposures() %>% 
+  #split_metabolite_exposures() %>% 
   add_exposure_labels() %>% 
   # drop really weird cases when CIs are weird
   filter(!or_loci > or_upci) %>% 
   # remove very small effects
-  filter(OR_CI != "0 [0:0]")
+  filter(OR_CI != "0 [0:0]") %>% 
+  mutate(exposure_cat = ifelse(exposure_cat == 'Antrophometric', 'Anthropometric', exposure_cat)) %>% 
+  mutate(exposure_cat = ifelse(exposure_cat == 'Drugs', 'Medication', exposure_cat))
+
 
 chip_list <- c("Meta", "OncArray",  "iCOG2017",'GWASold1','GWASold2', 'Survival', 'UKBB')
 
@@ -127,7 +125,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                   column(3, align="left",
                          selectInput(inputId ="category",
                                      label = "Trait category", 
-                                     choices = list("Antrophometric" = 'Antrophometric',
+                                     choices = list("Anthropometric" = 'Anthropometric',
                                                     "Reproductive" = 'Reproductive',
                                                     "Physical activity" = 'Physical activity',
                                                     "Diet and supplements" = 'Diet and supplements',
@@ -135,20 +133,21 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                                     "Smoking" = 'Smoking',
                                                     "Sleep" = 'Sleep',
                                                     "Lipids" = 'Lipids',
-                                                    #"Metabolites" = 'Metabolites',
-                                                    'Metabolites (pt. 1)'       = 'Metabolites (pt. 1)', 
-                                                    'Metabolites (pt. 2)'       = 'Metabolites (pt. 2)', 
+                                                    "Metabolites" = 'Metabolites',
+                                                    #'Metabolites (pt. 1)'       = 'Metabolites (pt. 1)', 
+                                                    #'Metabolites (pt. 2)'       = 'Metabolites (pt. 2)', 
                                                     #'Metabolites (met-) (pt. 3)'       = 'Metabolites (pt. 3)', 
-                                                    'Proteins (prot-) (pt. 1)' = "Proteins (pt. 1)",
-                                                    'Proteins (prot-) (pt. 2)' = "Proteins (pt. 2)",
-                                                    'Proteins (prot-) (pt. 3)' = "Proteins (pt. 3)",
-                                                    'Proteins (prot-) (pt. 4)' = "Proteins (pt. 4)",
-                                                    'Proteins (prot-) (pt. 5)' = "Proteins (pt. 5)",
-                                                    'Proteins (prot-) (pt. 6)' = "Proteins (pt. 6)",
+                                                    'Proteins' = "Proteins",
+                                                    #'Proteins (prot-) (pt. 1)' = "Proteins (pt. 1)",
+                                                    #'Proteins (prot-) (pt. 2)' = "Proteins (pt. 2)",
+                                                    #'Proteins (prot-) (pt. 3)' = "Proteins (pt. 3)",
+                                                    #'Proteins (prot-) (pt. 4)' = "Proteins (pt. 4)",
+                                                    #'Proteins (prot-) (pt. 5)' = "Proteins (pt. 5)",
+                                                    #'Proteins (prot-) (pt. 6)' = "Proteins (pt. 6)",
                                                     "Other biomarkers" = 'Other biomarkers',
-                                                    "Drugs" = 'Drugs'), 
+                                                    "Medication" = 'Medication'), 
                                      
-                                     selected = 'Antrophometric'),
+                                     selected = 'Anthropometric'),
                          
                          br(),
                          checkboxGroupInput("ukb_versions", 
@@ -236,7 +235,7 @@ server <- function(input, output) {
     
     
     ## ad hoc filtering for specific categories
-    if (input$category == 'Antrophometric'){
+    if (input$category == 'Anthropometric'){
       antro_blacklist <- c('ieu-a-81','ieu-a-74', "ieu-a-73" ,"ieu-a-79" ,"ieu-a-72" ,"ieu-a-78",
                            'ieu-a-63',  'ieu-a-66', 'ieu-a-60',  'ieu-a-69' , 'ieu-a-61',
                            'ieu-a-54', 'ieu-a-55',  'ieu-a-49' , 'ieu-a-48', 'ieu-a-57' , 'ieu-a-50',
@@ -280,6 +279,7 @@ server <- function(input, output) {
     HTML(paste("Showing the results for exposure trait category:", "<b>", input$category, "</b> (use the widget below to change) \n\n" ))
   })
 
+  # static
   output$bubbleplot1 <- renderPlot(
     
     height = function() 3 * 10 *length(unique(dataInput()$exposure.id)) + 80,
@@ -289,6 +289,7 @@ server <- function(input, output) {
     }
   )
   
+  # interactive
   output$bubbleplot2 <- renderPlotly({
     
     plot <- plot_bubble_plot(dataInput(), font_size = 8)  
