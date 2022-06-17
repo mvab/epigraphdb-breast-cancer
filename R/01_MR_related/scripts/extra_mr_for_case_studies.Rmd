@@ -18,7 +18,7 @@ params:
   data_prefix: data_prefix
 ---
 
-```{r setup I, eval=TRUE, echo=F}
+```{r setup I, eval=TRUE, echo=F, message = F, warning = F, comment=""}
 knitr::opts_chunk$set(eval = TRUE, include = T, message = F, warning = F, comment="")
 library(cowplot)
 library(flextable)
@@ -33,6 +33,7 @@ source("../../helper_functions.R")
 source("explore_MR-EvE_app/functions.R")
 source("mr_related_functions.R")
 
+set.seed(1)
 
 set_flextable_defaults(big.mark = " ", 
   font.size = 8, theme_fun = theme_vanilla,
@@ -89,7 +90,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
                     lit_space_file = "lit_terms_IGF1.csv",
                     data_prefix = 'igf'
                   ),
-                   output_file = paste0("case_study_report_", gsub(" ", "_", trait_name, ".html"))
+                   output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
 
 rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd", 
@@ -502,7 +503,7 @@ ft %>% bg(
 ```
 
 
-## Two-step MR
+## Two-step MR (step 2)
 
 
 ```{r , include=F, eval =T}
@@ -549,7 +550,7 @@ ft <- width(ft, j = c(1,3,4), width=2)
 ft
 ```
 
-## Bidirectional MR 
+## Bidirectional MR (exp/med) (step1)
 
 We next performed bidirectional MR to to establish the direction of the effect between the intermediate and the risk factor and identify the traits that are affected by the risk factor (i.e. likely mediator relationship) [**Exposure -> mediator (step1)**] and the other way around (i.e. potential confounder relationship). 
 
@@ -691,8 +692,49 @@ full_gwas <- vroom(paste0(local_data_path, "GWAS_results_tidy/", data_prefix , "
 ```
 
 
+## Two-step MR (step 2)
 
-## Bidirectional MR (female-only `r trait_name`)
+Effect on breast cancer from female-only data of **`r trait_name`**
+
+```{r}
+
+
+res_df_all<-tibble()
+res_df_pos<-tibble()
+res_df_neg<-tibble()
+
+if (all){ res_df_all <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1126') }
+if (pos){ res_df_pos <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1127') }
+if (neg){ res_df_neg <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1128') }
+
+step2_mr <- bind_rows(res_df_all, res_df_pos, res_df_neg) %>% 
+   select(exposure,  outcome,  OR_CI,  effect_direction, nsnp) %>% 
+   mutate(outcome = gsub("(Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) 
+
+
+if (step2_mr[step2_mr$outcome == "Breast cancer ",]$effect_direction != 'overlaps null') {all =T} else{all =F}
+if (step2_mr[step2_mr$outcome == "ER+ Breast cancer ",]$effect_direction != 'overlaps null') {pos =T} else{pos =F}
+if (step2_mr[step2_mr$outcome == "ER- Breast cancer ",]$effect_direction != 'overlaps null') {neg =T} else{neg =F}
+
+```
+
+```{r}
+ft <- flextable(step2_mr)
+ft <- width(ft, j = c(1,3), width=3)
+
+border <- fp_border( width = 2)
+
+ft %>%
+  bg(., 
+      i = ~ effect_direction != 'overlaps null', 
+      j = colnames(step2_mr), 
+      bg = "#7CC5A7", part = "body")
+```
+
+
+
+
+## Bidirectional MR (exp/med) (step1) (female-only `r trait_name`)
 
 Testing on all literature intermediates. An empty rows inducates that no instruments were avaialble to perform the analysis.
 
@@ -802,12 +844,11 @@ pt1 <- redone_MR %>%
 
 
 # get total effect of main trait on available BC outcomes
-pt2 <- total_res %>%  
-  filter(id.exposure == main) %>%
-  select(exposure, outcome,total_OR_CI,total_ED) %>%  
-  distinct() 
+pt2 <- step2_mr %>% 
+  filter(effect_direction != 'overlaps null') %>% 
+  select(exposure,  outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction, nsnp)
   
-  
+
 X <- bind_rows(pt1, pt2) %>%  arrange(outcome)
 
 
@@ -835,7 +876,7 @@ ft<-flextable(total_res_out_dipsF)
 ft<-width(ft, j = c(2), width=3)
 ft<-width(ft, j = c(3:7), width=1.8)
 ft %>% bg(
-  ., i = ~ `direct effect direction` == 'overlaps null', 
+  ., i = ~ `direct effect direction` == 'overlaps null' & `total effect direction` != 'overlaps null' , 
   j = "direct effect direction", 
   bg = "#6CA3F8", part = "body")
 ```
