@@ -125,8 +125,8 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                          selectInput(inputId ="exposure_name_type",
                                      label = "Display names (for proteins only)", 
                                      choices = list("Full names" = 'full',
-                                                    "Acronyms/genes" = 'gene',
-                                                    "Mixed names(capped by length)" = 'mix'), 
+                                                    "Aabbreviations / gene names" = 'gene',
+                                                    "Mixed names (capped by length)" = 'mix'), 
                                      selected = 'Full names'),
               
          
@@ -181,12 +181,21 @@ server <- function(input, output) {
       } else{
         # leave as as - full
       }
+
     }
     
     if (input$show_subcats){
-      dat_sub <- dat_sub %>%  select(-exposure_cat) %>% rename(exposure_cat= exposure_cat_sub)
       
-      print(unique(dat_sub$exposure_cat))
+      if (input$category == 'Proteins'){
+        
+        dat_sub <- dat_sub %>% 
+          select(-exposure_cat) %>% rename(exposure_cat=exposure_cat_sub) %>% 
+          mutate(exposure_cat = factor(exposure_cat, levels = c("Immune System", 'Metabolism', 'Signal Transduction','Developmental Biology', "Other", "Not mapped")))
+        
+      } else{ # all other cats
+        dat_sub <- dat_sub %>%  select(-exposure_cat) %>% rename(exposure_cat= exposure_cat_sub)
+      }
+      
     }
     
     if(input$show_no_effect_exp){
