@@ -31,7 +31,8 @@ or_ci_data <- inputs$or_ci_data
 names_tidy <- read_csv("data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
 merged<- merged %>%  select(-exposure) %>% left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% select(exposure, everything()) %>% filter(!is.na(exposure))
 
-data_full <- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs)
+data_full <- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs) %>% 
+            mutate(exposure_cat = ifelse(exposure_cat == 'Antrophometric traits', 'Anthropometric traits', exposure_cat))
 
 # add column for sharing
 data_full <- data_full %>% mutate(value_mtc = ifelse(!is.na(mtc), paste0(value, "*"), value)) %>% 
@@ -94,7 +95,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                   column(3, align="left",
                          selectInput(inputId ="category",
                                      label = "Select trait category", 
-                                     choices = list("Antrophometric traits" = 'Antrophometric traits',
+                                     choices = list("Anthropometric traits" = 'Anthropometric traits',
                                                     "Lifestyle traits" = 'Lifestyle traits',
                                                     "Metabolites" = 'Metabolites',
                                                     "Lipids" = 'Lipids',
