@@ -66,7 +66,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
                   lit_space_file = "lit_terms_cardiotrophin1.csv",
                   data_prefix = NA
                   ),
-                   output_file = paste0("case_study_report_", gsub(" ", "_", trait_name, ".html"))
+                   output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
 
 
@@ -78,7 +78,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
                     lit_space_file = "lit_terms_menopause.csv",
                     data_prefix = NA
                   ),
-                   output_file = paste0("case_study_report_", gsub(" ", "_", trait_name, ".html"))
+                   output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
 
 
@@ -101,7 +101,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
                     lit_space_file = "lit_terms_childhood_obesity.csv",
                     data_prefix = 'early_bmi_adj'
                   ),
-                   output_file = paste0("case_study_report_", gsub(" ", "_", trait_name, ".html"))
+                   output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
 
 
@@ -696,31 +696,27 @@ full_gwas <- vroom(paste0(local_data_path, "GWAS_results_tidy/", data_prefix , "
 
 Effect on breast cancer from female-only data of **`r trait_name`**
 
-```{r}
-
-
+```{r echo =F, eval =T}
 res_df_all<-tibble()
 res_df_pos<-tibble()
 res_df_neg<-tibble()
 
-if (all){ res_df_all <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1126') }
-if (pos){ res_df_pos <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1127') }
-if (neg){ res_df_neg <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1128') }
+res_df_all <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1126') 
+res_df_pos <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1127') 
+res_df_neg <- mr_exp_local(exp_snps = tophits, out_id = 'ieu-a-1128') 
 
 step2_mr <- bind_rows(res_df_all, res_df_pos, res_df_neg) %>% 
    select(exposure,  outcome,  OR_CI,  effect_direction, nsnp) %>% 
-   mutate(outcome = gsub("(Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) 
-
-
-if (step2_mr[step2_mr$outcome == "Breast cancer ",]$effect_direction != 'overlaps null') {all =T} else{all =F}
-if (step2_mr[step2_mr$outcome == "ER+ Breast cancer ",]$effect_direction != 'overlaps null') {pos =T} else{pos =F}
-if (step2_mr[step2_mr$outcome == "ER- Breast cancer ",]$effect_direction != 'overlaps null') {neg =T} else{neg =F}
-
+   mutate(outcome = gsub("(Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) %>% 
+  mutate(exposure = ifelse(exposure == "IGF", "IGF-1", exposure)) %>% 
+  mutate(exposure = ifelse(exposure == "Childhood BMI", "Comparative body size at age 10", exposure))
 ```
 
-```{r}
+```{r echo =F, eval =T}
 ft <- flextable(step2_mr)
-ft <- width(ft, j = c(1,3), width=3)
+ft <- width(ft, j = c(1), width=3)
+ft <- width(ft, j = c(2,3), width=2)
+
 
 border <- fp_border( width = 2)
 
@@ -729,6 +725,12 @@ ft %>%
       i = ~ effect_direction != 'overlaps null', 
       j = colnames(step2_mr), 
       bg = "#7CC5A7", part = "body")
+
+
+if (all && step2_mr[step2_mr$outcome == "Breast cancer ",]$effect_direction != 'overlaps null') {all =T} else{all =F}
+if (pos && step2_mr[step2_mr$outcome == "ER+ Breast cancer ",]$effect_direction != 'overlaps null') {pos =T} else{pos =F}
+if (neg && step2_mr[step2_mr$outcome == "ER- Breast cancer ",]$effect_direction != 'overlaps null') {neg =T} else{neg =F}
+
 ```
 
 
@@ -846,10 +848,10 @@ pt1 <- redone_MR %>%
 # get total effect of main trait on available BC outcomes
 pt2 <- step2_mr %>% 
   filter(effect_direction != 'overlaps null') %>% 
-  select(exposure,  outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction, nsnp)
+  select(exposure,  outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction)
   
 
-X <- bind_rows(pt1, pt2) %>%  arrange(outcome)
+X <- bind_rows(pt1, pt2) %>%  arrange(outcome) %>% mutate(exposure = ifelse(exposure == "IGF", "IGF-1", exposure)) 
 
 
 mvmr_sens <- full_join(X, all_resF, by = c("exposure"="exposure", "outcome"="outcome")) %>% select(test, everything())
