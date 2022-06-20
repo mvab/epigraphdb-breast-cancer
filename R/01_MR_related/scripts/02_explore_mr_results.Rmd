@@ -22,14 +22,13 @@ source('explore_MR-EvE_app/functions.R')
 rm(dat)
 dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>% 
         #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_madewR.tsv") %>% 
-      read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>% 
+      read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>%  # from 01_mr_epigraph_query.R script
       # subset 
       filter(exposure.sex != 'Males') %>% 
-      filter(!outcome.id %in% c('ebi-a-GCST007236', 'ebi-a-GCST004988')) %>% 
       filter(mr.method != 'Steiger null') %>% 
       # convert MR results to OR
       tidy_display_numbers()%>% 
-      # deal ith al outcome related changes
+      # deal with al outcome related changes
       process_bc_outcomes() %>% 
       # create categories of exposure traits
       filter(!grepl("_raw",exposure.id)) %>% 
@@ -39,6 +38,8 @@ dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>%
       filter(!or_loci > or_upci) %>% 
       # remove very small effects
       filter(OR_CI != "0 [0:0]")
+
+length(unique(dat$exposure.id)) # 1643
 
 ```
 
@@ -114,10 +115,9 @@ dat %>%
 
 
 ```{r}
+# output df will be saved here
 tidy_traits_by_cat <- data.frame()
 ```
-
-
 
 
 ### 1. Anthophometric traits
@@ -129,13 +129,15 @@ antro_blacklist <- c('ieu-a-81','ieu-a-74', "ieu-a-73" ,"ieu-a-79" ,"ieu-a-72" ,
                      'ukb-b-12039', 'ukb-b-2303',
                      'ieu-a-2', 'ieu-a-835')
 
+
 input <- dat %>% filter(exposure_cat %in% c('Antrophometric')) %>% 
     filter(!grepl("arm|leg|first child", exposure.trait, ignore.case = T)) %>% 
     filter(!exposure.id %in% antro_blacklist)
 
+length(unique(input$exposure.id)) #56
+
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
-
 
 
 # deal with duplicated from UKB
@@ -146,10 +148,25 @@ ukb_diff_sources<-input %>%
 
 input <- input %>% 
   filter(!(exposure.trait %in% ukb_diff_sources$exposure.trait & author == 'Neale'))
+length(unique(input$exposure.id)) # 53
+
+
+antro_exclusion_table <- dat %>% 
+                filter(exposure_cat %in% c('Antrophometric')) %>% 
+                mutate(include = case_when(grepl("arm|leg|first child", exposure.trait, ignore.case = T) ~ F,
+                                           exposure.id %in% antro_blacklist ~ F,
+                                           exposure.trait %in% ukb_diff_sources$exposure.trait & author == 'Neale' ~ F,
+                                           TRUE ~ T)) %>% 
+                select(exposure.id, exposure.trait,exposure, include ) %>% distinct()
+
+write_csv(antro_exclusion_table, "../results/mr_evidence_outputs/antro_traits_exclusion_list.csv")
+
+
+
 
 p<-plot_bubble_plot(input)
 ply<-plotly::ggplotly(p)
-ply
+
 
 p_gg<-plotly::plotly_build(p) # convert ggplot object to plotly
 p_gg$layout$showlegend = "TRUE"
@@ -164,27 +181,28 @@ p_gg$layout$showlegend = "TRUE"
 ```{r fig.width=10, fig.height=5}
 input <- dat %>% filter(exposure_cat %in% c('Physical activity')) %>% 
              filter(!grepl("leisure|mental", exposure, ignore.case = T))
-
+length(unique(input$exposure.id)) #39
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
 p<-plot_bubble_plot(input)
-p
+
 ```
 
-### 3.  Supplements / diat
+### 3.  Supplements / diet
 
 ```{r fig.width=10, fig.height=5}
 input <- dat %>% filter(exposure_cat %in% c('Diet and supplements')) %>% 
                 filter(!grepl("questionnaire", exposure))
 
+length(unique(input$exposure.id)) #54
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
 p<-plot_bubble_plot(input)
-p
+
 ```
 
 
@@ -192,13 +210,14 @@ p
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Reproductive')) 
+length(unique(input$exposure.id)) # 23
 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
 p<-plot_bubble_plot(input)
-p
+
 ```
 
 
@@ -207,26 +226,28 @@ p
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Alcohol')) 
+length(unique(input$exposure.id)) 
 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
 p<-plot_bubble_plot(input)
-p
+
 ```
 
 ### 6. smoking traits
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c( "Smoking")) 
+length(unique(input$exposure.id)) 
 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
 p<-plot_bubble_plot(input)
-p
+
 ```
 
 
@@ -237,6 +258,7 @@ p
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Metabolites')) 
 
+length(unique(input$exposure.id)) 
 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
@@ -244,7 +266,7 @@ tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
 p<-plot_bubble_plot(input)
-p
+
 
 test_list<-input %>%  filter(mr.pval < 10e-6) %>% 
                       #filter(mr.b > 0.01) %>%
@@ -265,16 +287,18 @@ ply<-plotly::ggplotly(p)
 input <- dat %>% filter(exposure_cat %in%  c('Proteins')) %>% 
         arrange(exposure.trait)
 
+length(unique(input$exposure.id)) 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
+
+# testing visualization
 dim(input)[1]/9
 length(unique(input$exposure.trait))
 
 p<-plot_bubble_plot(input[1:1000,])
 p<-plot_bubble_plot(input[1000:2000,])
-p
 
 test_list<-input %>%  filter(mr.pval < 10e-8) %>% filter(mr.b > 0.01) %>% pull(exposure.id) %>% unique()
 length(test_list)
@@ -292,9 +316,8 @@ ply<-plotly::ggplotly(p)
 ### 9. Other biomarkers/compounds
 
 ```{r fig.width=10, fig.height=3}
-input <- dat %>% filter(exposure_cat %in%  c('Other biomarkers')) %>% 
-        filter(!grepl("FEV",exposure.trait)) 
-
+input <- dat %>% filter(exposure_cat %in%  c('Other biomarkers'))
+length(unique(input$exposure.id)) 
 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
@@ -309,32 +332,61 @@ p<-plot_bubble_plot(input)
 
 ```{r fig.width=10, fig.height=3}
 input <- dat %>% filter(exposure_cat %in%  c('Sleep'))
+length(unique(input$exposure.id)) 
 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 
 p<-plot_bubble_plot(input)
-p
 ```
 
 ### 11. Drugs
 ```{r fig.width=12}
 input <- dat %>% filter(exposure_cat %in% c('Drugs')) 
-
+length(unique(input$exposure.id)) 
 #save
 tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
 
 p<-plot_bubble_plot(input)
-p
+```
+
+
+
+### 12. Lipids
+
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Lipids')) 
+
+length(unique(input$exposure.id)) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
 ```
 
 
 ```{r}
 #SAVE
-tidy_traits_by_cat %>% count(exposure_cat)
-tidy_traits_by_cat %>% write_tsv("mr_evidence_outputs/tidy_traits_by_cat.tsv")
+tidy_traits_by_cat %>% select(exposure.id, exposure_cat) %>% distinct() %>%  count(exposure_cat, sort=T)
+tidy_traits_by_cat %>% select(exposure.id, exposure_cat) %>% distinct() %>% count(exposure_cat) %>% summarise(across(n, sum)) # 905
+tidy_traits_by_cat %>% write_tsv("../results/mr_evidence_outputs/tidy_traits_by_cat.tsv")
 ```
 
 
+
+## checking 
+```{r}
+old <- read_tsv("../results/mr_evidence_outputs/tidy_traits_by_cat_old.tsv")
+old %>% select(exposure.id, exposure_cat) %>% distinct() %>%  count(exposure_cat, sort=T)
+old %>% select(exposure.id, exposure_cat) %>% distinct() %>% count(exposure_cat) %>% summarise(across(n, sum))
+```
+
+```{r}
+missing<- setdiff(old$exposure.id, tidy_traits_by_cat$exposure.id)
+old %>% filter(exposure.id %in% missing) %>% select(exposure.id, exposure.trait, exposure, exposure_cat) %>% distinct() %>% View()
+# basically just weird metabolites and cell types
+```
 
