@@ -68,7 +68,7 @@ out3<-query_epigraphdb_as_table(query)
 dim(out3)  #40475
 length(unique(out3$exposure.id)) # 1970
 
-write_tsv(out3, "01_MR_related/explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv")  # main query result
+write_tsv(out3, "01_MR_related/explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv")  # main query result -- saves directly to the app that uses it!
 
 
 
