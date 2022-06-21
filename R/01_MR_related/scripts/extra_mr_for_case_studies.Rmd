@@ -72,7 +72,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
 
 rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd", 
                   params = list(
-                    trait_name = "Age at menopause (last menstrual period)",
+                    trait_name = "Age at menopause",
                     main = "ukb-b-17422",
                     main_lit = "ukb-b-17422",
                     lit_space_file = "lit_terms_menopause.csv",
@@ -435,10 +435,10 @@ for (i in 1:length(lit_terms_df$gwas.id)){
   }
 }
 
-
+ 
 ids <- lit_terms_df %>% 
   filter(instruments > 0 ) %>% 
-  filter(!gwas.id %in% c("prot-a-81", "prot-a-1102", "ukb-b-8587", "prot-a-2694", "prot-a-2363", "finn-b-E4_OBESITY") )%>% 
+  filter(!gwas.id %in% c("prot-a-81", "prot-a-1102", "ukb-b-8587", "prot-a-2694", "prot-a-2363", "finn-b-E4_OBESITY", "prot-a-757") )%>% 
   pull(gwas.id) %>% unique()
 ```
 
@@ -684,7 +684,7 @@ ft %>% bg(
 # (Optional): sensitivity analysis with female only data (if available)
 
 
-```{r echo =F, eval =T}
+```{r echo =F, eval =F}
 local_data_path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/"
 
 tophits <- read_tsv(paste0(local_data_path, "GWAS_tophits/", data_prefix , "_tophits.tsv"), show_col_types = FALSE)
@@ -696,7 +696,7 @@ full_gwas <- vroom(paste0(local_data_path, "GWAS_results_tidy/", data_prefix , "
 
 Effect on breast cancer from female-only data of **`r trait_name`**
 
-```{r echo =F, eval =T}
+```{r echo =F, eval =F}
 res_df_all<-tibble()
 res_df_pos<-tibble()
 res_df_neg<-tibble()
@@ -712,7 +712,7 @@ step2_mr <- bind_rows(res_df_all, res_df_pos, res_df_neg) %>%
   mutate(exposure = ifelse(exposure == "Childhood BMI", "Comparative body size at age 10", exposure))
 ```
 
-```{r echo =F, eval =T}
+```{r echo =F, eval =F}
 ft <- flextable(step2_mr)
 ft <- width(ft, j = c(1), width=3)
 ft <- width(ft, j = c(2,3), width=2)
@@ -740,7 +740,7 @@ if (neg && step2_mr[step2_mr$outcome == "ER- Breast cancer ",]$effect_direction 
 
 Testing on all literature intermediates. An empty rows inducates that no instruments were avaialble to perform the analysis.
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval =F}
 
 step1_mr <- tibble()
 
@@ -765,7 +765,7 @@ step1_mr <- step1_mr %>%  mutate(exposure = ifelse(exposure == "Childhood BMI", 
 ```
 
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval =F}
 potential_mediators2 <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(outcome)
 potential_mediators2id <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(id.outcome)
 
@@ -792,7 +792,7 @@ Potential mediators from female-only `r trait_name` analysis: **`r paste0(potent
 
 ## MVMR
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval =F}
 
 all_resF <- tibble()
 x1 <- tibble()
@@ -834,7 +834,7 @@ for (interm in potential_mediators2id){
 
 ```
 
-```{r echo=F, eval=T}
+```{r echo=F, eval=F}
 
 # get total CI of potential meds of BC from here
 pt1 <- redone_MR %>%
@@ -872,7 +872,7 @@ total_res_out_dipsF<- total_res_outF %>%
 
 
 
-```{r echo =F, eval =T}
+```{r echo =F, eval =F}
 total_res_out_dipsF <- as_grouped_data(x = total_res_out_dipsF, groups = c("#"), columns = NULL)
 ft<-flextable(total_res_out_dipsF)
 ft<-width(ft, j = c(2), width=3)
