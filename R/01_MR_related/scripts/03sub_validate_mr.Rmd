@@ -1,57 +1,102 @@
 ---
-title: "MR on subtype outcomes"
+title: "MR validation"
+author: "Marina Vabistsevits"
+date: '2022-06-21'
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r message=F}
+
+library(dplyr)
+library(purrr)
 library(readr)
-library(data.table)
+library(stringr)
+library(tibble)
+library(tidyr)
+library(TwoSampleMR)
 library(vroom)
 
-library(tidyr)
-library(purrr)
-library(tibble)
-library(dplyr)
 
-library(TwoSampleMR)
-library(ggplot2)
-library(cowplot)
-library(wesanderson)
+source("explore_MR-EvE_app/functions.R")
+source("mr_related_functions.R")
 ```
+
+# Validation in BCAC 2017
+
+```{r}
+## validate results by redoing MR + sensitivity tests
+
+all_cats<-read_tsv("../results/mr_evidence_outputs/trait_for_followup.tsv") # created in 03 (309 traits)
+
+exp_help_names <- dat %>% # from the first chunk
+  select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat') %>% 
+  distinct()
+
+## MR -- doing all outcomes validation, even if mr-eve had sign result only for one or two types
+ids <-all_cats %>% pull(id)
+res_df_all <- bind_rows(lapply(ids, do_MR, 'all')) 
+res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+')) 
+res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-'))
+
+redone_MR_full <- bind_rows(res_df_all,res_df_pos,res_df_neg) %>% left_join(exp_help_names)
+
+# split into MR and sens and save
+redone_MR <- redone_MR_full %>% 
+              select(-starts_with('egger_intercept'), -starts_with('Q'))
+redone_MR_sens <- redone_MR_full %>% 
+              select(id.exposure, id.outcome, exposure, outcome, method, nsnp,
+                     starts_with('egger_intercept'), starts_with('Q'), exposure_name, exposure_cat) %>% 
+              filter(method != 'Weighted median')
+
+write_tsv(redone_MR,      "../results/mr_evidence_outputs/redone_MR_fulloutput.tsv")
+write_tsv(redone_MR_sens, "../results/mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
+
+
+##
+redoneMR_tidy <- redone_MR %>%  
+  select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
+  filter(effect_direction != "overlaps null") %>% 
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
+
+redoneMR_tidy%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)#total
+redoneMR_tidy%>% filter(id.outcome == 'ieu-a-1127') %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat) # selected outcome
+
+#write_tsv(redoneMR_tidy, "mr_evidence_outputs/trait_manual_ivw.tsv") #### OLD NAME
+write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv")
+
+```
+
+
+# Validation in BCAC 2020
+
 
 ```{r message=F}
 other_project_path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/"
-
 bcac_lookup<-read_csv(paste0(other_project_path, "early-bmi-breast-cancer-mr//metadata/data_lookup_BCAC.csv")) 
-
 
 # load functions
 source(paste0(other_project_path, "early-bmi-breast-cancer-mr/functions.R"))
 source(paste0(other_project_path, "early-bmi-breast-cancer-mr/functions_mvmr.R"))
 
-```
 
-```{r message=F}
 # load all BC subtype data
 bc_data<-list()
 data_path_gwas <- paste0(other_project_path, "/01_Data/new_data/tidy_meta_analysed_data/")
 for (i in bcac_lookup$full_data){
   print(paste0("Loading  ", i))
-  bc_data[[i]]<- vroom(paste0(data_path_gwas, i)) 
+  bc_data[[i]]<- vroom(paste0(data_path_gwas, i), show_col_types = F) 
 }
 ```
 
 ```{r}
 
 # load traits that have been validated in 'process_mr_results.Rmd'
-traits_df<-read_tsv("mr_evidence_outputs/trait_for_followup.tsv")
+traits_df<-read_tsv("../results/mr_evidence_outputs/trait_for_followup.tsv") # created in 03 .. (309 traits)
 
 traits<- traits_df%>%  pull(id) %>% unique()
+length(traits) # 309
 
-length(traits) # 314
-
-traits <- c("ieu-a-1096", "ieu-a-99" ,"ieu-a-107")
+#traits <- c("ieu-a-1096", "ieu-a-99" ,"ieu-a-107")
 ```
 
 
@@ -62,10 +107,9 @@ for (i in 1:length(traits)){
     print(paste0("==== ", trait, " / ", i,  " ===="))
   
     # load instruments
-    trait1_exp <- extract_instruments(trait) #### NB not clumping??
+    trait1_exp <- extract_instruments(trait) #### NB not clumping
   
-    
-    
+  
     # MR against every BC subtype outcome
     trait_vs_subtypes<-tibble()
     for (bc_type in names(bc_data)){
@@ -119,7 +163,7 @@ for (i in 1:length(traits)){
                                                   starts_with('egger_intercept'), starts_with('Q'), ) %>% 
                                             filter(method != 'Weighted median')
          
-         ind_res_dir <- paste0("mr_evidence_outputs/mr_subtypes/")
+         ind_res_dir <- paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/")
          write_tsv(mr_res, paste0(ind_res_dir, "MR_", trait,"-to-BCAC2020_subtypes.tsv" ))
          write_tsv(sens_res, paste0(ind_res_dir, "sens_", trait,"-to-BCAC2020_subtypes.tsv" ))
           
@@ -132,9 +176,9 @@ for (i in 1:length(traits)){
 ```{r}
 # join all files into one df
 
-all.files <- list.files(path = paste0("mr_evidence_outputs/mr_subtypes/"), pattern = paste0("^MR*"), full.names = T)
+all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/"), pattern = paste0("^MR*"), full.names = T)
 l <- lapply(all.files, read_tsv, show_col_types = FALSE)
-all_res<- bind_rows(l)
+all_res<- bind_rows(l) %>% filter(id.exposure %in% traits)
 
 all_res<- all_res %>% 
   select(-exposure_name, -exposure_cat) %>% 
@@ -159,17 +203,16 @@ all_res<- all_res %>%
   rename(id.exposure = exposure.id , exposure = exposure.trait)
 
 
-write_tsv(all_res, paste0("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv"))
+write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv"))
 ```
 
 
 
 ```{r}
 # join all SENS files into one df
-
-all.files <- list.files(path = paste0("mr_evidence_outputs/mr_subtypes/"), pattern = paste0("^sens*"), full.names = T)
+all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure"), pattern = paste0("^sens*"), full.names = T)
 l <- lapply(all.files, read_tsv, show_col_types = FALSE)
-all_res<- bind_rows(l)
+all_res<- bind_rows(l) %>% filter(id.exposure %in% traits)
 
 all_res <- all_res %>%   mutate(outcome =
                      case_when(outcome == 'Luminal B-HER2 negative' ~ 'LuminalB1 ER+PR+HER-',
@@ -181,62 +224,8 @@ all_res <- all_res %>%   mutate(outcome =
                                outcome == 'Breast cancer (overall BCAC 2020)' ~ 'Breast cancer BCAC 2020',
                                TRUE ~ outcome))
 
-write_tsv(all_res, paste0("mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020.tsv"))
+write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020.tsv"))
 ```
-
-
-
-
-
-```{r message=F}
-## Making plots  ---- old set-up : does not work right now
-
-for (trait in traits){
-  
-  all.files <- list.files(path = paste0(results_path, "new_bcac/"), pattern = paste0("MR_", trait,"-to-*"), full.names = T)
-  l <- lapply(all.files, read_tsv)
-  
-  dat<-
-    bind_rows(l) %>% 
-    filter(method %in% c("Inverse variance weighted", "Wald ratio")) %>% 
-    select( -method) %>% 
-    mutate(mr="Univariable MR") %>% 
-    mutate(outcome = case_when(outcome == 'Luminal B-HER2 negative' ~ 'Luminal B1: ER+PR+HER-',
-                               outcome == 'Luminal B'        ~ 'Luminal B2: ER+PR+HER+',
-                               outcome == 'Luminal A'        ~ 'Luminal A: ER+PR+HER-',
-                               outcome == 'HER2 enriched'    ~ 'HER2-enriched: ER-PR-HER+',
-                               outcome == 'TNBC Basal-like'  ~ 'Basal-like TNBC: ER-PR-HER-',
-                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'BRCA1_CIMBA TNBC: ER-PR-HER-',
-                               TRUE ~ outcome)) %>% 
-    mutate(OR_CI =  paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]"))
-  
-  #dat %>% kable_it()
-  
-  pal <- wes_palette("Zissou1")[c(1,5)]
-  dat$mr <- forcats::fct_rev(dat$mr) 
-  p<-ggplot(dat, aes(y=exposure, x=or, label=outcome, colour=exposure,  shape=exposure)) +
-    geom_errorbarh(aes(xmin=or_lci95, xmax=or_uci95), height=.3) +
-    geom_point(size=3)+
-    geom_text(aes(label=OR_CI),hjust=-0.1, vjust=-0.6, size =3, color = 'darkgrey')+
-    scale_color_manual(values=pal)+
-    scale_shape_manual(values = c(16,20)) +
-    geom_vline(xintercept=1, linetype='longdash') +
-    theme_minimal_hgrid(9, rel_small = 1) +
-    facet_wrap(~outcome, ncol=1)+
-    labs(color = "",y = "", x = "Odds ratio",
-         title= paste0("        IVW MR results") )+
-    theme(legend.position = "none", panel.grid.major.x = element_line())
-  
-  
-  
-  ggsave(paste0("/Users/ny19205/Documents/Projects_IEU/epigraphdb_breast_cancer/R/external_figures/new_bcac_", trait, ".png"),
-         plot=p, scale=1.2, 
-         width=15, height=10,
-         units=c("cm"), dpi=300, limitsize=F)
-  
-}
-```
-
 
 
 

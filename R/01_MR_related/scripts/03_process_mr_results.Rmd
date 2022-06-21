@@ -8,25 +8,34 @@ library(dplyr)
 library(readr)
 library(tidyr)
 library(stringr)
-
+library(tibble)
 library(TwoSampleMR)
 
 source("explore_MR-EvE_app/functions.R")
-
 source("mr_related_functions.R")
 ```
 
 
 ```{r, message = FALSE, include=F}
 rm(dat)
-dat <-  read_tsv("mr_evidence_outputs/tidy_traits_by_cat.tsv") %>%  # made in explore_mr_results.Rmd
+dat <-  read_tsv("../results/mr_evidence_outputs/tidy_traits_by_cat.tsv") %>%  # made in explore_mr_results.Rmd
         # update exposure categories 
         create_exposure_categories() %>%  filter(exposure_cat != 'other')
-  
+
+exp_help_names <- dat %>% # from the first chunk
+  select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat') %>% 
+  distinct()
+
+dat %>% select(exposure.id, exposure_cat) %>% distinct() %>%  count(exposure_cat, sort=T)
+n<- dat %>% select(exposure.id, exposure_cat) %>% distinct() %>% count(exposure_cat) %>% summarise(across(n, sum)) %>% pull(n)# 905
+
+table1_col1<- dat %>% select(exposure.id, exposure_cat) %>% distinct() %>%  count(exposure_cat, sort=T)
+
 
 dat %>% select(exposure_cat, exposure.trait, exposure.id) %>% distinct() %>% filter(exposure_cat == 'Other biomarkers') %>% View()
+dat %>% select(exposure_cat, exposure.trait, exposure.id) %>% distinct() %>% filter(exposure_cat == 'Alcohol') %>% View()
 
-dat %>% select(exposure_cat, exposure.trait, exposure.id) %>% distinct() %>%count(exposure_cat) 
+
 ```
 
 
@@ -34,6 +43,7 @@ dat %>% select(exposure_cat, exposure.trait, exposure.id) %>% distinct() %>%coun
 
 
 ```{r}
+# select traits that  have effect in 2/3 of main dataset in a subtype
 
 all_cats<-tibble() # run once
 cats <- dat %>% pull(exposure_cat) %>% unique()
@@ -44,17 +54,18 @@ for (i in cats){
   
   input <- dat %>% filter(exposure_cat == i)
   
-  # run for each category input
+  # run for each category input -- 2/3 method
   u <- traits_for_follow_up(input)
   
   all_cats<-bind_rows(all_cats, u) %>% distinct()
 }
 
-all_cats %>% select(exposure_cat, trait, id) %>% distinct() %>% count(exposure_cat)
+all_cats %>% select(exposure_cat, trait, id) %>% distinct() %>% count(exposure_cat, sort=T)
+table1_col2<- all_cats %>% select(exposure_cat, trait, id) %>% distinct() %>% count(exposure_cat, sort=T)
 
-dim(all_cats) # 312   7
+dim(all_cats) # 309
 
-write_tsv(all_cats, "mr_evidence_outputs/trait_for_followup.tsv")
+write_tsv(all_cats, "../results/mr_evidence_outputs/trait_for_followup.tsv")
 ```
 
 ```{r}
@@ -72,63 +83,11 @@ dat %>%
 
 
 ```{r}
-## validate results by redoing MR + sensitivity tests
-
-all_cats<-read_tsv("mr_evidence_outputs/trait_for_followup.tsv")
-
-exp_help_names <- dat %>% # from the first chunk
-  select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat') %>% 
-  distinct()
-
-## MR -- doing all outcomes validaton, even if mr-eve had sign result only for one or two types
-ids <-all_cats %>% pull(id)
-res_df_all <- bind_rows(lapply(ids, do_MR, 'all')) 
-res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+')) 
-res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-'))
-
-redone_MR_full <- bind_rows(res_df_all,res_df_pos,res_df_neg) %>% left_join(exp_help_names)
-
-# split into MR and sens and save
-redone_MR <- redone_MR_full %>% 
-              select(-starts_with('egger_intercept'), -starts_with('Q'))
-redone_MR_sens <- redone_MR_full %>% 
-              select(id.exposure, id.outcome, exposure, outcome, method, nsnp,
-                     starts_with('egger_intercept'), starts_with('Q'), exposure_name, exposure_cat) %>% 
-              filter(method != 'Weighted median')
-
-
-## category update tmp fix (needed unless rerun MR)
-#redone_MR<- redone_MR %>%rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
-#  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
-#  select(-exposure ) %>% 
-#  rename(id.exposure = exposure.id , exposure = exposure.trait) 
-write_tsv(redone_MR,      "mr_evidence_outputs/redone_MR_fulloutput.tsv")
-
-
-## category update tmp fix (needed unless rerun MR)
-#redone_MR_sens<- redone_MR_sens %>%rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
-#  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
-#  select(-exposure ) %>% 
-#  rename(id.exposure = exposure.id , exposure = exposure.trait) 
-write_tsv(redone_MR_sens, "mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
-
-
-##
-redoneMR_tidy <- redone_MR %>%  
-  select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
-  filter(effect_direction != "overlaps null") %>% 
-  filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
-
-redoneMR_tidy%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)#total
-redoneMR_tidy%>% filter(id.outcome == 'ieu-a-1127') %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat) # selected outcome
-
-#write_tsv(redoneMR_tidy, "mr_evidence_outputs/trait_manual_ivw.tsv") #### OLD NAME
-write_tsv(redoneMR_tidy, "mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv")
-
-
+# load BCAC 2017 validation results and tuen into wide format
 
 # create wide form of results to view by subtype
-redone_MR <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
+redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput.tsv") # created in 035
+length(unique(redone_MR$id.exposure)) # 309
 
 redone_wide <- redone_MR %>%
   select(id.outcome, id.exposure,exposure, exposure_name, effect_direction, method, exposure_cat) %>% 
@@ -140,11 +99,164 @@ redone_wide <- redone_MR %>%
   pivot_wider(names_from = id.outcome, values_from = effect_dir_binary)
  
 
-redone_MR %>% filter(method %in% c('Inverse variance weighted', 'Wald ratio') ) %>% 
-  arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) %>% View()
+```
+
+
+```{r message =F}
+
+# load BCAC 2020 validation results and turn into wide format
+
+res_subtypes <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>% 
+                filter(outcome != "TNBC_BRCA1 ER-PR-HER-")
+
+## category update 
+res_subtypes <- res_subtypes %>% 
+  rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
+  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
+  select(-exposure ) %>% 
+  rename(id.exposure = exposure.id , exposure = exposure.trait) 
+
+
+res_subtypes_wide<- res_subtypes %>% 
+  select(outcome, id.exposure,exposure,  effect_direction, method) %>% 
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
+  mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
+                                       effect_direction == 'positive' ~  1,
+                                       effect_direction == 'overlaps null' ~  0)) %>% 
+  select(-effect_direction, -method) %>% 
+  pivot_wider(names_from = outcome, values_from = effect_dir_binary)
+
+```
+
+
+```{r}
+
+res_subtypes_for_count <- bind_rows(redone_MR,res_subtypes) %>% 
+  select(exposure, id.exposure , outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
+  filter(effect_direction != "overlaps null") %>% 
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio')) 
+
+length(unique(res_subtypes$exposure_cat))
+unique(res_subtypes_for_count$outcome)
+
+counts_by_outcome <- list(
+  total = res_subtypes_for_count %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  total2017 = res_subtypes_for_count %>% filter(grepl("Combined", outcome)) %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total2017=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+   all2017 = res_subtypes_for_count %>% filter(outcome =="Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)")%>% count(exposure_cat) %>% rename(all2017=n)%>%
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  er_pos = res_subtypes_for_count %>% filter(outcome =="ER+ Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)")%>% count(exposure_cat) %>% rename(er_pos=n)%>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  er_neg = res_subtypes_for_count %>% filter(outcome =="ER- Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)")%>% count(exposure_cat) %>% rename(er_neg=n)%>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  total2020 = res_subtypes_for_count %>% filter(!grepl("Combined", outcome)) %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total2020=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  all2020 = res_subtypes_for_count %>% filter(outcome =="Breast cancer BCAC 2020")%>% count(exposure_cat) %>% rename(all2020=n)%>%
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  lumA = res_subtypes_for_count %>% filter(outcome =="LuminalA ER+PR+HER-")%>% count(exposure_cat) %>% rename(lumA=n)%>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  lumB1 = res_subtypes_for_count %>% filter(outcome =="LuminalB1 ER+PR+HER-")%>% count(exposure_cat) %>% rename(lumB1=n)%>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  lumB2 = res_subtypes_for_count %>% filter(outcome =="LuminalB2 ER+PR+HER+")%>% count(exposure_cat) %>% rename(lumB2=n)%>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  her2 = res_subtypes_for_count %>% filter(outcome =="HER2-enriched ER-PR-HER+")%>% count(exposure_cat) %>% rename(her2=n)%>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  tnbc = res_subtypes_for_count %>% filter(outcome =="TNBC ER-PR-HER-")%>% count(exposure_cat) %>% rename(tnbc=n)%>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
+
+counts_by_outcome_df <- bind_rows(counts_by_outcome) %>% t() %>% as.data.frame() %>% rownames_to_column('exposure_cat') 
+colnames(counts_by_outcome_df) <- c("exposure_cat", names(counts_by_outcome)) 
+
+preval_counts <- full_join(table1_col1%>% rename(total_preval=n),
+                           table1_col2 %>% rename(total_consist=n))
+
+counts_by_outcome_df<- left_join(preval_counts, counts_by_outcome_df) %>% column_to_rownames('exposure_cat')  %>% replace(is.na(.), 0) 
+
+sums<- colSums(counts_by_outcome_df)
+counts_by_outcome_df<- counts_by_outcome_df%>% bind_rows(.,sums)
+
+table1 <- counts_by_outcome_df %>% 
+    rownames_to_column('exposure_cat') %>% 
+    mutate(exposure_cat = case_when(exposure_cat == "...13" ~"TOTAL", 
+                                    exposure_cat == 'Antrophometric' ~ 'Anthropometric',
+                                     exposure_cat == 'Drugs' ~ 'Medication',
+                                    TRUE ~ exposure_cat) )%>% 
+      mutate(exposure_cat = factor(exposure_cat, 
+     levels= c( "Anthropometric", "Diet and supplements", "Physical activity", "Reproductive", 
+               "Sleep", "Medication", "Alcohol", "Smoking", "Proteins", "Lipids", "Metabolites", "Other biomarkers", "TOTAL"))) %>% 
+     arrange(exposure_cat) %>% 
+    mutate(group = ifelse(exposure_cat %in% c("Proteins", "Lipids", "Metabolites", "Other biomarkers"), "Molecular traits", "Lifestyle traits")) %>% 
+    mutate(group = ifelse(exposure_cat == "TOTAL", "TOTAL", group)) %>% 
+    select(group, everything()) 
+  
+
+write_tsv(counts_by_outcome_df, "../results/mr_evidence_outputs/mr_subtypes/table1_counts_by_exposure_cat.tsv")
+```
+
+```{r}
+library(flextable)
+library(officer)
+set_flextable_defaults(big.mark = " ", 
+  font.size = 8, theme_fun = theme_vanilla,
+  background.color = "white")
+
+table1_disp<- transform(table1,group =factor(group))
+ft<-flextable(table1_disp) %>% 
+   align(align = "center", part = "all", j = c(3:16)) %>% 
+  merge_v(j = ~group) %>% 
+  width(., j = c(1,2), width=2) %>% 
+ # width(., j = c(3), width=2) %>% 
+  vline(.,j = c(1,2,3,4,5,9), border = fp_border( width = 2), part = "all") %>% 
+  vline(.,j = c(6,7,8,10:15), border = fp_border( width = 1), part = "all") %>% 
+  add_header_row(., 
+                 values = c("",'Trait category',	
+                            'Traits in MR-EvE app',	
+                            'Traits with consistent effect *',
+                            'Traits validated in either BCAC',
+                            'Traits validated in \n BCAC 2017 (Supplementary Table 1)',
+                            'Traits validated in \n BCAC 2020 (Supplementary Table 2)'),
+                 colwidths = c(1, 1, 1, 1,1, 4, 7)) %>% 
+  set_header_labels(ft,
+    values = list(
+            exposure_cat = "",
+            group = " ",
+            "total_preval" = 'Total',
+            "total_consist" = 'Total',
+            "total"   = 'Total',
+            "total2017" = 'Total',
+            "all2017" = 'Full',
+            "er_pos" = "ER+",
+            "er_neg"= "ER-",
+            "total2020"  = 'Total',  
+            "all2020" = 'Full',
+            "lumA" = "LumA",
+            "lumB1"  = "LumB1",
+            "lumB2" = "LumB2",
+            "her2"  = "HER2",
+            "tnbc"  = "TNBC" ))
+ft
+
 
 
 ```
+
+
+
+```{r}
+#merge subtypes and validation 
+merged <- left_join(redone_wide, 
+                    res_subtypes_wide) %>% 
+          left_join(exp_help_names) %>% 
+          mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
+          select(exposure_cat, label, everything()) 
+
+
+write_tsv(merged, "../results/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
+```
+
+
+
 
 ```{r}
 library(eulerr)
@@ -156,86 +268,45 @@ plot(euler(s4, shape = "ellipse"), quantities = TRUE)
 
 ```
 
-#
-#
-NEXT, in other script `mr_results_for_bcac_subtypes.Rmd` we create MR results for those traits in subtypes
-#
-#
+```{r}
+s4 <- list(`All` = merged %>% filter(`ieu-a-1126` != 0) %>% pull(id.exposure) %>% sort(),
+           `ER+` = merged %>% filter(`ieu-a-1127` != 0) %>% pull(id.exposure)%>% sort(),
+           `ER-` = merged %>% filter(`ieu-a-1128` != 0) %>% pull(id.exposure)%>% sort(),
+           
+           `Breast cancer BCAC 2020` = merged %>% filter(`Breast cancer BCAC 2020` != 0) %>% pull(id.exposure)%>% sort(),
+           `LuminalA ER+PR+HER`      = merged %>% filter(`LuminalA ER+PR+HER-` != 0) %>% pull(id.exposure)%>% sort(),
+           `LuminalB1 ER+PR+HER-`    = merged %>% filter(`LuminalB1 ER+PR+HER-` != 0) %>% pull(id.exposure)%>% sort(),
+           `HER2-enriched ER-PR-HER+` = merged %>% filter(`HER2-enriched ER-PR-HER+` != 0) %>% pull(id.exposure)%>% sort(),
+           `TNBC ER-PR-HER-`         = merged %>% filter(`TNBC ER-PR-HER-` != 0) %>% pull(id.exposure)%>% sort(),
+           `LuminalB2 ER+PR+HER+`     = merged %>% filter(`LuminalB2 ER+PR+HER+` != 0) %>% pull(id.exposure)%>% sort())
 
 
-## Load results from subtype analysis
+s4 <- list(
+           `BCAC 2020 (n=176)` = merged %>% filter(`Breast cancer BCAC 2020` != 0 | 
+                                           `LuminalA ER+PR+HER-`     != 0 |  
+                                            `LuminalB1 ER+PR+HER-`    != 0 | 
+                                            `HER2-enriched ER-PR-HER+`!= 0 | 
+                                            `TNBC ER-PR-HER-`         != 0 | 
+                                            `LuminalB2 ER+PR+HER+`    != 0 ) %>% pull(id.exposure) %>% sort(),
+            `BCAC 2017 (n=168)` = merged %>% filter(`ieu-a-1128` != 0 | `ieu-a-1126` != 0 |`ieu-a-1127` != 0) %>% pull(id.exposure)%>% sort(),
+            `passed MTC (n=105)` = passed_pairs %>% filter(mtc == "*") %>% pull(id.exposure) %>% unique() ,
+            `Total (n=309)` = merged %>% pull(id.exposure)%>% sort())
 
-```{r message =F}
-
-res_subtypes <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv")
-
-## category update 
-res_subtypes <- res_subtypes %>% 
-  rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
-  create_exposure_categories() %>%  filter(exposure_cat != 'other') %>% 
-  select(-exposure ) %>% 
-  rename(id.exposure = exposure.id , exposure = exposure.trait) 
-
-#res_subtypes_for_count <- res_subtypes %>% 
-#  select(exposure, id.exposure , outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
-#  filter(effect_direction != "overlaps null") %>% 
-#  filter(method %in% c('Inverse variance weighted', 'Wald ratio')) 
-#
-#counts_by_outcome <- list(
-#  total = res_subtypes_for_count %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total=n) %>% 
-#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-#  all = res_subtypes_for_count %>% filter(outcome =="Breast cancer BCAC 2020")%>% count(exposure_cat) %>% rename(all=n)%>%
-#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-#  lumA = res_subtypes_for_count %>% filter(outcome =="LuminalA ER+PR+HER-")%>% count(exposure_cat) %>% rename(lumA=n)%>% 
-#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-#  lumB1 = res_subtypes_for_count %>% filter(outcome =="LuminalB1 ER+PR+HER-")%>% count(exposure_cat) %>% rename(lumB1=n)%>% 
-#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-#  lumB2 = res_subtypes_for_count %>% filter(outcome =="LuminalB2 ER+PR+HER+")%>% count(exposure_cat) %>% rename(lumB2=n)%>% 
-#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-#  her2 = res_subtypes_for_count %>% filter(outcome =="HER2-enriched ER-PR-HER+")%>% count(exposure_cat) %>% rename(her2=n)%>% 
-#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-#  tnbc = res_subtypes_for_count %>% filter(outcome =="TNBC ER-PR-HER-")%>% count(exposure_cat) %>% rename(tnbc=n)%>% 
-#    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
-#
-#counts_by_outcome_df <- bind_rows(counts_by_outcome) %>% t() %>% as.data.frame() %>% rownames_to_column('exposure_cat') %>% mutate(across(everything(), ~replace_na(.x, 0))) 
-#colnames(counts_by_outcome_df)[2:8] <- names(counts_by_outcome)
-#write_tsv(counts_by_outcome_df, "mr_evidence_outputs/mr_subtypes/counts_by_exposure_cat.tsv")
-
-res_subtypes_wide<- res_subtypes %>% 
-  select(outcome, id.exposure,exposure,  effect_direction, method) %>% 
-  filter(method %in% c('Inverse variance weighted', 'Wald ratio') )%>% 
-  mutate(effect_dir_binary = case_when(effect_direction == 'negative' ~ -1, 
-                                       effect_direction == 'positive' ~  1,
-                                       effect_direction == 'overlaps null' ~  0)) %>% 
-  select(-effect_direction, -method) %>% 
-  pivot_wider(names_from = outcome, values_from = effect_dir_binary)
-
- 
-# testing MTC
-res_subtypes %>% 
-  filter(method %in% c('Inverse variance weighted', 'Wald ratio') ) %>% 
-  arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) 
-
-
-#merge subtypes and validation 
-merged <- left_join(redone_wide, 
-                    res_subtypes_wide) %>% 
-          left_join(exp_help_names) %>% 
-          mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
-          select(exposure_cat, label, everything()) 
-
-
-write_tsv(merged, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
+plot(euler(s4, shape = "ellipse"), quantities = TRUE)
 ```
+
+
+
+
+
 
 
 ### Multiple testing
 
 ```{r}
 # create wide form of results to view by subtype
-redone_MR <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
-
-res_subtypes <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv")
+redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput.tsv")
+res_subtypes <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>% filter(outcome != "TNBC_BRCA1 ER-PR-HER-")
 ## category update 
 res_subtypes <- res_subtypes %>% 
   rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
@@ -251,7 +322,7 @@ all_mr_validation <- bind_rows(redone_MR, res_subtypes) %>%
     filter(method %in% c('Inverse variance weighted', 'Wald ratio') ) %>% 
    arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) 
 
-write_tsv(all_mr_validation, "mr_evidence_outputs/all_multiple_testing.tsv")
+write_tsv(all_mr_validation, "../results/mr_evidence_outputs/all_multiple_testing.tsv")
   
 
 tmp <- all_mr_validation %>% select(pval, qval) %>% 
@@ -263,21 +334,22 @@ tmp %>% count(qval_sign) # FALSE	2802	TRUE	332
 
 
 x<- all_mr_validation %>%  filter(pval < 0.05) %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(x$id.exposure)) # 220
+length(unique(x$id.exposure)) # 213
 
 y<- all_mr_validation %>%  filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(y$id.exposure)) # 220
+length(unique(y$id.exposure)) # 213
 
 z<- all_mr_validation %>%  filter(!is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(z$id.exposure)) # 175
+length(unique(z$id.exposure)) # 171
 
 w<- all_mr_validation %>%  filter(is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
 length(unique(w$id.exposure)) # 178
 
-passed_pairs <- all_mr_validation %>%  mutate(mtc = ifelse(qval < 0.05, "*", NA))  %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction, OR_CI, pval, qval, mtc) %>% distinct() 
-length(unique(passed_pairs$id.exposure)) # 103
+passed_pairs <- all_mr_validation %>%  mutate(mtc = ifelse(qval < 0.05, "*", NA))  %>%
+  select(id.exposure, exposure,outcome, exposure_cat, effect_direction, OR_CI, pval, qval, mtc) %>% distinct() 
 
-write_tsv(passed_pairs, "mr_evidence_outputs/passed_multiple_testing.tsv")
+passed_pairs %>% filter(mtc == "*") %>% pull(id.exposure) %>% unique() %>% length() # 105
+write_tsv(passed_pairs, "../results/mr_evidence_outputs/passed_multiple_testing.tsv")
 
 ```
 
@@ -296,12 +368,12 @@ write_tsv(passed_pairs, "mr_evidence_outputs/passed_multiple_testing.tsv")
 
 ```{r}
 
-mtc <- read_tsv("mr_evidence_outputs/all_multiple_testing.tsv")  %>% 
+mtc <- read_tsv("../results/mr_evidence_outputs/all_multiple_testing.tsv")  %>% 
   select(id.exposure, outcome,qval )%>% rename(pval_FDR_adj = qval)
 
 ## old outcomes
-main_results <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput.tsv")
-sens_results <- read_tsv("mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
+main_results <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput.tsv")
+sens_results <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
 
 res_w_sens <- list()
 
@@ -313,8 +385,8 @@ for (outcome_name in outcomes1){
 
 # new outcomes <- will add to the same list
 
-main_results <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>%  mutate(id.outcome = outcome)
-sens_results <- read_tsv("mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020.tsv") %>%  mutate(id.outcome = outcome)
+main_results <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>%  mutate(id.outcome = outcome)
+sens_results <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020.tsv") %>%  mutate(id.outcome = outcome)
 
 outcomes2 <- unique(main_results$id.outcome)
 
@@ -326,60 +398,19 @@ names(res_w_sens) <- c("All. BCAC 2017", "ER+. BCAC 2017 ", "ER-. BCAC 2017",
                        "All. BCAC 2020", "Luminal A. BCAC 2020","Luminal B1. BCAC 2020", 
                                      "Luminal B2. BCAC 2020",  "HER2-enriched. BCAC 2020", "TNBC. BCAC 2020" )
 
-res_w_sens <-res_w_sens[names(res_w_sens)[1:9]]# drop seconf TNBC
+res_w_sens <-res_w_sens[names(res_w_sens)[1:9]]# drop second TNBC
 
+writexl::write_xlsx(res_w_sens, "../results/mr_evidence_outputs/all_data_with_sens_filters.xlsx")
 
-# "ieu-a-1126 ::: 117 / 314"
-# "ieu-a-1127 ::: 126 / 314"
-# "ieu-a-1128 ::: 61 / 314"
-# "Breast cancer BCAC 2020 ::: 108 / 313"
-# "Luminal A: ER+PR+HER- ::: 104 / 313"
-# "Luminal B1: ER+PR+HER- ::: 37 / 313"
-# "Luminal B2: ER+PR+HER+ ::: 31 / 313"
-# "HER2-enriched: ER-PR-HER+ ::: 42 / 313"
-# "TNBC: ER-PR-HER- ::: 52 / 313"
-# "TNBC BRCA1: ER-PR-HER- ::: 37 / 314"
+## also save 
+main_results17 <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput.tsv")
+main_results20 <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>%  mutate(id.outcome = outcome) %>% filter(outcome != "TNBC_BRCA1 ER-PR-HER-")
 
+all_mr_tests <- bind_rows(main_results17,main_results20 ) %>% 
+                arrange(exposure_cat, id.exposure) %>% 
+                select(-exposure_name)
 
-writexl::write_xlsx(res_w_sens, "mr_evidence_outputs/mr_subtypes/all_data_with_sens_filters.xlsx")
-
-
-# ok find robust stuff
-
-d<- res_w_sens %>% bind_rows %>%
-  filter(pval_FDR_adj < 0.054) %>% 
-  filter(abs(egger_intercept) < 0.05) %>% 
-  filter(exposure_cat %in% c("Proteins"))#, "Metabolites")) 
-  
-View(d)
-
-d %>% count(exposure, sort=T)
-
-
-p<-ggplot(d, aes(y=exposure, x=or, label=exposure , colour = outcome)) +
-  geom_errorbarh(aes(xmin=or_lci95, xmax=or_uci95), height=.3) +
-  geom_point(size=2, shape=20)+
-  #scale_color_manual(values=pal)+
-  #xlim(0.43, 2.5)+
-  geom_vline(xintercept=1, linetype='longdash') +
-  theme_minimal_grid(11) +
-  facet_grid(exposure ~ ., scales="free")+
-  theme(strip.text = element_text(face = 'bold'))+
-  #labs(color = "",y = "", x = "beta coefficient (1 SD change in mediator per body size category change)"
-       #subtitle="",
-       #title= paste0("                    Univariate MR: effect of childhood body size on mediators (effect size, 95% CI)") 
-       #)+
-  theme(legend.position = "right",  plot.title.position = "plot", axis.title.x=element_text(size=9))
-
-
-
-
-x %>% count(`egger_intercept_less_than_0.05`, `egger_intercept_pval_more_than_0.05`)
-
-x %>%  filter(`egger_intercept_less_than_0.05` == F & `egger_intercept_pval_more_than_0.05` == T) %>% View()
-
-x %>%  filter(`egger_intercept_less_than_0.05` == T & `egger_intercept_pval_more_than_0.05` == F) %>% View()
-
+write_tsv(all_mr_tests, "../results/mr_evidence_outputs/all_data_validation.tsv")
 ```
 
 
@@ -455,16 +486,6 @@ mr_results_sub %>%  filter(exposure_cat %in% c('Proteins', 'Metabolites')) %>%
 
 
 
-
-
-
-```{r}
-# ad hoc check
-cand_list<-read_tsv("../01_MR_related/mr_evidence_outputs/candidate_list.tsv", col_names = F) %>% distinct()
-
-mr_results_sub %>% filter(exposure %in% cand_list$X1) %>% View()
-
-```
 
 
 
