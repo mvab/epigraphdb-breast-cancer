@@ -83,22 +83,23 @@ create_exposure_categories <- function(dat){
       grepl("blood pressure|heart|Pulse|Cardiac|thromboembolism", exposure, ignore.case = T) ~ "CHD",
       grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "Medical Procedures",
       grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure,  ignore.case = T) ~ "eye_hearing_teeth",
+      grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "Alcohol", # must be before diet
       grepl("vitamin|suppl", exposure, ignore.case = T) ~ "Diet and supplements",
+      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter|bread|Never eat", exposure, ignore.case = T) ~ "Diet and supplements",
       grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "Antrophometric",
       grepl("age at|age started|parous|contraceptive pill|replacement therapy|HRT|menopause|menarche|live birth|oophorectomy|hysterectomy|menstrual|sexual", exposure, ignore.case = T) ~ "Reproductive",
-      grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "Alcohol",
       grepl("smok|cigar", exposure, ignore.case = T) ~ "Smoking",
       grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing|walk|spend outdoors", exposure, ignore.case = T) ~ "Physical activity",
       grepl("sleep|Snoring|chronotype|Getting up in morning|Nap during day", exposure, ignore.case = T) ~ "Sleep",
-      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter|bread|Never eat", exposure, ignore.case = T) ~ "Diet and supplements",
       grepl("Iron|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'Other biomarkers',
-      grepl("LDL|HDL|cholest|trigl|cholesterol|glyceride", exposure.trait, ignore.case = T) ~ 'Lipids',
-      grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|cystatin|SHBG|bilirubin|Total protein|phosphatase|IGF|Albumin", exposure, ignore.case = T) ~ 'Proteins',
+      grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) ~ 'Lipids',
+      grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|cystatin|SHBG|bilirubin|Total protein|phosphatase|IGF", exposure, ignore.case = T) ~ 'Proteins',
       grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic|education", exposure, ignore.case = T) ~ 'Education',
       grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves", exposure, ignore.case = T) ~ 'Psychology',
       TRUE ~ 'other')) %>% 
-    mutate(exposure_cat = ifelse(grepl("LDL|HDL|cholest|trigl|cholesterol|glyceride", exposure.trait, ignore.case = T) & exposure_cat %in% c('Metabolites', 'Other biomarkers'), "Lipids", exposure_cat)) # recapture those in met-a
-  
+    mutate(exposure_cat = ifelse(grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) & exposure_cat %in% c('Metabolites', 'Other biomarkers'), "Lipids", exposure_cat)) %>%  # recapture those in met-a
+    mutate(exposure_cat = ifelse(grepl("Average number|Ratio of", exposure.trait, ignore.case = T) , "other", exposure_cat)) %>%  # recapture those in met-a
+    mutate(exposure_cat = ifelse(grepl("albumin", exposure.trait, ignore.case = T) , "Proteins", exposure_cat)) 
   return(dat)
   
 }
