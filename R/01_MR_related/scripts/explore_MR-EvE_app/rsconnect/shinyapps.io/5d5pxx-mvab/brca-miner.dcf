@@ -5,10 +5,10 @@ account: 5d5pxx-mvab
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4966914
-bundleId: 5981808
+bundleId: 6028824
 url: https://mvab.shinyapps.io/brca-miner/
-when: 1654520758.92725
-lastSyncTime: 1654520758.92726
+when: 1655838555.5116
+lastSyncTime: 1655838555.51166
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: www/.DS_Store

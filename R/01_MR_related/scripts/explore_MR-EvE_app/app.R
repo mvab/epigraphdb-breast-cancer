@@ -16,7 +16,6 @@ dat <-
   read_tsv("data_copy/bc_all_mr_fromCIs.tsv") %>% 
   # subset 
   filter(exposure.sex != 'Males') %>% 
-  filter(!outcome.id %in% c('ebi-a-GCST007236', 'ebi-a-GCST004988')) %>% 
   filter(mr.method != 'Steiger null') %>% 
   # convert MR results to OR
   tidy_display_numbers()%>% 
