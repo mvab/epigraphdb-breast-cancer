@@ -62,7 +62,7 @@ redoneMR_tidy%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>%
 redoneMR_tidy%>% filter(id.outcome == 'ieu-a-1127') %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat) # selected outcome
 
 #write_tsv(redoneMR_tidy, "mr_evidence_outputs/trait_manual_ivw.tsv") #### OLD NAME
-write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv")
+write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv") ### this is used in mediator validation
 
 ```
 

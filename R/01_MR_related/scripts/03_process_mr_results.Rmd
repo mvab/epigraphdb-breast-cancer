@@ -20,7 +20,7 @@ source("mr_related_functions.R")
 rm(dat)
 dat <-  read_tsv("../results/mr_evidence_outputs/tidy_traits_by_cat.tsv") %>%  # made in explore_mr_results.Rmd
         # update exposure categories 
-        create_exposure_categories() %>%  filter(exposure_cat != 'other')
+        create_exposure_categories() %>%  add_exposure_labels() %>% filter(exposure_cat != 'other')
 
 exp_help_names <- dat %>% # from the first chunk
   select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat') %>% 
@@ -82,8 +82,11 @@ dat %>%
 ```
 
 
+#### Next go to `03sub_validate_mr.Rmd` to get validation results
+
+
 ```{r}
-# load BCAC 2017 validation results and tuen into wide format
+# load BCAC 2017 validation results and turn into wide format
 
 # create wide form of results to view by subtype
 redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput.tsv") # created in 035
@@ -97,13 +100,11 @@ redone_wide <- redone_MR %>%
                                        effect_direction == 'overlaps null' ~  0)) %>% 
   select(-effect_direction, -method) %>% 
   pivot_wider(names_from = id.outcome, values_from = effect_dir_binary)
- 
 
 ```
 
 
 ```{r message =F}
-
 # load BCAC 2020 validation results and turn into wide format
 
 res_subtypes <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv") %>% 
@@ -237,8 +238,6 @@ ft<-flextable(table1_disp) %>%
             "tnbc"  = "TNBC" ))
 ft
 
-
-
 ```
 
 
@@ -247,9 +246,10 @@ ft
 #merge subtypes and validation 
 merged <- left_join(redone_wide, 
                     res_subtypes_wide) %>% 
+          select(-exposure_name) %>% 
           left_join(exp_help_names) %>% 
           mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
-          select(exposure_cat, label, everything()) 
+          select(exposure_cat, label, exposure_name, everything()) 
 
 
 write_tsv(merged, "../results/mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv")
@@ -420,6 +420,12 @@ write_tsv(all_mr_tests, "../results/mr_evidence_outputs/all_data_validation.tsv"
 
 
 
+
+
+# some testing
+
+
+
 ```{r}
 ### Subsetting to traits from MR that have enough lit space
 
@@ -510,177 +516,4 @@ mr_results_sub %>%  filter(exposure_cat %in% c('Proteins', 'Metabolites')) %>%
 
 
 
-
-
-
-
-
-x %>% count(`egger_intercept_less_than_0.05`, `egger_intercept_pval_more_than_0.05`)
-
-x %>%  filter(`egger_intercept_less_than_0.05` == F & `egger_intercept_pval_more_than_0.05` == T) %>% View()
-
-x %>%  filter(`egger_intercept_less_than_0.05` == T & `egger_intercept_pval_more_than_0.05` == F) %>% View()
-
-```{r}
-### variaous viz attempts
-
-heatmap(data, Colv = NA, Rowv = NA, scale="column", col = coul, xlab="variable", ylab="car", main="heatmap")
-
-
-only_ER_neg <- merged %>%
-  filter(`ieu-a-1128` ==1 & `Basal-like TNBC: ER-PR-HER-` ==1 & `BRCA1_CIMBA TNBC: ER-PR-HER-` ==1) 
-
-
-only_ER_pos <- merged %>%
-  filter(`ieu-a-1127` ==1 & `Luminal B1: ER+PR+HER-` ==1 & `Luminal B2: ER+PR+HER+` ==1 & `Luminal A: ER+PR+HER-`==1 ) 
-
-only_HER_pos <- merged %>%
-  filter(`Luminal B2: ER+PR+HER+` ==1 & `HER2-enriched: ER-PR-HER+` ==1) 
-
-
-# only in old BCAC
-merged %>%
-  filter(`ieu-a-1126` ==1) %>% 
-  filter_at(vars(-`ieu-a-1126`,-exposure_cat, -label, -id.exposure, -exposure_name ), all_vars(. == 0))%>% View()
-
-merged %>%
-  filter(`ieu-a-1126` ==1 | `ieu-a-1128` ==1 | `ieu-a-1127` ==1 ) %>% 
-  filter_at(vars(-contains('ieu'),-exposure_cat, -label, -id.exposure, -exposure_name ), all_vars(. == 0))%>% View()
-# same but count
-merged %>%
-  filter(`ieu-a-1126` ==1 | `ieu-a-1128` ==1 | `ieu-a-1127` ==1 ) %>% 
-  filter_at(vars(-contains('ieu'),-exposure_cat, -label, -id.exposure, -exposure_name ), all_vars(. == 0))%>% count(exposure_cat)
-
-
-merged_lipids<- merged %>% filter(exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers")) %>% 
-          filter(grepl("LDL|HDL|cholest|trigl", exposure_name, ignore.case = T))
-
-write_tsv(merged_lipids, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged_LIPIDS.tsv")
-
-
-not_lipids<- merged %>% filter(exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers")) %>% 
-          filter(!grepl("LDL|HDL|cholest|trigl", exposure_name, ignore.case = T))
-
-write_tsv(not_lipids, "mr_evidence_outputs/trait_manual_ivw_subtypes_merged_NOTLIPIDS.tsv")
-
-```
-
-
-```{r}
-##### NEXT: need to decide how to use this info to make any further decisions
-# https://cran.r-project.org/web/packages/dendextend/vignettes/Cluster_Analysis.html
-
-library(dendextend)
-
-merged <- read_tsv("mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") %>% 
-  filter(!exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers"))
-
-merged <- read_tsv("mr_evidence_outputs/trait_manual_ivw_subtypes_merged.tsv") %>% 
-  filter(exposure_cat %in% c("Proteins", "Metabolites", "Other biomarkers")) %>% 
-  filter(!grepl("LDL|HDL|cholest|trigl", exposure_name, ignore.case = T)) #%>% 
-  #mutate(exposure_cat = ifelse(grepl("HDL", label), "HDL", "not HDL"))
-  
-
-merged<- merged %>% mutate(overall = case_when(`ieu-a-1126` ==1 | `ieu-a-1128` ==1 | `ieu-a-1127` ==1 ~ 1,
-                                       `ieu-a-1126` ==-1 | `ieu-a-1128` ==-1 | `ieu-a-1127` ==-1 ~ 2 ))
-
-#merged_data <- merged %>% select(5:14)
-
-merged_data <- merged %>% select("Basal-like TNBC: ER-PR-HER-",#"BRCA1_CIMBA TNBC: ER-PR-HER-",  
-                                 "HER2-enriched: ER-PR-HER+" , "Luminal A: ER+PR+HER-" ,
-                                 "Luminal B2: ER+PR+HER+" , "Luminal B1: ER+PR+HER-"  )
-
-merged_data <- merged %>% select("ieu-a-1126" , "ieu-a-1127" ,"ieu-a-1128" ) %>% 
-   mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-   mutate(direction = case_when(sum < 0 ~ "negative",
-                          sum > 0 ~ "positive",
-                          TRUE ~ "no effect")) %>% select(-sum)
-
-merged_data <- merged %>% select("ieu-a-1126" , "ieu-a-1127" ,"ieu-a-1128" , "exposure_cat")
-
-
-merged_data <- merged %>% select( "ieu-a-1127" ,"ieu-a-1128",
-                                  "Basal-like TNBC: ER-PR-HER-","BRCA1_CIMBA TNBC: ER-PR-HER-",  
-                                 "HER2-enriched: ER-PR-HER+" , "Luminal A: ER+PR+HER-" ,
-                                 "Luminal B2: ER+PR+HER+" , "Luminal B1: ER+PR+HER-" )
-
-merged_data <- merged %>% select("ieu-a-1126" ,  "Breast cancer (overall BCAC 2020)")
-
-
-d <- dist(merged_data) # method="man" # is a bit better
-hc <- hclust(d, method = "complete")
-dat <- levels(unclass(factor(merged %>% pull(1))))
-
-dend <- as.dendrogram(hc)
-# order it the closest we can to the order of the observations:
-dend <- rotate(dend, 1:dim(merged_data)[1])
-
-# for conveniet viewing
-merged_data$exposure_name <- merged %>% pull(exposure_name)
-
-# Color the branches based on the clusters:
-dend <- color_branches(dend, k=1, col= 'black')
-
-#mypal <- RColorBrewer::brewer.pal(10,"Paired")[c(2,6, 4)]
-#mypal <- c("black","black","black" )
-
-mypal <- c( "#4D9221", "#C51B7D") #  green pink
-#mypal <- c("orange", "purple")
-
-# Manually match the labels, as much as possible, to the real classification of the flowers:
-labels_colors(dend) <-
-   mypal[sort_levels_values(as.numeric(unclass(factor(merged_data %>% pull(exposure_cat))))[order.dendrogram(dend)])]
-
-
-# We shall add the flower type to the labels:
-labels(dend) <- paste(as.character(merged %>% pull(4))[order.dendrogram(dend)])
-
-# We hang the dendrogram a bit:
-dend <- hang.dendrogram(dend,hang_height=0.1)
-# reduce the size of the labels:
-# dend <- assign_values_to_leaves_nodePar(dend, 0.5, "lab.cex")
-dend <- set(dend, "labels_cex", 0.6)
-# And plot:
-par(mar = c(2.5,0.5,2,25))
-plot(dend, 
-     horiz =  TRUE,  nodePar = list(cex = .007))
-#mytitle = "Clustered based on"
-#mysubtitle = paste0(rev(colnames(merged_data))[-1], collapse=", ")
-mtext(side=3, line=0.8, at=1, adj=1, cex=1.2, mytitle)
-#mtext(side=3, line=-0.2, at=1, adj=1, cex=0.9, mysubtitle) # meta
-mtext(side=3, line=-0.2, at=-2.5, adj=1, cex=0.6, mysubtitle)
-
-legend("topleft", legend = dat, fill = mypal)
-
-
-# circular diagram 
-library(circlize)
-par(mar = rep(0,4))
-circlize_dendrogram(dend)
-
-
-## with heatmap
-
-# scaled_iris2 <- iris2 %>% as.matrix %>% scale
-# library(gplots)
-
-
-merged_data<-merged_data %>% tibble::column_to_rownames('exposure_name')
-
-gplots::heatmap.2(as.matrix(merged_data), 
-          main = "Heatmap",
-          srtCol = 20,
-          dendrogram = "row",
-          Rowv = dend,
-          Colv = "NA", # this to make sure the columns are not ordered
-          trace="none",          
-          margins =c(5,10),      
-          key.xlab = "Cm",
-          denscol = "grey",
-          density.info = "density",
-          #RowSideColors = rev(labels_colors(dend)), # to add nice colored strips        
-          col = brewer.pal(n=7, name = "PiYG")
-         )
-
-```
 
