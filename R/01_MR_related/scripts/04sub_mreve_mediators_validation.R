@@ -43,8 +43,8 @@ redone_MR_sens <- res %>%
          starts_with('egger_intercept'), starts_with('Q')) %>% 
   filter(method != 'Weighted median')
 
-write_tsv(redone_MR,      "01_MR_related/mr_evidence_outputs/redone_MRmeds_fulloutput.tsv")
-write_tsv(redone_MR_sens, "01_MR_related/mr_evidence_outputs/redone_MRmeds_fulloutput_sens.tsv") #### NB this data is incomplte: need to rerun all analysis to generate it
+write_tsv(redone_MR,      "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_fulloutput.tsv")
+write_tsv(redone_MR_sens, "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_fulloutput_sens.tsv") 
 
 
 
@@ -53,5 +53,5 @@ redoneMR_tidy <- redone_MR %>%
   filter(effect_direction != "overlaps null") %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
 
-write_tsv(redoneMR_tidy, "01_MR_related/mr_evidence_outputs/redone_MRmeds_subsetoutput_ivw.tsv")
+write_tsv(redoneMR_tidy, "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_subsetoutput_ivw.tsv")
 
