@@ -2,69 +2,112 @@
 
 _very rough draft_
 
-1. `mr_epigraphdb_query.R` - MR-EvE data collection for all MR outcomes:
+1. `01_mr_epigraphdb_query.R` **MR-EvE data collection for all breast cancer outcomes**
 
 	The approach: get all MR relationships for all BC outcomes, calculate CIs, keep only those exposures for which the effect CIs don't overlap the null, regardless of the p-value. _(We get about 35 relationships where pval >0.05, but most of there are random traits and won't make it to the final analysis anyway)._
 	
 	Re-extract data for only those exposures from all BC outcomes.
 
 	
-	Output: `bc_all_mr_fromCIs.tsv`
+	Output: `bc_all_mr_fromCIs.tsv` (N= 2332 -> 1970)
 	
 
-2. `explore_mr_results.Rmd` - tidy up MR-EvE output and split into categories
+2. `02_explore_mr_results.Rmd` **Tidy up MR-EvE output and split it into categories**
 
-	This takes input from the previous step, adds exposure/outcome labels, performs minor filtering, and allows exploring each trait category in interactive plots. The interactive plots are equivalent to the RShiny app, but less refined. Also drops a bunch of not needed traits in several categories. The output df can be used for more directed filtering (ignoring actual trait names) (done in the next script).
+	Using the output from the previous step, we add exposure/outcome labels, perform minor filtering/exclusions, and explore each trait category in interactive plots. The interactive plots are equivalent to the RShiny app, but less refined. The output df can be used for more directed filtering (ignoring actual trait names) (done in the next script).
 	
-	Output: `tidy_traits_by_cat.tsv`
+	Exclusions:
+	* male-only sample traits
+	* 'raw' UKB traits
+	* anthropometric traits that are limb measurements, older versions of the same data with smaller sample sizes, Neale lab UK Biobank GWAS if MRC-IEU version was available
+	* anything that does not fall into 12 categories defined in functions
+	
+	Output: `tidy_traits_by_cat.tsv`(n = 1643 -> 905)
 	
 
-3. `process_mr_results.Rmd` - Traits validation
+3. `03_process_mr_results.Rmd` **Traits processing and validation summary**
 
 	* Extract traits with consistent effect (2/3 main datasets)
 	
-		Output: `trait_for_followup.tsv` (n = 314)
-	
-	* Perform manual MR in all remaining traits + sensitivity analysis
-	
-		Output: 
+		Output: `trait_for_followup.tsv` (n = 309)
 		
+		**~~ MR validation is done in a separate script:** `03sub_validate_mr.R`
+	
+	* read in MR validation results produced in the `03sub_validate_mr.R` script for BCAC 2017 and 2020 and join them in a wide format.
 		- `redone_MR_fulloutput.tsv` 
-		- `redone_MR_fulloutput_sens.tsv`
-		- `redone_MR_subsetoutput_ivw.tsv` # only ivw version
+		- `all_traits_MR_vs_BCAC2020.tsv`
+	
+	The script produces multiple outputs:
+	
+	
+	* `table1_counts_by_exposure_cat.tsv` - count by trait category and outcomes, at various stages of processing - basis for the dynamically made Table 1 in the paper (made with _flextable_ in the Rmd)
+	
+	* `trait_manual_ivw_subtypes_merged.tsv` - table of effect direction in wide format for all outcomes
+
+	* Venn diagrams 309 / 213 / 171 / 168
+	* `passed_multiple_testing.tsv` marking traits that passed MTC
+	* `all_data_with_sens_filters.xlsx` - XLS file (a sheet per outcome) IVW/MR main results including sens tests + MTC
+	* `all_data_validation.tsv` - all results (other MR methods as a single table)
+
+	
 	 
-	* Perform manual MR on subtype outcome [in other script `mr_results_for_bcac_subtypes.Rmd` on all traits in `trait_for_followup.tsv`] 
+4. `03sub_validate_mr.R` **MR results validation**
+
+Perform MR as validation on 309 traits on all BCAC 2017 and 2020 outcomes (+ sensitivity analyses)
+
+Input: `trait_for_followup.tsv`  from `03_process_mr_results.Rmd` 
+
+* Perform MR in BCAC 2017
+		
+	- `redone_MR_fulloutput.tsv` 
+	- `redone_MR_fulloutput_sens.tsv`
+	- `redone_MR_subsetoutput_ivw.tsv` (this is used in mediaotr validation)
+ 
+* Perform MR in BCAC 2020 (saved separately and joined in a single table as separate step)
 	
-	* read in subtype MR results produced in the next script (`all_traits_MR_vs_BCAC2020.tsv`)
-	
-	* join the results for old and new outcomes in a wide table of effect direction
-	
-	* There are some heatmap / hierarchical clustering plotting  code(currently not reviewed)
-	
-	Output: `trait_manual_ivw_subtypes_merged.tsv`
+	- `all_traits_MR_vs_BCAC2020.tsv`	
+	- `all_traits_sensMR_vs_BCAC2020.tsv`	
+
+5. `04_query_mreve_mediators.R`
+
+For the final set of traits in `trait_manual_ivw_subtypes_merged.tsv` (across BCAC 2017 outcomes only), we run MR-EvE queries to extract confounders, mediators, colliders, reverse intermediates. 
+
+Initially, we extract all relationships with a high p-value threshold (all results will be manually validated later, so it does not matter). Also not restricting search by pval of med->out, as will be using validation from the previous script to filter those.
+
+When we get a list of all potential meds per trait, we validate their effect in 
+`04sub_mreve_mediators_validation.R` script. 
+
+Inputs:
+`redone_MRmeds_subsetoutput_ivw.tsv` from 03sub
+`redone_MRmeds_fulloutput.tsv` from 04sub
 
 
-4. `mr_results_for_bcac_subtypes.Rmd` - Manual MR on subtypes
-
-	* Perform manual MR on subtype outcomes (new BCAC 2020) on all traits `trait_for_followup.tsv`
-	
-	* saves data to `mr_evidence_outputs/mr_subtypes/` for each trait individually 
-	
-	* joins data into full table, which is later read by the previous script. 
-	
-	Output:
-	
-	`all_traits_MR_vs_BCAC2020.tsv`
-	 
+Outputs:
+`med_extracted_all_r3.csv` - all potential mediators, not validated
+`mediators_counts_per_traits.csv` - counts; validated
+`med-table-validated.xlsx` - validated mediator results 
 
 
-5. `query_confounders.R`
 
-For the final set of traits in `trait_manual_ivw_subtypes_merged.tsv`, we run MR-EvE queries to extract confounders, mediators, colliders, reverse intermediates. For each trait, we only extract data for those meta-analysis BC outcomes where the effect was observed in previous analyses. 
+6. `04sub_mreve_mediators_validation.R`
 
-Initially, we extract all relationships with a high p-value threshold (all results will be manually validated later, so it does not matter).
+We manually re-run MR for all identified mediators for each risk factor trait.
+
+Input: 
+`med_extracted_all_r3.csv`
+Output:
+`redone_MRmeds_fulloutput.tsv`
+`redone_MRmeds_fulloutput_sens.tsv`
+`redone_MRmeds_subsetoutput_ivw.tsv`
 
 
+## Apps
+
+
+## Scripts with core and helper functions:
+
+- `mr_related_functions.R`
+- 
 
 
 
