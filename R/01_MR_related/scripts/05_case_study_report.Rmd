@@ -720,6 +720,7 @@ ft <- width(ft, j = c(2,3), width=2)
 
 border <- fp_border( width = 2)
 
+
 ft %>%
   bg(., 
       i = ~ effect_direction != 'overlaps null', 
