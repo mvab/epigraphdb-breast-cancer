@@ -21,8 +21,7 @@ load_and_merge_heatmap_inputs <- function() {
                                outcome =="LuminalB1 ER+PR+HER-"   ~ "Luminal B1",  
                                outcome =="LuminalB2 ER+PR+HER+" ~ "Luminal B2" ,
                                outcome =="HER2-enriched ER-PR-HER+"  ~ "HER2-enriched" ,
-                               outcome =="TNBC ER-PR-HER-"  ~ "TNBC" ,
-                               outcome =="TNBC_BRCA1 ER-PR-HER-" ~ "TNBC_BRCA1" ))%>% 
+                               outcome =="TNBC ER-PR-HER-"  ~ "TNBC" )) %>% 
     left_join(redone_MR %>% select(id.exposure, exposure_name )) %>% distinct() 
   
   or_ci_data <- bind_rows(redone_MR,res_subtypes ) %>% rename('exposure.id'= 'id.exposure') 
@@ -37,8 +36,7 @@ load_and_merge_heatmap_inputs <- function() {
                               "Luminal B1" = "LuminalB1 ER+PR+HER-" ,  
                               "Luminal B2" = "LuminalB2 ER+PR+HER+", 
                               "HER2-enriched" = "HER2-enriched ER-PR-HER+" ,
-                              "TNBC" = "TNBC ER-PR-HER-" ,
-                              "TNBC_BRCA1"  ="TNBC_BRCA1 ER-PR-HER-") 
+                              "TNBC" = "TNBC ER-PR-HER-") 
   
   
   merged <- merged %>% mutate(exposure_cat = ifelse(exposure == 'Albumin', 'Proteins', exposure_cat))
@@ -74,8 +72,7 @@ load_and_merge_heatmap_inputs <- function() {
                                outcome =="LuminalB1 ER+PR+HER-"   ~ "Lum B1",  
                                outcome =="LuminalB2 ER+PR+HER+" ~ "Lum B2" ,
                                outcome =="HER2-enriched ER-PR-HER+"  ~ "HER2" ,
-                               outcome =="TNBC ER-PR-HER-"  ~ "TNBC" ,
-                               outcome =="TNBC_BRCA1 ER-PR-HER-" ~ "TNBC_BRCA1" )) %>% 
+                               outcome =="TNBC ER-PR-HER-"  ~ "TNBC"  )) %>% 
     mutate(mtc = ifelse(mtc == "*", "\n*", mtc)) %>% 
     select(exposure.id = id.exposure, outcome, mtc, qval)
   
@@ -103,18 +100,18 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
   data_sub <- merged %>% 
     
     filter(!id.exposure %in% antro_blacklist)%>% 
-    mutate(exposure = ifelse(grepl("(F)", exposure_name, fixed = T), paste0(exposure, " (F)"), exposure)) %>% 
-    mutate(exposure = ifelse(grepl("AdjBMI", exposure_name, fixed = T), paste0(exposure, " - AdjBMI"), exposure)) %>% 
     filter(!id.exposure %in% c("prot-a-2396", 'prot-a-1540')) %>%  # duplicates
-    filter(!grepl("Average number|ratio ", exposure, ignore.case = T)) %>% 
+    #filter(!grepl("Average number|ratio ", exposure, ignore.case = T)) %>% 
     mutate(exposure = gsub('chylomicrons', 'ULDLs', exposure)) %>% 
     select(id.exposure, contains('BCAC'), "ER+", contains("Luminal"), "ER-", "HER2-enriched","TNBC" ) %>% 
     #filter(!(`BCAC 2017` == 0 & `BCAC 2020` == 0 & `ER-` == 0  & `ER+` == 0 & `Luminal A` == 0 & `Luminal B1` == 0 & `Luminal B2` == 0 &`HER2-enriched` == 0 & `TNBC` == 0 ))
     reshape_heatmap_matrix(., merged) %>% 
-    mutate(exposure_cat = ifelse(exposure == 'Albumin', 'Proteins', exposure_cat)) %>% 
+    #mutate(exposure_cat = ifelse(exposure == 'Albumin', 'Proteins', exposure_cat)) %>% 
     mutate(exposure = ifelse(exposure == 'X-11445--5-alpha-pregnan-3beta,20alpha-disulfate', 'X-11445', exposure)) %>% 
+    mutate(exposure = ifelse(grepl("(F)", exposure_name, fixed = T), paste0(exposure, " (F)"), exposure)) %>% 
+    mutate(exposure = ifelse(grepl("AdjBMI", exposure_name, fixed = T), paste0(exposure, " - AdjBMI"), exposure)) %>% 
     mutate(exposure_cat_sub = exposure_cat) %>% # backup
-    mutate(exposure_cat = case_when(exposure_cat == 'Antrophometric' ~ 'Antrophometric traits', 
+    mutate(exposure_cat = case_when(exposure_cat == 'Antrophometric' ~ 'Anthropometric traits', 
                                     exposure_cat == 'Metabolites' ~ 'Metabolites', 
                                     exposure_cat == 'Proteins' ~ 'Proteins', 
                                     exposure_cat == 'Lipids' ~ 'Lipids', 

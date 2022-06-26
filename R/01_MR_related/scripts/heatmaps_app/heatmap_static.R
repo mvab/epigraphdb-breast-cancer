@@ -51,7 +51,8 @@ font_size =8
 star_size = 3
 
 # lifestyle
-data_sub<- data_full %>% filter(exposure_cat %in% c("Antrophometric traits", "Lifestyle traits"))
+data_sub<- data_full %>% filter(exposure_cat %in% c("Anthropometric traits", "Lifestyle traits"))
+data_sub %>% select(exposure.id, exposure_cat) %>% distinct() %>% count(exposure_cat)
 lifestyle <- plot_heatmap2(data_sub,font_size = font_size, star_size = star_size, col_order = "normal")
 
 

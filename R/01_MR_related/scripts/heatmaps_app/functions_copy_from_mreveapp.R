@@ -83,22 +83,23 @@ create_exposure_categories <- function(dat){
       grepl("blood pressure|heart|Pulse|Cardiac|thromboembolism", exposure, ignore.case = T) ~ "CHD",
       grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "Medical Procedures",
       grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure,  ignore.case = T) ~ "eye_hearing_teeth",
+      grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "Alcohol", # must be before diet
       grepl("vitamin|suppl", exposure, ignore.case = T) ~ "Diet and supplements",
+      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter|bread|Never eat", exposure, ignore.case = T) ~ "Diet and supplements",
       grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "Antrophometric",
       grepl("age at|age started|parous|contraceptive pill|replacement therapy|HRT|menopause|menarche|live birth|oophorectomy|hysterectomy|menstrual|sexual", exposure, ignore.case = T) ~ "Reproductive",
-      grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "Alcohol",
       grepl("smok|cigar", exposure, ignore.case = T) ~ "Smoking",
       grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing|walk|spend outdoors", exposure, ignore.case = T) ~ "Physical activity",
       grepl("sleep|Snoring|chronotype|Getting up in morning|Nap during day", exposure, ignore.case = T) ~ "Sleep",
-      grepl("intake|diet|food|milk|dairy|coffee|cereal|butter|bread|Never eat", exposure, ignore.case = T) ~ "Diet and supplements",
       grepl("Iron|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'Other biomarkers',
-      grepl("LDL|HDL|cholest|trigl|cholesterol|glyceride", exposure.trait, ignore.case = T) ~ 'Lipids',
-      grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|cystatin|SHBG|bilirubin|Total protein|phosphatase|IGF|Albumin", exposure, ignore.case = T) ~ 'Proteins',
+      grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) ~ 'Lipids',
+      grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|cystatin|SHBG|bilirubin|Total protein|phosphatase|IGF", exposure, ignore.case = T) ~ 'Proteins',
       grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic|education", exposure, ignore.case = T) ~ 'Education',
       grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves", exposure, ignore.case = T) ~ 'Psychology',
       TRUE ~ 'other')) %>% 
-    mutate(exposure_cat = ifelse(grepl("LDL|HDL|cholest|trigl|cholesterol|glyceride", exposure.trait, ignore.case = T) & exposure_cat %in% c('Metabolites', 'Other biomarkers'), "Lipids", exposure_cat)) # recapture those in met-a
-  
+    mutate(exposure_cat = ifelse(grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) & exposure_cat %in% c('Metabolites', 'Other biomarkers'), "Lipids", exposure_cat)) %>%  # recapture those in met-a
+    mutate(exposure_cat = ifelse(grepl("Average number|Ratio of", exposure.trait, ignore.case = T) , "other", exposure_cat)) %>%  # recapture those in met-a
+    mutate(exposure_cat = ifelse(grepl("albumin", exposure.trait, ignore.case = T) , "Proteins", exposure_cat)) 
   return(dat)
   
 }
@@ -311,7 +312,7 @@ create_beta_ranges <- function(input){
 }
 
 create_outcomes_table <- function(dat){
-chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2', 'Survival', "UKBB")
+chip_list <- c('BCAC 2017 meta-analysis', "OncArray",  "iCOG2017",'iCOG2015','GWAS v1','GWAS v2', 'Survival', "UKBB")
   
  dat %>% 
     mutate(case_percent = round(N_case/outcome.sample_size*100, 2)) %>% 
@@ -319,11 +320,15 @@ chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2',
     mutate(chip=gsub("_","", chip),
            outcome.year = as.character(outcome.year)) %>% 
     distinct() %>%
+    mutate(chip = case_when(chip == 'GWASold1' ~ 'GWAS v1',
+                            chip == 'GWASold2' ~ 'GWAS v2',
+                            chip == 'Meta' ~ 'BCAC 2017 meta-analysis',
+                            TRUE ~ chip)) %>% 
     mutate(chip = factor(chip, levels = chip_list)) %>% 
     arrange(chip, outcome) %>% 
-    mutate(outcome = case_when(outcome == "ER- premeno" ~ "BCAC: ER- (pre-meno proxy)",
-                               outcome == "ER+ postmeno" ~ "BCAC: ER+ (post-meno  proxy)",
-                               outcome == "Breast cancer (all)" ~ "BCAC: full sample",
+    mutate(outcome = case_when(outcome == "ER- premeno" ~ "ER-",
+                               outcome == "ER+ postmeno" ~ "ER+",
+                               outcome == "Breast cancer (all)" ~ "Full sample",
                                outcome == "ER+ postmeno UKB" ~ "UK Biobank",
                                TRUE ~ outcome)) %>% 
     select(chip, outcome, outcome.id, outcome.year, outcome.nsnp, everything()) %>% 
@@ -331,7 +336,7 @@ chip_list <- c("Meta", "OncArray",  "iCOG2017",'iCOG2015','GWASold1','GWASold2',
            Year = outcome.year,
            nSNPs = outcome.nsnp,
            ID = outcome.id,
-           `Chip/data version` = chip,
+           `Array/data version` = chip,
            `# of cases` = N_case,
            `% of cases` = case_percent,
            `Breast cancer GWAS` = outcome) 
