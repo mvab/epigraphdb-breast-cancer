@@ -1,6 +1,48 @@
 ## MR codebase summary
 
-_very rough draft_
+## Summary
+
+MR workflow scripts (details below):
+
+```
+├── 01_mr_epigraphdb_query.R
+├── 02_explore_mr_results.Rmd
+├── 02_explore_mr_results.nb.html
+├── 03_process_mr_results.Rmd
+├── 03_process_mr_results.nb.html
+├── 03sub_validate_mr.Rmd
+├── 04_query_mreve_mediators.R
+├── 04sub_mreve_mediators_validation.R
+├── 05_case_study_report.Rmd
+├── mr_related_functions.R
+```
+
+Apps:
+
+```
+├── app1_MR-EvE_app
+│   ├── app.R
+│   ├── functions.R
+├── app2_heatmaps_app
+│   ├── app.R
+│   ├── functions_copy_from_mreveapp.R (copy! - must store in the app)
+│   ├── heatmap_functions.R
+│   ├── heatmap_static.R (can be run to generate the static figure and the RDS input to the app)
+```
+
+Legacy / supplementary:
+
+```
+├── adhoc_mr_testing.R
+├── protein_names_testing.R
+└── review_opengwas_riskfactors.Rmd
+
+├── app1_MR-EvE_app_2files (not maintained)
+
+```
+
+## Workflow scripts
+
 
 1. `01_mr_epigraphdb_query.R` **MR-EvE data collection for all breast cancer outcomes**
 
@@ -78,8 +120,10 @@ When we get a list of all potential meds per trait, we validate their effect in
 `04sub_mreve_mediators_validation.R` script. 
 
 Inputs:
-`redone_MRmeds_subsetoutput_ivw.tsv` from 03sub
-`redone_MRmeds_fulloutput.tsv` from 04sub
+`redone_MRmeds_subsetoutput_ivw.tsv` from 03sub - trait-BC validated results
+`redone_MRmeds_fulloutput.tsv` from 04sub - trait-mediator validated results
+
+For all identified exp-med-out relationships in MR-EvE, we pull numbers from validation tables, merge, and export as validated. 
 
 
 Outputs:
@@ -101,13 +145,6 @@ Output:
 `redone_MRmeds_subsetoutput_ivw.tsv`
 
 
-## Apps
-
-
-## Scripts with core and helper functions:
-
-- `mr_related_functions.R`
-- 
 
 
 
