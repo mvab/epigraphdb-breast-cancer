@@ -1,0 +1,18 @@
+---
+title: "Explrole lit spaces with network visualisation"
+author: "Marina Vabistsevits"
+date: "28/01/2022"
+output: html_document
+---
+  
+```{r message=F}
+library(readr)
+library(tidyr)
+library(stringr)
+library(vroom)
+library(dplyr)
+
+library(igraph)
+library(networkD3)
+source("functions_literature.R")
+```

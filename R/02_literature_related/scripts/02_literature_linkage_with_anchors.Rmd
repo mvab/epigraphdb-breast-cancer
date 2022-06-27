@@ -194,8 +194,13 @@ out2 <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM = KEY_TERM ,
 ## cardiotrophin 1
 
 ```{r}
+load(paste0("literature_outputs/lit_spaces_finalset_tidy.RData"))
+id = 'prot-a-710'
+trait_tidy <- tidy_litspace[[id]]
+rm(tidy_litspace)
 
-trait_triples <- extract_two_triples_for_trait(id='prot-a-710',  KEY_TERM = c('cardiotrophin 1'))#, ignore_terms = c("AKT1"))
+
+trait_triples <- extract_two_triples_for_trait(trait_tidy,   KEY_TERM = c('cardiotrophin 1'))#, ignore_terms = c("AKT1"))
 
 trait_trip_1s<- make_sankey(trait_triples$triple1_tidy %>% filter(n>0), fontSize=13)
 trait_trip_2s<- make_sankey(trait_triples$triple2_tidy %>% filter(n > 0), fontSize=13)
