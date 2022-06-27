@@ -2,8 +2,8 @@ library(cowplot)
 library(plotly)
 library(tidyverse)
 
-source("01_MR_related/scripts/heatmaps_app/heatmap_functions.R")
-source("01_MR_related/scripts/heatmaps_app/functions_copy_from_mreveapp.R")
+source("01_MR_related/scripts/app2_heatmaps_app/heatmap_functions.R")
+source("01_MR_related/scripts/app2_heatmaps_app/functions_copy_from_mreveapp.R")
 
 
 #### load data ----
@@ -11,9 +11,9 @@ source("01_MR_related/scripts/heatmaps_app/functions_copy_from_mreveapp.R")
 
 inputs <- load_and_merge_heatmap_inputs()
 
-saveRDS(inputs, "01_MR_related/scripts/heatmaps_app/data/inputs.rds")
+saveRDS(inputs, "01_MR_related/scripts/app2_heatmaps_app//data/inputs.rds")
 
-inputs<- readRDS("01_MR_related/scripts/heatmaps_app/data/inputs.rds")
+inputs<- readRDS("01_MR_related/scripts/app2_heatmaps_app/data/inputs.rds")
 merged <- inputs$merged
 or_ci_data <- inputs$or_ci_data
 protein_path_data <- inputs$protein_path_data
