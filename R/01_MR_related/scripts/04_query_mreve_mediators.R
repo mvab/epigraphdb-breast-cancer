@@ -62,6 +62,9 @@ results_subset <- all_results %>%
   
 dim(results_subset) # 8180
 
+counts_raw <- results_subset %>% select(exposure.trait,exposure.id, med.id) %>% count(exposure.trait,exposure.id) %>% rename(med_count_preval=n)
+mean(counts_raw$med_count_preval)
+
 #write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted.csv") # p<10e4
 write_csv(results_subset, "01_MR_related/results/mr_evidence_outputs/med_extracted_all_r3.csv") # p<0.05 # r3 all is not pval restricted
 
@@ -160,11 +163,16 @@ counts <- validated_with_BC %>%
   filter(type == 'mediator')  %>% 
   select(exposure_cat,exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
 
+mean(counts$med_count)
 counts %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traits.csv")
 
+p <- ggplot(counts, aes(x=med_count)) + 
+  +     geom_histogram()+ facet_wrap(~exposure_cat)
+
 # ad hoc category checking
-x<- counts %>% filter(exposure_cat == 'Lipids')  
+x<- counts %>% filter(exposure_cat == 'Proteins')  
 mean(x$med_count)# 31
+
 
 
 # saving all mediaotrs per each trait
