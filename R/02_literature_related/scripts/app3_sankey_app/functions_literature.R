@@ -1,6 +1,88 @@
 ### functions
 
 
+# extract literature space R function
+
+extract_literature_space <- function(id){
+  
+  ## this query is too heavy for R when literature space is huge (like for BC)
+  
+  # query =  paste0("
+  #     MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
+  #     WHERE gwas.id = '", id, "'
+  #     AND gs1.pval < 0.01
+  #     MATCH (s1)-[:SEMMEDDB_SUB]-(st1:LiteratureTerm) 
+  #     MATCH (gwas)-[:GWAS_TO_LITERATURE]-(lit:Literature)-[]-(s1)
+  #     RETURN lit.id, lit.year,  gwas {.id, .trait}, 
+  #     gs1 {.pval, .localCount}, st1 {.name, .type}, s1 {.id, .subject_id, .object_id, .predicate}, st {.name, .type}
+  #     ")
+  # out<-query_epigraphdb_as_table(query)
+  # dim(out)
+  
+  
+  # so we're going to split it in two parts (tested that this approach delivers the same result)
+  
+  # 1: extract GWAS triples and their terms
+  query1 =  paste0("
+      MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
+      WHERE gwas.id = '", id, "'
+      AND gs1.pval < 0.01
+      MATCH (s1)-[:SEMMEDDB_SUB]-(st1:LiteratureTerm) 
+      RETURN  gwas {.id, .trait}, 
+      gs1 {.pval, .localCount}, st1 {.name, .type}, s1 {.id, .subject_id, .object_id, .predicate}, st {.name, .type}
+      ")
+  # gwas and triples  
+  out1<-query_epigraphdb_as_table(query1)
+  
+  if (dim(out1)[1]==0 ){
+    print(paste0("======= ", id, " : empty literature space"))
+    return(data.frame())
+    
+  } else {
+    
+    dim(out1) # 24239
+    triple_id_list <- unique(out1$s1.id) #23278
+    length(triple_id_list)
+    
+    
+    # 2: for these triples, extract literature nodes
+    query2 =  paste0("
+        MATCH (s1:LiteratureTriple)-[]-(lit:Literature)
+        WHERE s1.id in ['", paste0(triple_id_list, collapse = "', '"),"'] 
+        MATCH (lit)-[:GWAS_TO_LITERATURE]-(gwas:Gwas)
+        WHERE gwas.id = '", id, "'
+        RETURN gwas.id, lit.id, lit.year, s1 {.id, .subject_id, .object_id, .predicate}
+        ")
+    
+    out2<-query_epigraphdb_as_table(query2) 
+    dim(out2)
+    
+    triple_id_list2 <- unique(out2$s1.id) #23142
+    length(triple_id_list2)
+    
+    litspace <- full_join(out1, out2, 
+                          by = c("s1.subject_id"="s1.subject_id",
+                                 "s1.predicate"="s1.predicate",
+                                 "s1.id" = "s1.id" ,
+                                 'gwas.id' = 'gwas.id',
+                                 "s1.object_id" ="s1.object_id" )) %>% 
+      filter(!is.na(lit.id))
+    
+    trait <- unique(litspace$gwas.trait)
+    
+    print(paste0("Lit space of ", trait, " - ", id, ": ", dim(litspace)[1] ))  
+    dim(litspace)
+    
+    litspace<- litspace %>% rowwise() %>% 
+      mutate(st1.type = paste0(unlist(st1.type), collapse="/")) %>%  
+      mutate(st.type = paste0(unlist(st.type), collapse="/"))
+    return(litspace)
+  }
+  
+}
+
+
+
 tidy_lit_space <- function(dat){
   
   triples_tidy <- dat %>% 
