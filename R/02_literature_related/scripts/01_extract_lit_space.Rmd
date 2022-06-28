@@ -146,43 +146,8 @@ trait_df_all<- trait_df_all %>% arrange(-unique_pairs) %>% rename(used_in_lit_an
 write_tsv(trait_df_all,
           "../results/literature_outputs/traits_marked_for_lit_analysis_with_size.tsv")
 
-
 ```
 
-Making summary table
-
-```{r}
-# count available lit space by categories
-counts_by_cat <- list(
-  queried=trait_df_all %>% filter(used_in_lit_analysis ==1 ) %>% count(exposure_cat) %>% rename(queried=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  total=trait_df_all %>% filter(lit_space_size_tidy > 0) %>% count(exposure_cat) %>% rename(total=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  `<=5`=trait_df_all %>% filter(lit_space_size_tidy > 0 & lit_space_size_tidy <=5) %>% count(exposure_cat) %>% rename(`<=5`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  `<=50`=trait_df_all %>% filter(lit_space_size_tidy > 5 & lit_space_size_tidy <=50) %>% count(exposure_cat) %>% rename(`<=50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  `>50`=trait_df_all %>% filter(lit_space_size_tidy > 50) %>% count(exposure_cat) %>% rename(`>50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
-
-counts_by_cat_df <- 
-  bind_rows(counts_by_cat) %>% t() %>% as.data.frame() %>% 
-  rownames_to_column('exposure_cat') %>%
-  mutate(across(V1:V5, ~replace_na(.x, 0))) %>% 
-  mutate(exposure_cat = factor(exposure_cat, levels= c(
-    "Antrophometric",
-    "Diet and supplements",
-    "Physical activity",
-    "Reproductive",
-    "Sleep",
-    "Drugs",
-    "Alcohol",
-    "Smoking",
-    "Molecular traits",
-    "Proteins",
-    "Lipids",
-    "Metabolites",
-    "Other biomarkers" ))) %>% arrange(exposure_cat)
-  
-
-colnames(counts_by_cat_df)[2:6] <- names(counts_by_cat)
-write_tsv(counts_by_cat_df, "../results/literature_outputs/available_litspace_counts_by_exposure_cat.tsv")
-```
 
 ```{r}
 # ad hoc viewing
@@ -200,6 +165,37 @@ tidy_litspace[["prot-a-1117"]] %>% filter(grepl("filamin|flna", term1, ignore.ca
 ```
 
 
+
+Making summary table
+
+```{r}
+# count available lit space by categories
+counts_by_cat <- list(
+  queried=trait_df_all %>% filter(used_in_lit_analysis ==1 ) %>% count(exposure_cat) %>% rename(queried=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  total=trait_df_all %>% filter(lit_space_size_tidy > 0) %>% count(exposure_cat) %>% rename(total=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `<=5`=trait_df_all %>% filter(lit_space_size_tidy > 0 & lit_space_size_tidy <=5) %>% count(exposure_cat) %>% rename(`<=5`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `<=50`=trait_df_all %>% filter(lit_space_size_tidy > 5 & lit_space_size_tidy <=50) %>% count(exposure_cat) %>% rename(`<=50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `>50`=trait_df_all %>% filter(lit_space_size_tidy > 50) %>% count(exposure_cat) %>% rename(`>50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
+
+counts_by_cat_df <- 
+  bind_rows(counts_by_cat) %>% t() %>% as.data.frame() %>% 
+   mutate(across(V1:V5, ~replace_na(.x, 0)))
+sums <- colSums(counts_by_cat_df)
+
+counts_by_cat_df<-bind_rows(counts_by_cat_df, sums)
+
+counts_by_cat_df<- counts_by_cat_df %>%
+  rownames_to_column('exposure_cat') %>%
+  mutate(exposure_cat = ifelse(exposure_cat == "...11", "TOTAL", exposure_cat)) %>% 
+  mutate(exposure_cat = factor(exposure_cat, levels= c( "Antrophometric", "Diet and supplements", "Physical activity",
+                                                        "Reproductive", "Sleep", "Drugs", "Alcohol", "Smoking",
+                                                        "Molecular traits", "Proteins", "Lipids", "Metabolites", 
+                                                        "Other biomarkers", "TOTAL" ))) %>% arrange(exposure_cat)
+  
+
+colnames(counts_by_cat_df)[2:6] <- names(counts_by_cat)
+write_tsv(counts_by_cat_df, "../results/literature_outputs/available_litspace_counts_by_exposure_cat.tsv")
+```
 
 
 ```{r}
@@ -229,6 +225,7 @@ related_traits <- list(
   hdl_particles = c( 'met-c-923', 'met-c-877', 'met-c-898', 'met-c-900',	'met-c-878')
   
 )
+
 
 
 combined_lit_spaces <- list()
@@ -277,58 +274,75 @@ for (i in 1:length(trait_df_comb$trait)){
 }
 
 trait_df_comb <- trait_df_comb %>% 
-      mutate(exposure_cat = "combined",
-              used_in_lit_analysis = T)
+      mutate(used_in_lit_analysis = T)
+
+trait_df_comb$exposure_cat <- c("Anthropometric","Anthropometric","Anthropometric","Anthropometric", "Diet and supplements","Reproductive","Reproductive","Reproductive",  "Lipids","Lipids")
+trait_df_comb$combined<-T
   
 write_tsv(trait_df_comb, "../results/literature_outputs/traits_marked_for_lit_analysis_combined.tsv")
 
 
 # make a jopint lit_counts df
-lit_counts <- bind_rows(trait_df_all,
-                        trait_df_comb %>% rename(exposure = trait) )%>% 
-  filter(!id.exposure %in% unlist(related_traits))
+lit_counts <- bind_rows(trait_df_all %>% mutate(combined=F) ,
+                        trait_df_comb %>% rename(exposure = trait) )
+  #filter(!id.exposure %in% unlist(related_traits))
 
 write_tsv(lit_counts, "../results/literature_outputs/lit_space_stats.tsv")
 
 ```
 
 
+
+
+
+
 ### Visualise lit space sizes
 
 
 ```{r}
+
+library(cowplot)
 lid_data<- read_tsv(  "../results/literature_outputs/lit_space_stats.tsv")
 
 lid_data<-lid_data  %>% 
-  mutate(usable = ifelse(unique_triples >50 ,T, F)) %>% 
+  mutate(`>50 triples` = ifelse(unique_triples >50 ,T, F)) %>% 
+  mutate(exposure_cat = ifelse(exposure_cat %in% c("Diet and supplements", "Physical activity", "Reproductive", "Sleep", "Drugs", "Alcohol", "Smoking"), "Lifestyle", exposure_cat)) %>% 
+  mutate(exposure_cat = ifelse(exposure_cat %in% c("Lipids", "Metabolites"), "Metabolites", exposure_cat)) %>% 
+  mutate(exposure_cat = ifelse(exposure_cat == "Antrophometric", "Anthropometric", exposure_cat)) %>% 
+  
   mutate(exposure_cat = factor(exposure_cat,
-                               levels = rev(c("Antrophometric", "Diet and supplements", "Physical activity", "Reproductive", "Sleep", "Drugs", "Alcohol", "Smoking", "Proteins", "Lipids", "Metabolites", "Other biomarkers", "combined"))))
+                               levels = (c("Anthropometric", "Lifestyle", "Proteins", "Metabolites"))))
 
 protein_path_data <- read_tsv("../../external_files/pathways/proteins_w_pathways.tsv") 
 
-lid_data <- lid_data %>% left_join(protein_path_data %>% select(gene, id.exposure), by = "id.exposure") %>% mutate(exposure = ifelse(!is.na(gene), gene, exposure))
+lid_data_pl <- lid_data %>% 
+  filter(used_in_lit_analysis==T) %>% 
+  mutate(unique_triples = ifelse(is.na(lit_space_size_tidy), 1, unique_triples)) %>% 
+  left_join(protein_path_data %>% select(gene, id.exposure), by = "id.exposure") %>%
+  mutate(exposure = ifelse(!is.na(gene), gene, exposure)) %>% 
+  mutate(label2 = ifelse((id.exposure %in% c("ukb-d-30770_irnt", "prot-a-710","ieu-a-1096") | exposure == "menopause"), exposure, NA) ) 
+  #mutate(label2 = ifelse(combined, paste0("combined_", label2), label2))
 
-p<- ggplot(lid_data, aes(y = unique_triples, x= exposure_cat, label= exposure))+
-  #geom_boxplot(fill = "grey")+
-  #geom_violin()+
-  geom_jitter(aes(colour = usable, alpha=0.3))+
+
+set.seed(1)
+p<- ggplot(lid_data_pl, aes(y = unique_triples, x= exposure_cat, label= label2))+
+  geom_violin()+
+  geom_point(aes(colour = `>50 triples`,
+                 alpha=0.3,
+                 #alpha = combined, shape = combined,
+                 size=0.7), position = position_jitter(w = 0.1, h = 0))+
   geom_hline(yintercept=50, linetype =3)+
-  ggrepel::geom_label_repel(size = 2)+
+  #ggrepel::geom_text_repel(size = 2.5, nudge_x = -0.1, nudge_y = 0, box.padding = 2)+  
+  #scale_alpha_discrete(range=c(0.4,1)) +
   scale_y_log10(breaks = c( 0, 50, 100, 1000, 5000,10000, 50000))+
-  coord_flip()+
-  theme_bw()+
-  labs(y = "Unique triples count", x= "Trait category")+
-  theme(axis.text.x = element_text(angle=40, size=7, hjust = 1))
+  theme_minimal_grid(10)+
+  scale_x_discrete(position = "top") +
+  labs(y = "Unique triples count (log10 scale)", x= "Trait category")+
+  theme(axis.text.x = element_text( size=9),legend.position = "bottom")+
+   guides( alpha="none", size="none")
 
-  
 plotly::ggplotly(p)
 
-
-
-# exckude stuff that is not in validated MR
-# add repel labels? proteins - genenames?
-# add joined groups ?
-# lipids? 
 
 ```
 
