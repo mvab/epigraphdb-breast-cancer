@@ -30,8 +30,10 @@ library(TwoSampleMR)
 library(vroom)
 
 source("../../helper_functions.R")
-source("explore_MR-EvE_app/functions.R")
+source("app1_MR-EvE_app/functions.R")
 source("mr_related_functions.R")
+source("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/early-bmi-breast-cancer-mr/functions_mvmr.R")
+
 
 set.seed(1)
 
@@ -55,10 +57,10 @@ params2$data_prefix -> data_prefix
 
 ```{r ,  include=F, eval = F, echo=F}
 
-#### HOW TO generate a case study report: €
-# run one of this in console
+#### HOW TO generate a case study report: 
+# run one of this in console, but set trait_name manually first
 
-rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd", 
+rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
                 params = list(
                   trait_name = "Cardiotrophin-1",
                   main = "prot-a-710",
@@ -70,11 +72,11 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
 )
 
 
-rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd", 
+rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
                   params = list(
                     trait_name = "Age at menopause",
                     main = "ukb-b-17422",
-                    main_lit = "ukb-b-17422",
+                    main_lit = "menopause",
                     lit_space_file = "lit_terms_menopause.csv",
                     data_prefix = NA
                   ),
@@ -82,7 +84,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
 )
 
 
-rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd", 
+rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
                   params  = list(
                     trait_name = "IGF-1",
                     main = "ukb-d-30770_irnt",
@@ -93,7 +95,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
                    output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
 
-rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd", 
+rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
                   params = list(
                     trait_name = "Childhood body size",
                     main = "ukb-a-34",
@@ -121,7 +123,23 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
 #
 ```
 
-**Report for: `r trait_name`**
+**Report for: `r trait_name` (`r main`)**
+
+This case study report includes the results for `r trait_name`, generated automatically using Rmarkdown.
+
+The report is split into 3(+1) parts:
+
+1. Mendelian randomization (MR) results for `r trait_name` for all breast cancer outcomes (BCAC 2017 and 2020)
+2. Overview of potential mediators identified from MR-EvE data; their validation with two-step and multivariable MR (MVMR)
+3. Overview of potential mediators identified from literature-mined data; their validation with two-step, bidirectional and MVMR
+4. _Optional_ validation of results with female-only exposure data (if available)
+
+- Trait IDs in this report correspond to data available in [OpenGWAS](https://gwas.mrcieu.ac.uk/)
+- BCAC 2017 outcomes names/IDs: Full sample `ieu-a-1126`, ER+ sample `ieu-a-1127`, ER- sample `ieu-a-1128`
+- MR analyses in this report were performed using [TwoSampleMR](https://github.com/MRCIEU/TwoSampleMR) and [MVMR](https://github.com/WSpiller/MVMR) packages
+
+This report is a part of publication _"Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors"_ Vabistsevits et al 2022
+
 
 # Main MR results
 
@@ -129,7 +147,7 @@ rmarkdown::render("01_MR_related/scripts/extra_mr_for_case_studies.Rmd",
 
 
 ```{r echo =F, fig.height=3, fig.width=7}
-path <- c("../results/mr_evidence_outputs/mr_subtypes/all_data_with_sens_filters.xlsx")
+path <- c("../results/mr_evidence_outputs/all_data_with_sens_filters.xlsx")
 mr_df<- path %>% 
   excel_sheets() %>% 
   set_names() %>% 
@@ -173,7 +191,7 @@ p<-ggplot(mr_results, aes(y=outcome, x=or, colour=outcome, shape = effect_direct
   theme_minimal_vgrid(10, rel_small = 1) +
   scale_y_discrete(position = "right")+
   facet_wrap( exposure ~ . , ncol=1)+
-  labs(color = "", y = "Outcome", x = "Odds ratio" )+
+  labs(color = "", y = "Breast cancer outcome", x = "Odds ratio" )+
   theme(legend.position = "none", plot.title.position  = "plot")
 p
 
@@ -198,12 +216,13 @@ ft<-width(ft, j = c(1,2,3), width=1.5)
 ft
 ```
 
+The full MR results and sensitivity analysis are available in Supplementary Data 2 and 3.
 
 # MR-EvE-mined mediators
 
 ```{r,  include=F}
 
-med_conf_table <- readxl::read_excel("../results/mr_evidence_outputs/med-conf-table_upd_ALL.xlsx", sheet = main) %>% 
+med_conf_table <- readxl::read_excel("../results/mr_evidence_outputs/med-table-validated.xlsx", sheet = main) %>% 
      mutate(outcome = case_when(outcome.id =="ieu-a-1126" ~ "BCAC 2017",
                              outcome.id =="ieu-a-1127" ~ "ER+",
                              outcome.id =="ieu-a-1128" ~ "ER-"))
@@ -229,9 +248,9 @@ unique_meds <- length(unique(meds_table$mediator.id))
 
 ```
 
-By querying MR-EvE data for `r trait_name` we identified `r unique_meds` potential mediators. This analysis was done only for BCAC 2017 outcomes (full / ER+ / ER- samples).
+By querying MR-EvE data for `r trait_name` we identified `r unique_meds` potential mediators. This analysis was done only for BCAC 2017 outcomes (full / ER+ / ER-), and only those that were affected in the main MR analysis: `r if(all) {"full "}` , `r if(pos) {"ER+ "}` , `r if(neg) {"ER-"}` sample(s)
 
-Below is a table of two-step MR results for each mediator, including _exposure -> mediator_ and	_mediator -> outcome_, and the total effect of _exposure -> outcome_. In the main analysis, `r trait_name` only had effect on `r if(all) {"total "}` , `r if(pos) {"ER+ "}` , `r if(neg) {"ER-"}` sample(s), so only them were used in MR-EvE mediators quesry.
+Below is a table of two-step MR results for each mediator, including _exposure -> mediator_ and	_mediator -> outcome_. The total effect of _exposure -> outcome_ is available in the table above. 
 
 ## Two-step MR
 
@@ -285,6 +304,8 @@ if (neg) {
 ```
 
 ## MVMR
+
+Next, we performed MVMR with potential mediators. In the table below, we include the total effect from univariable MR and the direct effect from MVMR accounted for each mediator. The mediator traits that disrupt the total effect are highlighted. 
 
 ```{r include=F, cache=T}
 
@@ -399,18 +420,18 @@ if (neg){
 }
 ```
 
-
+<br>
 
 # Literature-mined mediators
 
-
+We searched literature-mined relationships in EpiGraphDB for `r trait_name` and breast cancer and used literature-overlap method to identify potential intermediates between the two. The identified intermediates are tested as potential mediaotrs in this section.
 
 ```{r, include =F}
-lit_df<- read_tsv("../../02_literature_related/literature_outputs/traits_marked_for_lit_analysis.tsv")
-lit_trait <-lit_df %>% filter(id == main_lit)
+lit_df<- read_tsv("../../02_literature_related/results/literature_outputs/lit_space_stats.tsv")
+lit_trait <-lit_df %>% filter(id.exposure == main_lit)
 
 
-case_terms<- read_csv(paste0("../../02_literature_related/literature_outputs/sankey_terms_storage/", lit_space_file)) 
+case_terms<- read_csv(paste0("../../02_literature_related/results/literature_outputs/sankey_terms_storage/", lit_space_file)) 
 if (main == "prot-a-710") {
   case_terms <-case_terms %>% filter(value != 'cardiotrophin 1')
 }
@@ -465,6 +486,8 @@ traits_can_use <- lit_terms_df %>% filter(instruments > 0 ) %>% pull(gwas.name) 
  
 ## Literature overlap Sankey plot
 
+This is a subset of literature overlap between `r trait_name` and breast cancer. See and explore the full version in [https://mvab.shinyapps.io/literature_overlap_sankey/](https://mvab.shinyapps.io/literature_overlap_sankey/)
+
 ```{r}
 #library(networkD3)
 
@@ -486,14 +509,14 @@ traits_can_use <- lit_terms_df %>% filter(instruments > 0 ) %>% pull(gwas.name) 
 
 ```{r echo=F, eval =T}
 lit_terms_df_disp <- lit_terms_df %>% rename("Literature term"="value",
-                                        "Matching GWAS ID"="gwas.id" , 
-                                        "Matching GWAS" = "gwas.name",
+                                        "Matching GWAS in OpenGWAS"="gwas.id" , 
+                                        "GWAS ID" = "gwas.name",
                                         "nSNPs p < 5x10e8" = "instruments") %>% 
-                select("Literature term","Matching GWAS", "Matching GWAS ID", "nSNPs p < 5x10e8" )
+                select("Literature term","Matching GWAS in OpenGWAS", "GWAS ID", "nSNPs p < 5x10e8" )
 
 ft<-flextable(lit_terms_df_disp)
 ft<-width(ft, j = c(1), width=2)
-ft<-width(ft, j = c(2), width=4)
+ft<-width(ft, j = c(2), width=3.5)
 ft<-width(ft, j = c(3), width=1.3)
 
 ft %>% bg(
@@ -530,13 +553,13 @@ redoneMR_tidy <- redone_MR %>%
   select(exposure, id.exposure ,  outcome, id.outcome, OR_CI,  nsnp, effect_direction) 
 ```
 
-Then we performed two-step MR for the traits with >=1 instruments:
+We performed two-step MR for `r length(gwas_with_inst_total)` traits with >=1 instruments (highlighted in table above):
 
 ```{r unordered_list1, echo=FALSE, results='asis'}
 cat(paste('-', traits_can_use), sep = '\n')
 ```
 
-Out of these traits, `r length(unique(redoneMR_tidy$exposure))` had evidence of effect on breast cancer (so could be considered further as mediators):
+Out of these traits, `r length(unique(redoneMR_tidy$exposure))` had evidence of effect on breast cancer (so could be considered further as potential mediators):
 
 ```{r unordered_list2, echo=FALSE, results='asis'}
 cat(paste('-', unique(redoneMR_tidy$exposure)), sep = '\n')
@@ -547,12 +570,15 @@ cat(paste('-', unique(redoneMR_tidy$exposure)), sep = '\n')
 ```{r echo=F, eval =T}
 ft <- flextable(redoneMR_tidy %>% select(-id.outcome, -effect_direction))
 ft <- width(ft, j = c(1,3,4), width=2)
+ft <- width(ft, j = c(2), width=1.5)
 ft
 ```
 
 ## Bidirectional MR (exp/med) (step1)
 
-We next performed bidirectional MR to to establish the direction of the effect between the intermediate and the risk factor and identify the traits that are affected by the risk factor (i.e. likely mediator relationship) [**Exposure -> mediator (step1)**] and the other way around (i.e. potential confounder relationship). 
+We next performed bidirectional MR to to establish the direction of the effect between the intermediate and the risk factor and identify the traits that are affected by the risk factor (i.e. likely mediator relationship) [**Exposure -> mediator (step1 of two-step MR)**] and the other way around (i.e. potential confounder relationship). 
+
+The table below highlights the relationships with evidence of effect.
 
 
 ```{r , echo=F, eval =T, cache=T}
@@ -569,7 +595,12 @@ for (interm in unique(redoneMR_tidy$id.exposure)){
 }
 
 potential_mediators <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(outcome)
+```
 
+Potential mediators: **`r paste0(potential_mediators, collapse=", ")`** (traits affect by `r trait_name`)
+
+
+```{r , echo=F, eval =T, cache=T}
 ft <- flextable(step1_mr)
 ft <- width(ft, j = c(1,3,5,8), width=3)
 
@@ -586,10 +617,13 @@ ft %>%
 
 ```
 
-Potential mediators: **`r paste0(potential_mediators, collapse=", ")`**
 
 
 ## MVMR
+
+For the identified potential mediators we perform MVMR with the known affected outcomes. The table below shows the total effect of exposure (`r trait_name`) and each mediator, and their direct effects from MVMR analysis together. 
+
+The highlighted rows indicate when the direct effect overlaps the null. 
 
 ```{r , echo=F, cache =TRUE, eval =T}
 
@@ -681,10 +715,12 @@ ft %>% bg(
 
 
 
-# (Optional): sensitivity analysis with female only data (if available)
+# (Optional): sensitivity analysis with female only data
+
+This section is an optional sensitivity analysis, and is only run where external female-only data is available for the given exposure. 
 
 
-```{r echo =F, eval =F}
+```{r echo =F, eval =T}
 local_data_path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/"
 
 tophits <- read_tsv(paste0(local_data_path, "GWAS_tophits/", data_prefix , "_tophits.tsv"), show_col_types = FALSE)
@@ -696,7 +732,7 @@ full_gwas <- vroom(paste0(local_data_path, "GWAS_results_tidy/", data_prefix , "
 
 Effect on breast cancer from female-only data of **`r trait_name`**
 
-```{r echo =F, eval =F}
+```{r echo =F, eval =T}
 res_df_all<-tibble()
 res_df_pos<-tibble()
 res_df_neg<-tibble()
@@ -712,15 +748,10 @@ step2_mr <- bind_rows(res_df_all, res_df_pos, res_df_neg) %>%
   mutate(exposure = ifelse(exposure == "Childhood BMI", "Comparative body size at age 10", exposure))
 ```
 
-```{r echo =F, eval =F}
+```{r echo =F, eval =T}
 ft <- flextable(step2_mr)
-ft <- width(ft, j = c(1), width=3)
-ft <- width(ft, j = c(2,3), width=2)
-
-
+ft <- width(ft, j = c(1,2,3), width=2)
 border <- fp_border( width = 2)
-
-
 ft %>%
   bg(., 
       i = ~ effect_direction != 'overlaps null', 
@@ -739,13 +770,22 @@ if (neg && step2_mr[step2_mr$outcome == "ER- Breast cancer ",]$effect_direction 
 
 ## Bidirectional MR (exp/med) (step1) (female-only `r trait_name`)
 
-Testing on all literature intermediates. An empty rows inducates that no instruments were avaialble to perform the analysis.
+Testing on all literature intermediates and potential mediators from MR-EvE. An empty row indicates that no instruments were available to perform the analysis.
 
-```{r echo =F,  eval =F}
+
+```{r echo =F,  eval =T}
+# this runs to prevent failing is part if optional analysis is not run
+potential_mediators2 <- c(" ")
+```
+
+
+```{r echo =F,  eval =T}
 
 step1_mr <- tibble()
 
-for (interm in unique(redoneMR_tidy$id.exposure)){
+meds_to_retest <- unique(c(meds_table$mediator.id, redoneMR_tidy$id.exposure))
+
+for (interm in meds_to_retest){
 
     X <- mr_exp_local(exp_snps = tophits, out_id = interm) %>% 
         select(exposure,id.exposure,  outcome,id.outcome, beta_CI, effect_direction, nsnp) %>% mutate(effect = "term trait as mediator")
@@ -763,13 +803,13 @@ for (interm in unique(redoneMR_tidy$id.exposure)){
 step1_mr <- step1_mr %>%  mutate(exposure = ifelse(exposure == "Childhood BMI", "Comparative body size at age 10", exposure)) %>% 
                           mutate(outcome = ifelse(outcome == "Childhood BMI", "Comparative body size at age 10", outcome)) 
 
-```
 
-
-```{r echo =F,  eval =F}
 potential_mediators2 <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(outcome)
 potential_mediators2id <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(id.outcome)
+```
 
+Potential mediators from female-only `r trait_name` analysis: **`r paste0(potential_mediators2, collapse=", ")`**
+```{r echo =F,  eval =T}
 ft <- flextable(step1_mr)
 ft <- width(ft, j = c(1,3,5,8), width=3)
 
@@ -786,14 +826,17 @@ ft %>%
 ```
 
 
-Potential mediators from female-only `r trait_name` analysis: **`r paste0(potential_mediators2, collapse=", ")`**
 
 
 
 
 ## MVMR
 
-```{r echo =F,  eval =F}
+For the identified potential mediators we perform MVMR with the known affected outcomes. The table below shows the total effect of exposure (`r trait_name`) and each mediator, and their direct effects from MVMR analysis together. 
+
+The highlighted rows indicate when the direct effect overlaps the null. 
+
+```{r echo =F,  eval =T}
 
 all_resF <- tibble()
 x1 <- tibble()
@@ -835,7 +878,7 @@ for (interm in potential_mediators2id){
 
 ```
 
-```{r echo=F, eval=F}
+```{r echo=F, eval =T}
 
 # get total CI of potential meds of BC from here
 pt1 <- redone_MR %>%
@@ -873,7 +916,7 @@ total_res_out_dipsF<- total_res_outF %>%
 
 
 
-```{r echo =F, eval =F}
+```{r echo =F, eval =T}
 total_res_out_dipsF <- as_grouped_data(x = total_res_out_dipsF, groups = c("#"), columns = NULL)
 ft<-flextable(total_res_out_dipsF)
 ft<-width(ft, j = c(2), width=3)
