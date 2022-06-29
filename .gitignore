@@ -11,7 +11,7 @@ R/htmls*
 
 
 R/external_figures/
-R/01_MR_related/scripts/extra_mr_for_case_studies_cache/html/*
+R/01_MR_related/scripts/05_case_study_report_cache/html/*
 R/01_MR_related/results/mr_evidence_outputs/*
 R/01_MR_related/results/heatmap_html/*
 R/02_literature_related/results/literature_outputs/*
