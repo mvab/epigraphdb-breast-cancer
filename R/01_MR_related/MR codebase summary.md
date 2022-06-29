@@ -1,6 +1,6 @@
 ## MR codebase summary
 
-## Summary
+## File summary
 
 MR workflow scripts (details below):
 
@@ -44,7 +44,7 @@ Legacy / supplementary:
 ## Workflow scripts
 
 
-1. `01_mr_epigraphdb_query.R` **MR-EvE data collection for all breast cancer outcomes**
+1. **MR-EvE data collection for all breast cancer outcomes** `01_mr_epigraphdb_query.R` 
 
 	The approach: get all MR relationships for all BC outcomes, calculate CIs, keep only those exposures for which the effect CIs don't overlap the null, regardless of the p-value. _(We get about 35 relationships where pval >0.05, but most of there are random traits and won't make it to the final analysis anyway)._
 	
@@ -54,7 +54,7 @@ Legacy / supplementary:
 	Output: `bc_all_mr_fromCIs.tsv` (N= 2332 -> 1970)
 	
 
-2. `02_explore_mr_results.Rmd` **Tidy up MR-EvE output and split it into categories**
+2. **Tidy up MR-EvE output and split it into categories** `02_explore_mr_results.Rmd` 
 
 	Using the output from the previous step, we add exposure/outcome labels, perform minor filtering/exclusions, and explore each trait category in interactive plots. The interactive plots are equivalent to the RShiny app, but less refined. The output df can be used for more directed filtering (ignoring actual trait names) (done in the next script).
 	
@@ -67,8 +67,8 @@ Legacy / supplementary:
 	Output: `tidy_traits_by_cat.tsv`(n = 1643 -> 905)
 	
 
-3. `03_process_mr_results.Rmd` **Traits processing and validation summary**
-
+3. **Traits processing and validation summary**
+ `03_process_mr_results.Rmd` 
 	* Extract traits with consistent effect (2/3 main datasets)
 	
 		Output: `trait_for_followup.tsv` (n = 309)
@@ -93,60 +93,72 @@ Legacy / supplementary:
 
 	
 	 
-4. `03sub_validate_mr.R` **MR results validation**
+4. **MR results validation** `03sub_validate_mr.R` 
 
-Perform MR as validation on 309 traits on all BCAC 2017 and 2020 outcomes (+ sensitivity analyses)
-
-Input: `trait_for_followup.tsv`  from `03_process_mr_results.Rmd` 
-
-* Perform MR in BCAC 2017
-		
-	- `redone_MR_fulloutput.tsv` 
-	- `redone_MR_fulloutput_sens.tsv`
-	- `redone_MR_subsetoutput_ivw.tsv` (this is used in mediaotr validation)
- 
-* Perform MR in BCAC 2020 (saved separately and joined in a single table as separate step)
+	Perform MR as validation on 309 traits on all BCAC 2017 and 2020 outcomes (+ sensitivity analyses)
 	
-	- `all_traits_MR_vs_BCAC2020.tsv`	
-	- `all_traits_sensMR_vs_BCAC2020.tsv`	
+	Input: `trait_for_followup.tsv`  from `03_process_mr_results.Rmd` 
+	
+	* Perform MR in BCAC 2017
+			
+		- `redone_MR_fulloutput.tsv` 
+		- `redone_MR_fulloutput_sens.tsv`
+		- `redone_MR_subsetoutput_ivw.tsv` (this is used in mediaotr validation)
+	 
+	* Perform MR in BCAC 2020 (saved separately and joined in a single table as separate step)
+		
+		- `all_traits_MR_vs_BCAC2020.tsv`	
+		- `all_traits_sensMR_vs_BCAC2020.tsv`	
 
-5. `04_query_mreve_mediators.R`
+5. **Query and process potential mediators from MR-EvE** `04_query_mreve_mediators.R`
 
-For the final set of traits in `trait_manual_ivw_subtypes_merged.tsv` (across BCAC 2017 outcomes only), we run MR-EvE queries to extract confounders, mediators, colliders, reverse intermediates. 
-
-Initially, we extract all relationships with a high p-value threshold (all results will be manually validated later, so it does not matter). Also not restricting search by pval of med->out, as will be using validation from the previous script to filter those.
-
-When we get a list of all potential meds per trait, we validate their effect in 
-`04sub_mreve_mediators_validation.R` script. 
-
-Inputs:
-`redone_MRmeds_subsetoutput_ivw.tsv` from 03sub - trait-BC validated results
-`redone_MRmeds_fulloutput.tsv` from 04sub - trait-mediator validated results
-
-For all identified exp-med-out relationships in MR-EvE, we pull numbers from validation tables, merge, and export as validated. 
-
-
-Outputs:
-`med_extracted_all_r3.csv` - all potential mediators, not validated
-`mediators_counts_per_traits.csv` - counts; validated
-`med-table-validated.xlsx` - validated mediator results 
-
-
-
-6. `04sub_mreve_mediators_validation.R`
-
-We manually re-run MR for all identified mediators for each risk factor trait.
-
-Input: 
-`med_extracted_all_r3.csv`
-Output:
-`redone_MRmeds_fulloutput.tsv`
-`redone_MRmeds_fulloutput_sens.tsv`
-`redone_MRmeds_subsetoutput_ivw.tsv`
+	For the final set of traits in `trait_manual_ivw_subtypes_merged.tsv` (across BCAC 2017 outcomes only), we run MR-EvE queries to extract confounders, mediators, colliders, reverse intermediates. 
+	
+	Initially, we extract all relationships with a high p-value threshold (all results will be manually validated later, so it does not matter). Also not restricting search by pval of med->out, as will be using validation from the previous script to filter those.
+	
+	When we get a list of all potential meds per trait, we validate their effect in 
+	`04sub_mreve_mediators_validation.R` script. 
+	
+	Inputs:
+	`redone_MRmeds_subsetoutput_ivw.tsv` from 03sub - trait-BC validated results
+	`redone_MRmeds_fulloutput.tsv` from 04sub - trait-mediator validated results
+	
+	For all identified exp-med-out relationships in MR-EvE, we pull numbers from validation tables, merge, and export as validated. 
+	
+	
+	Outputs:
+	`med_extracted_all_r3.csv` - all potential mediators, not validated
+	`mediators_counts_per_traits.csv` - counts; validated
+	`med-table-validated.xlsx` - validated mediator results 
 
 
 
+6. **Run validation for identified mediators** `04sub_mreve_mediators_validation.R`
+
+	We manually re-run MR for all identified mediators for each risk factor trait.
+	
+	Input: 
+	`med_extracted_all_r3.csv`
+	Output:
+	`redone_MRmeds_fulloutput.tsv`
+	`redone_MRmeds_fulloutput_sens.tsv`
+	`redone_MRmeds_subsetoutput_ivw.tsv`
 
 
 
+7. **Case study report** `05_case_study_report.Rmd` 
 
+
+	The report is split into 3(+1) parts:
+	
+	1. MR results for case study trait for all breast cancer outcomes (BCAC 2017 and 2020)
+	2. Overview of potential mediators identified from MR-EvE data; their validation with two-step and multivariable MR (MVMR)
+	3. Overview of potential mediators identified from literature-mined data; their validation with two-step, bidirectional and MVMR
+	4. _Optional_ validation of results with female-only exposure data (if available)
+
+	The script depends on these input files:
+	
+	- `01_MR_related/results/mr_evidence_outputs/all_data_with_sens_filters.xlsx`
+	- `02_literature_related/results/literature_outputs/lit_space_stats.tsv`
+	- `02_literature_related/results/literature_outputs/sankey_terms_storage/....` - specific case study file in that location
+	- local GWAS data in a different project if the optional step is run
