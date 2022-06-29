@@ -2,7 +2,7 @@ library(tidyverse)
 library(epigraphdb)
 source("helper_functions.R")
 source("01_MR_related/scripts/mr_related_functions.R")
-source("01_MR_related/scripts/explore_MR-EvE_app/functions.R")
+source("01_MR_related/scripts/app1_MR-EvE_app/functions.R")
 
 # testing example
 exposure = "prot-a-670"
@@ -62,7 +62,7 @@ results_subset <- all_results %>%
   
 dim(results_subset) # 8180
 
-counts_raw <- results_subset %>% select(exposure.trait,exposure.id, med.id) %>% count(exposure.trait,exposure.id) %>% rename(med_count_preval=n)
+counts_raw <- results_subset %>% select(exposure.trait,exposure.id, med.id) %>% distinct() %>% count(exposure.trait,exposure.id) %>% rename(med_count_preval=n)
 mean(counts_raw$med_count_preval)
 
 #write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted.csv") # p<10e4
@@ -117,7 +117,7 @@ validated_with_BC <- results_validated %>%
                     filter(!is.na(r1.OR_CI_val)) %>% 
                     filter(!is.na(r2.OR_CI_val)) %>% 
                     filter(!is.na(r3.OR_CI_val)) %>% 
-                    select(-r1.OR_CI, -r2.OR_CI,-r3.OR_CI, -r1.b, -r2.b, -r3.b, -exposure_cat.y ) %>% 
+                    select(-r1.OR_CI, -r2.OR_CI,-r3.OR_CI, -r1.b, -r2.b, -r3.b, -exposure_cat.y , -exposure_cat) %>% 
                     rename(exposure_cat = exposure_cat.x)
   
     
@@ -149,11 +149,11 @@ select(type, outcome.id,
 counts <- left_join(
   # no conf per trait
   validated_with_BC %>% filter(type == 'confounder')  %>% 
-    select(exposure_cat, exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(conf_count=n),
+    select(exposure_cat, exposure.trait,exposure.id, med.id) %>% distinct() %>%  count(exposure_cat,exposure.trait,exposure.id) %>% rename(conf_count=n),
   
   # no med per trait
   validated_with_BC %>% filter(type == 'mediator')  %>% 
-    select(exposure_cat,exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
+    select(exposure_cat,exposure.trait,exposure.id, med.id) %>% distinct() %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
 )
 
 length(unique(validated_with_BC$exposure.id)) # 153 
@@ -161,7 +161,7 @@ length(unique(validated_with_BC$exposure.id)) # 153
 # no med per trait 153
 counts <- validated_with_BC %>% 
   filter(type == 'mediator')  %>% 
-  select(exposure_cat,exposure.trait,exposure.id, med.id) %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
+  select(exposure_cat,exposure.trait,exposure.id, med.id) %>% distinct() %>% count(exposure_cat,exposure.trait,exposure.id) %>% rename(med_count=n)
 
 mean(counts$med_count)
 counts %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traits.csv")
@@ -170,10 +170,11 @@ p <- ggplot(counts, aes(x=med_count)) +
   +     geom_histogram()+ facet_wrap(~exposure_cat)
 
 # ad hoc category checking
-x<- counts %>% filter(exposure_cat == 'Proteins')  
+x<- counts %>% filter(exposure_cat == 'Lipids')  
 mean(x$med_count)# 31
 
 
+mean(counts$med_count)
 
 # saving all mediaotrs per each trait
 
