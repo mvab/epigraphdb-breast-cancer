@@ -8,6 +8,9 @@ text
 
 ![Image](content/figs/app1.png)
 
+<img src="content/figs/app1.png" width="200"/>
+
+
 
 [Heatmaps app](https://mvab.shinyapps.io/MR_heatmaps/)
 
