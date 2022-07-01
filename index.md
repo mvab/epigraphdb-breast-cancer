@@ -5,7 +5,9 @@ text
 ### Apps
 
 [MR-EvE app](https://mvab.shinyapps.io/brca-miner/)
+
 [Heatmaps app](https://mvab.shinyapps.io/MR_heatmaps/)
+
 [Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
 
 
