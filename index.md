@@ -4,6 +4,11 @@ You can use the [editor on GitHub](https://github.com/mvab/epigraphdb-breast-can
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
+[case study page](content/case_study_report_Cardiotrophin-1.html)
+
+
+[app1](https://mvab.shinyapps.io/brca-miner/)
+
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
