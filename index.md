@@ -6,21 +6,17 @@ text
 
 [MR-EvE app](https://mvab.shinyapps.io/brca-miner/)
 
-![Image](content/figs/app1.png)
-
 <img src="content/figs/app1.png" width="275"/>
 
 
-<img src="content/figs/app2.png" width="275"/>
 
 [Heatmaps app](https://mvab.shinyapps.io/MR_heatmaps/)
 
 ![Image](content/figs/app2.png)
 
 
-[Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
 
-![Image](content/figs/app3.png)
+[Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
 
 <img src="content/figs/app3.png" width="275"/>
 
