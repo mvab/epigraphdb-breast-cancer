@@ -1,8 +1,7 @@
-# change title
 
-## Summary page 
+## Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors
 
-text
+This page is placeholder for navigation web-based components of this article
 
 ### Apps
 
