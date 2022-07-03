@@ -781,6 +781,19 @@ potential_mediators2 <- c(" ")
 step1_mr <- tibble()
 
 meds_to_retest <- unique(c(meds_table$mediator.id, redoneMR_tidy$id.exposure))
+# if we are working with childhood BMI, we are going to ignore all adult body size measures
+
+if (main == "ukb-a-34"){
+  
+  antro<-c("ieu-a-99","ieu-a-974",
+        "ieu-a-95","ieu-a-91",
+        "ieu-a-85","ieu-a-75",
+        "ieu-a-62","ieu-a-51",
+        "ieu-a-1096","ieu-a-107",
+        "ieu-a-109","ukb-a-269")
+  meds_to_retest<- meds_to_retest[!meds_to_retest %in% antro]
+}
+
 
 for (interm in meds_to_retest){
 
@@ -919,7 +932,7 @@ ft<-flextable(total_res_out_dipsF)
 ft<-width(ft, j = c(2), width=3)
 ft<-width(ft, j = c(3:7), width=1.8)
 ft %>% bg(
-  ., i = ~ `direct effect direction` == 'overlaps null' & `total effect direction` != 'overlaps null' , 
+  ., i = ~ `direct effect direction` == 'overlaps null' & `total effect direction` != 'overlaps null' & exposure == trait, 
   j = "direct effect direction", 
   bg = "#6CA3F8", part = "body")
 ```
