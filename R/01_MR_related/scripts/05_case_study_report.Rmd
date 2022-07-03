@@ -329,12 +329,9 @@ for (bc_out in outcomes){
   }
 
   
-  # list of interm where exp or/and interm overlaps null
-  x<- df %>% filter(effect_direction == 'overlaps null') %>% pull(interm)
-  
   # exposure disrupted by interm
   # returns disrupted exposure values
-  disrupted_by <- df %>% filter(interm %in% x) %>% 
+  disrupted_by <- df %>% 
     filter(exposure == trait) %>% 
     mutate(is_disrupted = ifelse(effect_direction == 'overlaps null', T,F)) %>%
     arrange(exposure) %>% distinct()
