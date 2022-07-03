@@ -82,15 +82,19 @@ full_results %>% filter(effect_direction != 'overlaps null') %>% count(effect_di
 # positive          3747
 
 
-X <- full_results %>% filter(mr.pval < 0.05) %>% pull(exposure.id) %>% unique() 
-length(X)
-# 1933
-Y <- full_results %>% filter(effect_direction != 'overlaps null') %>% pull(exposure.id) %>% unique() 
-length(Y)
-# 1970
+full_results %>% filter(mr.pval >= 0.05) %>% count(effect_direction)
+# negative           189
+# overlaps null    38128
+# positive            83
 
-Z <- setdiff(Y,X)
-full_results %>% filter(exposure.id %in% Z) %>% select(exposure.id, exposure.trait) %>% distinct() %>% View()
+
+full_results %>% filter(effect_direction == 'overlaps null') %>% filter(mr.pval < 0.05) %>% dim() #0 
+
+
+test <- full_results %>% filter(mr.pval >= 0.05) %>% filter(effect_direction != 'overlaps null') %>% 
+  select(exposure.id, exposure.trait,outcome.id,mr.method, mr.pval, or, or_loci, or_upci, OR_CI, effect_direction, mr.b, mr.se,loci, upci  ) %>% distinct() 
+
+write_csv(test, "01_MR_related/results/mr_evidence_outputs/mismatch_pval_ci.csv")
 
 
 
