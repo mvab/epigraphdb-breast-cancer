@@ -928,9 +928,9 @@ extract_lifestyle_main_triples <- function(trait_tidy ){
 
 make_sankey <- function(links, fontSize=10, colour_links = F, height=NULL,
                         bars = 'grey',
-                        shared = 'blue',
-                        trait_col = "#4FB3D9",
-                        bc_col = "#B19AC1"){
+                        shared = '#C54F1D', # old blue
+                        trait_col = "#89B6EE", # old 4FB3D9
+                        bc_col = "#E6B07F"){  # old B19AC1
   
   links <- links %>% rename(source = term1, target = term2, value = n)
   
