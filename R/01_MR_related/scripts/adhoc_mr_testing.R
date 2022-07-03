@@ -1,6 +1,6 @@
 library(TwoSampleMR)
 library(tidyverse)
-instruments <- extract_instruments('ukb-b-17422')
+instruments <- extract_instruments("prot-b-20")
 instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
 
 out <- extract_outcome_data(
@@ -70,15 +70,15 @@ instruments <- extract_instruments('met-a-362')
 
 # MVMR: 1 mrbase, 1 text
 
-instruments1 <- extract_instruments('ukb-b-16881')
-instruments2 <-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
+instruments1 <- extract_instruments('ukb-d-1418_3')
+instruments2 <-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/early_bmi_adj_tophits.tsv")
 
 exposure_list <- list(instruments1, instruments2)
 
 gwas1 <- extract_outcome_data(snps = exposure_list %>% purrr::reduce(bind_rows) %>% pull(SNP), 
-                              outcomes = 'ukb-b-16881')
+                              outcomes = 'ukb-d-1418_3')
 
-gwas2 <- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/igf_GWAS_tidy_outcome.txt.gz")
+gwas2 <- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/early_bmi_adj_GWAS_tidy_outcome.txt.gz")
 
 
 full_gwas_list <- list(gwas1, gwas2)
@@ -86,14 +86,14 @@ full_gwas_list <- list(gwas1, gwas2)
 
 
 # MVMR: 2 mrbase
-instruments1 <- extract_instruments('prot-a-710')
-instruments2 <- extract_instruments('prot-a-1736')
+instruments1 <- extract_instruments('ukb-d-1418_3')
+instruments2 <- extract_instruments('ukb-a-34')
 exposure_list <- list(instruments1, instruments2)
 
 gwas1 <- extract_outcome_data(snps = exposure_list %>% purrr::reduce(bind_rows) %>% pull(SNP), 
-                              outcomes = 'prot-a-710')
+                              outcomes = 'ukb-d-1418_3')
 gwas2 <- extract_outcome_data(snps = exposure_list %>% purrr::reduce(bind_rows) %>% pull(SNP), 
-                              outcomes = 'prot-a-1736')
+                              outcomes = 'ukb-a-34')
 
 full_gwas_list <- list(gwas1, gwas2)
 
@@ -117,4 +117,8 @@ mv_res<- res$result %>%
   separate(outcome, "outcome", sep="[(]") %>% 
   generate_odds_ratios() %>% 
   select(-id.exposure, -id.outcome)
+
+
+
+res1<-mv_res
 
