@@ -23,6 +23,7 @@
 	
 	* `traits_marked_for_lit_analysis.tsv` - 154/213 marked for analysis
 	* `lit_spaces_finalset.RData` - raw lit space for those 154 traits
+	* `lit_spaces_finalset_tidy.RData` - tidy space for 90 traits with non-empty spaces
 	* `traits_marked_for_lit_analysis_with_size.tsv` - same as first, but included lit spaces sizes, highlighting those qith zero-size lit spaces. 
 	
 	
@@ -52,7 +53,7 @@
 	* `lit_spaces_combined_traits_tidy.RData`
 	* `traits_marked_for_lit_analysis_combined.tsv` 
 	* `lit_space_stats.tsv` --- lit space counts (individual and combined) 
-	
+	* `all_tidy_spaces.xls` xls that combines `lit_spaces_finalset_tidy.RData` and `lit_spaces_combined_traits_tidy.RData` to be used as supl data 9
 		
 	* Also making a figure	
 		

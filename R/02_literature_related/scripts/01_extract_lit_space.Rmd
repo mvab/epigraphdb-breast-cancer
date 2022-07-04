@@ -291,12 +291,40 @@ write_tsv(lit_counts, "../results/literature_outputs/lit_space_stats.tsv")
 
 ```
 
+```{r}
+# make fiel with all tisy lit spaces for exposting to supplementary
+load("../results/literature_outputs/lit_spaces_finalset_tidy.RData")
+length(tidy_litspace)
+load("../results/literature_outputs/lit_spaces_combined_traits_tidy.RData")
+length(tidy_combined_litspace)
+
+names(tidy_combined_litspace)<- paste0("combined_", names(tidy_combined_litspace))
+
+all_tidy_spaces<-c(tidy_combined_litspace, tidy_litspace)
+length(all_tidy_spaces)
+sheet_list<- tibble(id.exposure=names(all_tidy_spaces)) %>% 
+             left_join(trait_df_all) %>% 
+            mutate(exposure = ifelse(is.na(exposure), "combined literature space", exposure))
+sheet_list<-list(sheet_list)
+
+names(sheet_list) <- "navigation"
+
+all_tidy_spaces<-c(sheet_list, tidy_combined_litspace, tidy_litspace)
+
+
+
+writexl::write_xlsx(all_tidy_spaces, "../results/literature_outputs/all_tidy_spaces.xlsx")
+
+
+
+
+```
 
 
 
 
 
-### Visualise lit space sizes
+# Visualise lit space sizes
 
 
 ```{r}
