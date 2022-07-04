@@ -29,7 +29,7 @@ bc_triples_tidy_count <- tidy_lit_space(dat) %>%
     mutate(term1.type_verbose  = ifelse(grepl("obesity", term1, ignore.case = T), 'antro', term1.type_verbose)) %>%
     mutate(term2.type_verbose  = ifelse(grepl("obesity", term2, ignore.case = T), 'antro', term2.type_verbose))
 
-write_tsv(bc_triples_tidy_count, "../results/literature_outputs/breast_cancer_litspace_prod_tidy_space.csv")
+write_csv(bc_triples_tidy_count, "../results/literature_outputs/breast_cancer_litspace_prod_tidy_space.csv")
 
 bc_triples <- get_breast_cancer_triples(bc_triples_tidy_count)
 ```

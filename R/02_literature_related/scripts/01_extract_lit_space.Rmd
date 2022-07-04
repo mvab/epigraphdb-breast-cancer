@@ -105,7 +105,7 @@ for (i in 1:length(trait_df_all$id.exposure)){
 ```{r}
 ## tidying lit spaces for loop
 
-#load("literature_outputs/lit_spaces_finalset.RData")
+#load("../results/literature_outputs/lit_spaces_finalset.RData")
 
 tidy_litspace <- list()
 
@@ -238,7 +238,7 @@ save(combined_lit_spaces, file="../results/literature_outputs/lit_spaces_combine
 
 ```{r}
 ## tidying lit sapces for loop
-#load("literature_outputs/lit_spaces_combined_traits.RData")
+#load("../results/literature_outputs/lit_spaces_combined_traits.RData")
 View(combined_lit_spaces)
 
 tidy_combined_litspace <- list()
