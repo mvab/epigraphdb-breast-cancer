@@ -117,9 +117,19 @@ tidy_lit_space <- function(dat){
     ungroup() %>% distinct() %>% 
     mutate(pair = paste0(term1," / ",term2)) # counts by pairs
   
+  # extract collapsed pubmed id + year
+  pubmed_year <- 
+    triples_tidy %>%  select(lit.id, lit.year, term1, predicate, term2)  %>% distinct() %>% 
+    mutate(pubmed_year = paste0(lit.id, " (", lit.year, ")")) %>% 
+    select(-lit.id, -lit.year) %>% 
+    group_by(term1, predicate, term2) %>% 
+    summarise(pubmed_year = paste0(pubmed_year, collapse=" / ")) 
+  
   triples_tidy_count  <- triples_tidy_count %>% 
     left_join(pair_counts) %>% 
-    select(term1, predicate, term2, n_triple = n, n_pair, pair, everything())
+    select(term1, predicate, term2, n_triple = n, n_pair, pair, everything()) %>% 
+    left_join(pubmed_year)
+  
   
   return(triples_tidy_count)
 }
