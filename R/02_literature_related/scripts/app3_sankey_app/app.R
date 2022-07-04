@@ -75,10 +75,12 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                      choices = list("2" = 2,
                                                     "3" = 3,
                                                     "4" = 4), 
-                                     selected = 2),
+                                     selected = 2)),
+                   column(3, align="left",
+                          downloadButton('downloadData', 'Download')),
+                                
                          
-                         
-                  ),
+                  
                 ),
                 br(),
                 
@@ -180,6 +182,16 @@ server <- function(input, output) {
     h <- 300 * log10(nrow(dataInput()))
     sankeyNetworkOutput("sankey_plot_prep", height = h)
   })
+  
+  
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste('sankey-data_', tolower(gsub(" ","-",input$trait)), "_breast-cancer_literature-overlap_", Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(dataInput(), file, row.names = FALSE)
+    }
+  )
   
   
   
