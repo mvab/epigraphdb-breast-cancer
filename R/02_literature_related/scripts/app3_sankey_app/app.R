@@ -96,49 +96,49 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
 
                                      p(style="text-align: left; padding-left: 6cm; padding-right: 6cm; padding-top: 1cm; padding-bottom: 2cm",
                                        
-                                       "Sankey plot is a visualisation of literature triples linkage showing the overlap between literature spaces
-                                       of a selected case study trait and breast cancer, extracted from EpiGraphDB. ",
+                                       "Sankey plot is a visualisation of literature spaces overlap between a case study trait and breast cancer. Individual
+                                       triples are linked via overlapping terms within each space and between two spaces.  ",
                                        br(),br(),
-                                     strong("literature triple"), " is a relationship between two literature terms connected by a verb/predicate that 
-                                            describes a relationship between them, e.g. 'subject term 1 – predicate – object term 2' or 'protein A –
-                                            stimulates – protein B'. A subject/object term could be any biological entity (gene name, drug, phenotype, disease)
-                                            and a predicate is a verb that represents a relationship between the two terms (affects, causes, inhibits, reduces, 
-                                     associated with, etc.).",
-                                     br(),br(),
-                                     "The underlying data comes from SemMedDB, a well-established repository of literature-mined semantic triples mined from
-                                     titles and abstracts in PubMed.",
-                                     br(),br(),
-                                     strong("literature space"),  " is a collection of triples related to a specific trait, e.g. breast cancer or a trait,
-                                     which is also a GWAS name in EpiGraphDB.", 
-                                     br(),br(),
-                                     strong("triple linkage"),  " is a method of linking triple via overlapping terms into chains (see Figure (a) below). 
-                                     This can be done within a literature space or between literature spaces. If a trait is available as a term within its 
-                                     space, it can be used as an anchor and sequentially link triples into chains from it. For example, in the breast cancer 
-                                     space, we directly link triples to the ‘breast cancer’ term or via up to three triples. If no anchoring term is available, 
-                                     we can still connect the terms from the breast cancer space to terms from a trait space, but there will not be a clear
-                                     path from a trait to breast cancer",
-                                     br(),br(),
-                                     strong("literature spaces overlap"),  " is a method that was developed for joining two literature spaces together (see
-                                     Figures (b) and (c)). It involves triple linkage within one literature space (trait and breast cancer separately) and 
-                                     then connecting them either via outer triples overlap or any combination of inner triples (see arrows in Figure (b)). ",
-                                     br(),br(),
-                                     strong("Why?"), " Overlapping literature spaces allowed us to look for intermediates between a risk factor trait and breast cancer.",
-                                     br(),br(),
-                                     "See further details on the method in the publication Methods.",
-                                     br(),br(),br(),
-                                     em("How to read the plot:"),
-                                     br(),br(),
-                                     "Sankey plot shows triples in the trait (blue) and breast cancer (orange) literature spaces and how they are connected. 
-                                     The thickness of the line indicates the frequency of the triple pair (i.e. the thicker the line, the more publication 
-                                     mention the specific relationship). The full Sankey plot includes all links; the subset Sankey shows only those links
-                                     that have been mentioned in minimum N publications.",
-                                     br(),br(),br(),
+                                       strong("  –  literature space"),  " is a collection of triples related to a specific trait, e.g. breast cancer or a trait,
+                                     which is also a GWAS in EpiGraphDB.", 
+                                       br(),br(),
+                                       strong("  –  literature triple"), " triple is a relationship between two literature terms connected by a verb/predicate that 
+                                       describes a relationship between them, e.g. 'subject term 1 – predicate – object term 2'. A subject/object term could be any
+                                       biological entity (gene name, drug, phenotype, disease) and a predicate is a verb that represents a relationship between 
+                                       the two terms (affects, causes, inhibits, reduces, associated with, etc.), e.g. 'protein A – stimulates – protein B'.",
                                        
+                                       "The underlying data comes from SemMedDB, a well-established repository of literature-mined semantic triples mined from
+                                       titles and abstracts in PubMed.",
+                                       br(),br(),
                                        
+                                       strong("  –  triple linkage"),  " is a method of linking triples via overlapping terms into chains (see Figure (a) below). 
+                                       This can be done within a literature space or between literature spaces. If a trait is available as a term within its space 
+                                       (e.g. IGF1 term in IGF1 literature space), it can be used as an anchor to which sequentially linked triples are attached. 
+                                       In the breast cancer space, we directly link triples to the ‘breast cancer’ term or via up to three triples. If no anchoring 
+                                       term is available, we can still connect the terms from the breast cancer space to the terms from a trait space, but there 
+                                       will not be a clear path from a trait to breast cancer.",
+                                       br(),br(),
+                                       strong("  –  literature spaces overlap"),  " is a method that was developed for joining two literature spaces together
+                                       (see Figures (b) and (c)). It involves triple linkage within one literature space (trait and breast cancer separately)
+                                       and then connecting them either via outer triples overlap or any combination of inner triples (see arrows in Figure (b)).  ",
+                                       br(),br(),
+                                       strong("Why?"), " Overlapping literature spaces allowed us to look for intermediates between a risk factor trait and breast cancer.",
+                                       br(),br(),
+                                       "See further details on the method in the publication Methods.",
+                                       br(),br(),br(),
+                                       em("How to read the plot:"),
+                                       br(),br(),
+                                       "In the plot, trait triples are shown in blue and breast cancer triples in orange. The thickness of the line indicates the 
+                                       frequency of the triple pair (i.e. the thicker the line, the more publications mention the specific relationship).
+                                       The full plot includes all links; the subset plot shows only those links that have been mentioned in minimum N 
+                                       publications (specify in the widget). ",
+                                       br(),br(),br(),
                                          
                                          
                                          
-                                       img(src='litmethod_abc_v1.png', align='centre', height = '600px'),br(),
+                                
+                                         
+                                       img(src='litmethod_abc_v1.png', align='centre', height = '500px'),br(),
                                        strong("Schemas of literature spaces overlap methods."), "(a) A basic example of two triples linkage via an overlapping term. 
                                        (b) Molecular traits literature space overlap method. Molecular trait literature space (blue box) and breast cancer 
                                        literature space (purple box) both contain triples linked via overlapping terms. The outer terms are restricted 
