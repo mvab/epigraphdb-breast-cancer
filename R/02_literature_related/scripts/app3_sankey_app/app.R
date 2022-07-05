@@ -165,8 +165,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                 
                 hr(),
                 br(), br(),
-                helpText("help text here"), 
-                
+
                 img(src='MRC_IEU_Bristol.png', align='centre', height = '60px')  , 
                 br(),
                 span(uiOutput("twitter_link"), style="color:grey;font-size:12px;")
