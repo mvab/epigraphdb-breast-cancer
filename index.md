@@ -1,32 +1,27 @@
+## _Article web-based contents_
 
-### R/Shiny apps
+#### R/Shiny apps
 
-[MR-EvE app](https://mvab.shinyapps.io/brca-miner/)
+* [MR-EvE app](https://mvab.shinyapps.io/brca-miner/)
 
-Some text about
-
-<img src="content/figs/app1.png" width="275"/>
-
-
-
-[Heatmaps app](https://mvab.shinyapps.io/MR_heatmaps/)
-
-Some text about
-
-![Image](content/figs/app2.png)
+  <img src="content/figs/app1.png" width="275"/>
 
 
 
-[Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
+* [Heatmaps app](https://mvab.shinyapps.io/MR_heatmaps/)
 
-Some text about
-
-<img src="content/figs/app3.png" width="275"/>
+  ![Image](content/figs/app2.png)
 
 
-### Case studies report
 
-Some text about
+* [Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
+
+
+  <img src="content/figs/app3.png" width="275"/>
+
+
+#### Case studies report
+
 
 * [Cardiotrophin-1](content/case_study_report_Cardiotrophin-1.html)
 
@@ -37,7 +32,7 @@ Some text about
 * [Age at menopause](content/case_study_report_Age_at_menopause.html)
 
 
-### Basic EpiGraphDB queries examples
+#### Basic EpiGraphDB queries examples
 
 [https://github.com/mvab/epigraphdb_mr_literature_queries](https://github.com/mvab/epigraphdb_mr_literature_queries)
 
