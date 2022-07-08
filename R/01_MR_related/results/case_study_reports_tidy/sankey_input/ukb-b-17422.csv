@@ -1,0 +1,1000 @@
+"term1","term2","n","group","n_pair_b","keep"
+"19-norprogesterone","Androgen Receptor",2,"trait",0,TRUE
+"ABCB1","TP53",2,"BC",0,TRUE
+"ABCC1","ERBB2",1,"BC",0,TRUE
+"ABCG2","estrogens",3,"BC",0,TRUE
+"Acids","Albumin",3,"BC",0,TRUE
+"Activins","estrogens",2,"BC",0,TRUE
+"Adiponectin","Cyclin D1",1,"BC",0,TRUE
+"Adiponectin","estradiol",3,"trait",0,TRUE
+"Adiponectin","Ferritin",1,"trait",0,TRUE
+"Adiponectin","resistin",2,"trait",0,TRUE
+"Adiponectin","SHBG",2,"trait",0,TRUE
+"Adiponectin","STK11",2,"BC",0,TRUE
+"ADRBK1","Cyclin D1",1,"BC",0,TRUE
+"AKT1","ERBB2",22,"BC",0,TRUE
+"AKT1","Estrogen Receptor alpha",14,"BC",0,TRUE
+"AKT1","Estrogen Receptors",10,"BC",0,TRUE
+"AKT1","estrogens",3,"BC",0,TRUE
+"AKT1","Progesterone receptor",1,"BC",0,TRUE
+"AKTIP","FRAP1",2,"BC",0,TRUE
+"AKTIP","MTOR",2,"BC",0,TRUE
+"Albumin","BEST1",1,"trait",0,TRUE
+"Albumin","DMD",1,"trait",0,TRUE
+"Albumin","estradiol",3,"BC",3,TRUE
+"Aldosterone","PRRT2",1,"BC",0,TRUE
+"Alkaline Phosphatase","Estrogen Receptor alpha",6,"BC",0,TRUE
+"Alkaline Phosphatase","estrogens",2,"BC",0,TRUE
+"Alkaline Phosphatase","Osteocalcin",6,"trait",2,TRUE
+"Alkaline Phosphatase","PHB2",1,"trait",0,TRUE
+"Alkaline Phosphatase","SIL1",1,"trait",0,TRUE
+"Alkaline Phosphatase","TNFRSF11B",1,"trait",0,TRUE
+"Alleles","IGF1",1,"trait",0,TRUE
+"alteplase","ERBB2",1,"BC",0,TRUE
+"alteplase","NEU1",1,"BC",0,TRUE
+"alteplase","NEURL1",1,"BC",0,TRUE
+"Amino-terminal pro-brain natriuretic peptide","dehydroepiandrosterone",1,"trait",0,TRUE
+"Amino-terminal pro-brain natriuretic peptide","estradiol",1,"trait",0,TRUE
+"Amino-terminal pro-brain natriuretic peptide","gonadorelin",1,"trait",0,TRUE
+"Amino-terminal pro-brain natriuretic peptide","SHBG",1,"trait",0,TRUE
+"Androgen Receptor","Aromatase",12,"BC",0,TRUE
+"Androgen Receptor","Breast cancer",1,"BC",0,TRUE
+"Androgen Receptor","Estrogen Receptor alpha",1,"shared",0,TRUE
+"Androgen Receptor","Estrogen Receptors",9,"shared",9,TRUE
+"Androgen Receptor","estrogens",19,"shared",0,TRUE
+"Androgen Receptor","steroid hormone receptor",2,"BC",0,TRUE
+"Androgens","Adiponectin",1,"trait",0,TRUE
+"Androgens","AKT1",1,"trait",0,TRUE
+"Androgens","Androgen Receptor",7,"BC",0,TRUE
+"Androgens","estradiol",4,"shared",0,TRUE
+"Androgens","Estrogen Receptors",2,"shared",0,TRUE
+"Androgens","Estrogenic",2,"trait",0,TRUE
+"Androgens","estrogens",142,"shared",27,TRUE
+"Androgens","Estrone",2,"trait",0,TRUE
+"Androgens","Gonadotropins",4,"trait",2,TRUE
+"Androgens","Insulin",2,"trait",2,TRUE
+"Androgens","Leptin",2,"trait",0,TRUE
+"Androgens","Lipoproteins",2,"trait",0,TRUE
+"Androgens","Prostate-Specific Antigen",1,"trait",0,TRUE
+"Androgens","SHBG",4,"trait",2,TRUE
+"Androgens","Stanolone",2,"trait",0,TRUE
+"Androgens","testosterone",4,"trait",3,TRUE
+"Androstenedione","Aromatase",11,"BC",0,TRUE
+"Androstenedione","estrogens",6,"shared",0,TRUE
+"Androstenedione","Estrone",20,"trait",0,TRUE
+"Androstenedione","testosterone",4,"trait",4,TRUE
+"ANG","IGF1",1,"trait",0,TRUE
+"angiogenin","IGF1",1,"trait",0,TRUE
+"angiotensin II","Plasminogen Activator Inhibitor 1",1,"trait",0,TRUE
+"Antibodies","Breast cancer",2,"BC",0,TRUE
+"Antibodies","Low-Density Lipoproteins",2,"trait",0,TRUE
+"Antibodies","Progestins",1,"trait",0,TRUE
+"AP4B1","SPARC",1,"BC",0,TRUE
+"APOA1","Conjugated Equine Estrogens",1,"trait",0,TRUE
+"Apolipoprotein A-I","Conjugated Equine Estrogens",1,"trait",0,TRUE
+"Apolipoprotein A-I","estrogens",2,"trait",1,TRUE
+"apolipoprotein B-48","Lipoproteins",2,"trait",0,TRUE
+"Apolipoproteins","Conjugated Equine Estrogens",1,"trait",0,TRUE
+"Apolipoproteins","Dydrogesterone",1,"trait",0,TRUE
+"arginine","Alkaline Phosphatase",1,"shared",0,TRUE
+"arginine","Lipoproteins",1,"trait",0,TRUE
+"Argipressin","Breast cancer",2,"BC",0,TRUE
+"Aromatase","Androgens",3,"trait",0,TRUE
+"Aromatase","Breast cancer",3,"BC",0,TRUE
+"Aromatase","estradiol",17,"shared",3,TRUE
+"Aromatase","Estrogen Receptor alpha",2,"BC",0,TRUE
+"Aromatase","estrogens",166,"shared",12,TRUE
+"Aromatase","Gonadal Steroid Hormones",3,"trait",0,TRUE
+"Aromatase","NF-kappa B",1,"trait",0,TRUE
+"Aromatase","Progesterone receptor",2,"BC",0,TRUE
+"aromatic hydrocarbon receptor","BAX",1,"trait",0,TRUE
+"Asparagine","SHBG",2,"trait",0,TRUE
+"BAX","TP53",33,"BC",0,TRUE
+"Beclomethasone","Osteocalcin",1,"trait",0,TRUE
+"BEST1","Adiponectin",1,"trait",0,TRUE
+"BEST1","ADRBK1",1,"trait",0,TRUE
+"BEST1","Alkaline Phosphatase",2,"trait",0,TRUE
+"BEST1","Aromatase",1,"trait",0,TRUE
+"BEST1","GRK2",1,"trait",0,TRUE
+"beta catenin","Estrogen Receptor alpha",2,"BC",0,TRUE
+"BHLHE23","SPARC",1,"BC",0,TRUE
+"Binding Proteins","Calcitriol",2,"trait",0,TRUE
+"Blood Coagulation Factor","estrogens",2,"trait",1,TRUE
+"Bradykinin","alteplase",3,"trait",0,TRUE
+"BRCA1","Androgen Receptor",4,"BC",0,TRUE
+"BRCA1","Aromatase",6,"BC",0,TRUE
+"BRCA1","Estrogen Receptor alpha",19,"BC",0,TRUE
+"BRCA1","Estrogen Receptors",11,"BC",0,TRUE
+"BRCA1","estrogens",12,"BC",0,TRUE
+"BRCA1","Ligase",2,"BC",0,TRUE
+"BRCA1","progesterone",2,"BC",0,TRUE
+"BRCA1","Progesterone receptor",9,"BC",0,TRUE
+"BRCA1","TP53",35,"BC",0,TRUE
+"BRD2","estradiol",4,"trait",2,TRUE
+"BRD2","GNRH1",8,"trait",0,TRUE
+"BRD2","gonadorelin",8,"trait",0,TRUE
+"BRD2","Gonadotropins",4,"trait",0,TRUE
+"c-myc Genes","estrogens",9,"BC",0,TRUE
+"c-myc Genes","TP53",5,"BC",0,TRUE
+"C-reactive protein","Estrone",2,"trait",0,TRUE
+"C-reactive protein","SHBG",3,"trait",0,TRUE
+"C-reactive protein","testosterone",3,"trait",0,TRUE
+"CA9","Estrogen Receptors",2,"trait",0,TRUE
+"Calcitonin","Hormones",2,"trait",0,TRUE
+"Calcitriol","Aromatase",8,"BC",0,TRUE
+"Calcitriol","Estrogen Receptor alpha",4,"BC",0,TRUE
+"Calcitriol","estrogens",2,"BC",2,TRUE
+"calmodulin-dependent protein kinase II","estrogens",1,"trait",0,TRUE
+"CAMP","estradiol",2,"BC",0,TRUE
+"CAMP","Estrogen Receptor alpha",1,"BC",0,TRUE
+"CAMP","Progesterone receptor",3,"BC",0,TRUE
+"caspase-8","estradiol",1,"BC",0,TRUE
+"Catechol O-Methyltransferase","Estrogens, Catechol",2,"trait",0,TRUE
+"CATHEPSIN D","estrogens",2,"BC",0,TRUE
+"caveolin 1","Estrogen Receptor alpha",2,"BC",0,TRUE
+"caveolin 1","Estrogen Receptors",2,"BC",0,TRUE
+"CD8B","Antibodies",2,"BC",0,TRUE
+"CD8B1","Antibodies",2,"BC",0,TRUE
+"CDKN1A","Androgen Receptor",2,"BC",0,TRUE
+"CDKN1A","estradiol",2,"BC",0,TRUE
+"CDKN1A","Estrogen Receptor alpha",9,"BC",0,TRUE
+"CDKN1A","Oncogenes",2,"BC",0,TRUE
+"CDKN1A","TP53",37,"BC",1,TRUE
+"Chemokine CXCL12","EPHB2",4,"BC",0,TRUE
+"Chemokine CXCL12","epidermal growth factor",2,"BC",0,TRUE
+"Chemokine CXCL12","MAPK1",4,"BC",0,TRUE
+"CHGA","ERBB2",1,"shared",0,TRUE
+"Chromatin","Estrogen Receptor alpha",6,"BC",0,TRUE
+"Chromatin","Estrogen Receptors",2,"BC",0,TRUE
+"Chromatin","TP53",2,"BC",0,TRUE
+"collagen","Antibodies",2,"BC",0,TRUE
+"collagen","Aromatase",1,"BC",0,TRUE
+"collagen type I","Alkaline Phosphatase",2,"trait",0,TRUE
+"Complement System Proteins","estrogens",2,"trait",0,TRUE
+"Conjugated Equine Estrogens","Blood Coagulation Factor",1,"trait",0,TRUE
+"Conjugated Equine Estrogens","IGF1",3,"trait",0,TRUE
+"Conjugated Equine Estrogens","Leptin",1,"trait",0,TRUE
+"Conjugated Equine Estrogens","Medroxyprogesterone 17-Acetate",19,"trait",6,TRUE
+"Conjugated Equine Estrogens","Progestins",3,"trait",0,TRUE
+"CST12P","Steryl-sulfatase",1,"trait",0,TRUE
+"CST12P","STS",1,"trait",0,TRUE
+"CXCL9","cytokine",1,"trait",0,TRUE
+"Cyclin D1","ERBB2",3,"BC",0,TRUE
+"Cyclin D1","Estrogen Receptor alpha",10,"BC",0,TRUE
+"Cyclin D1","Estrogen Receptors",17,"BC",0,TRUE
+"Cyclin D1","estrogens",16,"BC",0,TRUE
+"Cyclin D1","Progesterone receptor",5,"BC",0,TRUE
+"Cyclin D1","Progestins",1,"BC",0,TRUE
+"Cyclin D1","TP53",10,"BC",0,TRUE
+"Cyclin E","Androgen Receptor",1,"shared",0,TRUE
+"cyclooxygenase 2","Aromatase",7,"BC",0,TRUE
+"cyclooxygenase 2","TP53",2,"BC",0,TRUE
+"CYP19A1","estrogens",15,"shared",0,TRUE
+"CYP19A1","Gonadal Steroid Hormones",2,"trait",0,TRUE
+"CYP3A4","Medroxyprogesterone 17-Acetate",2,"BC",0,TRUE
+"Cytochrome P450","Acids",2,"trait",0,TRUE
+"Cytochrome P450 3A4","estrogens",2,"shared",0,TRUE
+"cytokine","Breast cancer",2,"BC",0,TRUE
+"cytokine","estrogens",9,"shared",5,TRUE
+"cytokine","IL10",3,"trait",0,TRUE
+"cytokine","PTH",1,"trait",0,TRUE
+"DBT","Steryl-sulfatase",1,"trait",0,TRUE
+"DBT","STS",1,"trait",0,TRUE
+"dehydroepiandrosterone","Androgens",16,"trait",9,TRUE
+"dehydroepiandrosterone","Androstenedione",3,"trait",0,TRUE
+"dehydroepiandrosterone","estradiol",12,"shared",6,TRUE
+"dehydroepiandrosterone","Estrogen Receptor alpha",3,"BC",0,TRUE
+"dehydroepiandrosterone","estrogens",13,"shared",4,TRUE
+"dehydroepiandrosterone","hydrocortisone",2,"trait",0,TRUE
+"dehydroepiandrosterone","NOS3",1,"trait",0,TRUE
+"deoxypyridinoline","collagen",2,"trait",0,TRUE
+"deoxypyridinoline","pyridinoline",2,"trait",2,TRUE
+"dienogest","estradiol",1,"trait",0,TRUE
+"dienogest","estradiol valerate",2,"trait",0,TRUE
+"DIO3","Minerals",1,"trait",0,TRUE
+"DMD","Adiponectin",1,"trait",0,TRUE
+"DMD","ADRBK1",1,"trait",0,TRUE
+"DMD","Alkaline Phosphatase",2,"trait",0,TRUE
+"DMD","Aromatase",1,"trait",0,TRUE
+"DMD","GRK2",1,"trait",0,TRUE
+"Dydrogesterone","Breast cancer",1,"BC",0,TRUE
+"Dydrogesterone","Progestins",2,"shared",0,TRUE
+"EEF1A2","C-reactive protein",2,"trait",0,TRUE
+"EGFR","ERBB2",48,"BC",0,TRUE
+"EGFR","Estrogen Receptor alpha",1,"BC",0,TRUE
+"EGFR","Estrogen Receptors",18,"shared",0,TRUE
+"EGFR","estrogens",6,"shared",2,TRUE
+"Endostatins","IGF1",1,"trait",0,TRUE
+"Enzymes","Androgens",4,"trait",0,TRUE
+"Enzymes","Aromatase",8,"BC",0,TRUE
+"Enzymes","dehydroepiandrosterone",2,"trait",0,TRUE
+"Enzymes","estradiol",17,"shared",0,TRUE
+"Enzymes","Estrogen Receptors",4,"BC",0,TRUE
+"Enzymes","estrogens",72,"shared",13,TRUE
+"Enzymes","estrone sulfate",2,"trait",0,TRUE
+"EPHB2","ERBB2",3,"BC",0,TRUE
+"EPHB2","estrogens",3,"BC",0,TRUE
+"Ephrin Receptor EphB1","estrogens",3,"trait",2,TRUE
+"Ephrin Receptor EphB1","Progesterone receptor",2,"trait",0,TRUE
+"epidermal growth factor","ERBB2",9,"BC",0,TRUE
+"epidermal growth factor","Estrogen Receptor alpha",6,"BC",0,TRUE
+"epidermal growth factor","Estrogen Receptors",9,"BC",0,TRUE
+"epidermal growth factor","estrogens",6,"shared",1,TRUE
+"epidermal growth factor","progesterone",2,"BC",0,TRUE
+"epidermal growth factor","Progesterone receptor",5,"BC",0,TRUE
+"epidermal growth factor","Proliferating Cell Nuclear Antigen",2,"trait",2,TRUE
+"epinephrine","estradiol",2,"trait",0,TRUE
+"erbB-2 Receptor","leptin receptor",1,"trait",0,TRUE
+"ERBB2","Breast cancer",6,"BC",0,TRUE
+"ERBB2","cytokine",3,"BC",0,TRUE
+"ERBB2","Estrogen Receptor alpha",5,"BC",0,TRUE
+"ERBB2","leptin receptor",1,"trait",0,TRUE
+"ERBB2","NEU1",7,"BC",0,TRUE
+"ERBB2","NEURL1",7,"BC",0,TRUE
+"ERBB2","TP53",8,"BC",0,TRUE
+"EREG","estradiol",11,"BC",2,TRUE
+"EREG","Estrogen Receptor alpha",34,"BC",0,TRUE
+"EREG","Estrogen Receptor beta",14,"BC",0,TRUE
+"EREG","Estrogen Receptors",67,"BC",0,TRUE
+"EREG","Estrogenic",1,"trait",0,TRUE
+"EREG","estrogens",40,"shared",2,TRUE
+"EREG","Progesterone receptor",8,"shared",0,TRUE
+"ERVK-10","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-10","Progestins",3,"BC",0,TRUE
+"ERVK-18","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-18","Progestins",3,"BC",0,TRUE
+"ERVK-19","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-19","Progestins",3,"BC",0,TRUE
+"ERVK-21","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-21","Progestins",3,"BC",0,TRUE
+"ERVK-24","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-24","Progestins",3,"BC",0,TRUE
+"ERVK-25","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-25","Progestins",3,"BC",0,TRUE
+"ERVK-7","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-7","Progestins",3,"BC",0,TRUE
+"ERVK-8","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-8","Progestins",3,"BC",0,TRUE
+"ERVK-9","Progesterone receptor",9,"BC",0,TRUE
+"ERVK-9","Progestins",3,"BC",0,TRUE
+"ESR1","ERBB2",8,"BC",0,TRUE
+"ESR1","ESR2",4,"trait",0,TRUE
+"ESR1","estradiol",11,"BC",2,TRUE
+"ESR1","Estrogen Receptor alpha",40,"BC",0,TRUE
+"ESR1","Estrogen Receptor beta",14,"BC",0,TRUE
+"ESR1","Estrogen Receptors",69,"BC",0,TRUE
+"ESR1","Estrogenic",1,"trait",0,TRUE
+"ESR1","estrogens",54,"shared",7,TRUE
+"ESR1","Progesterone receptor",9,"shared",0,TRUE
+"ESR2","estradiol",5,"BC",0,TRUE
+"ESR2","Estrogen Receptor alpha",24,"shared",2,TRUE
+"ESR2","estrogens",33,"shared",0,TRUE
+"ESR2","Progesterone receptor",2,"trait",0,TRUE
+"ESR2","TP53",2,"BC",0,TRUE
+"estradiol","Albumin",3,"trait",3,TRUE
+"estradiol","Breast cancer",7,"BC",0,TRUE
+"estradiol","C-reactive protein",3,"trait",2,TRUE
+"estradiol","collagen",3,"trait",0,TRUE
+"estradiol","Conjugated Equine Estrogens",3,"trait",0,TRUE
+"estradiol","Dydrogesterone",11,"trait",2,TRUE
+"estradiol","estradiol valerate",2,"trait",0,TRUE
+"estradiol","Estriol",4,"trait",2,TRUE
+"estradiol","Estrogen Receptor alpha",58,"shared",3,TRUE
+"estradiol","Estrogen Receptors",101,"shared",4,TRUE
+"estradiol","estrogens",33,"shared",33,TRUE
+"estradiol","Follicle Stimulating Hormone",10,"trait",8,TRUE
+"estradiol","Gonadotropins",6,"trait",2,TRUE
+"estradiol","High Density Lipoproteins",2,"trait",0,TRUE
+"estradiol","Hormones",2,"trait",0,TRUE
+"estradiol","hydrocortisone",2,"trait",0,TRUE
+"estradiol","IGF1",6,"trait",4,TRUE
+"estradiol","IGF1R",3,"BC",0,TRUE
+"estradiol","IL6",2,"trait",0,TRUE
+"estradiol","Insulin",4,"trait",0,TRUE
+"estradiol","Leptin",5,"trait",4,TRUE
+"estradiol","Lipoproteins",6,"trait",0,TRUE
+"estradiol","Low-Density Lipoproteins",4,"trait",0,TRUE
+"estradiol","Luteinizing Hormone",4,"trait",4,TRUE
+"estradiol","Medroxyprogesterone 17-Acetate",4,"trait",2,TRUE
+"estradiol","melatonin",3,"BC",0,TRUE
+"estradiol","Norethindrone",6,"trait",3,TRUE
+"estradiol","norethindrone acetate",15,"trait",5,TRUE
+"estradiol","NOS3",8,"trait",0,TRUE
+"estradiol","Peptidyl-Dipeptidase A",2,"trait",0,TRUE
+"estradiol","platelet-derived growth factor BB",1,"trait",0,TRUE
+"estradiol","Progesterone receptor",37,"shared",0,TRUE
+"estradiol","Progestins",18,"trait",11,TRUE
+"estradiol","TP53",9,"BC",0,TRUE
+"estradiol","Transforming Growth Factor beta",2,"trait",0,TRUE
+"estradiol","VEGFA",2,"trait",0,TRUE
+"estradiol valerate","Blood Coagulation Factor",1,"trait",0,TRUE
+"estradiol valerate","Medroxyprogesterone 17-Acetate",2,"trait",0,TRUE
+"Estriol","estrogens",4,"shared",0,TRUE
+"Estriol","Estrogens, Conjugated (USP)",2,"trait",0,TRUE
+"estrogen receptor alpha","ESR2",2,"trait",0,TRUE
+"estrogen receptor alpha","estrogens",8,"BC",2,TRUE
+"Estrogen Receptor alpha","Breast cancer",2,"BC",0,TRUE
+"Estrogen Receptor alpha","estrogens",107,"shared",19,TRUE
+"Estrogen Receptor alpha","Ligase",3,"BC",0,TRUE
+"Estrogen Receptor beta","Breast cancer",1,"BC",0,TRUE
+"Estrogen Receptor beta","estradiol",11,"shared",2,TRUE
+"Estrogen Receptor beta","Estrogen Receptor alpha",57,"shared",4,TRUE
+"Estrogen Receptor beta","Estrogenic",1,"trait",0,TRUE
+"Estrogen Receptor beta","estrogens",48,"shared",3,TRUE
+"Estrogen Receptor beta","Progesterone receptor",2,"shared",0,TRUE
+"Estrogen Receptor beta","TP53",2,"BC",0,TRUE
+"Estrogen Receptors","Aldosterone",1,"trait",0,TRUE
+"Estrogen Receptors","Androgen Receptor",9,"BC",9,TRUE
+"Estrogen Receptors","Aromatase",4,"BC",0,TRUE
+"Estrogen Receptors","Breast cancer",5,"BC",0,TRUE
+"Estrogen Receptors","ERBB2",34,"BC",0,TRUE
+"Estrogen Receptors","ESR2",2,"trait",0,TRUE
+"Estrogen Receptors","Estrogen Receptor alpha",19,"BC",0,TRUE
+"Estrogen Receptors","Estrogen Receptor beta",7,"shared",0,TRUE
+"Estrogen Receptors","NEU1",12,"BC",0,TRUE
+"Estrogen Receptors","NEURL1",12,"BC",0,TRUE
+"Estrogen Receptors","NOS3",2,"trait",0,TRUE
+"Estrogen Receptors","NTRK2",1,"trait",0,TRUE
+"Estrogen Receptors","progesterone",10,"BC",0,TRUE
+"Estrogen Receptors","PTEN",2,"trait",0,TRUE
+"Estrogen Receptors","PTEN Phosphohydrolase",2,"trait",0,TRUE
+"Estrogen Receptors","Receptor, trkB",1,"trait",0,TRUE
+"Estrogen Receptors","Steroid hormone",4,"BC",0,TRUE
+"Estrogen Receptors","testosterone",1,"shared",0,TRUE
+"Estrogen Receptors","TP53",12,"BC",2,TRUE
+"Estrogen Receptors","Vitamin D3 Receptor",3,"trait",0,TRUE
+"Estrogenic","dehydroepiandrosterone",2,"trait",0,TRUE
+"Estrogenic","estradiol",4,"BC",0,TRUE
+"Estrogenic","Estrogen Receptor alpha",7,"BC",0,TRUE
+"Estrogenic","Estrogen Receptors",19,"BC",2,TRUE
+"Estrogenic","estrogens",8,"BC",3,TRUE
+"Estrogenic","Progesterone receptor",3,"BC",0,TRUE
+"estrogens","ADRBK1",1,"trait",0,TRUE
+"estrogens","Aldosterone",3,"trait",0,TRUE
+"estrogens","AP4B1",1,"trait",0,TRUE
+"estrogens","Argipressin",2,"trait",0,TRUE
+"estrogens","BEST1",2,"trait",0,TRUE
+"estrogens","BHLHE23",1,"trait",0,TRUE
+"estrogens","BRD2",4,"trait",0,TRUE
+"estrogens","Breast cancer",9,"BC",0,TRUE
+"estrogens","C-reactive protein",18,"trait",0,TRUE
+"estrogens","Calcitonin",9,"trait",0,TRUE
+"estrogens","Calcitriol",2,"trait",2,TRUE
+"estrogens","collagen",10,"trait",0,TRUE
+"estrogens","Conjugated Equine Estrogens",4,"trait",2,TRUE
+"estrogens","DMD",2,"trait",0,TRUE
+"estrogens","ERBB2",18,"BC",0,TRUE
+"estrogens","estradiol",33,"shared",33,TRUE
+"estrogens","Estrogen Receptors",170,"shared",18,TRUE
+"estrogens","Follicle Stimulating Hormone",5,"trait",3,TRUE
+"estrogens","ghrelin",1,"trait",0,TRUE
+"estrogens","Globulins",2,"trait",2,TRUE
+"estrogens","Glycoproteins",2,"trait",0,TRUE
+"estrogens","Gonadal Steroid Hormones",14,"trait",8,TRUE
+"estrogens","gonadorelin",7,"trait",4,TRUE
+"estrogens","Gonadotropins",10,"trait",2,TRUE
+"estrogens","GRK2",1,"trait",0,TRUE
+"estrogens","High Density Lipoproteins",8,"trait",0,TRUE
+"estrogens","homocysteine",4,"trait",0,TRUE
+"estrogens","HSPB1",1,"trait",0,TRUE
+"estrogens","IGF1",18,"trait",7,TRUE
+"estrogens","IGF1R",4,"BC",0,TRUE
+"estrogens","IL1b",2,"trait",2,TRUE
+"estrogens","IL6",7,"trait",4,TRUE
+"estrogens","Insulin",7,"trait",6,TRUE
+"estrogens","Leptin",14,"trait",2,TRUE
+"estrogens","Lipoproteins",31,"trait",7,TRUE
+"estrogens","Low-Density Lipoproteins",13,"trait",0,TRUE
+"estrogens","Luteinizing Hormone",2,"trait",0,TRUE
+"estrogens","Matrix Metalloproteinases",3,"trait",0,TRUE
+"estrogens","Minerals",2,"trait",0,TRUE
+"estrogens","Mitogen-Activated Protein Kinases",2,"trait",0,TRUE
+"estrogens","MMP",2,"trait",0,TRUE
+"estrogens","NEU1",3,"BC",0,TRUE
+"estrogens","NEURL1",3,"BC",0,TRUE
+"estrogens","norethindrone acetate",2,"trait",0,TRUE
+"estrogens","NOS3",27,"trait",2,TRUE
+"estrogens","Oncogenes",3,"BC",0,TRUE
+"estrogens","Osteocalcin",2,"trait",1,TRUE
+"estrogens","Oxytocin",1,"trait",0,TRUE
+"estrogens","Peptidyl-Dipeptidase A",2,"trait",0,TRUE
+"estrogens","Plasminogen Activator Inhibitor 1",3,"trait",2,TRUE
+"estrogens","Progesterone receptor",47,"shared",2,TRUE
+"estrogens","Prolactin",14,"shared",5,TRUE
+"estrogens","reproductive hormone",3,"trait",0,TRUE
+"estrogens","SHBG",7,"trait",2,TRUE
+"estrogens","Somatotropin",4,"shared",4,TRUE
+"estrogens","Soy Proteins",2,"trait",2,TRUE
+"estrogens","thrombin",3,"trait",0,TRUE
+"estrogens","TNF",3,"trait",0,TRUE
+"estrogens","TNFRSF11B",4,"trait",2,TRUE
+"estrogens","TP53",12,"BC",0,TRUE
+"estrogens","TUBB3",1,"trait",0,TRUE
+"estrogens","Tumor Necrosis Factor-alpha",2,"trait",0,TRUE
+"estrogens","Vasoactive Intestinal Peptide",1,"trait",0,TRUE
+"estrogens","VDR",1,"trait",0,TRUE
+"estrogens","VEGFA",7,"trait",2,TRUE
+"estrogens","very low density lipoprotein triglyceride",2,"trait",0,TRUE
+"estrogens","Vitamin D3 Receptor",1,"trait",0,TRUE
+"Estrogens, Catechol","Estrogen Receptors",2,"BC",0,TRUE
+"Estrogens, Conjugated (USP)","Medroxyprogesterone 17-Acetate",3,"trait",2,TRUE
+"Estrone","estradiol",36,"shared",20,TRUE
+"Estrone","Estriol",1,"trait",0,TRUE
+"Estrone","estrogens",7,"shared",5,TRUE
+"Estrone","SHBG",2,"trait",0,TRUE
+"Estrone","testosterone",2,"BC",0,TRUE
+"estrone sulfatase","estrogens",4,"shared",0,TRUE
+"estrone sulfate","estradiol",14,"shared",0,TRUE
+"estrone sulfate","estrogens",3,"trait",0,TRUE
+"estrone sulfate","Estrone",6,"trait",3,TRUE
+"estrophilin","Estrogen Receptors",1,"shared",0,TRUE
+"Ethinyl Estradiol","ABCG2",1,"BC",0,TRUE
+"Ethinyl Estradiol","Blood Coagulation Factor",1,"trait",0,TRUE
+"Ethinyl Estradiol","estradiol valerate",2,"trait",0,TRUE
+"Ethinyl Estradiol","estrogens",5,"trait",0,TRUE
+"Ethinyl Estradiol","Norgestrel",1,"trait",0,TRUE
+"Ferritin","Breast cancer",2,"BC",0,TRUE
+"FGF2","CDKN1A",1,"BC",0,TRUE
+"FGF2","HOXB7",1,"BC",0,TRUE
+"FGF2","TFF1",1,"BC",0,TRUE
+"FGF7","Estrogen Receptor alpha",3,"BC",0,TRUE
+"Follicle Stimulating Hormone","Alkaline Phosphatase",2,"trait",0,TRUE
+"Follicle Stimulating Hormone","GNRH1",7,"trait",0,TRUE
+"Follicle Stimulating Hormone","gonadorelin",10,"trait",0,TRUE
+"Follicle Stimulating Hormone","Gonadotropins",4,"trait",0,TRUE
+"Follicle Stimulating Hormone","Luteinizing Hormone",8,"trait",4,TRUE
+"FRAP1","ERBB2",3,"BC",0,TRUE
+"Free estradiol","estradiol",2,"trait",0,TRUE
+"Free estradiol","SHBG",2,"trait",0,TRUE
+"Free testosterone","SHBG",5,"trait",0,TRUE
+"Free testosterone","testosterone",2,"trait",0,TRUE
+"FSHB","BRD2",1,"trait",0,TRUE
+"FSHB","Follicle Stimulating Hormone",1,"trait",0,TRUE
+"G-Protein-Coupled Receptors","Aldosterone",2,"trait",0,TRUE
+"G-Protein-Coupled Receptors","estrogens",3,"shared",0,TRUE
+"GALNT6","beta catenin",1,"shared",0,TRUE
+"GALNT6","c-myc Genes",1,"shared",0,TRUE
+"GALNT6","MYC",1,"shared",0,TRUE
+"ghrelin","GHRH",1,"trait",0,TRUE
+"ghrelin","Sermorelin",1,"trait",0,TRUE
+"GHRH","IGF1",2,"BC",0,TRUE
+"Globulins","Androgens",2,"trait",0,TRUE
+"Globulins","estrogens",2,"trait",2,TRUE
+"Glucocorticoids","Aromatase",4,"trait",0,TRUE
+"Glucocorticoids","CYP19A1",2,"trait",0,TRUE
+"Glucocorticoids","estrogens",4,"shared",0,TRUE
+"Glucocorticoids","Leptin",2,"trait",0,TRUE
+"Glucuronosyltransferase","estrogens",2,"BC",0,TRUE
+"Glucuronosyltransferase","Gonadal Steroid Hormones",2,"trait",0,TRUE
+"glutamyl-lysyl-alanyl-histidyl-aspartyl-glycyl-glycyl-arginine","salmon calcitonin",1,"trait",0,TRUE
+"Glycoproteins","Membrane Transport Proteins",2,"BC",0,TRUE
+"GNRH1","estrogens",4,"shared",2,TRUE
+"GNRH1","Human Chorionic Gonadotropin",4,"trait",0,TRUE
+"Gonadal Steroid Hormones","FGF2",2,"trait",0,TRUE
+"Gonadal Steroid Hormones","homocysteine",2,"trait",0,TRUE
+"Gonadal Steroid Hormones","HSD17B2",2,"trait",0,TRUE
+"Gonadal Steroid Hormones","HSD17B7P2",2,"trait",0,TRUE
+"Gonadal Steroid Hormones","Lipoproteins",4,"trait",2,TRUE
+"Gonadal Steroid Hormones","Opioids",2,"trait",0,TRUE
+"Gonadal Steroid Hormones","Somatomedins",2,"BC",0,TRUE
+"Gonadal Steroid Hormones","testosterone",2,"trait",2,TRUE
+"Gonadal Steroid Hormones","VEGFA",1,"BC",0,TRUE
+"gonadorelin","Human Chorionic Gonadotropin",4,"trait",0,TRUE
+"gonadorelin","Pituitary Gonadotropins",3,"trait",1,TRUE
+"Gonadotropin releasing hormone antagonist","Gonadotropins",3,"shared",0,TRUE
+"Gonadotropins","CAMP",1,"trait",0,TRUE
+"Gonadotropins","GNRH1",3,"trait",2,TRUE
+"Gonadotropins","gonadorelin",3,"trait",2,TRUE
+"Gonadotropins","INHIBIN",2,"trait",0,TRUE
+"Gonadotropins","Steroid hormone",3,"trait",0,TRUE
+"Goserelin","estrogens",2,"shared",0,TRUE
+"GRIA1","Estrogen Receptor beta",1,"trait",0,TRUE
+"GRK2","Cyclin D1",1,"BC",0,TRUE
+"H3F3AP6","Androgen Receptor",2,"BC",0,TRUE
+"H3F3AP6","estradiol",2,"BC",0,TRUE
+"H3F3AP6","Estrogen Receptor alpha",9,"BC",0,TRUE
+"H3F3AP6","Oncogenes",2,"BC",0,TRUE
+"H3F3AP6","TP53",30,"BC",1,TRUE
+"High Density Lipoproteins","VEGFA",1,"BC",0,TRUE
+"Histone Deacetylase","Estrogen Receptor alpha",2,"BC",0,TRUE
+"homocysteine","BEST1",1,"trait",0,TRUE
+"homocysteine","DMD",1,"trait",0,TRUE
+"homocysteine","estradiol",2,"trait",1,TRUE
+"homocysteine","Oxidoreductase",2,"trait",0,TRUE
+"hormone binding protein","estradiol",2,"trait",0,TRUE
+"Hormones","cytokine",2,"trait",0,TRUE
+"Hormones","Enzymes",2,"trait",0,TRUE
+"Hormones","ERBB2",3,"BC",0,TRUE
+"Hormones","Estrogen Receptor alpha",4,"BC",0,TRUE
+"Hormones","Estrogen Receptors",5,"shared",2,TRUE
+"Hormones","estrogens",7,"trait",6,TRUE
+"Hormones","Gonadal Steroid Hormones",3,"trait",2,TRUE
+"Hormones","Progestins",2,"trait",0,TRUE
+"Hormones","TP53",4,"BC",0,TRUE
+"HOTAIR","Chromatin",1,"trait",0,TRUE
+"HOXB7","Estrogen Receptor alpha",1,"BC",0,TRUE
+"HOXC13","Chromatin",1,"trait",0,TRUE
+"HSD17B2","BRCA1",1,"BC",0,TRUE
+"HSD17B7P2","BRCA1",1,"BC",0,TRUE
+"HSPB1","TP53",2,"BC",0,TRUE
+"Human Chorionic Gonadotropin","Alkaline Phosphatase",2,"BC",0,TRUE
+"hydrocortisone","CYP3A4",1,"trait",0,TRUE
+"hydrocortisone","estrogens",3,"BC",2,TRUE
+"ICAM1","Breast cancer",1,"BC",0,TRUE
+"IGBP1","Protein phosphatase",1,"BC",0,TRUE
+"IGF1","Aromatase",2,"BC",0,TRUE
+"IGF1","Estrogen Receptor alpha",5,"BC",0,TRUE
+"IGF1","IGF1R",18,"shared",0,TRUE
+"IGF1","Insulin",2,"trait",2,TRUE
+"IGF1","Leptin",2,"trait",0,TRUE
+"IGF1","melatonin",2,"BC",0,TRUE
+"IGF1","progesterone",2,"BC",0,TRUE
+"IGF1","Progesterone receptor",4,"BC",0,TRUE
+"IGF1","PTH",1,"trait",0,TRUE
+"IGF1","SHBG",3,"trait",0,TRUE
+"IGF1","TNFRSF11B",1,"trait",0,TRUE
+"IGF1","TP53",2,"BC",0,TRUE
+"IGF1R","Breast cancer",2,"BC",0,TRUE
+"IGF1R","Estrogen Receptor alpha",9,"BC",0,TRUE
+"IGF1R","Estrogen Receptors",1,"trait",0,TRUE
+"IGF2","Estrogen Receptor alpha",1,"BC",0,TRUE
+"IGF2","estrogens",2,"BC",0,TRUE
+"IGFBP","Somatomedins",1,"trait",0,TRUE
+"IGFBP3","caveolin 1",2,"BC",0,TRUE
+"IGFBP3","dehydroepiandrosterone",1,"BC",0,TRUE
+"IGFBP3","ERVK-10",1,"BC",0,TRUE
+"IGFBP3","ERVK-18",1,"BC",0,TRUE
+"IGFBP3","ERVK-19",1,"BC",0,TRUE
+"IGFBP3","ERVK-21",1,"BC",0,TRUE
+"IGFBP3","ERVK-24",1,"BC",0,TRUE
+"IGFBP3","ERVK-25",1,"BC",0,TRUE
+"IGFBP3","ERVK-7",1,"BC",0,TRUE
+"IGFBP3","ERVK-8",1,"BC",0,TRUE
+"IGFBP3","ERVK-9",1,"BC",0,TRUE
+"IGFBP3","IGF1",17,"shared",4,TRUE
+"IGFBP3","IGF2",3,"BC",0,TRUE
+"IGFBP3","Phosphoproteins",2,"BC",0,TRUE
+"IGFBP3","Somatomedins",9,"BC",0,TRUE
+"IGFBP3","Transforming Growth Factor beta",1,"BC",0,TRUE
+"IGFBP4","IGF1",3,"trait",0,TRUE
+"IL1","FGF7",1,"BC",0,TRUE
+"IL1","IL6",1,"BC",0,TRUE
+"IL1","Insulin",1,"BC",0,TRUE
+"IL1","Minerals",2,"trait",0,TRUE
+"IL10","Aromatase",1,"BC",0,TRUE
+"IL10","IL6",2,"trait",0,TRUE
+"IL1b","Aromatase",3,"BC",0,TRUE
+"IL1b","Breast cancer",2,"BC",0,TRUE
+"IL1b","Estrogen Receptor alpha",2,"BC",0,TRUE
+"IL1b","estrogens",2,"trait",2,TRUE
+"IL1b","IL6",2,"BC",0,TRUE
+"IL1b","TNF",1,"trait",0,TRUE
+"IL6","Aromatase",2,"BC",0,TRUE
+"IL6","Estrogen Receptor alpha",2,"BC",0,TRUE
+"ILS","SHBG",2,"trait",0,TRUE
+"INHIBIN","Activins",1,"trait",0,TRUE
+"INHIBIN","BRD2",5,"trait",0,TRUE
+"INHIBIN","Follicle Stimulating Hormone",16,"trait",0,TRUE
+"inhibin B","BRD2",4,"trait",3,TRUE
+"inhibin B","estradiol",1,"trait",0,TRUE
+"inhibin B","Follicle Stimulating Hormone",9,"trait",3,TRUE
+"Insulin","Adiponectin",3,"trait",0,TRUE
+"Insulin","Androgens",2,"trait",2,TRUE
+"Insulin","Aromatase",2,"BC",0,TRUE
+"Insulin","Estrogen Receptors",6,"BC",0,TRUE
+"Insulin","ghrelin",4,"trait",0,TRUE
+"Insulin","Gonadal Steroid Hormones",2,"trait",0,TRUE
+"Insulin","IGF1",2,"trait",2,TRUE
+"Insulin","SHBG",7,"trait",3,TRUE
+"Interstitial Collagenase","AKT1",1,"BC",0,TRUE
+"Lactate Dehydrogenase","progesterone",1,"trait",0,TRUE
+"Leptin","Adiponectin",9,"trait",7,TRUE
+"Leptin","Aromatase",6,"BC",0,TRUE
+"Leptin","ERBB2",3,"BC",0,TRUE
+"Leptin","Estrogen Receptor alpha",4,"BC",0,TRUE
+"Leptin","Estrogen Receptors",5,"BC",0,TRUE
+"Leptin","hydrocortisone",1,"trait",0,TRUE
+"Leptin","ICAM1",2,"BC",0,TRUE
+"Leptin","Insulin",5,"trait",3,TRUE
+"Leptin","resistin",2,"trait",0,TRUE
+"Leptin","SHBG",3,"trait",0,TRUE
+"leptin receptor","ICAM1",1,"BC",0,TRUE
+"leptin receptor","Insulin",1,"trait",0,TRUE
+"Leuprolide Acetate","GNRH1",2,"trait",0,TRUE
+"Leuprolide Acetate","gonadorelin",3,"trait",0,TRUE
+"Leuprolide Acetate","Gonadotropins",2,"trait",0,TRUE
+"Ligase","Breast cancer",2,"BC",0,TRUE
+"Lipoproteins","Conjugated Equine Estrogens",2,"trait",0,TRUE
+"Lipoproteins","Dydrogesterone",1,"trait",0,TRUE
+"Lipoproteins","Enzymes",2,"trait",0,TRUE
+"Lipoproteins","Low-Density Lipoproteins",2,"trait",0,TRUE
+"Low-Density Lipoproteins","High Density Lipoproteins",6,"trait",5,TRUE
+"Low-Density Lipoproteins","progesterone",2,"trait",1,TRUE
+"Luteinizing Hormone","cytokine",1,"trait",0,TRUE
+"Luteinizing Hormone","estradiol",4,"trait",4,TRUE
+"Luteinizing Hormone","Gonadal Steroid Hormones",2,"BC",0,TRUE
+"Luteinizing Hormone","INHIBIN",2,"trait",0,TRUE
+"Lyase","Androgens",1,"shared",0,TRUE
+"Lyase","Gonadal Steroid Hormones",2,"trait",0,TRUE
+"MAPK1","ERBB2",3,"BC",0,TRUE
+"MAPK1","estrogens",3,"BC",0,TRUE
+"Matrix Metalloproteinase 2","TP53",5,"BC",0,TRUE
+"Matrix Metalloproteinases","cyclooxygenase 2",1,"BC",0,TRUE
+"Matrix Metalloproteinases","Histone Deacetylase",1,"BC",0,TRUE
+"Matrix Metalloproteinases","PTK2",2,"BC",0,TRUE
+"Medroxyprogesterone 17-Acetate","Androgen Receptor",5,"shared",0,TRUE
+"Medroxyprogesterone 17-Acetate","Estrogen Receptors",1,"shared",0,TRUE
+"Medroxyprogesterone 17-Acetate","estrogens",8,"shared",7,TRUE
+"Medroxyprogesterone 17-Acetate","Monocyte Chemoattractant Protein-1",1,"trait",0,TRUE
+"Medroxyprogesterone 17-Acetate","NOS3",2,"trait",0,TRUE
+"Medroxyprogesterone 17-Acetate","progesterone",3,"BC",0,TRUE
+"Medroxyprogesterone 17-Acetate","Progesterone receptor",5,"BC",0,TRUE
+"Medroxyprogesterone 17-Acetate","Progestins",3,"shared",2,TRUE
+"Medroxyprogesterone 17-Acetate","Thromboplastin",1,"trait",0,TRUE
+"Megestrol Acetate","estrogens",2,"shared",0,TRUE
+"Megestrol Acetate","Somatomedins",1,"trait",0,TRUE
+"melatonin","Aromatase",6,"BC",0,TRUE
+"melatonin","Breast cancer",3,"BC",0,TRUE
+"melatonin","cytokine",2,"BC",0,TRUE
+"melatonin","Estrogen Receptor alpha",4,"BC",0,TRUE
+"melatonin","Estrogen Receptors",10,"BC",0,TRUE
+"melatonin","estrogens",17,"shared",3,TRUE
+"melatonin","hydrocortisone",1,"trait",0,TRUE
+"melatonin","Leptin",1,"trait",0,TRUE
+"melatonin","TP53",2,"BC",0,TRUE
+"Membrane Transport Proteins","ABCB1",2,"BC",0,TRUE
+"Membrane Transport Proteins","ABCC1",2,"BC",0,TRUE
+"Membrane Transport Proteins","ABCG2",14,"BC",0,TRUE
+"Membrane Transport Proteins","Enzymes",5,"BC",0,TRUE
+"Membrane Transport Proteins","estrone sulfate",3,"BC",0,TRUE
+"Membrane Transport Proteins","Glucuronosyltransferase",3,"BC",0,TRUE
+"Membrane Transport Proteins","PPIG",2,"BC",0,TRUE
+"MID1","IGBP1",1,"BC",0,TRUE
+"Minerals","ADRBK1",1,"trait",0,TRUE
+"Minerals","GRK2",1,"trait",0,TRUE
+"Mitogen-Activated Protein Kinases","ERBB2",2,"BC",0,TRUE
+"Mitogen-Activated Protein Kinases","estradiol",2,"BC",0,TRUE
+"Mitogen-Activated Protein Kinases","Estrogen Receptor alpha",17,"BC",0,TRUE
+"Mitogen-Activated Protein Kinases","Estrogen Receptor beta",2,"BC",0,TRUE
+"Mitogen-Activated Protein Kinases","Estrogen Receptors",6,"BC",0,TRUE
+"Mitogen-Activated Protein Kinases","Progesterone receptor",3,"BC",0,TRUE
+"MMP","EGFR",2,"BC",0,TRUE
+"MMP","Matrix Metalloproteinase 2",5,"BC",0,TRUE
+"MMP","Soluble ErbB-1",2,"BC",0,TRUE
+"Monoclonal Antibodies","TRANCE protein",3,"trait",0,TRUE
+"Monocyte Chemoattractant Protein-1","TNFRSF11B",1,"trait",0,TRUE
+"MTOR","ERBB2",3,"BC",0,TRUE
+"mullerian-inhibiting hormone","BRD2",3,"trait",0,TRUE
+"mullerian-inhibiting hormone","Follicle Stimulating Hormone",3,"trait",2,TRUE
+"mullerian-inhibiting hormone","NF-kappa B",2,"BC",0,TRUE
+"mullerian-inhibiting hormone","NFKB1",3,"BC",0,TRUE
+"mullerian-inhibiting hormone","testosterone",2,"trait",0,TRUE
+"MYC","estrogens",15,"BC",0,TRUE
+"MYC","TP53",7,"BC",0,TRUE
+"N-telopeptide","collagen type I",2,"trait",0,TRUE
+"N-telopeptide","estrogens",1,"trait",0,TRUE
+"Nandrolone","Progestins",3,"shared",0,TRUE
+"NCOA3","EREG",1,"trait",0,TRUE
+"NCOA3","ESR1",1,"trait",0,TRUE
+"NCOA3","Estrogen Receptor alpha",1,"trait",0,TRUE
+"NEU1","Breast cancer",2,"BC",0,TRUE
+"NEURL1","Breast cancer",2,"BC",0,TRUE
+"Neurokinin B","gonadorelin",2,"trait",0,TRUE
+"NF-kappa B","ERBB2",1,"BC",0,TRUE
+"NFKB1","ERBB2",3,"BC",0,TRUE
+"NFKB1","Estrogen Receptors",2,"BC",0,TRUE
+"Norethindrone","estrogens",2,"trait",0,TRUE
+"Norethindrone","Ethinyl Estradiol",3,"trait",0,TRUE
+"Norethindrone","Lipoproteins",2,"trait",0,TRUE
+"Norethindrone","norethindrone acetate",2,"trait",0,TRUE
+"Norethindrone","NOS3",2,"trait",0,TRUE
+"Norethindrone","VEGFA",3,"BC",0,TRUE
+"norethindrone acetate","Androgens",2,"trait",0,TRUE
+"norethindrone acetate","IGF1",1,"trait",0,TRUE
+"Norgestrel","Androgen Receptor",1,"BC",0,TRUE
+"NOS2","estrogens",2,"trait",0,TRUE
+"NOS2A","estrogens",2,"trait",0,TRUE
+"NOS3","Apolipoproteins",1,"trait",0,TRUE
+"NOS3","EGFR",1,"BC",0,TRUE
+"NOS3","Lipoproteins",3,"trait",0,TRUE
+"NR5A2","Aromatase",1,"shared",0,TRUE
+"NSG1","Androgen Receptor",2,"BC",0,TRUE
+"NSG1","estradiol",2,"BC",0,TRUE
+"NSG1","Estrogen Receptor alpha",9,"BC",0,TRUE
+"NSG1","Oncogenes",2,"BC",0,TRUE
+"NSG1","TP53",30,"BC",1,TRUE
+"NTRK2","STAT3",1,"BC",0,TRUE
+"Oncogenes","Breast cancer",5,"BC",0,TRUE
+"Opioid Peptide","Gonadotropins",2,"trait",0,TRUE
+"Opioids","Gonadotropins",3,"trait",0,TRUE
+"Opioids","Prolactin",2,"trait",0,TRUE
+"Oral form estradiol","Dydrogesterone",3,"trait",0,TRUE
+"Oral form estradiol","Medroxyprogesterone 17-Acetate",3,"trait",0,TRUE
+"Ornithine Decarboxylase","Estrogen Receptor alpha",1,"BC",0,TRUE
+"Osteocalcin","C-reactive protein",2,"trait",0,TRUE
+"Osteocalcin","Follicle Stimulating Hormone",2,"trait",0,TRUE
+"Osteocalcin","Insulin",3,"trait",0,TRUE
+"osteopontin","Aromatase",1,"BC",0,TRUE
+"osteopontin","estradiol",1,"BC",0,TRUE
+"osteopontin","ICAM1",1,"BC",0,TRUE
+"Oxidoreductase","Ornithine Decarboxylase",1,"BC",0,TRUE
+"Oxytocin","Estrogen Receptor alpha",1,"BC",0,TRUE
+"P2RX5","Aromatase",1,"shared",0,TRUE
+"parathyroid hormone-related protein","VEGFA",2,"BC",0,TRUE
+"PELP1","Aromatase",3,"BC",0,TRUE
+"PELP1","Estrogen Receptor alpha",3,"BC",0,TRUE
+"PELP1","Estrogen Receptors",5,"BC",0,TRUE
+"PELP1","estrogens",3,"BC",1,TRUE
+"Peptidyl-Dipeptidase A","Bradykinin",3,"trait",0,TRUE
+"Peptidyl-Dipeptidase A","NOS3",2,"trait",0,TRUE
+"PHB2","TP53",2,"BC",0,TRUE
+"Phosphoproteins","TP53",2,"BC",0,TRUE
+"Phytoestrogens","Aromatase",2,"BC",0,TRUE
+"Phytoestrogens","estradiol",3,"BC",0,TRUE
+"Phytoestrogens","Estrogen Receptor alpha",3,"BC",0,TRUE
+"Phytoestrogens","Estrogen Receptor beta",7,"BC",0,TRUE
+"Phytoestrogens","Estrogen Receptors",33,"shared",1,TRUE
+"Phytoestrogens","Estrogenic",2,"trait",0,TRUE
+"Phytoestrogens","estrogens",18,"shared",2,TRUE
+"Phytoestrogens","Gonadal Steroid Hormones",3,"trait",0,TRUE
+"Phytoestrogens","Soy Proteins",9,"trait",4,TRUE
+"Pituitary Gonadotropins","GNRH1",1,"shared",0,TRUE
+"Plasminogen Activator Inhibitor 1","PLAU",2,"BC",0,TRUE
+"Plasminogen Activator Inhibitor 1","PRAP1",2,"BC",0,TRUE
+"Plasminogen Activator Inhibitor 1","Serpins",2,"BC",0,TRUE
+"Plasminogen Activator Inhibitor 1","Urokinase",13,"BC",0,TRUE
+"platelet-derived growth factor BB","Chemokine CXCL12",1,"BC",0,TRUE
+"platelet-derived growth factor BB","epidermal growth factor",1,"trait",0,TRUE
+"PLAU","EPHB2",1,"BC",0,TRUE
+"PLAU","MAPK1",1,"BC",0,TRUE
+"PLAU","PLAUR",5,"BC",0,TRUE
+"PLAUR","ERBB2",1,"BC",0,TRUE
+"polyglutamine","Androgen Receptor",1,"trait",0,TRUE
+"POSTN","Alkaline Phosphatase",1,"trait",0,TRUE
+"PPIG","estrogens",3,"BC",0,TRUE
+"PRAP1","EPHB2",1,"BC",0,TRUE
+"PRAP1","MAPK1",1,"BC",0,TRUE
+"PRAP1","PLAUR",5,"BC",0,TRUE
+"Premarin","ADRBK1",1,"trait",0,TRUE
+"Premarin","GRK2",1,"trait",0,TRUE
+"Pro-X dipeptidase","collagen",2,"trait",0,TRUE
+"Progestational Hormones, Synthetic","progesterone",2,"trait",0,TRUE
+"progesterone","Androgens",4,"trait",0,TRUE
+"progesterone","Aromatase",3,"BC",0,TRUE
+"progesterone","Breast cancer",3,"BC",0,TRUE
+"progesterone","dehydroepiandrosterone",2,"trait",0,TRUE
+"progesterone","estradiol",20,"trait",16,TRUE
+"progesterone","estrogens",32,"shared",31,TRUE
+"progesterone","Gonadotropins",2,"trait",0,TRUE
+"progesterone","Hormones",6,"trait",0,TRUE
+"progesterone","Leptin",2,"trait",0,TRUE
+"progesterone","Lipoproteins",3,"trait",0,TRUE
+"progesterone","Progestins",7,"shared",4,TRUE
+"progesterone","reproductive hormone",2,"trait",0,TRUE
+"progesterone","Somatotropin",4,"BC",0,TRUE
+"progesterone","Steroid receptor",2,"trait",0,TRUE
+"progesterone","TP53",2,"BC",0,TRUE
+"Progesterone receptor","AKTIP",1,"trait",0,TRUE
+"Progesterone receptor","Breast cancer",4,"BC",0,TRUE
+"Progesterone receptor","ERBB2",13,"BC",0,TRUE
+"Progesterone receptor","Estrogen Receptor alpha",23,"BC",18,TRUE
+"Progesterone receptor","Estrogen Receptors",58,"BC",3,TRUE
+"Progesterone receptor","NEU1",7,"BC",0,TRUE
+"Progesterone receptor","NEURL1",7,"BC",0,TRUE
+"Progesterone receptor","progesterone",38,"BC",0,TRUE
+"Progesterone receptor","steroid hormone receptor",4,"BC",0,TRUE
+"Progesterone receptor","Steroid receptor",3,"shared",0,TRUE
+"Progesterone receptor","TP53",6,"BC",0,TRUE
+"Progestins","Androgen Receptor",2,"trait",0,TRUE
+"Progestins","Androgens",6,"trait",0,TRUE
+"Progestins","Breast cancer",3,"BC",0,TRUE
+"Progestins","Estrogen Receptor alpha",2,"BC",0,TRUE
+"Progestins","Estrogen Receptors",10,"BC",0,TRUE
+"Progestins","estrogens",93,"shared",71,TRUE
+"Progestins","Ethinyl Estradiol",2,"trait",0,TRUE
+"Progestins","gonadorelin",3,"trait",0,TRUE
+"Progestins","IGF1",2,"trait",0,TRUE
+"Progestins","IGF1R",2,"BC",0,TRUE
+"Progestins","Ligase",7,"shared",0,TRUE
+"Progestins","Lipoproteins",5,"trait",0,TRUE
+"Progestins","Low-Density Lipoproteins",2,"trait",0,TRUE
+"Progestins","Norethindrone",2,"trait",0,TRUE
+"Progestins","NOS3",2,"trait",0,TRUE
+"Progestins","Progesterone receptor",23,"shared",0,TRUE
+"Progestins","Somatomedins",1,"trait",0,TRUE
+"Progestins","Somatotropin",7,"BC",0,TRUE
+"Progestins","Steroid receptor",5,"BC",0,TRUE
+"Progestins","TP53",2,"BC",0,TRUE
+"Progestins","VEGFA",3,"trait",0,TRUE
+"Prolactin","Breast cancer",5,"BC",0,TRUE
+"Prolactin","Estrogen Receptor alpha",9,"BC",0,TRUE
+"Prolactin","Estrogen Receptors",3,"BC",0,TRUE
+"Prolactin","gonadorelin",2,"trait",1,TRUE
+"Prolactin","Prolactin Receptor",7,"BC",0,TRUE
+"Prolactin","Somatotropin-Releasing Hormone",1,"trait",0,TRUE
+"Prolactin Receptor","Breast cancer",2,"BC",0,TRUE
+"Proliferating Cell Nuclear Antigen","epidermal growth factor",2,"trait",2,TRUE
+"Proliferating Cell Nuclear Antigen","TP53",2,"BC",0,TRUE
+"Prostate-Specific Antigen","Steroid hormone",2,"BC",0,TRUE
+"Prostate-Specific Antigen","steroid hormone receptor",1,"BC",0,TRUE
+"Protein phosphatase","Estrogen Receptor alpha",1,"BC",0,TRUE
+"Protein phosphatase","TP53",2,"BC",0,TRUE
+"PRRT2","AKT1",2,"BC",0,TRUE
+"PTEN","ERBB2",2,"BC",0,TRUE
+"PTEN","TP53",4,"BC",0,TRUE
+"PTEN Phosphohydrolase","AKT1",3,"BC",0,TRUE
+"PTEN Phosphohydrolase","PTEN",2,"BC",0,TRUE
+"PTH","parathyroid hormone-related protein",1,"trait",0,TRUE
+"PTH","PTHLH",1,"trait",0,TRUE
+"PTH","TNFRSF11B",2,"trait",0,TRUE
+"PTHLH","VEGFA",2,"BC",0,TRUE
+"PTK2","TP53",1,"BC",0,TRUE
+"PTPRU","High Density Lipoproteins",1,"trait",0,TRUE
+"pyridinoline","collagen",2,"trait",0,TRUE
+"pyridinoline","deoxypyridinoline",2,"trait",2,TRUE
+"Receptor, trkB","STAT3",1,"BC",0,TRUE
+"Receptors, Nuclear","Aromatase",5,"BC",0,TRUE
+"Receptors, Nuclear","estrogens",6,"BC",2,TRUE
+"Receptors, Nuclear","Progesterone receptor",2,"BC",0,TRUE
+"reproductive hormone","Hormones",2,"trait",0,TRUE
+"resistin","IL1",1,"trait",0,TRUE
+"RHO","estrogens",1,"trait",0,TRUE
+"Rho-associated kinase","estrogens",1,"trait",0,TRUE
+"RHOD","estrogens",1,"trait",0,TRUE
+"Ribonucleases","estrogens",1,"BC",0,TRUE
+"RS 26306","BRD2",1,"trait",0,TRUE
+"RS 26306","Follicle Stimulating Hormone",1,"trait",0,TRUE
+"salmon calcitonin","CAMP",4,"BC",0,TRUE
+"SCTR","gonadorelin",2,"shared",0,TRUE
+"Selective Estrogen Receptor Modulators","Androgen Receptor",1,"BC",0,TRUE
+"Selective Estrogen Receptor Modulators","Conjugated Equine Estrogens",2,"trait",0,TRUE
+"Selective Estrogen Receptor Modulators","estradiol",5,"BC",0,TRUE
+"Selective Estrogen Receptor Modulators","Estrogen Receptor alpha",9,"shared",0,TRUE
+"Selective Estrogen Receptor Modulators","Estrogen Receptor beta",2,"BC",0,TRUE
+"Selective Estrogen Receptor Modulators","Estrogen Receptors",45,"shared",0,TRUE
+"Selective Estrogen Receptor Modulators","Estrogenic",5,"trait",0,TRUE
+"Selective Estrogen Receptor Modulators","estrogens",47,"shared",3,TRUE
+"Selective Estrogen Receptor Modulators","homocysteine",2,"trait",0,TRUE
+"Selective Estrogen Receptor Modulators","Lipoproteins",2,"trait",0,TRUE
+"Sermorelin","IGF1",2,"BC",0,TRUE
+"Serpins","caspase-8",2,"BC",0,TRUE
+"SHBG","estradiol",15,"shared",14,TRUE
+"SHBG","Gonadal Steroid Hormones",6,"trait",2,TRUE
+"SHBG","Progestins",2,"trait",0,TRUE
+"SIL1","TP53",2,"BC",0,TRUE
+"SMAD3","Androgen Receptor",1,"trait",0,TRUE
+"SNORA62","Steryl-sulfatase",1,"trait",0,TRUE
+"SNORA62","STS",1,"trait",0,TRUE
+"SNORD12C","Steryl-sulfatase",1,"trait",0,TRUE
+"SNORD12C","STS",1,"trait",0,TRUE
+"Soluble ErbB-1","ERBB2",7,"BC",0,TRUE
+"Soluble ErbB-1","estrogens",2,"BC",0,TRUE
+"Somatomedins","Estrogen Receptor alpha",8,"BC",0,TRUE
+"Somatomedins","Estrogen Receptors",8,"BC",0,TRUE
+"Somatomedins","estrogens",3,"shared",0,TRUE
+"Somatomedins","IGF1R",4,"BC",0,TRUE
+"Somatomedins","progesterone",2,"BC",0,TRUE
+"Somatotropin","Breast cancer",2,"BC",0,TRUE
+"Somatotropin","estrogens",4,"trait",4,TRUE
+"Somatotropin","IGFBP4",2,"trait",0,TRUE
+"Somatotropin","Prolactin Receptor",3,"BC",0,TRUE
+"Somatotropin","Somatotropin-Releasing Hormone",1,"trait",0,TRUE
+"Somatotropin-Releasing Hormone","epidermal growth factor",1,"BC",0,TRUE
+"Somatotropin-Releasing Hormone","Soluble ErbB-1",1,"BC",0,TRUE
+"Soy Proteins","estrogens",2,"trait",2,TRUE
+"Soy Proteins","IGF1",3,"shared",0,TRUE
+"Soy Proteins","NOS3",2,"trait",0,TRUE
+"Soy Proteins","Triiodothyronine",1,"trait",0,TRUE
+"SPARC","Matrix Metalloproteinase 2",1,"BC",0,TRUE
+"src-Family Kinases","ERBB2",6,"BC",0,TRUE
+"src-Family Kinases","estradiol",3,"BC",0,TRUE
+"src-Family Kinases","Estrogen Receptor alpha",6,"BC",0,TRUE
+"src-Family Kinases","Estrogen Receptors",9,"BC",0,TRUE
+"src-Family Kinases","estrogens",4,"BC",0,TRUE
+"Stanolone","Androgen Receptor",16,"BC",0,TRUE
+"Stanozolol","High Density Lipoproteins",2,"trait",0,TRUE
+"STAT3","ERBB2",3,"BC",0,TRUE
+"STAT3","Estrogen Receptor alpha",1,"BC",0,TRUE
+"Steroid hormone","Breast cancer",2,"BC",0,TRUE
+"Steroid hormone","Estrogen Receptor alpha",2,"BC",0,TRUE
+"Steroid hormone","estrogens",6,"BC",5,TRUE
+"Steroid hormone","NOS3",2,"trait",0,TRUE
+"Steroid hormone","Progesterone receptor",6,"BC",0,TRUE
+"steroid hormone receptor","Breast cancer",2,"BC",0,TRUE
+"Steroid receptor","Breast cancer",3,"BC",0,TRUE
+"Steroid receptor","Estrogen Receptor alpha",1,"BC",0,TRUE
+"Steroid receptor","Estrogen Receptors",3,"BC",0,TRUE
+"Steroid receptor","estrogens",3,"BC",2,TRUE
+"Steryl-sulfatase","estrogens",14,"shared",0,TRUE
+"STK11","ERBB2",2,"BC",0,TRUE
+"STK11","Estrogen Receptor alpha",1,"BC",0,TRUE
+"STN","C-reactive protein",2,"trait",0,TRUE
+"STS","estrogens",12,"shared",0,TRUE
+"sulfotransferase","Gonadal Steroid Hormones",2,"trait",0,TRUE
+"TAP-144","gonadorelin",2,"shared",0,TRUE
+"TCEAL1","Androgen Receptor",2,"BC",0,TRUE
+"TCEAL1","estradiol",2,"BC",0,TRUE
+"TCEAL1","Estrogen Receptor alpha",9,"BC",0,TRUE
+"TCEAL1","Oncogenes",2,"BC",0,TRUE
+"TCEAL1","TP53",30,"BC",1,TRUE
+"Teriparatide","BEST1",2,"trait",0,TRUE
+"Teriparatide","DMD",2,"trait",0,TRUE
+"testosterone","Androstenedione",4,"trait",4,TRUE
+"testosterone","Breast cancer",2,"BC",0,TRUE
+"testosterone","dehydroepiandrosterone",4,"trait",3,TRUE
+"testosterone","estradiol",16,"shared",2,TRUE
+"testosterone","estrogens",11,"shared",5,TRUE
+"testosterone","Follicle Stimulating Hormone",2,"trait",0,TRUE
+"testosterone","Gonadal Steroid Hormones",2,"trait",2,TRUE
+"testosterone","Hormones",2,"trait",0,TRUE
+"testosterone","Human Chorionic Gonadotropin",2,"trait",0,TRUE
+"testosterone","hydrocortisone",2,"trait",0,TRUE
+"testosterone","Low-Density Lipoproteins",1,"trait",0,TRUE
+"testosterone","Progestins",4,"shared",2,TRUE
+"testosterone","SHBG",13,"trait",10,TRUE
+"TFF1","CATHEPSIN D",1,"trait",0,TRUE
+"TFF1","estradiol",5,"BC",0,TRUE
+"TFF1","Estrogen Receptor alpha",9,"BC",0,TRUE
+"TFF1","Estrogen Receptors",11,"BC",0,TRUE
+"TFF1","estrogens",10,"BC",2,TRUE
+"TGFA","EGFR",4,"BC",0,TRUE
+"TGFA","ESR1",1,"BC",0,TRUE
+"TGFA","estrogen receptor alpha",1,"BC",0,TRUE
+"TGFA","Mitogen-Activated Protein Kinases",1,"BC",0,TRUE
+"TGFB1","Vitamin D3 Receptor",1,"trait",0,TRUE
+"thrombin","osteopontin",3,"BC",0,TRUE
+"Thromboplastin","TP53",1,"BC",0,TRUE
+"Thyrotropin-Releasing Hormone","estrogens",2,"trait",0,TRUE
+"Thyrotropin-Releasing Hormone","Prolactin",6,"trait",3,TRUE
+"TIMP1","Interstitial Collagenase",1,"trait",0,TRUE
+"Tissue-Inhibitor of Metalloproteinase-1","Interstitial Collagenase",1,"trait",0,TRUE
+"TNF","Adiponectin",2,"trait",0,TRUE
+"TNF","Aromatase",5,"shared",0,TRUE
+"TNF","CDKN1A",1,"BC",0,TRUE
+"TNF","Estrogen Receptor alpha",2,"BC",1,TRUE
+"TNF","H3F3AP6",1,"BC",0,TRUE
+"TNF","MID1",1,"trait",0,TRUE
+"TNF","NSG1",1,"BC",0,TRUE
+"TNF","TCEAL1",1,"BC",0,TRUE
+"TNFRSF11B","Apolipoprotein A-I",1,"trait",0,TRUE
+"TNFRSF11B","NF-kappa B",2,"BC",0,TRUE
+"TNFRSF11B","NFKB1",1,"BC",0,TRUE
+"TNFRSF11B","TRANCE protein",14,"BC",0,TRUE
+"Topical form estradiol","collagen",3,"trait",0,TRUE
+"TP53","Breast cancer",2,"BC",0,TRUE
+"TRANCE protein","progesterone",5,"BC",0,TRUE
+"Transforming Growth Factor alpha","EGFR",11,"BC",0,TRUE
+"Transforming Growth Factor alpha","EPHB2",1,"BC",0,TRUE
+"Transforming Growth Factor alpha","ESR1",1,"BC",0,TRUE
+"Transforming Growth Factor alpha","estrogen receptor alpha",1,"BC",0,TRUE
+"Transforming Growth Factor alpha","MAPK1",1,"BC",0,TRUE
+"Transforming Growth Factor alpha","Mitogen-Activated Protein Kinases",1,"BC",0,TRUE
+"Transforming Growth Factor beta","Antibodies",4,"BC",0,TRUE
+"Transforming Growth Factor beta","ERBB2",4,"BC",0,TRUE
+"Transforming Growth Factor beta","estrogens",2,"BC",0,TRUE
+"TRH","estrogens",2,"trait",0,TRUE
+"TRH","Prolactin",6,"trait",3,TRUE
+"Triiodothyronine","TGFA",2,"BC",0,TRUE
+"Triiodothyronine","Transforming Growth Factor alpha",2,"BC",0,TRUE
+"TUBB3","SPARC",1,"BC",0,TRUE
+"Tumor Necrosis Factor-alpha","CD8B",2,"BC",0,TRUE
+"Tumor Necrosis Factor-alpha","CD8B1",2,"BC",0,TRUE
+"Urokinase","Alkaline Phosphatase",1,"BC",0,TRUE
+"Urokinase","CAMP",1,"BC",0,TRUE
+"Urokinase","IGF1",2,"BC",0,TRUE
+"Urokinase","NF-kappa B",2,"BC",0,TRUE
+"Urokinase","PLAUR",25,"BC",0,TRUE
+"Vasoactive Intestinal Peptide","VEGFA",2,"BC",0,TRUE
+"VDR","src-Family Kinases",2,"BC",0,TRUE
+"VEGFA","Estrogen Receptor alpha",3,"BC",0,TRUE
+"VEGFA","Estrogen Receptor beta",3,"BC",0,TRUE
+"VEGFA","Gonadotropins",1,"trait",0,TRUE
+"VEGFA","progesterone",2,"BC",0,TRUE
+"VEGFA","TNF",1,"trait",0,TRUE
+"Very low density lipoprotein","High Density Lipoproteins",1,"trait",0,TRUE
+"very low density lipoprotein triglyceride","Adiponectin",1,"trait",0,TRUE
+"Vitamin D3 Receptor","beta catenin",2,"BC",0,TRUE
+"Vitamin D3 Receptor","Estrogen Receptor alpha",2,"trait",0,TRUE
+"Vitamin D3 Receptor","Osteocalcin",1,"trait",0,TRUE
+"Vitamin D3 Receptor","Ribonucleases",2,"BC",0,TRUE
+"Vitamin D3 Receptor","src-Family Kinases",2,"BC",0,TRUE

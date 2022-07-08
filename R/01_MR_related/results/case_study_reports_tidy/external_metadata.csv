@@ -1,0 +1,7 @@
+﻿analysis,id,sample_size,source,snps,sample_sex
+main,prot-a-710,3301,Sun BB 2018,4,mixed
+main,ukb-d-30770_irnt,> 450K,UK Biobank,318,mixed
+main,ukb-a-34 ,> 450K,UK Biobank,144,mixed
+main,ukb-b-17422,143K,UK Biobank,102,female
+sens,ukb-d-30770_irnt,246K,UK Biobank,375,female
+sens,ukb-a-34 ,246K,UK Biobank,115,female

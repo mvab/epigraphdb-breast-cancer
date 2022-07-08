@@ -16,6 +16,7 @@ params:
   trait_name: trait_name
   lit_space_file: lit_space_file
   data_prefix: data_prefix
+  sens_analysis: sens_analysis
 ---
 
 ```{r setup I, eval=TRUE, echo=F, message = F, warning = F, comment=""}
@@ -29,8 +30,10 @@ library(tidyverse)
 library(TwoSampleMR)
 library(vroom)
 
+
 source("../../helper_functions.R")
 source("app1_MR-EvE_app/functions.R")
+source("../../02_literature_related/scripts/app3_sankey_app/functions_literature.R")
 source("mr_related_functions.R")
 source("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/early-bmi-breast-cancer-mr/functions_mvmr.R")
 
@@ -51,8 +54,15 @@ params2$main_lit -> main_lit
 params2$trait_name -> trait_name
 params2$lit_space_file -> lit_space_file
 params2$data_prefix -> data_prefix
+params2$sens_analysis -> sens_analysis
 ```
 
+```{r echo=F, eval=T}
+metadata <- read_csv("../results/case_study_reports_tidy/external_metadata.csv")
+meta <- metadata %>% filter(analysis == "main", id == main)
+
+sankey_data <-  read_csv(paste0("../results/case_study_reports_tidy/sankey_input/", main ,".csv"))
+```
 
 
 ```{r ,  include=F, eval = F, echo=F}
@@ -66,6 +76,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
                   main = "prot-a-710",
                   main_lit = "prot-a-710",
                   lit_space_file = "lit_terms_cardiotrophin1.csv",
+                  sens_analysis = F,
                   data_prefix = NA
                   ),
                    output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
@@ -78,6 +89,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
                     main = "ukb-b-17422",
                     main_lit = "menopause",
                     lit_space_file = "lit_terms_menopause.csv",
+                    sens_analysis = F,
                     data_prefix = NA
                   ),
                    output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
@@ -90,6 +102,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
                     main = "ukb-d-30770_irnt",
                     main_lit = "ukb-d-30770_irnt",
                     lit_space_file = "lit_terms_IGF1.csv",
+                    sens_analysis = T,
                     data_prefix = 'igf'
                   ),
                    output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
@@ -101,27 +114,14 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
                     main = "ukb-a-34",
                     main_lit = "ieu-a-1096",
                     lit_space_file = "lit_terms_childhood_obesity.csv",
+                    sens_analysis = T,
                     data_prefix = 'early_bmi_adj'
                   ),
                    output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
 
-
-
-
-#main <- "prot-a-67"
-#main_lit <- "prot-a-67"
-#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-#
-#main <- "prot-b-38"
-#main_lit <- "prot-b-38"
-#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-#
-#main <- "prot-a-366"
-#main_lit <- "prot-a-366"
-#trait_name <- extract_instruments(main) %>% split_exposure() %>% pull(exposure) %>% unique()
-#
 ```
+
 
 **Report for: `r trait_name` (`r main`)**
 
@@ -131,17 +131,25 @@ The report is split into 3(+1) parts:
 
 1. Mendelian randomization (MR) results for `r trait_name` for all breast cancer outcomes (BCAC 2017 and 2020)
 2. Overview of potential mediators identified from MR-EvE data; their validation with two-step and multivariable MR (MVMR)
-3. Overview of potential mediators identified from literature-mined data; their validation with two-step, bidirectional and MVMR
+3. Overview of potential mediators identified from literature-mined data; their validation with two-step, bidirectional, and MVMR
 4. _Optional_ validation of results with female-only exposure data (if available)
 
 - Trait IDs in this report correspond to data available in [OpenGWAS](https://gwas.mrcieu.ac.uk/)
-- BCAC 2017 outcomes names/IDs: Full sample `ieu-a-1126`, ER+ sample `ieu-a-1127`, ER- sample `ieu-a-1128`
+- BCAC 2017 outcomes names/IDs: Full sample ("Breast cancer") `ieu-a-1126`, ER+ sample ("ER+ Breast cancer")`ieu-a-1127`, ER- sample ("ER- Breast cancer") `ieu-a-1128`
 - MR analyses in this report were performed using [TwoSampleMR](https://github.com/MRCIEU/TwoSampleMR) and [MVMR](https://github.com/WSpiller/MVMR) packages
+- The two-sample MR estimates presented in this report were produced with inverse-variance weighted (IVW) or Wald ratio (for single SNP traits)
 
-This report is a part of publication _"Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors"_ Vabistsevits et al 2022
+This report is a part of the publication _"Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors"_ Vabistsevits et al 2022
 
 
-# Main MR results
+# Main analysis MR results
+
+`r trait_name` data details:
+
+* Source: `r meta$source` 
+* Sample size: `r meta$sample_size`
+* nSNPs: `r meta$snps` 
+* Sample sex: `r meta$sample_sex` 
 
 `r trait_name` was identified in MR-EvE search as having evidence of effect on breast cancer and validated with IVW MR method in BCAC 2017 and BCAC 2020 breast cancer outcomes: 
 
@@ -235,12 +243,16 @@ meds_table <- med_conf_table %>%
          'med.id',
          'med.trait',
          'r1.OR_CI_val', 
-         'r3.OR_CI_val') %>% 
+         "r1.nsnp_val",
+         'r3.OR_CI_val',
+         "r3.nsnp_val") %>% 
   rename('exposure' = 'exposure.trait', 
          'mediator.id' = 'med.id',
          'mediator' = 'med.trait',
          "exposure -> mediator \n (step1)" = 'r1.OR_CI_val', 
-         'mediator -> outcome \n (step2)' = 'r3.OR_CI_val') 
+         "nSNPs (step1)" = 'r1.nsnp_val', 
+         'mediator -> outcome \n (step2)' = 'r3.OR_CI_val',
+         'nSNPs (step2)' = 'r3.nsnp_val') 
 
 
 unique_meds <- length(unique(meds_table$mediator.id))
@@ -265,7 +277,7 @@ if (all){
   ft<-flextable(meds_table %>% filter(outcome == "BCAC 2017") %>% select(-outcome.id) %>% arrange(desc(mediator.id)))
   ft<-width(ft, j = c(1), width=1.5)
   ft<-width(ft, j = c(4), width=3)
-  ft<-width(ft, j = c(5,6), width=1.3)
+  ft<-width(ft, j = c(5,7), width=1.3)
   ft
 }
 ```
@@ -281,7 +293,7 @@ if (pos) {
   ft<-flextable(meds_table %>% filter(outcome == "ER+") %>% select(-outcome.id) %>% arrange(desc(mediator.id)))
   ft<-width(ft, j = c(1), width=1.5)
   ft<-width(ft, j = c(4), width=3)
-  ft<-width(ft, j = c(5,6), width=1.3)
+  ft<-width(ft, j = c(5,7), width=1.3)
   ft
   }
 ```
@@ -298,7 +310,7 @@ if (neg) {
   ft<-flextable(meds_table %>% filter(outcome == "ER-")%>% select(-outcome.id) %>% arrange(desc(mediator.id)))
   ft<-width(ft, j = c(1), width=1.5)
   ft<-width(ft, j = c(4), width=3)
-  ft<-width(ft, j = c(5,6), width=1.3)
+  ft<-width(ft, j = c(5,7), width=1.3)
   ft
 }
 ```
@@ -334,14 +346,15 @@ for (bc_out in outcomes){
   disrupted_by <- df %>% 
     filter(exposure == trait) %>% 
     mutate(is_disrupted = ifelse(effect_direction == 'overlaps null', T,F)) %>%
-    arrange(exposure) %>% distinct()
+    arrange(exposure) %>% distinct() %>% 
+    left_join(df %>% filter(exposure != trait) %>%  select(interm, interm_nsnp = nsnp))
   
   disrupted_by<- disrupted_by %>% 
     left_join(med_conf_table %>% filter(outcome.id == bc_out) %>%
-                                 select( med.id,med.trait, r2.OR_CI_val), 
+                                 select( med.id,med.trait, r2.OR_CI_val, r2.nsnp_val), 
               by = c('interm' = 'med.id')) %>% 
-    rename(disrupter = med.trait, OR_CI_direct = OR_CI, OR_CI_total = r2.OR_CI_val) %>% 
-    select(exposure,  outcome, OR_CI_total, disrupter,  OR_CI_total, OR_CI_direct, is_disrupted, interm)
+    rename(disrupter = med.trait, OR_CI_direct = OR_CI, SNP_direct_exp=nsnp, OR_CI_total = r2.OR_CI_val, SNP_total = r2.nsnp_val,SNP_direct_med = interm_nsnp) %>% 
+    select(exposure,  outcome, OR_CI_total, disrupter,  OR_CI_total, SNP_total, OR_CI_direct,SNP_direct_exp,SNP_direct_med, is_disrupted, interm)
   
   disrupted_by_all <- bind_rows(disrupted_by_all, disrupted_by) 
 
@@ -349,10 +362,14 @@ for (bc_out in outcomes){
 }
 
 disrupted_by_all<-
-  disrupted_by_all %>%  rename("Total effect \n exposure -> outcome" = "OR_CI_total",
+  disrupted_by_all %>% 
+          select(exposure, outcome, disrupter, OR_CI_total,SNP_total, OR_CI_direct, SNP_direct_exp,SNP_direct_med, everything())%>%
+                      rename("Total effect \n exposure -> outcome" = "OR_CI_total",
                              "Direct effect \n exposure -> outcome" = "OR_CI_direct",
-                             "mediator" = 'disrupter') %>% arrange(desc(interm)) %>% 
-          select(exposure, outcome, mediator, everything()) %>% select(-interm)
+                             "Exp SNPs \n (total)" = "SNP_total",
+                             "Exp SNPs \n (direct)" = "SNP_direct_exp",
+                             "Med SNPs \n (direct)" = "SNP_direct_med",
+                             "mediator" = 'disrupter') %>% arrange(desc(interm))  %>% select(-interm)
 
 
 attenuate_full <- disrupted_by_all %>% filter(outcome == "Breast cancer ", is_disrupted == T) %>% pull(mediator) 
@@ -372,7 +389,7 @@ if (all){
 ```{r, echo=F}
 if (all){
   ft<-flextable(disrupted_by_all_display)
-  ft<-width(ft, j = c(1,2,4,5), width=1.5)
+  ft<-width(ft, j = c(1,2,4,6), width=1.5)
   ft<-width(ft, j = 3, width=3)
   ft %>% bg(
     ., i = ~ is_disrupted == T, j = "mediator",
@@ -390,7 +407,7 @@ if (pos){
 ```{r, echo=F}
 if (pos){
   ft<-flextable(disrupted_by_all_display)
-  ft<-width(ft, j = c(1,2,4,5), width=1.5)
+  ft<-width(ft, j = c(1,2,4,6), width=1.5)
   ft<-width(ft, j = 3, width=3)
   ft %>% bg(
     ., i = ~ is_disrupted == T, j = "mediator",
@@ -409,7 +426,7 @@ if (neg){
 ```{r, echo=F}
 if (neg){
   ft<-flextable(disrupted_by_all_display)
-  ft<-width(ft, j = c(1,2,4,5), width=1.5)
+  ft<-width(ft, j = c(1,2,4,6), width=1.5)
   ft<-width(ft, j = 3, width=3)
   ft %>% bg(
     ., i = ~ is_disrupted == T, j = "mediator",
@@ -483,15 +500,12 @@ traits_can_use <- lit_terms_df %>% filter(instruments > 0 ) %>% pull(gwas.name) 
  
 ## Literature overlap Sankey plot
 
-This is a subset of literature overlap between `r trait_name` and breast cancer. See and explore the full version in [https://mvab.shinyapps.io/literature_overlap_sankey/](https://mvab.shinyapps.io/literature_overlap_sankey/)
+This is a Sankey plot of literature overlap between `r trait_name` and breast cancer. See the subset versions and explore filters in a separate app:  [https://mvab.shinyapps.io/literature_overlap_sankey/](https://mvab.shinyapps.io/literature_overlap_sankey/)
 
-```{r}
-#library(networkD3)
-
-
-### subset of sankey plot of lit overlap goes here
-
-
+```{r echo =F}
+library(networkD3)
+sankey<-make_sankey(sankey_data, fontSize=12, colour_links = T)
+sankey
 ```
 
 ## Matching literature terms to GWAS traits
@@ -641,14 +655,14 @@ for (bc_out in outcomes){
   
     x<-full_join(
         quick_mr(exp = main, out = bc_out) %>% 
-          select(exposure, id.exposure, outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction, "total_OR" = or) %>% 
+          select(exposure, id.exposure, outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction, "total_OR" = or, total_snp=nsnp) %>% 
           mutate(outcome = gsub("(Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) ,# main to out
         quick_mr(exp = interm, out = bc_out) %>% 
-          select(exposure, id.exposure,outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction, "total_OR" = or) %>% 
+          select(exposure, id.exposure,outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction, "total_OR" = or, total_snp=nsnp) %>% 
           mutate(outcome = gsub("(Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) ) %>% 
      full_join(.,
         quick_mvmr(exp1 = main, exp2 = interm, out = bc_out) %>%
-          select(exposure, outcome, "direct_OR_CI" = OR_CI, "direct_ED" = effect_direction, "direct_OR" = or) ) %>%
+          select(exposure, outcome, "direct_OR_CI" = OR_CI, "direct_ED" = effect_direction, "direct_OR" = or, direct_snp=nsnp) ) %>%
       mutate(test = paste0(interm, " / ", bc_out) ) %>% 
       select(test, exposure, everything()) 
     
@@ -667,8 +681,11 @@ total_res_out_dips<- total_res_out %>%
   arrange(group) %>%
   select(-total_OR, -direct_OR) %>% 
   rename("#" = "group", 
+         "exposure/mediator" = exposure,
          "total effect (MR)" = "total_OR_CI",  "direct effect (MVMR)" = "direct_OR_CI",
-         "total effect direction" = "total_ED",  "direct effect direction" = "direct_ED") 
+         "total effect direction" = "total_ED",  "direct effect direction" = "direct_ED",
+         "SNPs in \n total" = 'total_snp', "SNPs in \n  direct"='direct_snp'
+         ) 
 ```
 
 
@@ -678,7 +695,7 @@ total_res_out_dips<- total_res_out %>%
 total_res_out_dips <- as_grouped_data(x = total_res_out_dips, groups = c("#"), columns = NULL)
 ft<-flextable(total_res_out_dips)
 ft<-width(ft, j = c(2), width=2.5)
-ft<-width(ft, j = c(3:7), width=1.8)
+ft<-width(ft, j = c(3,4,5,7,8), width=1.8)
 ft %>% bg(
   ., i = ~ `direct effect direction` == 'overlaps null', 
   j = "direct effect direction", 
@@ -712,24 +729,33 @@ ft %>% bg(
 
 
 
-# (Optional): sensitivity analysis with female only data
+`r if (sens_analysis) {"# (Optional): sensitivity analysis with female only data"}`
 
-This section is an optional sensitivity analysis, and is only run where external female-only data is available for the given exposure. 
+`r if (sens_analysis) {"This section is an optional sensitivity analysis, and is only run where external female-only data is available for the given exposure. "}`
 
 
-```{r echo =F, eval =T}
+```{r echo =F, eval = sens_analysis}
+meta <- metadata %>% filter(analysis == "sens", id == main)
+
 local_data_path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/"
 
 tophits <- read_tsv(paste0(local_data_path, "GWAS_tophits/", data_prefix , "_tophits.tsv"), show_col_types = FALSE)
 full_gwas <- vroom(paste0(local_data_path, "GWAS_results_tidy/", data_prefix , "_GWAS_tidy_outcome.txt.gz"))
 ```
 
+`r if (sens_analysis) {trait_name}`   `r if (sens_analysis) {"sensitivity analysis data details:"}`
 
-## Two-step MR (step 2)
+`r if (sens_analysis){"* Source: "}` `r if (sens_analysis){ meta$source}` 
+`r if (sens_analysis){"* Sample size: "}` `r if (sens_analysis){ meta$sample_size}`
+`r if (sens_analysis){"* nSNPs:"}` `r if (sens_analysis){ meta$snps}` 
+`r if (sens_analysis){"* Sample sex:"}` `r if (sens_analysis){ meta$sample_sex}` 
 
-Effect on breast cancer from female-only data of **`r trait_name`**
 
-```{r echo =F, eval =T}
+`r if (sens_analysis) {"## Two-step MR (step 2)"}`
+
+`r if (sens_analysis) {"Effect on breast cancer from female-only data of"}` `r if (sens_analysis){ trait_name }`
+
+```{r echo =F, eval = sens_analysis}
 res_df_all<-tibble()
 res_df_pos<-tibble()
 res_df_neg<-tibble()
@@ -745,7 +771,7 @@ step2_mr <- bind_rows(res_df_all, res_df_pos, res_df_neg) %>%
   mutate(exposure = ifelse(exposure == "Childhood BMI", "Comparative body size at age 10", exposure))
 ```
 
-```{r echo =F, eval =T}
+```{r echo =F, eval = sens_analysis}
 ft <- flextable(step2_mr)
 ft <- width(ft, j = c(1,2,3), width=2)
 border <- fp_border( width = 2)
@@ -765,18 +791,18 @@ if (neg && step2_mr[step2_mr$outcome == "ER- Breast cancer ",]$effect_direction 
 
 
 
-## Bidirectional MR (exp/med) (step1) (female-only `r trait_name`)
+`r if (sens_analysis) {"## Bidirectional MR (exp/med) (step1) (female-only)"}`
 
-Testing on all literature intermediates and potential mediators from MR-EvE. An empty row indicates that no instruments were available to perform the analysis.
+`r if (sens_analysis) {"Testing on all literature intermediates and potential mediators from MR-EvE. An empty row indicates that no instruments were available to perform the analysis."}`
 
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval = sens_analysis}
 # this runs to prevent failing is part if optional analysis is not run
 potential_mediators2 <- c(" ")
 ```
 
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval = sens_analysis}
 
 step1_mr <- tibble()
 
@@ -818,8 +844,9 @@ potential_mediators2 <- step1_mr %>% filter(effect_direction != 'overlaps null',
 potential_mediators2id <- step1_mr %>% filter(effect_direction != 'overlaps null', effect == "term trait as mediator" ) %>% pull(id.outcome)
 ```
 
-Potential mediators from female-only `r trait_name` analysis: **`r paste0(potential_mediators2, collapse=", ")`**
-```{r echo =F,  eval =T}
+`r if (sens_analysis) {"Potential mediators from female-only"}` `r if (sens_analysis) {trait_name}`  `r if (sens_analysis) {"analysis:"}` `r if (sens_analysis) { paste0(potential_mediators2, collapse=", ")}`
+
+```{r echo =F,  eval = sens_analysis}
 ft <- flextable(step1_mr)
 ft <- width(ft, j = c(1,3,5,8), width=3)
 
@@ -840,13 +867,13 @@ ft %>%
 
 
 
-## MVMR
+`r if (sens_analysis){"## MVMR"}`
 
-For the identified potential mediators we perform MVMR with the known affected outcomes. The table below shows the total effect of exposure (`r trait_name`) and each mediator, and their direct effects from MVMR analysis together. 
+`r if (sens_analysis){"For the identified potential mediators we perform MVMR with the known affected outcomes. The table below shows the total effect of exposure ("}` `r if (sens_analysis){ trait_name }` `r if (sens_analysis){") and each mediator, and their direct effects from MVMR analysis together. "}`
 
-The highlighted rows indicate when the direct effect overlaps the null. 
+`r if (sens_analysis){"The highlighted rows indicate when the direct effect overlaps the null. "}`
 
-```{r echo =F,  eval =T}
+```{r echo =F,  eval = sens_analysis}
 
 all_resF <- tibble()
 x1 <- tibble()
@@ -860,25 +887,28 @@ for (interm in potential_mediators2id){
         mutate(test = paste0(interm, " / ", 'ieu-a-1126') ) %>% 
         select(test, exposure, everything()) %>% 
         rename("direct_OR_CI" = "OR_CI",
-              "direct_ED" = "effect_direction")
+              "direct_ED" = "effect_direction",
+              "direct_snp" = "nsnp")
   } 
   if(pos){
       x2 <- mvmr_mixed_sources(id1 = interm, outcome.id = 'ieu-a-1127', tophits,full_gwas)%>%
         mutate(test = paste0(interm, " / ", 'ieu-a-1127') ) %>% 
         select(test, exposure, everything()) %>% 
         rename("direct_OR_CI" = "OR_CI",
-              "direct_ED" = "effect_direction")
+              "direct_ED" = "effect_direction",
+              "direct_snp" = "nsnp")
   }
   if (neg){
       x3 <- mvmr_mixed_sources(id1 = interm, outcome.id = 'ieu-a-1128', tophits, full_gwas) %>%
         mutate(test = paste0(interm, " / ", 'ieu-a-1128') ) %>% 
         select(test, exposure, everything()) %>% 
         rename("direct_OR_CI" = "OR_CI",
-              "direct_ED" = "effect_direction")
+              "direct_ED" = "effect_direction",
+              "direct_snp" = "nsnp")
   }
 
   all_resF<- bind_rows(all_resF, x1, x2, x3) %>% 
-            select(test, exposure, outcome, direct_OR_CI, direct_ED) %>% 
+            select(test, exposure, outcome, direct_OR_CI, direct_ED, direct_snp) %>% 
           # fix names to match other results
             mutate(exposure = ifelse(exposure == "IGF", "IGF-1", exposure)) %>% 
             mutate(exposure = ifelse(exposure == "Childhood BMI", "Comparative body size at age 10", exposure))
@@ -888,21 +918,21 @@ for (interm in potential_mediators2id){
 
 ```
 
-```{r echo=F, eval =T}
+```{r echo=F, eval = sens_analysis}
 
 # get total CI of potential meds of BC from here
 pt1 <- redone_MR %>%
   filter(id.exposure %in% potential_mediators2id) %>% 
   tidyr::separate(col = outcome, into = c("outcome", "tmp"), sep = "\\(" ) %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio')) %>%
-  select(exposure, outcome, OR_CI, effect_direction) %>% 
-  rename( "total_OR_CI" = "OR_CI", "total_ED" = "effect_direction")
+  select(exposure, outcome, OR_CI, effect_direction, nsnp) %>% 
+  rename( "total_OR_CI" = "OR_CI", "total_ED" = "effect_direction", "total_snp" = 'nsnp')
 
 
 # get total effect of main trait on available BC outcomes
 pt2 <- step2_mr %>% 
   filter(effect_direction != 'overlaps null') %>% 
-  select(exposure,  outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction)
+  select(exposure,  outcome, "total_OR_CI" = OR_CI, "total_ED" = effect_direction, "total_snp" = 'nsnp')
   
 
 X <- bind_rows(pt1, pt2) %>%  arrange(outcome) %>% mutate(exposure = ifelse(exposure == "IGF", "IGF-1", exposure)) 
@@ -919,20 +949,20 @@ total_res_out_dipsF<- total_res_outF %>%
   select(group, everything(), -test) %>% 
   arrange(group,exposure) %>% 
   rename("#" = "group", 
+         "exposure/mediator" = exposure,
          "total effect (MR)" = "total_OR_CI",  "direct effect (MVMR)" = "direct_OR_CI",
-         "total effect direction" = "total_ED",  "direct effect direction" = "direct_ED") 
+         "total effect direction" = "total_ED",  "direct effect direction" = "direct_ED",
+         "SNPs in \n total" = 'total_snp', "SNPs in \n  direct"='direct_snp') 
 ```
 
 
-
-
-```{r echo =F, eval =T}
+```{r echo =F, eval =sens_analysis}
 total_res_out_dipsF <- as_grouped_data(x = total_res_out_dipsF, groups = c("#"), columns = NULL)
 ft<-flextable(total_res_out_dipsF)
 ft<-width(ft, j = c(2), width=3)
-ft<-width(ft, j = c(3:7), width=1.8)
+ft<-width(ft, j = c(3,4,7,8), width=1.8)
 ft %>% bg(
-  ., i = ~ `direct effect direction` == 'overlaps null' & `total effect direction` != 'overlaps null' & exposure == trait, 
+  ., i = ~ `direct effect direction` == 'overlaps null' & `total effect direction` != 'overlaps null' & `exposure/mediator` == trait, 
   j = "direct effect direction", 
   bg = "#6CA3F8", part = "body")
 ```

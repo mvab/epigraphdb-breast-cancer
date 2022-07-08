@@ -337,7 +337,7 @@ mvmr_mixed_sources <- function(id1, outcome.id, id2_tophits_file, id2_gwas_file 
     mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
     mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                                      ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
-    select(exposure, outcome, starts_with("or", ignore.case = T), effect_direction) 
+    select(exposure, outcome, starts_with("or", ignore.case = T), effect_direction, nsnp) 
   
   return(mv_res)
   
