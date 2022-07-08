@@ -78,15 +78,17 @@ create_exposure_categories <- function(dat){
     mutate(exposure_cat = case_when(
       grepl("prot", exposure.id) ~ 'Proteins',
       grepl("met", exposure.id) ~ 'Metabolites',
-      grepl("Drug|Medication for pain|prescription medications", exposure, ignore.case = T) ~ "Drugs",
-      grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies", exposure, ignore.case = T) ~ "Diseases",
-      grepl("blood pressure|heart|Pulse|Cardiac|thromboembolism", exposure, ignore.case = T) ~ "CHD",
+      grepl("Drug|Medication|prescription medications", exposure, ignore.case = T) ~ "Drugs",
+      grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies|Malignant|Siatica|Gonarthrosis", exposure, ignore.case = T) ~ "Diseases",
+      grepl("blood pressure|heart|Pulse|Cardiac|thromboembolism", exposure, ignore.case = T) ~ "CVD_related",
       grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "Medical Procedures",
-      grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental", exposure,  ignore.case = T) ~ "eye_hearing_teeth",
+      grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental|Spherical power", exposure,  ignore.case = T) ~ "eye_hearing_dental",
+      grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "Antrophometric",
+      grepl("FEV1|FVC|Wheeze|cough", exposure,  ignore.case = T) ~ "lung_related",
+      grepl("count|volume|percentage|reticulocyte|Platelet", exposure,  ignore.case = T) ~ "cells_related",
       grepl("alco|wine|spirits|beer", exposure, ignore.case = T) ~ "Alcohol", # must be before diet
       grepl("vitamin|suppl", exposure, ignore.case = T) ~ "Diet and supplements",
       grepl("intake|diet|food|milk|dairy|coffee|cereal|butter|bread|Never eat", exposure, ignore.case = T) ~ "Diet and supplements",
-      grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "Antrophometric",
       grepl("age at|age started|parous|contraceptive pill|replacement therapy|HRT|menopause|menarche|live birth|oophorectomy|hysterectomy|menstrual|sexual", exposure, ignore.case = T) ~ "Reproductive",
       grepl("smok|cigar", exposure, ignore.case = T) ~ "Smoking",
       grepl("activi|transport |diy|walking|walked|Time spent|Weekly usage of|stair climbing|walk|spend outdoors", exposure, ignore.case = T) ~ "Physical activity",
@@ -95,7 +97,8 @@ create_exposure_categories <- function(dat){
       grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) ~ 'Lipids',
       grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|cystatin|SHBG|bilirubin|Total protein|phosphatase|IGF", exposure, ignore.case = T) ~ 'Proteins',
       grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic|education", exposure, ignore.case = T) ~ 'Education',
-      grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves", exposure, ignore.case = T) ~ 'Psychology',
+      grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves|irritability|satisfaction", exposure, ignore.case = T) ~ 'psychiatric_or_mental_health',
+      
       TRUE ~ 'other')) %>% 
     mutate(exposure_cat = ifelse(grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) & exposure_cat %in% c('Metabolites', 'Other biomarkers'), "Lipids", exposure_cat)) %>%  # recapture those in met-a
     mutate(exposure_cat = ifelse(grepl("Average number|Ratio of", exposure.trait, ignore.case = T) , "other", exposure_cat)) %>%  # recapture those in met-a
