@@ -14,7 +14,7 @@ library(wesanderson)
 library(RColorBrewer)
 library(flextable)
 library(TwoSampleMR)
-source('explore_MR-EvE_app/functions.R')
+source('app1_MR-EvE_app/functions.R')
 ```
 
 
@@ -22,7 +22,7 @@ source('explore_MR-EvE_app/functions.R')
 rm(dat)
 dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>% 
         #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_madewR.tsv") %>% 
-      read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>%  # from 01_mr_epigraph_query.R script
+      read_tsv("app1_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>%  # from 01_mr_epigraph_query.R script
       # subset 
       filter(exposure.sex != 'Males') %>% 
       filter(mr.method != 'Steiger null') %>% 
@@ -40,6 +40,7 @@ dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>%
       filter(OR_CI != "0 [0:0]")
 
 length(unique(dat$exposure.id)) # 1643
+dat %>% select(exposure.id, exposure.trait, exposure_cat) %>% distinct() %>% View()
 
 ```
 
