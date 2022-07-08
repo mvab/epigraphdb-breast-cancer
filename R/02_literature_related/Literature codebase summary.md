@@ -63,22 +63,22 @@
 	* Loads breast cancer literature space `breast_cancer_litspace_prod.csv` created in 01.. script, does space tidy up (like for all traits in 01), then extract 4 sequential triples.
 
 	* For each molecular trait (i.e. trait with anchor):
-	 - load tidy lit space form `lit_spaces_finalset_tidy.RData`
-	 - extract and link trait triples
-	 - make mini sankey of trait triples (for exploratory purposes)
-	 - overlap literature spaces of trait and breast cancer
-	 - the output has the full_sankey or subset_sankey (excludes n=1 (or more)) 
-	 - save overlap intermediate terms
+		 - load tidy lit space form `lit_spaces_finalset_tidy.RData`
+		 - extract and link trait triples
+		 - make mini sankey of trait triples (for exploratory purposes)
+		 - overlap literature spaces of trait and breast cancer
+		 - the output has the full_sankey or subset_sankey (excludes n=1 (or more)) 
+		 - save overlap intermediate terms
 
 
 	* For lifestyle traits, the process is similar.
 
-	 - we load tidy trait space, by specifying whether it is a single-ID trait, or a combined trait: data is loaded from the selected RData
-	 - for lifestyle trait there is no anchor, so we first only extract a single triple from the trait (it is allowes to loop back on itself)
-	 - we also make a trait-only sankey 
-	 - then we connect BC space to trait space via that one triple A-B  and allow trait triple to backwards connect to another triple X-A
-	 - lit overlap sankey
-	 - save intermediates
+		 - we load tidy trait space, by specifying whether it is a single-ID trait, or a combined trait: data is loaded from the selected RData
+		 - for lifestyle trait there is no anchor, so we first only extract a single triple from the trait (it is allowes to loop back on itself)
+		 - we also make a trait-only sankey 
+		 - then we connect BC space to trait space via that one triple A-B  and allow trait triple to backwards connect to another triple X-A
+		 - lit overlap sankey
+		 - save intermediates
 
 
 	* Overlap intermediates are saved in `results/literature_outputs/sankey_terms_storage/lit_terms_TRAITNAME.csv` These will later be reviewed and manually mapped to OpenGWAS traits. Some reusing of the mapping is done in `merge_term_to_gwas_tables.R`
