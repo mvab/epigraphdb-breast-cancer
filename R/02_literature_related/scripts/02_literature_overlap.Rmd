@@ -106,7 +106,15 @@ write_tsv(as_tibble(out$terms_list), paste0("../results/literature_outputs/sanke
 
 ```{r}
 
-trait_triples <- extract_two_triples_for_trait(id='prot-b-38',  KEY_TERM = c('IL1RL1'))
+load(paste0(data_location, "lit_spaces_finalset_tidy.RData"))
+id = 'prot-b-38'
+trait_tidy <- tidy_litspace[[id]]
+rm(tidy_litspace)
+
+
+trait_triples <- extract_two_triples_for_trait(trait_tidy,  KEY_TERM =c( 'IL1RL1'))
+
+
 
 trait_trip_1s<- make_sankey(trait_triples$triple1_tidy %>% filter(n>0), fontSize=13)
 trait_trip_2s<- make_sankey(trait_triples$triple2_tidy %>% filter(n > 0), fontSize=13)
@@ -116,8 +124,9 @@ trait_s_n<- make_sankey(trait_triples$joined_triples, fontSize=13)
 
 KEY_TERM= 'IL1RL1'
 
-out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM, n_filter=1,sankey_font = 13,
-                                 bc_triples)
+out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM, n_filter=2, sankey_font = 13,bc_triples)
+out$full_sankey
+out$subset_sankey
 
 write_tsv(as_tibble(out$terms_list), paste0("../results/literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
 
