@@ -120,8 +120,8 @@ Legacy / supplementary:
 	`04sub_mreve_mediators_validation.R` script. 
 	
 	Inputs:
-	`redone_MRmeds_subsetoutput_ivw.tsv` from 03sub - trait-BC validated results
-	`redone_MRmeds_fulloutput.tsv` from 04sub - trait-mediator validated results
+	`redone_MR_subsetoutput_ivw.tsv` from 03sub - trait-BC validated results
+	`redone_MRmeds_subsetoutput_ivw.tsv` from 04sub - trait-mediator validated results
 	
 	For all identified exp-med-out relationships in MR-EvE, we pull numbers from validation tables, merge, and export as validated. 
 	
