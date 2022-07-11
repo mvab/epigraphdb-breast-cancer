@@ -242,16 +242,16 @@ meds_table <- med_conf_table %>%
          'outcome.id', 
          'med.id',
          'med.trait',
-         'r1.OR_CI_val', 
+         'r1.beta_CI_val', 
          "r1.nsnp_val",
          'r3.OR_CI_val',
          "r3.nsnp_val") %>% 
   rename('exposure' = 'exposure.trait', 
          'mediator.id' = 'med.id',
          'mediator' = 'med.trait',
-         "exposure -> mediator \n (step1)" = 'r1.OR_CI_val', 
+         "exposure -> mediator \n (step1) \n beta_CI" = 'r1.beta_CI_val', 
          "nSNPs (step1)" = 'r1.nsnp_val', 
-         'mediator -> outcome \n (step2)' = 'r3.OR_CI_val',
+         'mediator -> outcome \n (step2) \n OR_CI' = 'r3.OR_CI_val',
          'nSNPs (step2)' = 'r3.nsnp_val') 
 
 

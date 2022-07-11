@@ -359,9 +359,9 @@ do_MR_trait_pairs <- function(exp_trait, out_trait){
       split_outcome() %>% 
       split_exposure() %>% 
       generate_odds_ratios() %>% 
-      mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
-      mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
-                                       ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+      mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
+      mutate(effect_direction = ifelse(lo_ci > 0 & up_ci >= 0, 'positive',
+                                       ifelse(lo_ci < 0 & up_ci <= 0, 'negative', 'overlaps null'))) 
     # sensitivity
     if (dim(harmonised)[1]>1){
       res_sens <-

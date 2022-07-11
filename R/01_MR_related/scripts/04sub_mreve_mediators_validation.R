@@ -34,6 +34,7 @@ for (i in 1:dim(y)[1]){
 res <- bind_rows(res_list) %>% distinct()
 
 
+write_tsv(res,      "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_fulloutput_fulltable.tsv")
 
 # split into MR and sens and save
 redone_MR <- res %>% 
@@ -49,7 +50,7 @@ write_tsv(redone_MR_sens, "01_MR_related/results/mr_evidence_outputs/redone_MRme
 
 
 redoneMR_tidy <- redone_MR %>%  
-  select(exposure, id.exposure , id.outcome, OR_CI, effect_direction , nsnp, method) %>% 
+  select(exposure, id.exposure , id.outcome, beta_CI, effect_direction , nsnp, method) %>% 
   filter(effect_direction != "overlaps null") %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
 

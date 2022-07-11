@@ -97,7 +97,7 @@ length(unique(results_subset$exposure.id)) # 162
 
 ## 1) bringing in validated  results for trait-trait
 validated <- read_tsv("01_MR_related/results/mr_evidence_outputs/redone_MRmeds_subsetoutput_ivw.tsv") %>% 
-              select(id.exp_val = id.exposure , id.out_val = id.outcome, r1.OR_CI_val = OR_CI, r1.nsnp_val=nsnp)
+              select(id.exp_val = id.exposure , id.out_val = id.outcome, r1.beta_CI_val = beta_CI, r1.nsnp_val=nsnp)
 
 # need to do left_join with conf and med separately
 mediators <- results_subset %>% filter(type == 'mediator') %>% left_join(validated, by = c("exposure.id"= 'id.exp_val' , 'med.id'= 'id.out_val'))
@@ -114,10 +114,10 @@ traits_bc_validated <- read_tsv("01_MR_related/results/mr_evidence_outputs/redon
 validated_with_BC <- results_validated %>% 
                     left_join(traits_bc_validated, by = c("exposure.id" = "id.trait", "outcome.id" = "id.outcome" )) %>% rename('r2.OR_CI_val' = 'OR_CI_val', "r2.nsnp_val"="nsnp_val") %>% 
                     left_join(traits_bc_validated, by = c("med.id" = "id.trait", "outcome.id" = "id.outcome" )) %>% rename('r3.OR_CI_val' = 'OR_CI_val', "r3.nsnp_val"="nsnp_val") %>% 
-                    filter(!is.na(r1.OR_CI_val)) %>% 
+                    filter(!is.na(r1.beta_CI_val)) %>% 
                     filter(!is.na(r2.OR_CI_val)) %>% 
                     filter(!is.na(r3.OR_CI_val)) %>% 
-                    select(-r1.OR_CI, -r2.OR_CI,-r3.OR_CI, -r1.b, -r2.b, -r3.b, -exposure_cat.y , -exposure_cat) %>% 
+                    select(-r1.OR_CI, -r2.OR_CI,-r3.OR_CI, -r1.b, -r2.b, -r3.b, -exposure_cat.y ) %>% 
                     rename(exposure_cat = exposure_cat.x)
   
     
@@ -139,7 +139,7 @@ select(type, outcome.id,
        med.trait,med.id, med_cat,
        #med.gene, #exp.gene,
        #exposure_lit_pairs, med_lit_pairs, 
-       r1.OR_CI_val, r1.nsnp_val, r2.OR_CI_val, r2.nsnp_val, r3.OR_CI_val, r3.nsnp_val)
+       r1.beta_CI_val, r1.nsnp_val, r2.OR_CI_val, r2.nsnp_val, r3.OR_CI_val, r3.nsnp_val)
     
        
        
