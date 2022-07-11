@@ -25,7 +25,7 @@ passed_pairs <- inputs$passed_pairs
 # give better names
 #names <- data_full %>% select(exposure_cat_sub,exposure.id, exposure.trait, exposure) %>% distinct()
 #write_csv(names, "01_MR_related/results/mr_evidence_outputs/renaming_key_raw.csv")
-names_tidy <- read_csv("01_MR_related/scripts/heatmaps_app/data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
+names_tidy <- read_csv("01_MR_related/scripts/app2_heatmaps_app/data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
 merged<- merged %>%  select(-exposure) %>% left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% select(exposure, everything())  %>% filter(!is.na(exposure))
 
 data_full<- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs)
@@ -68,7 +68,16 @@ data_sub <- data_sub %>%
   select(-exposure) %>% rename(exposure= name_mix) %>% 
   mutate(exposure = factor(exposure, levels = unique(data_sub$name_mix))) %>% 
   select(-exposure_cat) %>% rename(exposure_cat=exposure_cat_sub) %>% 
-  mutate(exposure_cat = factor(exposure_cat, levels = c("Immune System", 'Metabolism', 'Signal Transduction','Developmental Biology', "Other", "Not mapped")))
+  mutate(exposure_cat = case_when(exposure_cat == "Immune System" ~ "Proteins: Immune System",
+                                  exposure_cat == "Metabolism" ~ "Proteins: Metabolism",
+                                  exposure_cat == "Signal Transduction" ~ "Proteins: Signal Transduction",
+                                  exposure_cat == "Developmental Biology" ~ "Proteins: Developmental Biology",
+                                  exposure_cat == "Other" ~ "Proteins: other",
+                                  exposure_cat == "Not mapped" ~ "Proteins: not mapped",
+                                  TRUE ~ exposure_cat)) %>% 
+  mutate(exposure_cat = factor(exposure_cat, levels = c("Proteins: Immune System", 'Proteins: Metabolism',
+                                                        'Proteins: Signal Transduction','Proteins: Developmental Biology', 
+                                                        "Proteins: other", "Proteins: not mapped")))
   
 #data_sub %>% left_join(merged %>% select(id.exposure, exposure)) %>%  write_tsv("01_MR_related/mr_evidence_outputs/protein_in_final_set.tsv")
 proteins <- plot_heatmap2(data_sub,font_size = font_size, star_size = star_size)
