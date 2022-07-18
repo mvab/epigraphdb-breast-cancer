@@ -937,10 +937,10 @@ extract_lifestyle_main_triples <- function(trait_tidy ){
 
 
 make_sankey <- function(links, fontSize=10, colour_links = F, height=NULL,
-                        bars = 'grey',
-                        shared = '#C54F1D', # old blue
-                        trait_col = "#89B6EE", # old 4FB3D9
-                        bc_col = "#E6B07F"){  # old B19AC1
+                        term_nodes_col = 'grey',
+                        shared_col = '#C54F1D', # dark orange
+                        trait_col = "#89B6EE", # blue
+                        bc_col = "#E6B07F"){  # orange
   
   links <- links %>% rename(source = term1, target = term2, value = n)
   
@@ -955,10 +955,9 @@ make_sankey <- function(links, fontSize=10, colour_links = F, height=NULL,
   
   if (colour_links){
     # Add a 'group' column to each node. Here I decide to put all of them in the same group to make them grey
-    nodes$group <- as.factor(c("my_unique_group"))
+    nodes$group <- as.factor(c("term_node"))
     # Give a color for each group:
-    #my_color <- 'd3.scaleOrdinal() .domain(["trait", "BC", "shared", "my_unique_group"]) .range(["#4FB3D9", "#B19AC1", "blue", "grey"])'
-    my_color <- paste0('d3.scaleOrdinal() .domain(["trait", "BC", "shared", "my_unique_group"]) .range(["',trait_col ,'", "',bc_col ,'", "',shared ,'", "',bars ,'"])')
+    my_color <- paste0('d3.scaleOrdinal() .domain(["trait", "BC", "shared", "term_node"]) .range(["',trait_col ,'", "',bc_col ,'", "',shared_col ,'", "',term_nodes_col ,'"])')
     
     # Make the Network
     p <- sankeyNetwork(Links = links, Nodes = nodes,
@@ -973,7 +972,7 @@ make_sankey <- function(links, fontSize=10, colour_links = F, height=NULL,
                        height=height)
   } else{ 
 
-  # Make the Network
+  # Make the Network without colouring links
   p <- sankeyNetwork(Links = links, Nodes = nodes,
                      Source = "IDsource", Target = "IDtarget",
                      Value = "value", NodeID = "name", 
