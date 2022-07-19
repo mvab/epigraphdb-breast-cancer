@@ -268,7 +268,8 @@ server <- function(input, output) {
     },
     content = function(file) {
       write.csv(dataInput() %>% select(exposure.id, exposure, exposure_cat, exposure_details, gene, 
-                                       outcome, effect_direction, OR_CI, pval, qval), file, row.names = FALSE)
+                                       outcome, effect_direction, OR_CI, pval, qval), 
+                file, row.names = FALSE)
     }
   )
   
