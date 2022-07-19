@@ -136,7 +136,7 @@ The report is split into 3(+1) parts:
 4. _Optional_ validation of results with female-only exposure data (if available)
 
 - Trait IDs in this report correspond to data available in [OpenGWAS](https://gwas.mrcieu.ac.uk/)
-- BCAC 2017 outcomes names/IDs: Full sample ("Breast cancer") `ieu-a-1126`, ER+ sample ("ER+ Breast cancer")`ieu-a-1127`, ER- sample ("ER- Breast cancer") `ieu-a-1128`
+- BCAC 2017 outcomes names/IDs: Overall sample ("Breast cancer") `ieu-a-1126`, ER+ sample ("ER+ Breast cancer")`ieu-a-1127`, ER- sample ("ER- Breast cancer") `ieu-a-1128`
 - MR analyses in this report were performed using [TwoSampleMR](https://github.com/MRCIEU/TwoSampleMR) and [MVMR](https://github.com/WSpiller/MVMR) packages
 - The two-sample MR estimates presented in this report were produced with inverse-variance weighted (IVW) or Wald ratio (for single SNP traits)
 
@@ -261,7 +261,7 @@ unique_meds <- length(unique(meds_table$mediator.id))
 
 ```
 
-By querying MR-EvE data for `r trait_name` we identified `r unique_meds` potential mediators. This analysis was done only for BCAC 2017 outcomes (full / ER+ / ER-), and only those that were affected in the main MR analysis: `r if(all) {"full "}` , `r if(pos) {"ER+ "}` , `r if(neg) {"ER-"}` sample(s)
+By querying MR-EvE data for `r trait_name` we identified `r unique_meds` potential mediators. This analysis was done only for BCAC 2017 outcomes (overall / ER+ / ER-), and only those that were affected in the main MR analysis: `r if(all) {"overall "}` , `r if(pos) {"ER+ "}` , `r if(neg) {"ER-"}` sample(s)
 
 Below is a table of two-step MR results for each mediator, including _exposure -> mediator_ and	_mediator -> outcome_. The total effect of _exposure -> outcome_ is available in the table above. 
 
@@ -270,7 +270,7 @@ Below is a table of two-step MR results for each mediator, including _exposure -
 ```{r echo=F, results='asis'}
 if (all){
   med <- meds_table %>% filter(outcome == "BCAC 2017") %>% pull( mediator.id) %>% length()
-  cat(paste0("**Full sample**: ", med , " potential mediators from MR-EvE" ))}
+  cat(paste0("**Overall sample**: ", med , " potential mediators from MR-EvE" ))}
 ```
 
 ```{r, echo=F}
@@ -383,7 +383,7 @@ attenuate_neg <- disrupted_by_all %>% filter(outcome == "ER- Breast cancer ", is
 ```{r, echo=F, results= 'asis'}
 if (all){
   disrupted_by_all_display<- disrupted_by_all %>% distinct() %>% filter(outcome == "Breast cancer ")
-  cat(paste0(length(attenuate_full), " traits attenuate the effect of ", trait_name, " on **breast cancer (full sample)** (highlighted):"))
+  cat(paste0(length(attenuate_full), " traits attenuate the effect of ", trait_name, " on **breast cancer (overall sample)** (highlighted):"))
 }
 ```
 
