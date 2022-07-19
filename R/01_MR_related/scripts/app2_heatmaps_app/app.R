@@ -69,9 +69,9 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                 (protective) effect, white – no evidence of effect, based on 95% confidence intervals. The asterisk indicates
                                 the results that passed the FDR correction.",
                                 br(),br(), 
-                                strong("About the source data:"),br(),
+                                strong("About the data:"),br(),
                                 
-                                "The MR results are estimated using the inverse-variance weighted (IVW) method (or Wald ratio if only 1 SNP 
+                                "The MR results were estimated using the inverse-variance weighted (IVW) method (or Wald ratio if only 1 SNP 
                                 was available). By hovering over any data point (square) in the interactive version of the plot, you can see
                                 the details of each MR analysis: exposure ID in OpenGWAS (gwas.mrcieu.ac.uk), exposure details (sample size/sex, author/cohort name),
                                 OR and CIs, p-value and FDR-adjusted p-value, and the number of SNPs).",
@@ -80,7 +80,10 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                 that have no evidence of effect in any of the outcomes; for proteins only - show full names or abbreviations/gene names; 
                                 select outcomes to display.",
                                 br(), 
-                                "All exposure traits are from mixed-sex samples unless otherwise specified (F: female-only) or are female-specific reproductive traits."
+                                "All exposure traits are from mixed-sex samples unless otherwise specified (F: female-only) or are female-specific reproductive traits.",
+                                br(), br(),
+                                ">>> This app is a part of the work presented in ",
+                                em('"Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors"'), ", Vabistsevits et al 2022 " 
                                 )
                               )
             
