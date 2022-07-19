@@ -240,7 +240,8 @@ server <- function(input, output) {
   
   output$heatmap1 <- renderPlot(
     width = function() (3 * max(dataInput()$name_nchar)) + (66 * length(unique(dataInput()$outcome))),
-    height = function() 3 * 10 * length(unique(dataInput()$exposure.id)),
+    #height = function() 3 * 10 * length(unique(dataInput()$exposure.id)),
+    height = function() max((3 * 10 * length(unique(dataInput()$exposure.id))), 200), # calculate or use 200
     
     #height = function() 3 * nrow(dataInput()),
     res = 96,
@@ -255,7 +256,7 @@ server <- function(input, output) {
     plot <- plot_heatmap2(dataInput(), font_size = 9, star_size = 4)  
     plotly::ggplotly(plot , tooltip = c("text"), 
                      width = (3 * max(dataInput()$name_nchar))  + (66 * length(unique(dataInput()$outcome))),
-                     height = 3 * 10 *length(unique(dataInput()$exposure.id))
+                     height = max((3 * 10 *length(unique(dataInput()$exposure.id))),200) # calculate or use 200
                      )
     
   })
