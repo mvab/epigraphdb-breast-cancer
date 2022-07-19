@@ -141,7 +141,8 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
     separate(exposure_name, into = c("tmp", "exposure_details"), sep = "\\(") %>% 
     mutate(exposure_details = ifelse(!grepl("^F|^M", exposure_details), "NA", exposure_details)) %>% 
     mutate(exposure_details = gsub(")", "; ",exposure_details, fixed = T)) %>% 
-    mutate(empty_col = "")
+    mutate(empty_col = "") %>% 
+    select(-tmp, -exposure_name.y)
   
   print(dim(data_tidy))
   return(data_tidy)
