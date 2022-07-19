@@ -223,6 +223,9 @@ server <- function(input, output) {
       
     }
     
+    # calculate name length in the selected subgroup
+    dat_sub <- dat_sub %>% mutate(name_nchar = stringr::str_count(exposure))
+    
 
     return(dat_sub)
   })
@@ -233,8 +236,8 @@ server <- function(input, output) {
   })
   
   output$heatmap1 <- renderPlot(
-    width = function() 400 + (66 * length(unique(dataInput()$outcome))),
-    height = function() 3 * 10 *length(unique(dataInput()$exposure.id)),
+    width = function() (3 * max(dataInput()$name_nchar)) + (66 * length(unique(dataInput()$outcome))),
+    height = function() 3 * 10 * length(unique(dataInput()$exposure.id)),
     
     #height = function() 3 * nrow(dataInput()),
     res = 96,
@@ -248,7 +251,7 @@ server <- function(input, output) {
     {
     plot <- plot_heatmap2(dataInput(), font_size = 9, star_size = 4)  
     plotly::ggplotly(plot , tooltip = c("text"), 
-                     width = 400 + (66 * length(unique(dataInput()$outcome))),
+                     width = (3 * max(dataInput()$name_nchar))  + (66 * length(unique(dataInput()$outcome))),
                      height = 3 * 10 *length(unique(dataInput()$exposure.id))
                      )
     
