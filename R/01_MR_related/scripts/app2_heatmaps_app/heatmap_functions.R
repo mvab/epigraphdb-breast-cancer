@@ -126,7 +126,7 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
     mutate(value = ifelse(is.na(value), 0 , value)) %>% 
     mutate(effect_direction = ifelse(value == "1" , 'positive',
                                      ifelse(value == "-1", 'negative', 'overlaps null'))) %>% 
-    left_join(or_ci_data) %>% distinct() %>% 
+    left_join(or_ci_data %>% drop_na(),  by = c("exposure.id", "outcome")) %>% distinct() %>% 
     mutate_at(vars('outcome'), funs(case_when(. == "BCAC 2017" ~ "BCAC'17", 
                                               . == "BCAC 2020" ~ "BCAC'20", 
                                               . == "Luminal A" ~ "Lum A", 
@@ -137,6 +137,7 @@ prepare_data <- function(merged, protein_path_data, antro_blacklist, or_ci_data,
                             levels = c("BCAC'17", "BCAC'20","ER+", "Lum A","Lum B1", 
                                        "Lum B2", "ER-", "HER2", "TNBC" ))) %>% 
     left_join(passed_pairs) %>% 
+    rename(exposure_name = exposure_name.x) %>% 
     separate(exposure_name, into = c("tmp", "exposure_details"), sep = "\\(") %>% 
     mutate(exposure_details = ifelse(!grepl("^F|^M", exposure_details), "NA", exposure_details)) %>% 
     mutate(exposure_details = gsub(")", "; ",exposure_details, fixed = T)) %>% 
