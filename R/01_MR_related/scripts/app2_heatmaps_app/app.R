@@ -29,8 +29,11 @@ or_ci_data <- inputs$or_ci_data
 
 
 names_tidy <- read_csv("data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
-merged<- merged %>%  select(-exposure) %>% left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% select(exposure, everything()) %>% filter(!is.na(exposure))
-
+merged<- merged %>%
+  select(-exposure) %>%
+  left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% 
+  select(exposure, everything())  %>% 
+  filter(!is.na(exposure))
 data_full <- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs) 
 
 # add column for sharing
@@ -125,7 +128,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                          selectInput(inputId ="exposure_name_type",
                                      label = "Display names (for proteins only)", 
                                      choices = list("Full names" = 'full',
-                                                    "Aabbreviations / gene names" = 'gene',
+                                                    "Abbreviations / gene names" = 'gene',
                                                     "Mixed names (capped by length)" = 'mix'), 
                                      selected = 'Full names'),
               
