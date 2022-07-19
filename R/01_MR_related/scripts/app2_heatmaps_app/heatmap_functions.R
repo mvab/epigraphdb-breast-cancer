@@ -168,7 +168,7 @@ plot_heatmap <- function(data_tidy, font_size = 11, star_size = 7){
   )) + 
     geom_tile(colour = "grey") + 
     geom_text(aes(label=mtc,  vjust = 0.27), size = star_size) +
-    scale_fill_manual(values=c("#4D9221","white", "#C51B7D"))+ ### normal
+    scale_fill_manual(values=c("-1"="#4D9221", "0"="white", "-1"= "#C51B7D"))+ ### normal
     theme_minimal_grid(font_size) +
     panel_border() +
     labs(fill = "Effect direction", x="", y ="")+
@@ -186,11 +186,11 @@ plot_heatmap2 <- function(data_tidy, font_size = 11, star_size = 7, col_order = 
   font_size_ax = font_size - 2
   
   if (col_order == 'normal'){
-    pal_values <- c( "#4D9221","#88C254", "white","#DE7BB2", "#C51B7D") # g, light g, w, light p, p 
+    pal_values <- c( "-1*"="#4D9221", "-1"="#88C254", "0"="white","1" = "#DE7BB2", "1*"="#C51B7D") # g, light g, w, light p, p 
   } else if (col_order == "weird"){
-    pal_values <- c( "#88C254", "#4D9221", "white","#DE7BB2", "#C51B7D") #light g, g, w, light p, p 
+    # is this used??
+    #pal_values <- c( "#88C254", "#4D9221", "white","#DE7BB2", "#C51B7D") #light g, g, w, light p, p 
   }
-
   
   p<-ggplot(data_tidy, aes( y=exposure, x=outcome, fill = value_mtc, 
                             id = exposure.id ,
