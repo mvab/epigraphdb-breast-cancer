@@ -48,6 +48,13 @@ full_results<- full_results %>%
                                    ifelse(or_loci < 1 & or_upci <= 1, 'negative', 'overlaps null'))) %>% 
   mutate(`MR method and score` = paste0(mr.method," / ", mr.moescore)) 
 
+
+# save all for supl data
+full_results_save<- full_results
+
+write_csv(full_results_save, "01_MR_related/results/mr_evidence_outputs/all_mreve_bc_results.csv")  # prereq for supl data 1
+
+
 sub_results <- full_results %>% filter(effect_direction != 'overlaps null') 
 length(unique(sub_results$exposure.id)) # 1970 unique traits with non-null effect
 

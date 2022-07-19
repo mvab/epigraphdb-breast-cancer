@@ -51,7 +51,10 @@ Legacy / supplementary:
 	Re-extract data for only those exposures from all BC outcomes.
 
 	
-	Output: `bc_all_mr_fromCIs.tsv` (N= 2332 -> 1970)
+	Output: 
+		
+	* `bc_all_mr_fromCIs.tsv` (N= 2332 -> 1970)
+	* `all_mreve_bc_results.csv` - full 2332 traits, to be used as Supl data 1, with extra columns added.
 	
 
 2. **Tidy up MR-EvE output and split it into categories** `02_explore_mr_results.Rmd` 
