@@ -39,10 +39,6 @@ load_and_merge_heatmap_inputs <- function() {
                               "TNBC" = "TNBC ER-PR-HER-") 
   
   
-  merged <- merged %>% mutate(exposure_cat = ifelse(exposure == 'Albumin', 'Proteins', exposure_cat))
-  
-  
-  
   
   protein_path_data <- read_tsv("external_files/pathways/proteins_w_pathways.tsv") %>% 
     mutate(name_len = nchar(name)) %>% 
@@ -60,7 +56,8 @@ load_and_merge_heatmap_inputs <- function() {
                        'ukb-b-12039', 'ukb-b-2303', 'ieu-a-2', 'ieu-a-835',
                        'ukb-b-18105', 'ieu-a-99', 'ieu-a-105', 'ieu-a-109', 'ukb-b-4650', 'ieu-a-95',
                        'ukb-a-248', 'ieu-a-68', 	
-                       'ieu-a-101')
+                       'ieu-a-101',
+                       'ieu-a-780', 'ieu-a-299') # + HDL chol
   
   # MR pairs that passed MTC
   passed_pairs <- read_tsv("01_MR_related/results/mr_evidence_outputs/passed_multiple_testing.tsv") %>% 

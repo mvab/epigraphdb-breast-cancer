@@ -42,7 +42,8 @@ antro_blacklist <- c('ieu-a-81','ieu-a-74', "ieu-a-73" ,"ieu-a-79" ,"ieu-a-72" ,
                      'ukb-b-12039', 'ukb-b-2303', 'ieu-a-2', 'ieu-a-835',
                      'ukb-b-18105', 'ieu-a-99', 'ieu-a-105', 'ukb-b-4650', 'ieu-a-95',
                      'ukb-a-248', 'ieu-a-68', 	
-                     'ieu-a-101', 'ieu-a-109')
+                     'ieu-a-101', 'ieu-a-109',
+                     'ieu-a-780', 'ieu-a-299') # + HDL chol
 
 
 
