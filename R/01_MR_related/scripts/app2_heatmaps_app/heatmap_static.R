@@ -11,7 +11,7 @@ source("01_MR_related/scripts/app2_heatmaps_app/functions_copy_from_mreveapp.R")
 
 inputs <- load_and_merge_heatmap_inputs()
 
-saveRDS(inputs, "01_MR_related/scripts/app2_heatmaps_app//data/inputs.rds")
+saveRDS(inputs, "01_MR_related/scripts/app2_heatmaps_app/data/inputs.rds")
 
 inputs<- readRDS("01_MR_related/scripts/app2_heatmaps_app/data/inputs.rds")
 merged <- inputs$merged
@@ -26,7 +26,11 @@ passed_pairs <- inputs$passed_pairs
 #names <- data_full %>% select(exposure_cat_sub,exposure.id, exposure.trait, exposure) %>% distinct()
 #write_csv(names, "01_MR_related/results/mr_evidence_outputs/renaming_key_raw.csv")
 names_tidy <- read_csv("01_MR_related/scripts/app2_heatmaps_app/data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
-merged<- merged %>%  select(-exposure) %>% left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% select(exposure, everything())  %>% filter(!is.na(exposure))
+merged<- merged %>%
+  select(-exposure) %>%
+  left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% 
+  select(exposure, everything())  %>% 
+  filter(!is.na(exposure))
 
 data_full<- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs)
 
