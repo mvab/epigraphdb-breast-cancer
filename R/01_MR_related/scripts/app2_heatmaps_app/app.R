@@ -105,6 +105,17 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                      
                                      selected = 'Antrophometric traits'),
                          br(),
+                         
+                         selectInput(inputId ="exposure_name_type",
+                                     label = "Display names (for proteins only)", 
+                                     choices = list("Full names" = 'full',
+                                                    "Abbreviations / gene names" = 'gene',
+                                                    "Mixed names (capped by length)" = 'mix'), 
+                                     selected = 'Full names'),
+
+                  ),
+               
+                  column(3, align="left",
                          strong("Sub-categories:"), 
                          checkboxInput("show_subcats", 
                                        label = "Show", 
@@ -114,23 +125,13 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                          checkboxInput("show_no_effect_exp", 
                                        label = "Don't show", 
                                        value = TRUE),
-                  
+                         
                          br(),
                          strong("FDR correction"), 
                          checkboxInput("rows_with_fdr", 
                                        label = "Show passed", 
                                        value = F)
                          
-   
-                  ),
-               
-                  column(3, align="left",
-                         selectInput(inputId ="exposure_name_type",
-                                     label = "Display names (for proteins only)", 
-                                     choices = list("Full names" = 'full',
-                                                    "Abbreviations / gene names" = 'gene',
-                                                    "Mixed names (capped by length)" = 'mix'), 
-                                     selected = 'Full names'),
               
          
                   ),
@@ -140,6 +141,8 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                             choices = outcome_list,
                                             selected = outcome_list)
                   ),
+                  column(3, align="left",
+                         downloadButton('downloadData', 'Download currently displayed data')),
                   
 
                 ),
@@ -258,6 +261,17 @@ server <- function(input, output) {
                      )
     
   })
+  
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste('breast_cancer_MR_results_for_', tolower(gsub(" ","-",input$category)), "_", Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(dataInput() %>% select(exposure.id, exposure, exposure_cat, exposure_details, gene, 
+                                       outcome, effect_direction, OR_CI, pval, qval), file, row.names = FALSE)
+    }
+  )
+  
   
 
   
