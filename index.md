@@ -8,12 +8,11 @@
   
   <img src="content/figs/app1.png" width="275"/>
 
-
-
 * [Heatmaps app](https://mvab.shinyapps.io/MR_heatmaps/)
 
-  ![Image](content/figs/app2.png)
+   The MR effect direction heatmap app includes the results for 309 traits that were selected with filtering steps from the initial MR-EvE exploration dataset. 213 traits (or 105 after FDR correction) have eveidence of effect on at least one validation breast cancer outcome. 
 
+  ![Image](content/figs/app2.png)
 
 
 * [Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
