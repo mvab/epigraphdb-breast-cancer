@@ -1,9 +1,4 @@
-
-
-## <span style="color:blue"> _Article web-based contents_</span>.
-
-<p style="text-align: center;"><span style="color: red;"><em>my text</em></span></p>
-
+## <span style="color:white"> Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors</span>.
 
 #### R/Shiny apps
 
