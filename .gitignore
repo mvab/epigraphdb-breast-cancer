@@ -9,6 +9,7 @@ __pycache__/*
 R/htmls*
 *.html
 
+figures/
 other_text_files/
 R/external_figures/
 R/01_MR_related/scripts/05_case_study_report_cache/html/*
