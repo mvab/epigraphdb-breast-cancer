@@ -15,8 +15,9 @@
   ![Image](content/figs/app2.png)
 
 
-* [Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
+* [Literature overlap Sankey plot app](https://mvab.shinyapps.io/literature_overlap_sankey/)
 
+  The Sankey plot app provides a visualisation of literature spaces overlap of risk factor traits (case studies only) and breast cancer. 
 
   <img src="content/figs/app3.png" width="275"/>
 
