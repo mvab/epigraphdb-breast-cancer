@@ -24,6 +24,9 @@
 
 #### Case study reports
 
+  <img src="content/figs/case_studies.png"/>
+  
+  In the article, we explore four  breast cancer risk/protective factors as case studies in more detail. The investigation of potential mediators identified for these traits from MR-EvE and literature-mined data is presented in invidual report, which were generated with Rmd in an automated way. 
 
 * [Cardiotrophin-1](content/case_study_report_Cardiotrophin-1.html)
 
