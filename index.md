@@ -1,4 +1,4 @@
-## <span style="color:white"> Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors</span>.
+#### <span style="color:white"> Integrating Mendelian randomization</span>
 
 #### R/Shiny apps
 
