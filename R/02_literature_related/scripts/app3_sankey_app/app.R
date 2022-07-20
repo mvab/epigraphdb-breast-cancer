@@ -149,7 +149,13 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                        overlap method. Lifestyle trait literature space (green circle) contains triples that cannot be anchored to any specific
                                        term representing the trait. The unlinked triples in the lifestyle trait space are matched to overlap (via B) with any 
                                        triples in the breast cancer literature space with a path to breast cancer. The linked triples are then connected with 
-                                       any preceding triples in lifestyle trait space (via A), adding X-A triples into the spaces overlap.")
+                                       any preceding triples in lifestyle trait space (via A), adding X-A triples into the spaces overlap.",
+                                       br(), br(),
+                                       ">>> This app is a part of the work presented in ",
+                                       em('"Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors"'), ", Vabistsevits et al 2022 " 
+                                       
+                                       
+                                       )
                               )
                             
                 ),
