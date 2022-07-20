@@ -1,9 +1,11 @@
-#### <span style="color:white"> Integrating Mendelian randomization</span>
+### <span style="color:white"> Integrating Mendelian randomization</span>
 
 #### R/Shiny apps
 
 * [MR-EvE app](https://mvab.shinyapps.io/brca-miner/)
 
+  Breast cancer MR-EvE (Mendelian Randomization "Everything-vs-Everything") app was created to facilitate the exploration of exposures that could be breast cancer risk or protective factors. The app includes 905 exposure traits split into 12 categories, with MR results available for multiple breast cancer outcome GWAS.
+  
   <img src="content/figs/app1.png" width="275"/>
 
 
