@@ -101,6 +101,10 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                        em('Liu et al., "EpiGraphDB: A database and data mining platform for health data science" (2021) Bioinformatics, 37(9), 1304–1311'),br(),
                                        em('Hemani et al., "Automating Mendelian randomization through machine learning to construct a putative causal map of the human phenome" (2017) bioRxiv'),br(),
                                        br(), br(),
+                                       ">>> This app is a part of the work presented in ",
+                                       em('"Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors"'), ", Vabistsevits et al 2022 " ,
+                                       
+                                        br(), br(),
                                        h4("Breast cancer GWAS summary details ", align='center'),
                                        tableOutput("outcome_table"),
                                        
