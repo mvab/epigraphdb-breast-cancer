@@ -28,15 +28,11 @@ dat <-
   #split_protein_exposures() %>% 
   #split_metabolite_exposures() %>% 
   add_exposure_labels() %>% 
-  # drop really weird cases when CIs are weird
-  filter(!or_loci > or_upci) %>% 
-  # remove very small effects
-  filter(OR_CI != "0 [0:0]") %>% 
   mutate(exposure_cat = ifelse(exposure_cat == 'Antrophometric', 'Anthropometric', exposure_cat)) %>% 
   mutate(exposure_cat = ifelse(exposure_cat == 'Drugs', 'Medication', exposure_cat))
 
 
-chip_list <- c("Meta", "OncArray",  "iCOG2017",'GWASold1','GWASold2', 'Survival', 'UKBB')
+chip_list <- c("Meta", "OncArray",  "iCOG2017",'GWASv1','GWASv2', 'Survival', 'UKBB')
 
 
 ### APP
@@ -192,9 +188,19 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                   column(3,align="left",
                          checkboxGroupInput("outcomes", 
                                             p("Include outcomes:"), 
-                                            choices = chip_list,
-                                            selected = chip_list[!grepl('iCOG2015|GWASold2|UKBB|Survival',chip_list)])
+                                            #choices = chip_list,
+                                            choices = list("BCAC 2017 meta-analysis" = 'Meta',
+                                                           "OncoArray" = "OncArray", 
+                                                           "iCOG2017" = "iCOG2017",
+                                                           'GWAS v1' =  'GWASv1',
+                                                           'GWAS v2' =  'GWASv2',
+                                                           'Survival' = 'Survival',
+                                                           "UK Biobank" = 'UKBB'),
+                                            selected = chip_list[!grepl('iCOG2015|GWASv2|UKBB|Survival',chip_list)]),
+                         downloadButton('downloadData', 'Download currently displayed data')
                   )
+                  
+                  
                   
                   
                 ),

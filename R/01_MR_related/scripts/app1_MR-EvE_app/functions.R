@@ -5,18 +5,19 @@ process_bc_outcomes <- function(dat){
   dat <- dat %>%  
     # create groups
     mutate(outcome = case_when(
-    outcome.id %in% c('ieu-a-1127','ieu-a-1132', 'ieu-a-1133', 'ieu-a-1134', 'ieu-a-1167', 'ieu-a-1164', 'ieu-a-1161') ~ 'ER+ postmeno',
-    outcome.id %in% c('ieu-a-1128','ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137', 'ieu-a-1166', 'ieu-a-1163', 'ieu-a-1160') ~ 'ER- premeno',
-    outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1168', 'ieu-a-1165', 'ieu-a-1162', 'ebi-a-GCST004988', 'ebi-a-GCST007236') ~ 'Breast cancer (all)',
+    outcome.id %in% c('ieu-a-1127','ieu-a-1132', 'ieu-a-1133', 'ieu-a-1134', 'ieu-a-1167', 'ieu-a-1164', 'ieu-a-1161') ~ 'ER+ sample',
+    outcome.id %in% c('ieu-a-1128','ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137', 'ieu-a-1166', 'ieu-a-1163', 'ieu-a-1160') ~ 'ER- sample',
+    outcome.id %in% c('ieu-a-1126','ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1168', 'ieu-a-1165', 'ieu-a-1162', 'ebi-a-GCST004988', 'ebi-a-GCST007236') ~ 'Overall sample',
     grepl('ukb', outcome.id) ~ 'UK Biobank')) %>% 
+    mutate(outcome = factor(outcome, levels=c('Overall sample', 'ER+ sample','ER- sample','UK Biobank'))) %>% 
     # create data version subgroups
     mutate(chip = case_when(
       outcome.id %in% c('ieu-a-1126','ieu-a-1127', 'ieu-a-1128', 'ebi-a-GCST004988') ~ 'Meta',
       outcome.id %in% c('ieu-a-1129', 'ieu-a-1132','ieu-a-1135') ~                     'OncArray',
       outcome.id %in% c('ieu-a-1130', 'ieu-a-1133','ieu-a-1136') ~                     'iCOG2017',
       outcome.id %in% c('ieu-a-1161', 'ieu-a-1160','ieu-a-1162', 'ebi-a-GCST007236') ~ 'iCOG2015',
-      outcome.id %in% c('ieu-a-1131', 'ieu-a-1134','ieu-a-1137') ~                     'GWASold1',
-      outcome.id %in% c('ieu-a-1166', 'ieu-a-1167','ieu-a-1168') ~                     'GWASold2',
+      outcome.id %in% c('ieu-a-1131', 'ieu-a-1134','ieu-a-1137') ~                     'GWASv1',
+      outcome.id %in% c('ieu-a-1166', 'ieu-a-1167','ieu-a-1168') ~                     'GWASv2',
       outcome.id %in% c('ieu-a-1163', 'ieu-a-1164','ieu-a-1165') ~                     'Survival',
       grepl('ukb', outcome.id) ~                                                       'UKBB')) %>% 
     
@@ -33,8 +34,8 @@ process_bc_outcomes <- function(dat){
         sort(unique(dat$outcome.details)[grepl('OncArray', unique(dat$outcome.details))]),
         sort(unique(dat$outcome.details)[grepl('iCOG2017', unique(dat$outcome.details))]),
         sort(unique(dat$outcome.details)[grepl('iCOG2015', unique(dat$outcome.details))]),
-        sort(unique(dat$outcome.details)[grepl('GWASold1', unique(dat$outcome.details))]),
-        sort(unique(dat$outcome.details)[grepl('GWASold2', unique(dat$outcome.details))]),
+        sort(unique(dat$outcome.details)[grepl('GWASv1', unique(dat$outcome.details))]),
+        sort(unique(dat$outcome.details)[grepl('GWASv2', unique(dat$outcome.details))]),
         sort(unique(dat$outcome.details)[grepl('Survival', unique(dat$outcome.details))]),
         sort(unique(dat$outcome.details)[grepl('UKBB', unique(dat$outcome.details))])  ))) 
   
@@ -256,7 +257,7 @@ plot_bubble_plot <- function(input, font_size = 10){
     theme_light()+
     #theme_solarized()+
     labs(size="-log10(pval)", 
-         color='beta', x="Breast cancer outcomes", y="Exposures")+
+         color='beta (effect size)', x="Breast cancer outcomes", y="Exposures")+
     theme(axis.text.x=element_text(angle=35, hjust=1), 
           axis.text = element_text(size = font_size),
           legend.position = 'right')
@@ -323,17 +324,12 @@ chip_list <- c('BCAC 2017 meta-analysis', "OncArray",  "iCOG2017",'iCOG2015','GW
     mutate(chip=gsub("_","", chip),
            outcome.year = as.character(outcome.year)) %>% 
     distinct() %>%
-    mutate(chip = case_when(chip == 'GWASold1' ~ 'GWAS v1',
-                            chip == 'GWASold2' ~ 'GWAS v2',
+    mutate(chip = case_when(chip == 'GWASv1' ~ 'GWAS v1',
+                            chip == 'GWASv2' ~ 'GWAS v2',
                             chip == 'Meta' ~ 'BCAC 2017 meta-analysis',
                             TRUE ~ chip)) %>% 
     mutate(chip = factor(chip, levels = chip_list)) %>% 
     arrange(chip, outcome) %>% 
-    mutate(outcome = case_when(outcome == "ER- premeno" ~ "ER-",
-                               outcome == "ER+ postmeno" ~ "ER+",
-                               outcome == "Breast cancer (all)" ~ "Full sample",
-                               outcome == "ER+ postmeno UKB" ~ "UK Biobank",
-                               TRUE ~ outcome)) %>% 
     select(chip, outcome, outcome.id, outcome.year, outcome.nsnp, everything()) %>% 
     rename(`Sample size`=outcome.sample_size,
            Year = outcome.year,
