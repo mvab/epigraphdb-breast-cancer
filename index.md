@@ -41,7 +41,7 @@
 
 #### EpiGraphDB queries examples 
 
-GitHub repo [https://github.com/mvab/epigraphdb_mr_literature_queries](https://github.com/mvab/epigraphdb_mr_literature_queries)) provides basic examples of querying MR-EvE and literature data in EpiGraphDB. These examples may be helpful for understanding and/or replicating EpiGraphDB queries that were used in this article, or applying them to study your disease of interest.
+GitHub repo [https://github.com/mvab/epigraphdb_mr_literature_queries](https://github.com/mvab/epigraphdb_mr_literature_queries) provides basic examples of querying MR-EvE and literature data in EpiGraphDB. These examples may be helpful for understanding and/or replicating EpiGraphDB queries that were used in this article, or applying them to study your disease of interest.
 
 
 
