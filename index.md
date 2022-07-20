@@ -21,10 +21,11 @@
 
   <img src="content/figs/app3.png" width="275"/>
 
+<br>
 
 #### Case study reports
 
-  <img src="content/figs/case_studies.png"/>
+  <img src="content/figs/case_studies.png" width="290"/>
   
   In the article, we explore four  breast cancer risk/protective factors as case studies in more detail. The investigation of potential mediators identified for these traits from MR-EvE and literature-mined data is presented in invidual report, which were generated with Rmd in an automated way. 
 
@@ -36,6 +37,7 @@
 
 * [Age at menopause](content/case_study_report_Age_at_menopause.html)
 
+<br>
 
 #### EpiGraphDB queries examples 
 
