@@ -20,7 +20,7 @@
   <img src="content/figs/app3.png" width="275"/>
 
 
-#### Case studies report
+#### Case study reports
 
 
 * [Cardiotrophin-1](content/case_study_report_Cardiotrophin-1.html)
@@ -32,7 +32,7 @@
 * [Age at menopause](content/case_study_report_Age_at_menopause.html)
 
 
-#### Basic EpiGraphDB queries examples
+#### EpiGraphDB queries examples 
 
 [https://github.com/mvab/epigraphdb_mr_literature_queries](https://github.com/mvab/epigraphdb_mr_literature_queries)
 
