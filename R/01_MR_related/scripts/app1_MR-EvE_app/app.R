@@ -278,7 +278,8 @@ server <- function(input, output) {
       dat_sub<-dat_sub %>% filter(effect_direction != 'overlaps null')
     }
     
-
+    # calculate name length in the selected subgroup
+    dat_sub <- dat_sub %>% mutate(name_nchar = stringr::str_count(exposure)) # might use this for dynamic width adjustment
       
     return(dat_sub)
   })
@@ -290,9 +291,7 @@ server <- function(input, output) {
 
   # static
   output$bubbleplot1 <- renderPlot(
-    
-    height = function() 3 * 10 *length(unique(dataInput()$exposure.id)) + 80,
-
+    height = function() max((3 * 10 *length(unique(dataInput()$exposure.id)) + 80), 200),
     {
     plot_bubble_plot(dataInput(), font_size = 12)  
     }
@@ -303,7 +302,8 @@ server <- function(input, output) {
     
     plot <- plot_bubble_plot(dataInput(), font_size = 8)  
     plotly::ggplotly(plot , tooltip = c("text"),
-                     height = 3 * 10 *length(unique(dataInput()$exposure.id)) + 100)
+                     height = max((3 * 10 *length(unique(dataInput()$exposure.id)) + 100),220)
+                     )
     
   })
   
@@ -314,6 +314,18 @@ server <- function(input, output) {
       kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F) 
       #footnote(general = "BCAC: Breast Cancer Association Consortium") # does not want to display for some reason (worked before!)
   }
+  
+  
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste('breast_cancer_MR-EvE_results_for_', tolower(gsub(" ","-",input$category)), "_", Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(dataInput()  %>% select(-pval_truncated, -empty_col, -exposure, -exposure.ss,	-tmp,	-exposure.ss_label,	-ukb_tag,	-name_nchar), 
+                file, row.names = FALSE)
+    }
+  )
+  
 
  
   url <- a("@marina_vab", href="https://twitter.com/marina_vab/")
