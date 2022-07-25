@@ -21,7 +21,7 @@ A pre-print of this work will soon be available on MedRxiv.
 │   │   ├── MR_codebase_summary.md # see this file for MR-related analysis documentation
 │   │   ├── results/
 │   │   └── scripts/
-├── 02_literature_related/
+│   ├── 02_literature_related/
 │   │   ├── Literature_codebase_summary.md # see this file for literature analysis documentation
 │   │   ├── results/
 │   │   └── scripts/
