@@ -46,7 +46,7 @@ GitHub repo [https://github.com/mvab/epigraphdb_mr_literature_queries](https://g
 
 #### Poster (IGES 2022 conference)
 
-<img src="content/figs/poster_IGES_MV.png.png" width="275"/>
+<img src="content/figs/poster_IGES_MV.png" width="275"/>
 
 See the full version [here](https://github.com/mvab/epigraphdb-breast-cancer/wiki/IGES-conference-2022-poster)
 
