@@ -1,5 +1,10 @@
 ### <span style="color:white"> Integrating Mendelian randomization</span>
 
+#### 
+
+[<img src="content/figs/poster_IGES_MV.png" width="500"/>](https://github.com/mvab/epigraphdb-breast-cancer/wiki/IGES-conference-2022-poster)
+[full version of the poster](https://github.com/mvab/epigraphdb-breast-cancer/wiki/IGES-conference-2022-poster)
+
 #### R/Shiny apps
 
 * [MR-EvE app](https://mvab.shinyapps.io/brca-miner/)
@@ -43,12 +48,6 @@
 
 GitHub repo [https://github.com/mvab/epigraphdb_mr_literature_queries](https://github.com/mvab/epigraphdb_mr_literature_queries) provides basic examples of querying MR-EvE and literature data in EpiGraphDB. These examples may be helpful for understanding and/or replicating EpiGraphDB queries that were used in this article, or applying them to study your disease of interest.
 
-
-#### Poster (IGES 2022 conference)
-
-<img src="content/figs/poster_IGES_MV.png" width="500"/>
-
-See the full version [here](https://github.com/mvab/epigraphdb-breast-cancer/wiki/IGES-conference-2022-poster)
 
 
 
