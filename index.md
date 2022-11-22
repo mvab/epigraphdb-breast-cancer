@@ -1,9 +1,6 @@
 ### <span style="color:white"> Integrating Mendelian randomization</span>
 
-#### 
-
 [<img src="content/figs/poster_IGES_MV.png" width="500"/>](https://github.com/mvab/epigraphdb-breast-cancer/wiki/IGES-conference-2022-poster)
-[full version of the poster](https://github.com/mvab/epigraphdb-breast-cancer/wiki/IGES-conference-2022-poster)
 
 #### R/Shiny apps
 
