@@ -1,5 +1,5 @@
 def start_graph_session(env):
-    
+    # is this jojo? 
     from neo4j import GraphDatabase
     env.read_env()
 
