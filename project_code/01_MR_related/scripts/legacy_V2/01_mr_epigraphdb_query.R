@@ -6,11 +6,12 @@ source("helper_functions.R")
 
 
 # outcomes list
-bc_gwas <- c( 'ieu-a-1126', 'ieu-a-1127', 'ieu-a-1128', 'ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1132',
-              'ieu-a-1133', 'ieu-a-1134', 'ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137', 
+bc_gwas <- c( 'ieu-a-1126', 'ieu-a-1127', 'ieu-a-1128') # only using these fro discovery in the new version V3
+              # 'ieu-a-1129', 'ieu-a-1130', 'ieu-a-1131', 'ieu-a-1132',
+              #'ieu-a-1133', 'ieu-a-1134', 'ieu-a-1135', 'ieu-a-1136', 'ieu-a-1137', 
               #'ieu-a-1160', 'ieu-a-1161', 'ieu-a-1162', # iCOGS 2015 weird outcomes data - not using 
-               'ieu-a-1163', 'ieu-a-1164', 'ieu-a-1165', 'ieu-a-1166', 'ieu-a-1167', 'ieu-a-1168',
-              'ukb-a-55', 'ukb-b-16890', 'ukb-d-C3_BREAST_3')
+              # 'ieu-a-1163', 'ieu-a-1164', 'ieu-a-1165', 'ieu-a-1166', 'ieu-a-1167', 'ieu-a-1168',
+              #'ukb-a-55', 'ukb-b-16890', 'ukb-d-C3_BREAST_3')
 
 
 # V1 - less stringent
@@ -35,6 +36,7 @@ query =
 full_results<-query_epigraphdb_as_table(query)
 dim(full_results)# 45702 w/o 2015
 length(unique(full_results$exposure.id)) #2332 -- total number of exposure traits connected to outcomes with any result
+                                          # 2296 -- total number of traits with any result -V3
 
 # calculate CI and get effect direction
 full_results<- full_results %>%
@@ -52,13 +54,13 @@ full_results<- full_results %>%
 # save all for supl data
 full_results_save<- full_results
 
-write_csv(full_results_save, "01_MR_related/results/mr_evidence_outputs/all_mreve_bc_results.csv")  # prereq for supl data 1
+write_csv(full_results_save, "01_MR_related/results/mr_evidence_outputs/all_mreve_bc_resultsV3.csv")  # prereq for supl data 1;  V3 - 3 outcomes version 
 
 
 sub_results <- full_results %>% filter(effect_direction != 'overlaps null') 
-length(unique(sub_results$exposure.id)) # 1970 unique traits with non-null effect
+length(unique(sub_results$exposure.id)) # 1970 unique traits with non-null effect  # 866 in V3
 
-# now re-extract the full MR results (for all outcomes) for those 1970 traits
+# now re-extract the full MR results (for all outcomes) for those 1970 traits # 866 in V3
 query = paste0("
       MATCH (exposure:Gwas)-[mr:MR_EVE_MR]->(outcome:Gwas)
       WHERE outcome.id in ['", paste0(bc_gwas, collapse = "', '"),"'] 
@@ -75,8 +77,8 @@ out3<-query_epigraphdb_as_table(query)
 dim(out3)  #40475
 length(unique(out3$exposure.id)) # 1970
 
-write_tsv(out3, "01_MR_related/app1_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv")  # main query result -- saves directly to the app that uses it!
-
+write_tsv(out3, "01_MR_related/app1_MR-EvE_app/data_copy/bc_all_mr_fromCIsV3.tsv")  # main query result (many outcomes)-- saves directly to the app that uses it!
+                                                                                    # V3 is based on 3 discovery outcomes
 
 
 ## review CIs vs pval 

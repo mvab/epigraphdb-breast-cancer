@@ -1,0 +1,92 @@
+exposure,outcome,mediator,"Total effect (MR): 
+ exposure -> outcome; p.val","Exp SNPs 
+ (total)","Direct effect (MVMR): 
+ exposure -> outcome; p.val","Exp SNPs 
+ (direct)","Med SNPs 
+ (direct)","Is total effect 
+ disrupted by 
+ mediator in MVMR?"
+Cardiotrophin-1,ER+ Breast cancer ,Milk type used: Skimmed,"0.97 [0.95:0.99];
+0.013",3,"1 [0.95:1.05];
+0.93",3,3,TRUE
+Cardiotrophin-1,Breast cancer ,Milk type used: Skimmed,"0.97 [0.95:0.99];
+0.01",3,"1 [0.94:1.06];
+0.93",3,3,TRUE
+Cardiotrophin-1,Breast cancer ,Dried fruit intake,"0.97 [0.95:0.99];
+0.01",3,"0.98 [0.95:1.01];
+0.18",3,40,TRUE
+Cardiotrophin-1,Breast cancer ,Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging),"0.97 [0.95:0.99];
+0.01",3,"0.98 [0.95:1];
+0.041",3,3,FALSE
+Cardiotrophin-1,ER+ Breast cancer ,Morning/evening person (chronotype),"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.95:1.01];
+0.17",3,76,TRUE
+Cardiotrophin-1,Breast cancer ,Morning/evening person (chronotype),"0.97 [0.95:0.99];
+0.01",3,"0.98 [0.95:1.01];
+0.12",3,76,TRUE
+Cardiotrophin-1,ER+ Breast cancer ,Dual specificity protein kinase CLK2,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.96:1];
+0.081",3,3,TRUE
+Cardiotrophin-1,ER+ Breast cancer ,Calpastatin,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.95:1.01];
+0.15",3,4,TRUE
+Cardiotrophin-1,Breast cancer ,Calpastatin,"0.97 [0.95:0.99];
+0.01",3,"0.98 [0.96:0.99];
+0.011",3,4,FALSE
+Cardiotrophin-1,ER+ Breast cancer ,Protein-tyrosine sulfotransferase 2,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.94:1.01];
+0.21",3,4,TRUE
+Cardiotrophin-1,ER+ Breast cancer ,Complement C1q tumor necrosis factor-related protein 5,"0.97 [0.95:0.99];
+0.013",3,"0.96 [0.93:0.99];
+0.011",3,4,FALSE
+Cardiotrophin-1,Breast cancer ,Complement C1q tumor necrosis factor-related protein 5,"0.97 [0.95:0.99];
+0.01",3,"0.96 [0.94:0.99];
+0.007",3,4,FALSE
+Cardiotrophin-1,Breast cancer ,Extracellular sulfatase Sulf-2,"0.97 [0.95:0.99];
+0.01",3,"0.97 [0.94:0.99];
+0.0043",3,3,FALSE
+Cardiotrophin-1,ER+ Breast cancer ,SLAM family member 7,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.95:1];
+0.077",3,3,TRUE
+Cardiotrophin-1,ER+ Breast cancer ,Pro-FMRFamide-related neuropeptide FF,"0.97 [0.95:0.99];
+0.013",3,"0.97 [0.95:0.99];
+0.0051",3,3,FALSE
+Cardiotrophin-1,ER+ Breast cancer ,Interleukin-21,"0.97 [0.95:0.99];
+0.013",3,"0.97 [0.94:0.99];
+0.0035",3,3,FALSE
+Cardiotrophin-1,Breast cancer ,Interleukin-21,"0.97 [0.95:0.99];
+0.01",3,"0.97 [0.95:0.99];
+0.00054",3,3,FALSE
+Cardiotrophin-1,Breast cancer ,Alpha-L-iduronidase,"0.97 [0.95:0.99];
+0.01",3,"0.97 [0.96:0.99];
+0.0046",3,2,FALSE
+Cardiotrophin-1,ER+ Breast cancer ,Total cholesterol in small VLDL,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.95:1.01];
+0.12",3,15,TRUE
+Cardiotrophin-1,ER+ Breast cancer ,Concentration of small HDL particles,"0.97 [0.95:0.99];
+0.013",3,"0.97 [0.95:1];
+0.05",3,5,TRUE
+Cardiotrophin-1,Breast cancer ,Concentration of small HDL particles,"0.97 [0.95:0.99];
+0.01",3,"0.97 [0.95:0.99];
+0.011",3,5,FALSE
+Cardiotrophin-1,ER+ Breast cancer ,Phospholipids in medium VLDL,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.96:1.01];
+0.12",3,16,TRUE
+Cardiotrophin-1,Breast cancer ,Phospholipids in medium VLDL,"0.97 [0.95:0.99];
+0.01",3,"0.98 [0.95:1];
+0.084",3,16,TRUE
+Cardiotrophin-1,ER+ Breast cancer ,Total cholesterol in medium VLDL,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.95:1.01];
+0.12",3,16,TRUE
+Cardiotrophin-1,Breast cancer ,Total cholesterol in medium VLDL,"0.97 [0.95:0.99];
+0.01",3,"0.98 [0.95:1];
+0.1",3,16,TRUE
+Cardiotrophin-1,ER+ Breast cancer ,Free cholesterol in medium HDL,"0.97 [0.95:0.99];
+0.013",3,"0.98 [0.96:1];
+0.018",3,5,FALSE
+Cardiotrophin-1,Breast cancer ,Free cholesterol in medium HDL,"0.97 [0.95:0.99];
+0.01",3,"0.98 [0.96:0.99];
+0.0068",3,5,FALSE
+Cardiotrophin-1,ER+ Breast cancer ,Total cholesterol in HDL,"0.97 [0.95:0.99];
+0.013",3,"0.97 [0.95:1];
+0.02",3,12,FALSE

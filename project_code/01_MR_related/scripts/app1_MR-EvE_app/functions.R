@@ -81,7 +81,7 @@ create_exposure_categories <- function(dat){
       grepl("met", exposure.id) ~ 'Metabolites',
       grepl("Drug|Medication|prescription medications", exposure, ignore.case = T) ~ "Drugs",
       grepl("Diagnos|Illness|cancer|neoplasm|glioma|diagnos|death|disorder|eye|carcino|colitis|disease|diabetes|asthma|sclerosis|infarction|neuroblastoma|arthritis|eczema|cholangitis|pain|hernia|Polyarthropathies|Malignant|Siatica|Gonarthrosis", exposure, ignore.case = T) ~ "Diseases",
-      grepl("blood pressure|heart|Pulse|Cardiac|thromboembolism", exposure, ignore.case = T) ~ "CVD_related",
+      grepl("blood pressure|heart|Pulse|Cardiac|thromboembolism|hypertens", exposure, ignore.case = T) ~ "CVD_related",
       grepl("operation|operative|Methods of admission|Number of treatments|Spells in hospital|hospital episode", exposure, ignore.case = T) ~ "Medical Procedures",
       grepl("cylindrical|meridian|asymmetry|glasses|hearing|Corneal|ocular|logMAR|teeth|dental|Spherical power", exposure,  ignore.case = T) ~ "eye_hearing_dental",
       grepl("waist|hip c|hip r|obesity|trunk|mass|weight|bmi|body size|height|impedance|fat percentage|body fat|Basal metabolic rate", exposure, ignore.case = T) ~ "Antrophometric",
@@ -184,6 +184,8 @@ add_exposure_labels <-function(dat){
     # add note
     mutate(exposure = case_when(grepl('Adjusted for BMI', exposure.note) ~ paste0(exposure, " AdjBMI"),
                                 TRUE ~ exposure)) %>% 
+    mutate(exposure = ifelse(exposure.id == "ieu-a-1034", gsub("Height", "Childhood height", exposure), exposure)) %>% 
+    
   # create ukb data tag for filtering in the app
   mutate(ukb_tag = ifelse(author %in% c('Neale lab', 'Neale'), "Neale lab",
                    ifelse (consortium == "MRC-IEU", "MRC-IEU", NA)))

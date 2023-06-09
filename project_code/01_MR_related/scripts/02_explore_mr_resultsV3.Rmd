@@ -1,0 +1,366 @@
+---
+title: "Explore traits with effect in at least one outcome"
+output: html_notebook
+---
+
+```{r message=F}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(plotly)
+library(wesanderson)
+library(RColorBrewer)
+library(flextable)
+library(TwoSampleMR)
+source('app1_MR-EvE_app/functions.R')
+```
+
+
+```{r, message = FALSE, include=F}
+rm(dat)
+dat <-  read_tsv("app1_MR-EvE_app/data_copy/bc_all_mr_fromCIsV3.tsv") %>% 
+      # subset 
+      filter(exposure.sex != 'Males') %>% 
+      # convert MR results to OR
+      tidy_display_numbers()%>% 
+      # deal with al outcome related changes
+      process_bc_outcomes() %>% 
+      # create categories of exposure traits
+      filter(!grepl("_raw",exposure.id)) %>% 
+      create_exposure_categories() %>% 
+      add_exposure_labels() 
+
+length(unique(dat$exposure.id))  # 321
+dat %>% select(exposure.id, exposure.trait, exposure_cat) %>% distinct() %>% View()
+
+```
+
+```{r}
+outcome_table<- dat %>% 
+  mutate(case_percent = round(N_case/outcome.sample_size*100, 2)) %>% 
+  select(outcome, outcome.id, outcome.sample_size, N_case, case_percent, chip, outcome.year, outcome.nsnp)%>% 
+  mutate(chip=gsub("_","", chip)) %>% 
+  distinct() %>%
+  arrange(outcome, desc(outcome.sample_size)) %>% 
+  rename(`sample_size`=outcome.sample_size)
+
+
+set_flextable_defaults(big.mark = " ", 
+  font.size = 10, theme_fun = theme_vanilla,
+  padding.bottom = 6, 
+  padding.top = 6,
+  padding.left = 6,
+  padding.right = 6,
+  background.color = "#EFEFEF")
+
+ft<-flextable(outcome_table)
+ft<-width(ft, j = 1, width=1.5)
+ft<-width(ft, j = 2, width=1.7)
+ft
+
+
+```
+
+```{r}
+
+exposure_table<- dat %>% 
+  select(exposure_cat, exposure.trait, exposure.id) %>% 
+  distinct() %>% 
+  count(exposure_cat) %>% arrange(-n)
+
+
+set_flextable_defaults(big.mark = " ", 
+  font.size = 10, theme_fun = theme_vanilla,
+  padding.bottom = 6, 
+  padding.top = 6,
+  padding.left = 6,
+  padding.right = 6,
+  background.color = "#EFEFEF")
+
+ft<-flextable(exposure_table)
+ft
+
+keep <- 
+c('Proteins',                      
+'Metabolites',          
+'Antrophometric',        
+'Other biomarkers',      
+'Diet and supplements',  
+'Drugs',                 
+'Physical activity',     
+'Smoking',                    
+'Reproductive',                      
+'Alcohol',               
+'Sleep')
+
+
+dat %>% 
+  filter(exposure_cat %in% keep) %>% 
+  filter(chip %in% c('Meta')) %>% 
+  select(exposure.id, outcome.id, mr.method) %>% 
+  distinct() %>% 
+  count(mr.method) %>% arrange(-n) %>% 
+  mutate(pct =  round(n/sum(n)*100, 2)) 
+
+
+```
+
+
+```{r}
+# output df of each categoty will be saved here
+tidy_traits_by_cat <- data.frame()
+```
+
+
+### 1. Anthophometric traits
+
+```{r}
+antro_sub <-dat %>% filter(exposure_cat %in% c('Antrophometric')) %>% select(1:8) %>% distinct() %>% 
+  mutate(exposure.trait = ifelse(exposure.id == "ieu-a-1034", "Childhood height", exposure.trait)) %>% 
+  mutate(exposure.trait = ifelse(grepl("Adjusted", exposure.note, ignore.case = T), paste0(exposure.trait, " (AdjBMI)"), exposure.trait))
+
+same_traits_to_filterby_size<- antro_sub %>% count(exposure.trait, exposure.sex) %>% filter(n>1) 
+
+# finding traits with the same name+sex, and creating exl list of those with smaller SS
+antro_excusion_list <-
+  same_traits_to_filterby_size %>% left_join(antro_sub %>% select(exposure.trait, exposure.sex, exposure.id, exposure.sample_size)) %>%
+  arrange(exposure.trait, desc(exposure.sample_size)) %>% 
+  mutate(remove = rep(c(0,1), nrow(same_traits_to_filterby_size))) %>% 
+  select(exposure.id, remove) %>% filter(remove == 1) %>% pull(exposure.id)
+
+length(antro_excusion_list) #8
+
+
+# updating Antro data in main table
+input <- dat %>% 
+  filter(exposure_cat %in% c('Antrophometric')) %>% 
+  mutate(exposure.trait = ifelse(exposure.id == "ieu-a-1034", "Childhood height", exposure.trait)) %>% 
+  mutate(exposure.trait = ifelse(grepl("Adjusted", exposure.note, ignore.case = T), paste0(exposure.trait, " (AdjBMI)"), exposure.trait)) %>% 
+  filter(!exposure.id %in% antro_excusion_list) %>% 
+  filter(!grepl("arm|leg", exposure.trait, ignore.case = T))
+  
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+# may need to create this eclusin table
+#write_csv(antro_exclusion_table, "01_MR_related/results/mr_evidence_outputs/antro_traits_exclusion_listV3.csv")
+
+
+#p<-plot_bubble_plot(input)
+#ply<-plotly::ggplotly(p)
+
+
+#p_gg<-plotly::plotly_build(p) # convert ggplot object to plotly
+#p_gg$layout$showlegend = "TRUE"
+
+```
+
+
+
+
+### 2. Activity
+
+```{r fig.width=10, fig.height=5}
+input <- dat %>% filter(exposure_cat %in% c('Physical activity')) %>% 
+             filter(!grepl("leisure|mental", exposure, ignore.case = T))
+length(unique(input$exposure.id)) #6
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+#p<-plot_bubble_plot(input)
+
+```
+
+### 3.  Supplements / diet
+
+```{r fig.width=10, fig.height=5}
+input <- dat %>% filter(exposure_cat %in% c('Diet and supplements')) %>% 
+                filter(!grepl("questionnaire", exposure))
+
+length(unique(input$exposure.id)) #12
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+#p<-plot_bubble_plot(input)
+
+```
+
+
+### 4. Reproductive traits
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Reproductive')) 
+length(unique(input$exposure.id)) # 23
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+#p<-plot_bubble_plot(input)
+
+```
+
+
+
+### 5. alcohol
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Alcohol')) 
+length(unique(input$exposure.id)) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+#p<-plot_bubble_plot(input)
+
+```
+
+### 6. smoking traits
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c( "Smoking")) 
+length(unique(input$exposure.id)) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+#p<-plot_bubble_plot(input)
+
+```
+
+
+
+### 7. Metabolites
+
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Metabolites')) 
+
+length(unique(input$exposure.id)) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+
+##p<-plot_bubble_plot(input)
+
+
+#test_list<-input %>%  filter(mr.pval < 10e-6) %>% 
+                      #filter(mr.b > 0.01) %>%
+#                      pull(exposure.id) %>% unique()
+#length(test_list)
+
+#p<-plot_bubble_plot(input %>% filter(exposure.id %in% test_list))
+#ply<-plotly::ggplotly(p)
+
+```
+
+
+
+
+### 8. Protein measures
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Proteins')) %>% 
+        arrange(exposure.trait)
+
+length(unique(input$exposure.id)) 
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+
+# testing visualization
+#dim(input)[1]/9
+#length(unique(input$exposure.trait))
+
+#p<-plot_bubble_plot(input[1:150,])
+#p<-plot_bubble_plot(input[150:333,])
+
+
+#ply<-plotly::ggplotly(p)
+
+```
+
+### 9. Other biomarkers/compounds
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Other biomarkers'))
+length(unique(input$exposure.id)) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+#p<-plot_bubble_plot(input)
+```
+
+
+
+### 10. Sleep
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Sleep'))
+length(unique(input$exposure.id)) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+#p<-plot_bubble_plot(input)
+```
+
+### 11. Drugs
+```{r fig.width=12}
+input <- dat %>% filter(exposure_cat %in% c('Drugs')) 
+length(unique(input$exposure.id)) 
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+#p<-plot_bubble_plot(input)
+```
+
+
+
+### 12. Lipids
+
+
+```{r fig.width=10, fig.height=3}
+input <- dat %>% filter(exposure_cat %in%  c('Lipids')) 
+
+length(unique(input$exposure.id)) 
+
+#save
+tidy_traits_by_cat<-bind_rows(tidy_traits_by_cat, input)
+
+
+```
+
+
+```{r}
+#SAVE
+tidy_traits_by_cat %>% select(exposure.id, exposure_cat) %>% distinct() %>%  count(exposure_cat, sort=T)
+length(unique(tidy_traits_by_cat$exposure.id)) # 202
+
+tidy_traits_by_cat %>% select(exposure.id, exposure_cat) %>% distinct() %>% count(exposure_cat) %>% summarise(across(n, sum)) #? 
+tidy_traits_by_cat %>% distinct() %>% write_tsv("../results/mr_evidence_outputs/tidy_traits_by_catV3.tsv")
+
+tidy_traits_by_cat <- read_tsv("../results/mr_evidence_outputs/tidy_traits_by_catV3.tsv")
+
+```
+
+
+
+
+```{r}
+# check what traits we dropped
+dat %>% filter(!exposure.id %in% tidy_traits_by_cat$exposure.id) %>% select(exposure.id ,exposure.trait, exposure_cat) %>% distinct() %>% View()
+```
+

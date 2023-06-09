@@ -86,17 +86,70 @@ traits_for_follow_up <- function(input) {
 
 
 ### validation MR
-do_MR <- function(trait, bc_type){
+do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions){
+  
+  cat("\n\n")
+  print(paste0(">>>>>>>>>> " , trait))
+  
+  if       (bc_type %in% c('all' , 'ieu-a-1126')){
+    bc.id <- 'ieu-a-1126'
+    outcome_ss = 228951
+    outcome_ncase = 122977	
+    outcome_ncontrol = 105974
+  }else if (bc_type %in% c('ER+','ieu-a-1127')){
+    bc.id <- 'ieu-a-1127'
+    outcome_ss = 175475
+    outcome_ncase = 69501
+    outcome_ncontrol = 105974
+  }else if (bc_type %in% c('ER-', 'ieu-a-1128')){
+    bc.id <- 'ieu-a-1128'
+    outcome_ss = 127442
+    outcome_ncase = 21468
+    outcome_ncontrol =105974
+  }
+  
+  exposure_ss <- exposure_ss_df %>% filter(exposure.id == trait) %>% pull(exposure.sample_size)
   
   
-  if       (bc_type == 'all'){bc.id <- 'ieu-a-1126'
-  }else if (bc_type == 'ER+'){bc.id <- 'ieu-a-1127'
-  }else if (bc_type == 'ER-'){bc.id <- 'ieu-a-1128'}
+  if (trait %in% protein_regions$exposure.id){
+    # it's a protein, so we are going to use cis instruments
+    protein_details <- protein_regions %>% filter(exposure.id == trait)
+    protein_cis <- get_cis_region(id=trait,
+                                  chr = protein_details$chr ,
+                                  start = protein_details$posStart, end = protein_details$posEnd)
+    
+    # now do filteting and clumping
+    instruments <- protein_cis %>% filter(pval.exposure < 5e-08) 
+    if (nrow(instruments) >= 1){
+      instruments_clumped <-  clump_data(instruments, clump_r2 = 0.01)
+      used_inst <- "cis_5e-08_r2=0.01"
+    } else{
+      # filter less stringent
+      instruments <- protein_cis %>% filter(pval.exposure < 0.05/nrow(protein_cis)) 
+      if (nrow(instruments) >= 1){
+        instruments_clumped <- clump_data(instruments, clump_r2 = 0.01)
+        used_inst <- "cis_lessStringent_r2=0.01"
+        
+      } else{
+        # no protein cis insruments to use
+        instruments_clumped <- extract_instruments(trait)
+        used_inst <- "cis_and_trans"
+        
+      }
+      
+    }
+    
   
-  instruments <- extract_instruments(trait)
-  out <- extract_outcome_data(snps = instruments$SNP,
+  } else {
+  # not a protein
+    instruments_clumped <- extract_instruments(trait) # clumping is done internally!
+    used_inst <- "not_protein"
+  }
+  
+  
+  out <- extract_outcome_data(snps = instruments_clumped$SNP,
                               outcome = bc.id)
-  harmonised<- harmonise_data(exposure_dat = instruments, 
+  harmonised<- harmonise_data(exposure_dat = instruments_clumped, 
                               outcome_dat = out)
   #mr
   res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
@@ -106,20 +159,85 @@ do_MR <- function(trait, bc_type){
     mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
     mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                                      ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+  
+  streiger_res =  calc_steiger(harmonised, 
+                               exposure_ss = exposure_ss, 
+                               outcome_ss = outcome_ss,
+                               outcome_ncase = outcome_ncase,
+                               outcome_ncontrol = outcome_ncontrol) 
+  
   # sensitivity
   if (dim(harmonised)[1]>1){
     
     if (dim(mr_pleiotropy_test(harmonised))[1] ==0){
       res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
     } else{
+      
+      res_sens <-
+        full_join(mr_pleiotropy_test(harmonised),
+                  mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
+        left_join(streiger_res$summary) %>% 
+        split_outcome() %>%
+        split_exposure() %>% 
+        rename(egger_intercept_pval = pval,
+               egger_intercept_se = se)
+    }
+  } else {
+    # making dummy sens anlysis table as a placeholder
+    res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+  }
+  
+  # join mr and sens in one table
+  out <- full_join(res, res_sens)
+  out$used_instrument <- used_inst
+  
+  return( out) 
+} 
+
+# used in case-study report
+do_MR_pair <- function(exp, out, exposure_ss_df){
+  
+  #cat("\n\n")
+  #print(paste0(">>>>>>>>>> " , exp, " to ", out))
+  
+  
+  exposure_ss <- exposure_ss_df %>% filter(exposure.id == exp) %>% pull(exposure.sample_size)
+  outcome_ss <- exposure_ss_df%>% filter(exposure.id == out) %>% pull(exposure.sample_size)
+  
+  instruments <- extract_instruments(exp) # clumping is done internally!
+  outdat <- extract_outcome_data(snps = instruments$SNP,
+                                 outcome = out)
+  harmonised<- harmonise_data(exposure_dat = instruments, 
+                              outcome_dat = outdat)
+  #mr
+  res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
+    split_outcome() %>% 
+    split_exposure() %>% 
+    generate_odds_ratios() %>% 
+    mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
+    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                                     ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null')))  
+  
+  streiger_res =  calc_steiger(harmonised, 
+                               exposure_ss = exposure_ss, 
+                               outcome_ss = outcome_ss) 
+  
+  # sensitivity
+  if (dim(harmonised)[1]>1){
     
-    res_sens <-
-      full_join(mr_pleiotropy_test(harmonised),
-                mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
-      split_outcome() %>%
-      split_exposure() %>% 
-      rename(egger_intercept_pval = pval,
-             egger_intercept_se = se)
+    if (dim(mr_pleiotropy_test(harmonised))[1] ==0){
+      res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+    } else{
+      
+      res_sens <-
+        full_join(mr_pleiotropy_test(harmonised),
+                  mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
+        left_join(streiger_res$summary) %>% 
+        split_outcome() %>%
+        split_exposure() %>% 
+        rename(egger_intercept_pval = pval,
+               egger_intercept_se = se)
     }
   } else {
     # making dummy sens anlysis table as a placeholder
@@ -131,6 +249,107 @@ do_MR <- function(trait, bc_type){
   
   return( out) 
 } 
+
+
+
+calc_steiger <- function(harmonised, exposure_ss, outcome_ss, outcome_ncase = NA, outcome_ncontrol =NA){
+  # assumed both traits are continuous, not binary
+  
+  harmonised$samplesize.exposure <- exposure_ss
+  harmonised$samplesize.outcome <- outcome_ss 
+  
+  if (NA %in% harmonised$eaf.outcome){
+    # if eaf is not available for outcome GWAS, we can't apply r_func below, so we will treat this data as continuous
+    print("EAF not available; can't analyses outcome as binary for steiger filtering")
+    outcome_ncase = NA
+    outcome_ncontrol =NA
+  }
+  
+  if (!is.na(outcome_ncase) & !is.na(outcome_ncontrol)){
+    # if outcome case/control is provided, calculate prevalence and add everything to harmonised 
+    # this is done for binary outcome analyses
+    prevelance = outcome_ncase / (outcome_ncase + outcome_ncontrol)
+    harmonised$ncase.outcome = outcome_ncase
+    harmonised$ncontrol.outcome = outcome_ncontrol
+    harmonised$prevelance.outcome = prevelance
+    
+    ## estimate r for binary or continuous exposures/outcomes
+    harmonised <- r_func(harmonised, logistic.exposure=F, logistic.outcome=T)
+  }
+  
+  
+  harmonised <- steiger_filtering(harmonised) 
+  harmonised_sub <- harmonised %>%  select(SNP, exposure, beta.exposure, pval.exposure, outcome, beta.outcome, pval.outcome, rsq.exposure, rsq.outcome, steiger_dir, steiger_pval)
+  
+  
+  directionality <- directionality_test(harmonised)
+  
+  N = unique(harmonised$samplesize.exposure) #sample size
+  K = length(harmonised$SNP) #number of SNPs
+  total_r2 <- sum(harmonised$rsq.exposure) 
+  Fstat <- (N-K-1)/K * total_r2 / (1-total_r2)
+  
+  
+  summary <- directionality
+  summary$Fst <- Fstat
+  summary$total_r2 <- total_r2
+  summary <- summary %>% select(-c("id.outcome", "id.exposure")) 
+  
+  
+  return(list(Fstat = Fstat,
+              total_r2 = total_r2,
+              directionality= directionality,
+              summary = summary,
+              single_rsq = harmonised_sub))
+  
+  
+}
+
+## estimate r for binary or continuous exposures/outcomes
+r_func <- function(x, logistic.exposure,logistic.outcome ){
+  # function from: https://github.com/sjfandrews/MR_ADPhenome/blob/b64d8821dbf1546090f47e0642cc8092592cddc8/workflow/scripts/mr_SteigerTest.R#L13
+  x$r.exposure <- if(logistic.exposure == TRUE){
+    x %>%
+      mutate(r.exposure = get_r_from_lor(x$beta.exposure, x$eaf.exposure, x$ncase.exposure, x$ncontrol.exposure, x$prevelance.exposure)) %>% pull(r.exposure)
+  } else if(logistic.exposure == FALSE){
+    x %>% mutate(r.exposure = get_r_from_pn(x$pval.exposure, x$samplesize.exposure)) %>% pull(r.exposure)
+  }
+  
+  x$r.outcome <- if(logistic.outcome == TRUE){
+    x %>% mutate(r.outcome = get_r_from_lor(x$beta.outcome, x$eaf.outcome, x$ncase.outcome, x$ncontrol.outcome, x$prevelance.outcome)) %>% pull(r.outcome)
+  } else if(logistic.outcome == FALSE){
+    x %>% mutate(r.outcome = get_r_from_pn(x$pval.outcome, x$samplesize.outcome)) %>% pull(r.outcome)
+  }
+  x
+}
+
+
+
+get_cis_region <- function(id, chr, start, end, buffer= 1000000){
+  
+  # get cis region for protein data + 1Mb buffer
+  # use UCSC genome browser to get start/end for genes
+  # http://genome.ucsc.edu/cgi-bin/hgTables 
+  
+  startPos = start - buffer
+  if (startPos < 0){startPos =0}
+  endPos = end + buffer
+  region = paste0(chr, ":", startPos, "-", endPos)
+  
+  cis_region <- ieugwasr::associations(variants=region, id=id, proxies=0) %>% 
+    select("exposure" = "trait",
+           "id.exposure" = "id",
+           "SNP"  = "rsid",
+           "chr.exposure"  = "chr",
+           "pos.exposure" = "position",    
+           "beta.exposure" = "beta",
+           "se.exposure" = "se",
+           "pval.exposure" = "p",
+           "samplesize.exposure" = "n",
+           "effect_allele.exposure" = "ea", 
+           "other_allele.exposure" = "nea",
+           "eaf.exposure"   = "eaf")
+}
 
 
 
@@ -204,8 +423,6 @@ quick_mr <- function(exp, out){
 
 quick_mvmr <- function(exp1, exp2, out){
   
-  source("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/early-bmi-breast-cancer-mr/functions_mvmr.R")
-  
   
   # MVMR: 2 mrbase
   instruments1 <- extract_instruments(exp1)
@@ -240,6 +457,32 @@ quick_mvmr <- function(exp1, exp2, out){
     mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
     mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                                      ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+  
+  
+  # create MVMR package input
+  mvmr_input <- make_mvmr_input(exposure_dat,  outcome.data = outcome_dat)
+  
+  # format data to be in MVMR package-compatible df
+  mvmr_out <- format_mvmr(BXGs = mvmr_input$XGs %>% select(contains("beta")),  # exposure betas
+                          BYG = mvmr_input$YG$beta.outcome,                     # outcome beta
+                          seBXGs = mvmr_input$XGs %>% select(contains("se")),  # exposure SEs
+                          seBYG = mvmr_input$YG$se.outcome,                     # outcome SEs
+                          RSID = mvmr_input$XGs$SNP)                            # SNPs
+  
+  #print("No phenotypic correlation available, going to use gencov=0 ")
+  
+  #Test for weak instruments
+  sres <- strength_mvmr(r_input=mvmr_out, gencov=0) %>% t() %>% as_tibble() %>%
+    mutate(exposure = mvmr_input$exposures) %>% split_exposure() %>% 
+    rename("F-stat" = "F-statistic")
+  
+  #Test for horizontal pleiotropy
+  pres <- pleiotropy_mvmr(r_input=mvmr_out, gencov=0)
+  
+  sres$Qstat <- pres$Qstat
+  sres$Qpval <- pres$Qpval
+  
+  mv_res <- left_join(mv_res, sres, by="exposure")
   
   mv_res
 }
@@ -447,10 +690,10 @@ query_and_tidy_conf <- function(exposure, outcome, pval_threshold, mediator= F, 
     print("Querying MR-EvE for mediators ...")
     mediator_query = paste0("
     MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) AND med.population = 'European'
     AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
-    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
+    RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait, .population}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
     
     mediators = query_epigraphdb_as_table(mediator_query)
@@ -460,56 +703,56 @@ query_and_tidy_conf <- function(exposure, outcome, pval_threshold, mediator= F, 
   }
   
   if (confounder){
-  
-  print("Querying MR-EvE for confounders ...")
-  confounder_query = paste0("
+    
+    print("Querying MR-EvE for confounders ...")
+    confounder_query = paste0("
     MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) <-[r3:MR_EVE_MR]-(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) AND med.population = 'European'
     AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
     RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
-  
-  confounders = query_epigraphdb_as_table(confounder_query)
-  confounders = tidy_conf_query_output(res_list$confounders, type = "confounder")
-  
-  res_list_tidy$confounders <- confounders
+    
+    confounders = query_epigraphdb_as_table(confounder_query)
+    confounders = tidy_conf_query_output(res_list$confounders, type = "confounder")
+    
+    res_list_tidy$confounders <- confounders
   }
   
   if (collider){
     
-  print("Querying MR-EvE for colliders ...")
-  collider_query = paste0("
+    print("Querying MR-EvE for colliders ...")
+    collider_query = paste0("
     MATCH (med:Gwas)<-[r1:MR_EVE_MR]- (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) AND med.population = 'European'
     AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
     RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
-  
-  colliders = query_epigraphdb_as_table(collider_query)
-  colliders = tidy_conf_query_output(res_list$colliders, type = "collider")
-  res_list_tidy$colliders <- colliders
-  
+    
+    colliders = query_epigraphdb_as_table(collider_query)
+    colliders = tidy_conf_query_output(res_list$colliders, type = "collider")
+    res_list_tidy$colliders <- colliders
+    
   }
   
   
   if (reverse_mediator){
     
-  print("Querying MR-EvE for reverse mediators ...")
+    print("Querying MR-EvE for reverse mediators ...")
     
-  reverse_mediator_query = paste0("
+    reverse_mediator_query = paste0("
     MATCH (med:Gwas)-[r1:MR_EVE_MR]-> (exposure:Gwas) -[r2:MR_EVE_MR]->(outcome:Gwas) -[r3:MR_EVE_MR]->(med:Gwas) 
-    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) 
+    WHERE exposure.id = '", exposure, "' AND outcome.id = '", outcome,"' AND (not (toLower(med.trait) contains 'breast')) AND med.population = 'European'
     AND r1.pval < ", pval_threshold, " AND r3.pval < ", pval_threshold_outcome, " 
     AND med.id <> exposure.id AND med.id <> outcome.id AND exposure.id <> outcome.id AND med.trait <> exposure.trait AND med.trait <> outcome.trait AND exposure.trait <> outcome.trait 
     RETURN exposure {.id, .trait}, outcome {.id, .trait}, med {.id, .trait}, r1 {.b, .se, .pval, .selection, .method, .moescore}, r2 {.b, .se, .pval, .selection, .method, .moescore}, r3 {.b, .se, .pval, .selection, .method, .moescore} ORDER BY r1.p
           ")
-  
-  rev_mediators = query_epigraphdb_as_table(reverse_mediator_query)
-  rev_mediators = tidy_conf_query_output(res_list$rev_mediators, type = "reverse_mediator")
-  res_list_tidy$rev_mediators <- rev_mediators
-  
+    
+    rev_mediators = query_epigraphdb_as_table(reverse_mediator_query)
+    rev_mediators = tidy_conf_query_output(res_list$rev_mediators, type = "reverse_mediator")
+    res_list_tidy$rev_mediators <- rev_mediators
+    
   }
   
   

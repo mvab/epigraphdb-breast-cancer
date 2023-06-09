@@ -1,0 +1,110 @@
+value,gwas.id,gwas.name,instruments
+AKT1,prot-a-70,RAC-alpha/beta/gamma serine/threonine-protein kinase,1
+AKT1,prot-a-71,RAC-alpha/beta/gamma serine/threonine-protein kinase,1
+APOA1,met-d-ApoA1,Apolipoprotein A1,77
+Adiponectin,ieu-a-1,Adiponectin,14
+Albumin,met-c-841,Albumin,3
+Albumin,met-d-Albumin,Albumin,29
+Albumin,ukb-d-30600_irnt,Albumin,203
+Apolipoprotein A-I,ieu-b-107,apolipoprotein A-I,299
+Apolipoprotein A-I,met-c-842,Apolipoprotein A-I,11
+Apolipoprotein A-I,ukb-d-30630_irnt,Apoliprotein A,246
+Apolipoprotein E,prot-c-2418_55_9,Apo E,0
+Apolipoprotein E,prot-c-5312_49_3,Apo E2,0
+Apolipoprotein E,prot-c-2938_55_2,Apo E4,0
+Apolipoprotein E,prot-c-2937_10_2,Apo E3,0
+Apolipoprotein E,prot-a-132,Apolipoprotein E (isoform E2),1
+Apolipoprotein E,prot-a-131,Apolipoprotein E (isoform E3),1
+Apolipoproteins B,prot-a-127,apolipoprotein B,1
+Apolipoproteins B,met-c-843,apolipoprotein B,21
+Apolipoproteins B,ieu-b-108,apolipoprotein B,198
+Apolipoproteins B,met-d-ApoB,Apolipoproteins B,58
+BSG,prot-a-275,Basigin,1
+C-reactive protein,ieu-b-35,C-Reactive protein level,57
+C-reactive protein,prot-a-670,C-reactive protein,4
+C-reactive protein,ukb-d-30710_irnt,C-reactive protein,210
+CATHEPSIN D,prot-b-51,cathepsin D,2
+CATHEPSIN D,prot-c-3180_46_2,Cathepsin D,0
+CDKN1A,prot-a-495,Cyclin-dependent kinase inhibitor 1B,1
+Calmodulin,prot-a-2218,"Calcium/calmodulin-dependent 3',5'-cyclic nucleotide phosphodiesterase 1A",1
+Calmodulin,prot-a-346,Calcium/calmodulin-dependent protein kinase type 1,3
+Calmodulin,prot-a-347,Calcium/calmodulin-dependent protein kinase type 1D,3
+Calmodulin,prot-a-348,Calcium/calmodulin-dependent protein kinase type II subunit alpha,1
+Calmodulin,prot-a-349,Calcium/calmodulin-dependent protein kinase type II subunit beta,1
+Calmodulin,prot-a-350,Calcium/calmodulin-dependent protein kinase kinase 1,0
+Calmodulin,prot-c-3350_53_2,CAMK2A,0
+Calmodulin,prot-c-3351_1_1,CAMK2B,0
+Calmodulin,prot-c-3418_12_2,CAMK1D,0
+Calmodulin,prot-c-3419_49_2,CAMK2D,0
+Calmodulin,prot-c-3592_4_3,CAMK1,0
+Calmodulin,prot-c-3877_67_2,CaMKK alpha,0
+Cholesterol Ester Transfer Proteins,met-c-875,Cholesterol esters in large HDL,14
+Cholesterol Ester Transfer Proteins,met-c-881,Cholesterol esters in large VLDL,25
+Cholesterol Ester Transfer Proteins,met-c-887,Cholesterol esters in large VLDL,12
+Cholesterol Ester Transfer Proteins,met-c-899,Cholesterol esters in medium HDL,7
+Cholesterol Ester Transfer Proteins,met-c-905,Cholesterol esters in medium LDL,24
+Cholesterol Ester Transfer Proteins,met-c-910,Cholesterol esters in medium VLDL,14
+Cholesterol Ester Transfer Proteins,met-c-943,Cholesterol esters in very large HDL,13
+Cholesterol Ester Transfer Proteins,met-d-Total_CE,Total esterified cholesterol,65
+DCTN6,prot-a-879,Dynactin-associated protein,2
+EGFR,prot-a-908,Epidermal growth factor,1
+ELAVL1,prot-a-928,ELAV-like protein 1,1
+EPHB2,prot-a-905,Ephrin-B2,1
+EPHB2,prot-a-962,Ephrin type-B receptor 2,1
+EPHB2,prot-c-5077_28_3,EPHB2,0
+Endopeptidases,prot-a-1908,Membrane metallo-endopeptidase-like 1,0
+Estrogen Receptors,prot-c-2945_25_1,ER,0
+Glucocorticoids,prot-a-2088,Glucocorticoid receptor,0
+Glucocorticoids,prot-c-2857_70_2,Glucocorticoid receptor,0
+Histone Deacetylase,prot-a-1320,Histone deacetylase 8,1
+Histone Deacetylase,prot-c-2859_69_2,HDAC8,0
+ICAM1,prot-a-1397,Intercellular adhesion molecule 1,3
+ICAM1,prot-c-4342_10_3,sICAM-1,0
+IFI27,prot-a-1426,Interferon alpha/beta receptor 1,1
+IGF1,prot-a-1443,Insulin-like growth factor I,3
+IGF1,prot-c-2952_75_2,IGF-I,0
+IGF1,ukb-d-30770_irnt,IGF-1,364
+IGF1R,prot-a-1444,Insulin-like growth factor 1 receptor,1
+IL1a,prot-c-4851_25_1,IL-1a,0
+Insulin,ieu-b-115,Fasting insulin,0
+Insulin,ieu-b-116,Fasting insulin,0
+LIPOPROTEIN LIPASE,ebi-a-GCST90010149,Lipoprotein lipase levels,3
+LPA,ukb-d-30790_irnt,Lipoprotein A,22
+Low-Density Lipoproteins,ieu-b-110,LDL cholesterol,177
+Low-Density Lipoproteins,met-d-LDL_C,LDL cholesterol,52
+Low-Density Lipoproteins,ukb-d-30780_irnt,LDL direct,160
+MAPK1,prot-a-1845,Mitogen-activated protein kinase 1,1
+Multidrug Resistance Associated Protein 1,prot-a-4,Multidrug resistance-associated protein 6,0
+Ornithine Decarboxylase,prot-a-2142,Ornithine decarboxylase,1
+Oxidoreductase,prot-a-1389,Oxidoreductase HTATIP2,3
+Oxidoreductase,prot-a-1390,Oxidoreductase HTATIP2,1
+Oxidoreductase,prot-c-2731_29_2,NADPH-P450 Oxidoreductase,0
+PON1,prot-c-4261_55_2,paraoxonase 1,0
+PON1,ebi-a-GCST90010252,Paraoxonase activity,5
+PRRT2,prot-a-2363,Salivary acidic proline-rich phosphoprotein 1/2,1
+PRRT2,prot-a-2383,Proline-rich protein 1,0
+PSMD9,prot-a-2416,26S proteasome non-ATPase regulatory subunit 1,1
+Prolactin,prot-a-2377,Prolactin receptor,2
+Prolactin,prot-c-2585_2_5,PRL,0
+RHOA,prot-a-2539,Transforming protein RhoA,1
+SCTR,prot-c-3728_52_2,Secretin,0
+Somatotropin,prot-a-1209,Somatotropin,0
+Soy Proteins,ukb-b-998,Soya dessert intake,4
+Soy Proteins,ukb-d-100920_2105,Type milk consumed: soya with calcium,1
+Soy Proteins,ukb-d-1418_4,Milk type used: Soya,1
+TNF,prot-a-3029,Tumor necrosis factor,1
+VEGFA,ebi-a-GCST90000506,Vascular endothelial growth factor A levels,0
+VEGFA,prot-a-3198,Vascular endothelial growth factor A,1
+Very low density lipoprotein,met-d-VLDL_C,VLDL cholesterol,65
+estradiol,ieu-b-4872,Oestradiol,1
+oxidized low density lipoprotein,prot-a-2146,Oxidized low-density lipoprotein receptor 1,1
+oxidized low density lipoprotein,prot-b-17,oxidized low density lipoprotein receptor 1,0
+oxidized low density lipoprotein,prot-c-3636_37_4,OLR1,0
+peroxidase,ebi-a-GCST90012031,Myeloperoxidase levels,10
+steroidogenic acute regulatory protein,prot-a-2866,"Steroidogenic acute regulatory protein, mitochondrial",2
+superoxide dismutase,ebi-a-GCST90010172,"Superoxide dismutase [Mn],mitochondrial levels",1
+superoxide dismutase,prot-a-2799,"Superoxide dismutase [Mn], mitochondrial",1
+superoxide dismutase,prot-c-2794_60_2,SOD,0
+survivin,prot-c-3472_40_2,Survivin,0
+testosterone,ieu-b-4864,Total Testosterone,114
+testosterone,ieu-b-4869,Bioavailable Testosterone,125

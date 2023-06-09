@@ -15,54 +15,83 @@ library(tibble)
 library(tidyr)
 library(TwoSampleMR)
 library(vroom)
+library(tidyselect)
 
 
-source("explore_MR-EvE_app/functions.R")
+source("app1_MR-EvE_app/functions.R")
 source("mr_related_functions.R")
 ```
+
+
+```{r}
+all_cats <-  read_tsv("../results/mr_evidence_outputs/tidy_traits_by_catV3.tsv") %>%  # made in explore_mr_results.Rmd
+        # for HDL chol fro UKB we have no sample size, so we will arbitrarily add 400,000 (needed for Fstat calc)
+        # upd - going to use the number from here: https://docs.google.com/spreadsheets/d/1kvPoupSzsSFBNSztMzl04xMoSC3Kcx3CrjVf4yBmESU/edit#gid=227859291&range=B75
+        mutate(exposure.sample_size = ifelse(exposure.id == "ukb-d-30760_irnt", 361194, exposure.sample_size)) %>% 
+        # update exposure categories 
+        create_exposure_categories() %>%  add_exposure_labels() %>% filter(exposure_cat != 'other') 
+        
+
+length(unique(all_cats$exposure.id)) # 202
+
+
+exp_help_names <- all_cats %>% # from the first chunk
+  select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat') %>% 
+  distinct()
+
+ids_to_ignore <- c("prot-a-550", "prot-a-3000") # their SNPs are not available in outcomes
+
+ids <-all_cats %>% pull(exposure.id) %>% unique()
+exp_ss <- all_cats %>% select(exposure.id, exposure.sample_size)%>%  distinct()
+
+# protein location data, for cis instruments extraction
+protein_regions<- read_csv("../results/mr_evidence_outputs/protein_gene_regions_ids.csv") %>% 
+  filter(chr != "X") %>%  # non 1-22 will be labeles as 'not a protein'
+  filter(!exposure.id %in% ids_to_ignore) # these protein's cis insruments are not available in BC output; so treating them not as proteins, we get their cis+trans SNPs
+```
+
+
+
 
 # Validation in BCAC 2017
 
 ```{r}
 ## validate results by redoing MR + sensitivity tests
-
-all_cats<-read_tsv("../results/mr_evidence_outputs/trait_for_followup.tsv") # created in 03 (309 traits)
-
-exp_help_names <- dat %>% # from the first chunk
-  select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat') %>% 
-  distinct()
-
 ## MR -- doing all outcomes validation, even if mr-eve had sign result only for one or two types
-ids <-all_cats %>% pull(id)
-res_df_all <- bind_rows(lapply(ids, do_MR, 'all')) 
-res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+')) 
-res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-'))
 
-redone_MR_full <- bind_rows(res_df_all,res_df_pos,res_df_neg) %>% left_join(exp_help_names)
+res_df_all <- bind_rows(lapply(ids, do_MR, 'all', exp_ss, protein_regions)) 
+res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+', exp_ss, protein_regions)) 
+res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-', exp_ss, protein_regions))
+
+redone_MR_full <- bind_rows( res_df_all,res_df_pos,res_df_neg) %>% left_join(exp_help_names) %>% arrange(id.outcome)
 
 # split into MR and sens and save
 redone_MR <- redone_MR_full %>% 
-              select(-starts_with('egger_intercept'), -starts_with('Q'))
+              select(-starts_with('egger_intercept'), -starts_with('Q'),
+                     -Fst, -total_r2, -correct_causal_direction, -steiger_pval,-starts_with("snp_r2"))
 redone_MR_sens <- redone_MR_full %>% 
-              select(id.exposure, id.outcome, exposure, outcome, method, nsnp,
-                     starts_with('egger_intercept'), starts_with('Q'), exposure_name, exposure_cat) %>% 
+              select(id.exposure, id.outcome, exposure, outcome, method, nsnp, used_instrument,
+                     starts_with('egger_intercept'), starts_with('Q'), 
+                     Fst, total_r2, correct_causal_direction,  steiger_pval, starts_with("snp_r2"),
+                     exposure_name, exposure_cat) %>% 
               filter(method != 'Weighted median')
 
-write_tsv(redone_MR,      "../results/mr_evidence_outputs/redone_MR_fulloutput.tsv")
-write_tsv(redone_MR_sens, "../results/mr_evidence_outputs/redone_MR_fulloutput_sens.tsv")
-
+write_tsv(redone_MR,      "../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
+write_tsv(redone_MR_sens, "../results/mr_evidence_outputs/redone_MR_fulloutput_sensV3cis.tsv")
+length(unique(redone_MR$id.exposure)) # 202
 
 ##
+#redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv")
 redoneMR_tidy <- redone_MR %>%  
-  select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
+  select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, pval, effect_direction , nsnp, method, exposure_cat) %>% 
   filter(effect_direction != "overlaps null") %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
 
 redoneMR_tidy%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)#total
 redoneMR_tidy%>% filter(id.outcome == 'ieu-a-1127') %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat) # selected outcome
 
-#write_tsv(redoneMR_tidy, "mr_evidence_outputs/trait_manual_ivw.tsv") #### OLD NAME
-write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_ivw.tsv") ### this is used in mediator validation
+
+write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_ivwV3cis.tsv") ### this is used in mediator validation
 
 ```
 
@@ -71,45 +100,37 @@ write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_
 
 
 ```{r message=F}
-other_project_path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/"
-bcac_lookup<-read_csv(paste0(other_project_path, "early-bmi-breast-cancer-mr//metadata/data_lookup_BCAC.csv")) 
+other_project_path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project4/"
+bcac_lookup<-read_csv(paste0(other_project_path, "mammo_density_mr/metadata/data_lookup_BCAC.csv")) %>% 
+              filter(trait != "BRCA1_TN") %>% filter(is.na(mr.base.id))
 
 # load functions
-source(paste0(other_project_path, "early-bmi-breast-cancer-mr/functions.R"))
-source(paste0(other_project_path, "early-bmi-breast-cancer-mr/functions_mvmr.R"))
+source(paste0(other_project_path, "mammo_density_mr/functions.R"))
+source(paste0(other_project_path, "mammo_density_mr/functions_mvmr.R"))
 
 
 # load all BC subtype data
 bc_data<-list()
-data_path_gwas <- paste0(other_project_path, "/01_Data/new_data/tidy_meta_analysed_data/")
+data_path_gwas <- paste0(other_project_path, "/01_Data/GWAS_tidy/")
 for (i in bcac_lookup$full_data){
   print(paste0("Loading  ", i))
   bc_data[[i]]<- vroom(paste0(data_path_gwas, i), show_col_types = F) 
 }
-```
 
-```{r}
-
-# load traits that have been validated in 'process_mr_results.Rmd'
-traits_df<-read_tsv("../results/mr_evidence_outputs/trait_for_followup.tsv") # created in 03 .. (309 traits)
-
-traits<- traits_df%>%  pull(id) %>% unique()
-length(traits) # 309
-
-#traits <- c("ieu-a-1096", "ieu-a-99" ,"ieu-a-107")
 ```
 
 
 ```{r message=F,  warnings=F}
 
-for (i in 1:length(traits)){
-    trait = traits[i]
+for (i in 1:length(ids)){
+    trait = ids[i]
     print(paste0("==== ", trait, " / ", i,  " ===="))
   
     # load instruments
-    trait1_exp <- extract_instruments(trait) #### NB not clumping
+    trait1_exp <- extract_instruments(trait) # don't need to do clumping as it is already do in the extarct function 
   
-  
+    exposure_ss <- exp_ss %>% filter(exposure.id == trait) %>% pull(exposure.sample_size)
+    
     # MR against every BC subtype outcome
     trait_vs_subtypes<-tibble()
     for (bc_type in names(bc_data)){
@@ -120,6 +141,20 @@ for (i in 1:length(traits)){
         # Harmonise 
         harmonised <- harmonise_data(exposure_dat = trait1_exp, 
                                  outcome_dat = outcome_mediator_trait1)
+        # steiger
+     
+        ss_data <- bcac_lookup %>% filter(full_data == bc_type) %>% select(sample.size, ncase, ncontrol)
+        outcome_ss = ss_data$sample.size
+        outcome_ncase = ss_data$ncase
+        outcome_ncontrol =ss_data$ncontrol
+        
+        streiger_res =  calc_steiger(harmonised, 
+                                 exposure_ss = exposure_ss, 
+                                 outcome_ss = outcome_ss,
+                                 outcome_ncase = outcome_ncase,
+                                 outcome_ncontrol = outcome_ncontrol) 
+  
+        
         # Perform MR
         res <- mr(harmonised, method_list=c('mr_ivw','mr_egger_regression','mr_weighted_median', 'mr_wald_ratio')) 
         
@@ -132,10 +167,11 @@ for (i in 1:length(traits)){
                         arrange(method)
             
               # sensitivity
-            if (dim(harmonised)[1]>1 & unique(res$method) != "Wald ratio"){
+            if (dim(harmonised)[1]>1 & length(unique(res$method))>1){
               res_sens <-
                 full_join(mr_pleiotropy_test(harmonised),
                         mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
+                left_join(streiger_res$summary) %>% 
               split_outcome() %>%
               split_exposure() %>% 
               rename(egger_intercept_pval = pval,
@@ -158,14 +194,20 @@ for (i in 1:length(traits)){
          trait_vs_subtypes <- trait_vs_subtypes  %>% select(-id.outcome) %>% distinct()
 
          
-         mr_res <- trait_vs_subtypes   %>% select(-starts_with('egger_intercept'), -starts_with('Q'))
-         sens_res <- trait_vs_subtypes %>% select(id.exposure, exposure, outcome, method, nsnp,
-                                                  starts_with('egger_intercept'), starts_with('Q'), ) %>% 
-                                            filter(method != 'Weighted median')
+         mr_res <- trait_vs_subtypes   %>% 
+           select(id.exposure:or_uci95)
+         
+         sens_res <- trait_vs_subtypes %>% 
+           select(any_of(c('id.exposure', 'exposure', 'outcome', 'method', 'nsnp',
+                    "egger_intercept", "egger_intercept_se","egger_intercept_pval"  , 
+                    "Q" , "Q_df" ,"Q_pval",
+                    'Fst', 'total_r2', 'correct_causal_direction', 'steiger_pval',  "snp_r2.exposure" ,"snp_r2.outcome" ))) %>% 
+           filter(method != 'Weighted median')
          
          ind_res_dir <- paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/")
-         write_tsv(mr_res, paste0(ind_res_dir, "MR_", trait,"-to-BCAC2020_subtypes.tsv" ))
-         write_tsv(sens_res, paste0(ind_res_dir, "sens_", trait,"-to-BCAC2020_subtypes.tsv" ))
+         
+         write_tsv(mr_res, paste0(ind_res_dir, "MR_", trait,"-to-BCAC2020_subtypesV3.tsv" ))
+         write_tsv(sens_res, paste0(ind_res_dir, "sens_", trait,"-to-BCAC2020_subtypesV3.tsv" ))
           
            
 } 
@@ -177,11 +219,14 @@ for (i in 1:length(traits)){
 # join all files into one df
 
 all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/"), pattern = paste0("^MR*"), full.names = T)
+all.files<- all.files[grepl("V3", all.files)]
 l <- lapply(all.files, read_tsv, show_col_types = FALSE)
-all_res<- bind_rows(l) %>% filter(id.exposure %in% traits)
+all_res<- bind_rows(l) %>% filter(id.exposure %in% ids)
+length(ids)
+length(unique(all_res$id.exposure))# 202
 
 all_res<- all_res %>% 
-  select(-exposure_name, -exposure_cat) %>% 
+  #select(-exposure_cat) %>% 
   mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
   mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
                             ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
@@ -203,7 +248,8 @@ all_res<- all_res %>%
   rename(id.exposure = exposure.id , exposure = exposure.trait)
 
 
-write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020.tsv"))
+write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020V3.tsv"))
+length(unique(all_res$id.exposure))
 ```
 
 
@@ -211,8 +257,10 @@ write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits
 ```{r}
 # join all SENS files into one df
 all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure"), pattern = paste0("^sens*"), full.names = T)
+all.files<- all.files[grepl("V3", all.files)]
+
 l <- lapply(all.files, read_tsv, show_col_types = FALSE)
-all_res<- bind_rows(l) %>% filter(id.exposure %in% traits)
+all_res<- bind_rows(l) %>% filter(id.exposure %in% ids)
 
 all_res <- all_res %>%   mutate(outcome =
                      case_when(outcome == 'Luminal B-HER2 negative' ~ 'LuminalB1 ER+PR+HER-',
@@ -224,7 +272,9 @@ all_res <- all_res %>%   mutate(outcome =
                                outcome == 'Breast cancer (overall BCAC 2020)' ~ 'Breast cancer BCAC 2020',
                                TRUE ~ outcome))
 
-write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020.tsv"))
+write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020V3.tsv"))
+all_res <-read_tsv(paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020V3.tsv"))
+
 ```
 
 

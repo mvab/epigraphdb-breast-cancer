@@ -22,7 +22,8 @@ source('app1_MR-EvE_app/functions.R')
 rm(dat)
 dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>% 
         #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr_madewR.tsv") %>% 
-      read_tsv("app1_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>%  # from 01_mr_epigraph_query.R script
+      #read_tsv("app1_MR-EvE_app/data_copy/bc_all_mr_fromCIs.tsv") %>%  # from 01_mr_epigraph_query.R script
+      read_tsv("app1_MR-EvE_app/data_copy/bc_all_mr_fromCIsV3.tsv") %>% 
       # subset 
       filter(exposure.sex != 'Males') %>% 
       #filter(mr.method != 'Steiger null') %>%  # NA results --- does not make difference to the total number of traits
@@ -35,7 +36,7 @@ dat <- #read_tsv("explore_MR-EvE_app/data_copy/bc_all_mr.tsv") %>%
       create_exposure_categories() %>% 
       add_exposure_labels() 
 
-length(unique(dat$exposure.id)) # 1643
+length(unique(dat$exposure.id)) # 1643 # 321
 dat %>% select(exposure.id, exposure.trait, exposure_cat) %>% distinct() %>% View()
 
 ```

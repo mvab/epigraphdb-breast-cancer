@@ -1,0 +1,12 @@
+value,gwas.id,gwas.name,instruments
+AKT1,prot-a-70,RAC-alpha/beta/gamma serine/threonine-protein kinase,1
+AKT1,prot-a-71,RAC-alpha/beta/gamma serine/threonine-protein kinase,1
+leukemia inhibitory factor receptor,prot-a-1736,Leukemia inhibitory factor,1
+leukemia inhibitory factor receptor,prot-a-1737,Leukemia inhibitory factor receptor,1
+MAPK1,prot-a-1845,Mitogen-activated protein kinase 1,1
+oncostatin M,prot-a-2155,Oncostatin-M,2
+STAT3,prot-a-2869,Signal transducer and activator of transcription 3,2
+VEGFA,ebi-a-GCST90000506,Vascular endothelial growth factor A levels,0
+VEGFA,prot-a-3198,Vascular endothelial growth factor A,1
+Estrogen Receptors,prot-c-2945_25_1,ER,0
+pituitary adenylate cyclase activating polypeptide,prot-a-42,Pituitary adenylate cyclase-activating polypeptide,1

@@ -1,0 +1,41 @@
+test,exposure,id.exposure,outcome,total_OR_CI,total_ED,total_OR,total_snp,direct_OR_CI,direct_ED,direct_OR,direct_snp
+met-c-887 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.07 [1.02:1.12],positive,1.0673346498873244,245
+met-c-887 / ieu-a-1126,Cholesterol esters in large VLDL,met-c-887,Breast cancer ,0.9 [0.86:0.93],negative,0.8951144570378394,12,0.98 [0.92:1.04],overlaps null,0.9753124418256988,17
+ieu-b-107 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.17 [1.05:1.31],positive,1.168985360648261,358
+ieu-b-107 / ieu-a-1126,apolipoprotein A-I,ieu-b-107,Breast cancer ,1.07 [1.01:1.12],positive,1.0673123225459629,264,0.91 [0.8:1.03],overlaps null,0.9089083175067815,385
+ukb-d-30630_irnt / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.22 [1.08:1.37],positive,1.2166237339285917,335
+ukb-d-30630_irnt / ieu-a-1126,Apoliprotein A,ukb-d-30630_irnt,Breast cancer ,1.06 [1.01:1.12],positive,1.063853804163764,222,0.88 [0.78:1],overlaps null,0.8817509167024133,309
+prot-a-132 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.09 [1.04:1.14],positive,1.086104627667888,244
+prot-a-132 / ieu-a-1126,Apolipoprotein E (isoform E2),prot-a-132,Breast cancer ,0.91 [0.84:0.97],negative,0.9056430524963712,1,0.99 [0.95:1.04],overlaps null,0.9906898464856774,2
+met-c-875 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.07 [0.99:1.16],overlaps null,1.0734241978622556,245
+met-c-875 / ieu-a-1126,Cholesterol esters in large HDL,met-c-875,Breast cancer ,1.06 [1.02:1.11],positive,1.0608691658459286,13,1 [0.93:1.07],overlaps null,1.0013614604734478,21
+met-c-910 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.07 [1.02:1.12],positive,1.0735191487863271,242
+met-c-910 / ieu-a-1126,Cholesterol esters in medium VLDL,met-c-910,Breast cancer ,0.93 [0.88:0.97],negative,0.9275504634558084,14,0.99 [0.94:1.05],overlaps null,0.9919431595128507,18
+met-c-943 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.07 [1.02:1.14],positive,1.0747869209657106,244
+met-c-943 / ieu-a-1126,Cholesterol esters in very large HDL,met-c-943,Breast cancer ,1.08 [1.03:1.13],positive,1.0762389989673944,13,1.01 [0.95:1.07],overlaps null,1.0056346348277037,19
+ieu-b-4869 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.1 [1.05:1.15],positive,1.1000863079125334,245
+ieu-b-4869 / ieu-a-1126,Bioavailable Testosterone,ieu-b-4869,Breast cancer ,1.12 [1.04:1.2],positive,1.1183526562328447,115,1.16 [1.09:1.23],positive,1.158734902783986,123
+ieu-b-4864 / ieu-a-1126,HDL cholesterol,ukb-d-30760_irnt,Breast cancer ,1.09 [1.04:1.13],ok,1.085246219154325,245,1.08 [1.04:1.13],positive,1.0845649750793904,242
+ieu-b-4864 / ieu-a-1126,Total Testosterone,ieu-b-4864,Breast cancer ,1.14 [1.06:1.23],positive,1.1403388710687088,108,1.16 [1.08:1.25],positive,1.1631910841390938,109
+prot-a-132 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.09 [1.04:1.14],positive,1.0881982856120302,244
+prot-a-132 / ieu-a-1127,Apolipoprotein E (isoform E2),prot-a-132,ER+ Breast cancer ,0.9 [0.83:0.98],negative,0.9038131015081919,1,0.98 [0.93:1.03],overlaps null,0.9809125834948684,2
+ukb-d-30630_irnt / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.23 [1.07:1.41],positive,1.229893432123091,335
+ukb-d-30630_irnt / ieu-a-1127,Apoliprotein A,ukb-d-30630_irnt,ER+ Breast cancer ,1.07 [1.01:1.12],positive,1.0652360941262085,222,0.88 [0.76:1.01],overlaps null,0.875841666346675,309
+ieu-b-107 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.18 [1.04:1.34],positive,1.182932757451236,358
+ieu-b-107 / ieu-a-1127,apolipoprotein A-I,ieu-b-107,ER+ Breast cancer ,1.07 [1.01:1.14],positive,1.0729363898410096,264,0.9 [0.79:1.03],overlaps null,0.9013083030615726,385
+met-c-875 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.05 [0.96:1.15],overlaps null,1.0527343638281854,245
+met-c-875 / ieu-a-1127,Cholesterol esters in large HDL,met-c-875,ER+ Breast cancer ,1.07 [1.02:1.13],positive,1.0708629182998628,13,1.03 [0.95:1.11],overlaps null,1.0269719305086407,21
+met-c-943 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.07 [1.01:1.14],positive,1.0729856023207027,244
+met-c-943 / ieu-a-1127,Cholesterol esters in very large HDL,met-c-943,ER+ Breast cancer ,1.09 [1.03:1.15],positive,1.087631535404572,13,1.01 [0.95:1.08],overlaps null,1.0116407987174647,19
+met-c-910 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.08 [1.03:1.14],positive,1.0795085722948705,242
+met-c-910 / ieu-a-1127,Cholesterol esters in medium VLDL,met-c-910,ER+ Breast cancer ,0.91 [0.87:0.96],negative,0.9136971229387532,14,0.99 [0.93:1.05],overlaps null,0.9898074244313414,18
+ieu-b-4864 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.09 [1.03:1.14],positive,1.0861556666248682,242
+ieu-b-4864 / ieu-a-1127,Total Testosterone,ieu-b-4864,ER+ Breast cancer ,1.19 [1.09:1.3],positive,1.1893528659910884,108,1.21 [1.12:1.31],positive,1.2093849541631405,109
+ieu-b-4869 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.11 [1.05:1.16],positive,1.105981348596812,245
+ieu-b-4869 / ieu-a-1127,Bioavailable Testosterone,ieu-b-4869,ER+ Breast cancer ,1.17 [1.09:1.26],positive,1.1728399099262452,115,1.22 [1.14:1.3],positive,1.2197044701751616,123
+met-c-887 / ieu-a-1127,HDL cholesterol,ukb-d-30760_irnt,ER+ Breast cancer ,1.09 [1.04:1.14],ok,1.089250025563043,245,1.07 [1.01:1.13],positive,1.0693956856282787,245
+met-c-887 / ieu-a-1127,Cholesterol esters in large VLDL,met-c-887,ER+ Breast cancer ,0.89 [0.84:0.93],negative,0.885319304280011,12,0.97 [0.91:1.04],overlaps null,0.9707472276357657,17
+ukb-d-30630_irnt / ieu-a-1128,HDL cholesterol,ukb-d-30760_irnt,ER- Breast cancer ,1.09 [1.02:1.16],ok,1.088710532561228,245,1.24 [1.04:1.49],positive,1.2437888486401054,335
+ukb-d-30630_irnt / ieu-a-1128,Apoliprotein A,ukb-d-30630_irnt,ER- Breast cancer ,1.07 [1:1.15],positive,1.0730991752185874,222,0.86 [0.72:1.04],overlaps null,0.8647783157353846,309
+met-c-887 / ieu-a-1128,HDL cholesterol,ukb-d-30760_irnt,ER- Breast cancer ,1.09 [1.02:1.16],ok,1.088710532561228,245,1.08 [1.01:1.17],positive,1.0845522475675704,245
+met-c-887 / ieu-a-1128,Cholesterol esters in large VLDL,met-c-887,ER- Breast cancer ,0.89 [0.81:0.98],negative,0.8919250143502039,12,1 [0.91:1.09],overlaps null,0.9977029288287989,17

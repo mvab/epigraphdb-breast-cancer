@@ -1,0 +1,255 @@
+type,id.exposure,exposure,chr.exposure,pos.exposure,SNP,beta.exposure,se.exposure,pval.exposure,effect_allele.exposure,other_allele.exposure,eaf.exposure
+exposure / risk factor,prot-a-710,Cardiotrophin-1 || id:prot-a-710,19,45411941,rs429358,0.7994,0.0308,3.46737e-148,C,T,0.15301
+exposure / risk factor,prot-a-710,Cardiotrophin-1 || id:prot-a-710,19,45541782,rs34827707,-0.6324,0.0797,2.18776e-15,A,G,0.02784
+exposure / risk factor,prot-a-710,Cardiotrophin-1 || id:prot-a-710,19,45423944,rs144311893,-0.9059,0.0845,8.51138e-27,T,C,0.02301
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,1,62922660,rs4350231,-0.084291,0.010758,8.70964e-15,A,G,0.301344
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,2,21225281,rs1042034,0.09686,0.011258,1.63005e-17,T,C,0.745398
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,2,27730940,rs1260326,-0.09786,0.010285,4.48023e-21,C,T,0.63917
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,5,74656539,rs12916,0.056629,0.010083,2.68999e-8,C,T,0.42383
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,6,43756169,rs9472125,-0.091925,0.016282,2.27997e-8,T,C,0.166066
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,7,72971728,rs13234157,-0.123009,0.015299,1.71989e-15,A,C,0.124817
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,8,19912370,rs115849089,-0.167502,0.016797,5.42001e-23,A,G,0.107442
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,8,126481747,rs2980875,-0.066595,0.009875,2.44006e-11,G,A,0.484643
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,11,116648917,rs964184,-0.236196,0.014075,5.00956e-62,C,G,0.8618
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,16,56993886,rs821840,-0.091712,0.011729,9.86052e-15,G,A,0.263992
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,17,41926126,rs72836561,0.202129,0.036062,2.86999e-8,T,C,0.025024
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,19,19366632,rs72999033,-0.16299,0.021163,2.45019e-14,T,C,0.059371
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,19,11191536,rs10401845,-0.075021,0.01321,1.88001e-8,C,T,0.179277
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,19,45418961,rs3826688,0.092329,0.0112,3.29989e-16,C,T,0.676615
+mediator from mr-eve,met-c-914,Phospholipids in medium VLDL || id:met-c-914,20,44534651,rs6065904,0.067255,0.011796,1.66001e-8,A,G,0.228793
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,7869960,rs139315125,-0.152798,0.0172941,1.00369e-18,G,A,0.0047257
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,150327106,rs11587758,-0.0184382,0.00243904,4.05509e-14,A,G,0.394123
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,77705365,rs12040629,-0.0302285,0.00323964,1.05755e-20,A,G,0.161365
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,7874975,rs228674,0.0257233,0.00404308,1.9904e-10,T,C,0.0968879
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,21256368,rs17416732,-0.0151033,0.00247515,1.04904e-9,C,T,0.373748
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,62579891,rs12140153,0.0284315,0.00415367,7.66832e-12,T,G,0.0967607
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,179338327,rs975025,0.0248254,0.0044645,2.69048e-8,T,C,0.077045
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,79419861,rs61770703,-0.0138795,0.00239604,6.93458e-9,C,T,0.520074
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,91191582,rs72720396,-0.0212689,0.00282979,5.65979e-14,G,A,0.231132
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,1,182573227,rs509476,0.0823325,0.00698321,4.46375e-32,C,T,0.969683
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,61606566,rs778147,0.0152648,0.0024799,7.49808e-10,A,C,0.633607
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,239311505,rs80271258,0.0416911,0.00422947,6.4254e-23,T,C,0.0877182
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,66750564,rs113851554,0.0298787,0.00533726,2.16865e-8,T,G,0.0566594
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,77217310,rs10520176,0.0206927,0.00239744,6.10099e-18,C,T,0.498019
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,144162609,rs10189912,0.0183096,0.00247317,1.33199e-13,G,A,0.370296
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,149390435,rs1947198,-0.0204385,0.00364723,2.09822e-8,T,C,0.122063
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,198944655,rs4417706,-0.0153237,0.00239351,1.53359e-10,T,A,0.482746
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,4651923,rs13011556,-0.0171857,0.00281078,9.71471e-10,G,C,0.239318
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,44675823,rs1067404,-0.0198366,0.00278591,1.0792e-12,G,T,0.757519
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,49750698,rs10495976,-0.0141953,0.00246291,8.24138e-9,T,A,0.391545
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,2,186210402,rs850894,0.0145002,0.00262396,3.2771e-8,T,A,0.706827
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,63564385,rs13316611,-0.0161278,0.00274317,4.12563e-9,T,G,0.256024
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,48405661,rs75815271,-0.025759,0.0045793,1.85579e-8,C,T,0.0743878
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,160755062,rs9831488,-0.0170062,0.00253204,1.86595e-11,G,A,0.348758
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,14400610,rs4685141,0.0198909,0.00358156,2.79937e-8,T,C,0.129948
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,182277971,rs2125109,0.0155273,0.00258728,1.95853e-9,T,C,0.307427
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,77215327,rs66710942,-0.014529,0.00244469,2.80008e-9,T,C,0.593473
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,185998884,rs2239626,-0.0162523,0.00260617,4.49262e-10,C,T,0.303496
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,3,18200346,rs1107268,0.0134836,0.00244772,3.61885e-8,G,A,0.403609
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,4,83279041,rs6846730,0.0155144,0.00283296,4.3445e-8,T,C,0.231045
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,4,137083193,rs1296328,0.0157883,0.00241688,6.47739e-11,C,A,0.559914
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,5,88170066,rs304136,0.0149096,0.00239185,4.5672e-10,C,T,0.476554
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,5,152204741,rs67988891,-0.0179504,0.00256678,2.68906e-12,G,C,0.319237
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,6,166263488,rs9348050,0.0138817,0.00239075,6.38807e-9,C,T,0.510503
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,6,13183998,rs9381812,-0.0174062,0.00261703,2.9134e-11,G,A,0.296604
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,6,55142337,rs2653349,0.0267733,0.00290186,2.82033e-20,G,A,0.783617
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,6,153105795,rs75284686,-0.0855377,0.0118573,5.44753e-13,T,C,0.0103826
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,6,33355103,rs9278039,0.0188931,0.00340343,2.83975e-8,C,T,0.143414
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,6,110244765,rs60616179,0.0331401,0.005292,3.79848e-10,G,A,0.0545494
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,7,24082063,rs10280205,0.0149636,0.00258998,7.59032e-9,C,T,0.30719
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,7,96474878,rs4729303,-0.0213842,0.00306667,3.1067e-12,T,C,0.813637
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,7,102383663,rs4729854,0.0217736,0.00244372,5.12979e-19,A,T,0.487484
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,7,114116881,rs7783012,-0.013992,0.00243905,9.66563e-9,A,G,0.592219
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,7,133643778,rs2971970,0.0168253,0.0028937,6.08836e-9,G,T,0.781866
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,7,50642701,rs6967481,-0.0173287,0.00240067,5.27716e-13,T,C,0.496889
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,8,8121882,rs56265640,-0.0168399,0.00283798,2.96429e-9,A,G,0.23275
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,8,76606910,rs9987253,0.0183557,0.00288198,1.90384e-10,A,G,0.220549
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,8,33601233,rs16881183,-0.0141141,0.00246751,1.06638e-8,T,C,0.376582
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,8,116659731,rs17716502,-0.0185752,0.00296651,3.8147e-10,T,C,0.207243
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,9,37044437,rs117823615,0.0264598,0.00432492,9.48899e-10,G,C,0.0849632
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,9,140257189,rs28458909,0.0297926,0.00360916,1.52862e-16,T,C,0.124833
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,9,8450638,rs6477309,-0.0141469,0.00254281,2.64624e-8,T,C,0.665589
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,9,76484268,rs77598468,0.0386486,0.00649595,2.6903e-9,A,C,0.0351899
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,10,55964743,rs10825272,0.0200075,0.00340636,4.26963e-9,A,G,0.144956
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,11,33759092,rs11032362,-0.0236597,0.00416117,1.3029e-8,A,G,0.0904288
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,11,122818795,rs11218901,0.0190902,0.00349458,4.69008e-8,T,C,0.136037
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,11,43893093,rs7111355,0.0178815,0.00325198,3.83028e-8,A,G,0.83716
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,11,58296806,rs11605297,0.016942,0.00282936,2.12794e-9,A,G,0.233288
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,63514094,rs73325957,0.0190246,0.00344994,3.50131e-8,C,T,0.140107
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,38289817,rs11181153,0.0174218,0.00242871,7.34007e-13,T,C,0.585779
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,38908389,rs7313852,0.0219527,0.00241684,1.06047e-19,A,G,0.435431
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,90428028,rs73208536,-0.0147285,0.00244154,1.61644e-9,G,A,0.395296
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,121029604,rs80097534,0.0234436,0.00405176,7.21357e-9,T,G,0.0993479
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,24065752,rs7302062,0.0134881,0.00240147,1.94922e-8,C,T,0.448054
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,34018179,rs7308565,-0.0150828,0.0024623,9.05128e-10,T,C,0.400852
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,12,38033268,rs7316768,0.0146758,0.00243973,1.79709e-9,T,G,0.402784
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,13,94065186,rs2762088,-0.0153577,0.0028095,4.59759e-8,G,T,0.759974
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,13,59623062,rs2322000,-0.015372,0.00257549,2.39624e-9,T,A,0.320935
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,13,77571532,rs7317373,0.0553193,0.00659361,4.88877e-17,C,T,0.0341208
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,14,41002929,rs1958885,0.0147766,0.00268393,3.68282e-8,G,T,0.728656
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,14,74669893,rs4899502,0.014098,0.00257866,4.57583e-8,A,G,0.689166
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,14,101021218,rs12432176,-0.0150304,0.0024691,1.14905e-9,A,C,0.380225
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,16,53800954,rs1421085,-0.022268,0.0024365,6.32121e-20,C,T,0.40212
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,16,56188593,rs1190652,-0.0240641,0.0043932,4.31529e-8,G,T,0.91966
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,16,72210865,rs17604349,0.0193793,0.00313708,6.52064e-10,A,G,0.177489
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,16,52684916,rs12927162,0.0212584,0.00266752,1.60066e-15,G,A,0.277378
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,16,56364030,rs4784655,0.0147098,0.00256601,9.90262e-9,C,G,0.321233
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,17,65475332,rs2364972,-0.0131243,0.00239824,4.4415e-8,G,A,0.464561
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,17,8061708,rs4792268,0.0337363,0.00438892,1.51426e-14,A,G,0.919509
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,17,17399635,rs2232839,0.0194209,0.0029326,3.53916e-11,T,C,0.218464
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,17,34011819,rs12949341,0.0141893,0.00253803,2.26391e-8,G,A,0.330901
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,18,5186019,rs62082401,-0.0218407,0.0030454,7.42335e-13,G,C,0.190402
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,18,38018996,rs4527088,0.0171556,0.00243959,2.03845e-12,G,A,0.411272
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,18,56824041,rs9964420,0.0209231,0.00260667,1.00415e-15,A,C,0.305115
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,20,17348608,rs6131942,-0.0134549,0.00242485,2.87939e-8,G,A,0.578649
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,21,40555561,rs117143374,0.0196182,0.00343206,1.09051e-8,C,T,0.141984
+mediator from mr-eve,ukb-a-11,Morning/evening person (chronotype) || id:ukb-a-11,22,40704052,rs139911,0.0186126,0.00242279,1.56711e-14,T,C,0.576139
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,1,241054465,rs261809,-0.00962858,0.00167902,9.80009e-9,G,A,0.540636
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,1,44031793,rs11586016,0.00987818,0.00173034,1.09999e-8,C,G,0.371004
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,1,72270797,rs12137234,0.0102051,0.00183744,2.80001e-8,T,C,0.303772
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,1,91191582,rs72720396,0.0114265,0.00198541,8.70001e-9,G,A,0.229157
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,1,204603861,rs11811826,0.0132178,0.0020058,4.40048e-11,A,T,0.224231
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,1,72748669,rs3101339,0.0142595,0.00170546,6.20012e-17,C,A,0.603285
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,1,98327133,rs75641275,-0.0141613,0.00238518,2.90001e-9,C,A,0.143372
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,2,60231826,rs7582086,-0.00962821,0.00167381,8.79995e-9,T,G,0.468273
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,2,60718347,rs7599488,-0.0104154,0.00168729,6.69993e-10,T,C,0.426408
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,2,101022726,rs4149513,0.01173,0.00167139,2.19989e-12,A,G,0.493537
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,2,166183577,rs17184707,-0.0114381,0.00204011,2.1e-8,T,C,0.212811
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,3,18763543,rs4269101,-0.0138099,0.00185921,1.10002e-13,G,T,0.718948
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,3,43941406,rs11720884,0.0111797,0.00193554,7.59994e-9,G,A,0.250137
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,3,147239337,rs57499472,0.00991231,0.00171869,8.10009e-9,C,T,0.404131
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,4,2862190,rs10026792,0.0108465,0.0018423,3.89996e-9,A,G,0.290404
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,4,37175523,rs1648404,0.00941595,0.00167357,1.79999e-8,T,C,0.476112
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,6,31540429,rs746868,-0.0129055,0.00171452,5.19996e-14,G,C,0.614662
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,6,98547979,rs9385269,0.0120673,0.00168183,7.19946e-13,T,C,0.524565
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,6,25430149,rs2328887,0.0189482,0.00277607,8.80035e-12,C,T,0.899467
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,7,153485282,rs2533273,-0.00987659,0.00167714,3.89996e-9,A,C,0.48453
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,7,132716502,rs7808471,-0.0115362,0.00178604,1.09999e-10,C,T,0.322136
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,7,2109821,rs11772627,0.0183338,0.00217099,2.99985e-17,C,G,0.18202
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,8,144258705,rs7829800,-0.0104463,0.00178709,5.1e-9,G,A,0.671041
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,10,22058137,rs10740991,0.016739,0.00185722,1.99986e-19,C,G,0.717606
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,10,64988931,rs7916868,0.00960741,0.00167167,9.09997e-9,T,A,0.503499
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,10,126723567,rs893856,-0.013361,0.00234923,1.29999e-8,A,G,0.148988
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,11,66292908,rs10896126,-0.015009,0.00181919,1.59993e-16,G,A,0.303582
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,11,43622423,rs11037497,0.0104396,0.00168442,5.69994e-10,C,G,0.446175
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,11,95523433,rs1622515,0.00991719,0.00167077,2.90001e-9,G,A,0.484704
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,12,108618630,rs3764002,0.0131215,0.00190081,5.10035e-12,T,C,0.261416
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,14,72170969,rs4140799,0.0094566,0.0016784600000000001,1.79999e-8,A,G,0.531856
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,14,22038125,rs34162196,-0.0223628,0.00277168,7.10068e-16,T,C,0.101001
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,14,77433198,rs10129747,0.00935902,0.00168126,2.59998e-8,G,A,0.530254
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,15,47821612,rs1797235,-0.0100206,0.00174235,8.9e-9,C,G,0.374623
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,15,45319982,rs11632215,-0.0141434,0.00258382,4.39997e-8,C,A,0.120179
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,16,73602926,rs862227,-0.0091646,0.00167238,4.30002e-8,G,A,0.458327
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,16,52105988,rs1582322,0.00994346,0.00171571,6.80002e-9,G,A,0.604805
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,17,56419228,rs62084586,0.0133946,0.00226174,3.2e-9,C,T,0.165729
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,17,1373612,rs8081370,-0.0166666,0.00293795,1.40001e-8,T,C,0.910232
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,18,21117571,rs4800488,0.0119836,0.00167202,7.70016e-13,A,C,0.489858
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,18,57850583,rs17175518,0.0114962,0.00197514,5.89997e-9,A,C,0.232775
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,18,60233646,rs11152349,0.00991215,0.0018176,4.90004e-8,A,G,0.302856
+mediator from mr-eve,ukb-b-16576,Dried fruit intake || id:ukb-b-16576,19,45411941,rs429358,0.0199445,0.00231362,6.70039e-18,C,T,0.154208
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,1,55636240,rs72660594,-0.175088,0.028825,1.83e-9,C,T,0.035214
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,1,62960250,rs1168041,0.093668,0.011223,1.42988e-16,C,T,0.721994
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,2,27730940,rs1260326,-0.094448,0.010203,5.01996e-20,C,T,0.63891
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,2,21225281,rs1042034,0.108877,0.011169,4.9204e-22,T,C,0.745345
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,5,74639178,rs3846661,0.065549,0.010007,8.94953e-11,G,A,0.424866
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,7,72982874,rs17145738,-0.109965,0.015025,4.33012e-13,T,C,0.125425
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,8,19912370,rs115849089,-0.163505,0.016666,2.66993e-22,A,G,0.107398
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,8,126482077,rs2954021,-0.069263,0.009809,2.75994e-12,G,A,0.546371
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,11,116648917,rs964184,-0.234013,0.01397,8.66962e-62,C,G,0.861763
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,16,56991363,rs183130,-0.104531,0.011843,2.39001e-18,T,C,0.294505
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,17,41926126,rs72836561,0.207536,0.035842,9.94008e-9,T,C,0.024935
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,19,45418961,rs3826688,0.092171,0.011112,2.19989e-16,C,T,0.67682
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,19,19366632,rs72999033,-0.176128,0.021006,1.03992e-16,T,C,0.059269
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,19,19919422,rs141110858,-0.141357,0.025352,3.40001e-8,A,G,0.05382
+mediator from mr-eve,met-c-909,Total cholesterol in medium VLDL || id:met-c-909,19,11191536,rs10401845,-0.088453,0.013113,2.44006e-11,C,T,0.179052
+mediator from mr-eve,met-c-922,Concentration of small HDL particles || id:met-c-922,2,27730940,rs1260326,-0.08658,0.01061,5.41003e-16,C,T,0.636562
+mediator from mr-eve,met-c-922,Concentration of small HDL particles || id:met-c-922,15,58869185,rs73424577,-0.164518,0.029234,2.30001e-8,G,A,0.036006
+mediator from mr-eve,met-c-922,Concentration of small HDL particles || id:met-c-922,15,58678512,rs10468017,-0.105282,0.011171,8.12082e-21,T,C,0.313616
+mediator from mr-eve,met-c-922,Concentration of small HDL particles || id:met-c-922,15,58725839,rs633695,-0.083851,0.011354,2.25009e-13,G,A,0.293077
+mediator from mr-eve,met-c-922,Concentration of small HDL particles || id:met-c-922,20,44551855,rs6073958,0.202344,0.012829,2.61999e-55,C,T,0.195862
+mediator from mr-eve,prot-a-366,Calpastatin || id:prot-a-366,10,101829514,rs61751507,-0.6688,0.0589,7.4131e-30,T,C,0.04472
+mediator from mr-eve,prot-a-366,Calpastatin || id:prot-a-366,11,87982859,rs57510498,-0.1415,0.0259,4.67735e-8,G,A,0.62068
+mediator from mr-eve,prot-a-366,Calpastatin || id:prot-a-366,17,26694861,rs704,-0.1405,0.0246,1.07152e-8,A,G,0.46665
+mediator from mr-eve,prot-a-366,Calpastatin || id:prot-a-366,20,3675498,rs709012,0.1486,0.025,2.95121e-9,G,T,0.59971
+mediator from mr-eve,prot-a-305,Complement C1q tumor necrosis factor-related protein 5 || id:prot-a-305,5,131461341,rs152197,0.21560000000000001,0.0334,1.12202e-10,T,C,0.16786
+mediator from mr-eve,prot-a-305,Complement C1q tumor necrosis factor-related protein 5 || id:prot-a-305,5,131567924,rs11955347,-0.2464,0.0245,9.12011e-24,A,G,0.47186
+mediator from mr-eve,prot-a-305,Complement C1q tumor necrosis factor-related protein 5 || id:prot-a-305,6,31324023,rs9266141,0.1755,0.031,1.58489e-8,G,C,0.23402
+mediator from mr-eve,prot-a-305,Complement C1q tumor necrosis factor-related protein 5 || id:prot-a-305,11,119207341,rs2248863,0.3261,0.0345,3.54813e-21,A,G,0.14179
+mediator from mr-eve,prot-a-305,Complement C1q tumor necrosis factor-related protein 5 || id:prot-a-305,12,99025406,rs61932023,-0.1884,0.026,3.89045e-13,C,A,0.3319
+mediator from mr-eve,ukb-d-1418_3,Milk type used: Skimmed || id:ukb-d-1418_3,1,72811904,rs11209948,0.00535716,9.63258e-4,2.67658e-8,T,G,0.599691
+mediator from mr-eve,ukb-d-1418_3,Milk type used: Skimmed || id:ukb-d-1418_3,11,47650993,rs3817334,0.00564232,9.60284e-4,4.21493e-9,T,C,0.407661
+mediator from mr-eve,ukb-d-1418_3,Milk type used: Skimmed || id:ukb-d-1418_3,12,97916146,rs10777875,-0.00665365,0.00115574,8.56781e-9,A,G,0.783523
+mediator from mr-eve,ukb-d-1418_3,Milk type used: Skimmed || id:ukb-d-1418_3,16,53809123,rs55872725,0.00849863,9.64085e-4,1.1995e-18,T,C,0.402076
+mediator from mr-eve,met-c-900,Free cholesterol in medium HDL || id:met-c-900,1,230309619,rs590820,-0.061641,0.010121,1.59001e-9,G,A,0.436583
+mediator from mr-eve,met-c-900,Free cholesterol in medium HDL || id:met-c-900,8,9183358,rs9987289,0.107267,0.015122,2.08018e-12,G,A,0.881901
+mediator from mr-eve,met-c-900,Free cholesterol in medium HDL || id:met-c-900,8,19885513,rs75835816,-0.227901,0.038116,3.12997e-9,C,G,0.0194
+mediator from mr-eve,met-c-900,Free cholesterol in medium HDL || id:met-c-900,16,56990716,rs247617,0.158606,0.010817,7.51969e-48,A,C,0.297517
+mediator from mr-eve,met-c-900,Free cholesterol in medium HDL || id:met-c-900,18,47167407,rs4939884,0.082776,0.012938,2.30999e-10,C,T,0.830432
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,1,55334001,rs190934192,-0.250017,0.040024,6.72001e-10,A,G,0.023981
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,1,55505647,rs11591147,-0.33771,0.034863,1.03992e-21,T,G,0.030715
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,1,56801542,rs3005923,-0.221776,0.036237,1.47001e-9,A,G,0.027565
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,1,109818530,rs646776,0.070499,0.011954,5.62005e-9,T,C,0.780066
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,2,21471603,rs1848922,0.091968,0.012095,5.75043e-14,C,T,0.782838
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,2,21204025,rs6544366,-0.105646,0.010987,2.05022e-21,T,G,0.267876
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,4,74813227,rs182695896,0.268259,0.040848,8.62979e-11,C,A,0.019221
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,4,73406173,rs144064722,0.201214,0.03405,5.25001e-9,G,A,0.025283
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,5,74619639,rs79225634,0.078118,0.010472,1.69005e-13,T,C,0.336963
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,8,19912370,rs115849089,-0.124614,0.01668,1.54989e-13,A,G,0.107412
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,8,126481747,rs2980875,-0.066648,0.009799,1.81009e-11,G,A,0.484523
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,11,116648917,rs964184,-0.188319,0.013994,2.29985e-40,C,G,0.861772
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,16,56993324,rs3764261,-0.102518,0.010739,3.97009e-21,A,C,0.299039
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,19,45411941,rs429358,0.138085,0.013393,2.22998e-24,C,T,0.169993
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,19,11190652,rs142130958,-0.172682,0.016403,2.38013e-25,A,G,0.105495
+mediator from mr-eve,met-c-927,Total cholesterol in small VLDL || id:met-c-927,19,19366632,rs72999033,-0.147038,0.021018,4.75007e-12,T,C,0.059265
+mediator from mr-eve,prot-a-2073,Pro-FMRFamide-related neuropeptide FF || id:prot-a-2073,16,6023323,rs1076382,-0.4275,0.0751,1.28825e-8,G,A,0.02876
+mediator from mr-eve,prot-a-2073,Pro-FMRFamide-related neuropeptide FF || id:prot-a-2073,17,26694861,rs704,0.4225,0.0236,7.58578e-72,A,G,0.46665
+mediator from mr-eve,prot-a-2073,Pro-FMRFamide-related neuropeptide FF || id:prot-a-2073,19,54320939,rs62143198,0.56,0.0292,3.16228e-82,A,G,0.21453
+mediator from mr-eve,prot-a-1506,Interleukin-21 || id:prot-a-1506,6,32606912,rs28383364,0.2669,0.0308,5.12861e-18,G,A,0.19996
+mediator from mr-eve,prot-a-1506,Interleukin-21 || id:prot-a-1506,6,32421469,rs3129897,-0.3747,0.0332,1.69824e-29,A,G,0.15627
+mediator from mr-eve,prot-a-1506,Interleukin-21 || id:prot-a-1506,12,7181105,rs12368181,-0.3688,0.0362,1.99526e-24,G,A,0.13305
+mediator from mr-eve,prot-a-1506,Interleukin-21 || id:prot-a-1506,14,106188309,rs11624581,0.1547,0.0279,3.0903e-8,T,C,0.65137
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,8,9187242,rs1461729,0.093989,0.014485,1.31999e-10,G,A,0.869708
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,8,19815852,rs291,0.096436,0.011678,2.90001e-16,C,T,0.23101
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,8,19750044,rs59347135,-0.167157,0.028586,7.03008e-9,G,C,0.043109
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,9,107664301,rs1883025,-0.076062,0.01246,1.5e-9,T,C,0.193655
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,11,61619829,rs174594,0.068823,0.010278,3.34965e-11,A,C,0.58932
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,11,116721405,rs111894427,0.133814,0.02204,1.83e-9,T,C,0.052024
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,12,125353810,rs67053123,0.080931,0.014549,3.63003e-8,A,T,0.1485
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,15,58680178,rs261291,0.128746,0.010195,6.79986e-36,C,T,0.373202
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,15,58874532,rs60439253,0.175786,0.028248,7.17993e-10,T,C,0.035229
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,15,58724706,rs11632618,0.158495,0.023091,1.07004e-11,A,G,0.059606
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,16,56990716,rs247617,0.227319,0.010776,5.7597e-97,A,C,0.297503
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,18,47176261,rs6507939,0.092625,0.01346,9.47982e-12,C,A,0.84338900000000006
+mediator from mr-eve,met-c-864,Total cholesterol in HDL || id:met-c-864,20,43042364,rs1800961,-0.15675,0.026493,4.67003e-9,T,C,0.036404
+mediator from mr-eve,prot-a-586,Dual specificity protein kinase CLK2 || id:prot-a-586,1,196657064,rs570618,-0.1789,0.0253,1.51356e-12,G,T,0.61149
+mediator from mr-eve,prot-a-586,Dual specificity protein kinase CLK2 || id:prot-a-586,5,40972211,rs74480769,-0.404,0.0734,3.71535e-8,G,A,0.0317
+mediator from mr-eve,prot-a-586,Dual specificity protein kinase CLK2 || id:prot-a-586,17,26694861,rs704,0.4086,0.0237,7.07946e-67,A,G,0.46665
+mediator from mr-eve,prot-a-2891,Extracellular sulfatase Sulf-2 || id:prot-a-2891,3,186393786,rs7614709,0.2311,0.0299,1.20226e-14,A,G,0.21475
+mediator from mr-eve,prot-a-2891,Extracellular sulfatase Sulf-2 || id:prot-a-2891,12,57770098,rs7971133,-0.2304,0.0284,4.57088e-16,T,C,0.24029
+mediator from mr-eve,prot-a-2891,Extracellular sulfatase Sulf-2 || id:prot-a-2891,17,52967416,rs117978438,0.3311,0.0602,3.80189e-8,A,G,0.04499
+mediator from mr-eve,prot-a-2891,Extracellular sulfatase Sulf-2 || id:prot-a-2891,19,54321933,rs10424405,0.3055,0.0299,1.54882e-24,G,A,0.2203
+mediator from mr-eve,prot-a-2744,SLAM family member 7 || id:prot-a-2744,1,196655743,rs10801553,-0.2121,0.0252,4.2658e-17,C,A,0.61291
+mediator from mr-eve,prot-a-2744,SLAM family member 7 || id:prot-a-2744,5,40972211,rs74480769,-0.5135,0.0732,2.34423e-12,G,A,0.0317
+mediator from mr-eve,prot-a-2744,SLAM family member 7 || id:prot-a-2744,17,26694861,rs704,0.3761,0.0238,3.54813e-56,A,G,0.46665
+mediator from mr-eve,prot-a-1411,Alpha-L-iduronidase || id:prot-a-1411,4,985727,rs3822020,0.608,0.0235,7.24436e-148,G,A,0.63658
+mediator from mr-eve,prot-a-1411,Alpha-L-iduronidase || id:prot-a-1411,4,1187703,rs142576171,0.5106,0.0673,3.23594e-14,A,G,0.03611
+mediator from mr-eve,prot-a-1411,Alpha-L-iduronidase || id:prot-a-1411,10,65333648,rs6479908,-0.1391,0.0251,2.95121e-8,G,C,0.46934
+mediator from mr-eve,prot-a-1411,Alpha-L-iduronidase || id:prot-a-1411,12,102220783,rs7964859,-0.2399,0.027,7.24436e-19,G,C,0.2939
+mediator from mr-eve,prot-a-3093,Protein-tyrosine sulfotransferase 2 || id:prot-a-3093,9,136149711,rs115478735,0.3201,0.0318,7.94328e-24,T,A,0.17824
+mediator from mr-eve,prot-a-3093,Protein-tyrosine sulfotransferase 2 || id:prot-a-3093,11,117067699,rs8521,-0.1872,0.0294,1.90546e-10,T,C,0.77445
+mediator from mr-eve,prot-a-3093,Protein-tyrosine sulfotransferase 2 || id:prot-a-3093,19,54327313,rs34436714,-0.2243,0.0299,6.76083e-14,A,C,0.21294
+mediator from mr-eve,prot-a-3093,Protein-tyrosine sulfotransferase 2 || id:prot-a-3093,22,26924456,rs2283824,0.2429,0.0246,6.0256e-23,A,G,0.41694
+mediator from mr-eve,ukb-a-487,Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging) || id:ukb-a-487,1,97595236,rs79313673,0.0096238,0.00146271,4.72933e-11,C,T,0.209808
+mediator from mr-eve,ukb-a-487,Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging) || id:ukb-a-487,11,57665336,rs674094,0.00844651,0.001295,6.92947e-11,C,A,0.700871
+mediator from mr-eve,ukb-a-487,Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging) || id:ukb-a-487,13,77049857,rs9573867,-0.00835758,0.00145408,9.05566e-9,G,A,0.209777
+mediator from literature,prot-a-70,RAC-alpha/beta/gamma serine/threonine-protein kinase || id:prot-a-70,19,54327869,rs10418046,0.4004,0.0292,6.76083e-43,G,T,0.21727
+mediator from literature,prot-a-71,RAC-alpha/beta/gamma serine/threonine-protein kinase || id:prot-a-71,19,54320939,rs62143198,0.4389,0.0298,3.46737e-49,A,G,0.21453
+mediator from literature,prot-a-1736,Leukemia inhibitory factor || id:prot-a-1736,17,26716821,rs4795433,-0.2008,0.0243,1.38038e-16,T,C,0.50963
+mediator from literature,prot-a-1737,Leukemia inhibitory factor receptor || id:prot-a-1737,9,136155000,rs635634,-0.2996,0.0319,6.0256e-21,T,C,0.17981
+mediator from literature,prot-a-1845,Mitogen-activated protein kinase 1 || id:prot-a-1845,19,54320939,rs62143198,0.5009,0.0295,9.12011e-65,A,G,0.21453
+mediator from literature,prot-a-2155,Oncostatin-M || id:prot-a-2155,1,196657064,rs570618,-0.1732,0.0253,7.58578e-12,G,T,0.61149
+mediator from literature,prot-a-2155,Oncostatin-M || id:prot-a-2155,5,40972211,rs74480769,-0.5281,0.0732,5.37032e-13,G,A,0.0317
+mediator from literature,prot-a-2869,Signal transducer and activator of transcription 3 || id:prot-a-2869,4,12656113,rs77903926,0.4362,0.0786,2.88403e-8,C,T,0.0301
+mediator from literature,prot-a-2869,Signal transducer and activator of transcription 3 || id:prot-a-2869,19,54320939,rs62143198,0.412,0.0299,3.16228e-43,A,G,0.21453
+mediator from literature,prot-a-3198,Vascular endothelial growth factor A || id:prot-a-3198,6,43925607,rs6921438,-0.4199,0.0236,7.76247e-71,A,G,0.49684
+mediator from literature,prot-a-42,Pituitary adenylate cyclase-activating polypeptide || id:prot-a-42,19,54319624,rs62143194,-0.1683,0.0306,3.80189e-8,G,C,0.22364

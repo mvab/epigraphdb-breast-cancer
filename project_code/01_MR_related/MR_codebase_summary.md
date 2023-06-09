@@ -58,6 +58,9 @@ Legacy / supplementary:
 	* `all_mreve_bc_results.csv` - full 2332 traits, to be used as Supl data 1, with extra columns added.
 	
 
+**UPD** -  `01_mr_epigraphdb_queryV3.R` - does it only in 3 discovery samples+ does FDR immediately 
+
+
 2. **Tidy up MR-EvE output and split it into categories** `02_explore_mr_results.Rmd` 
 
 	Using the output from the previous step, we add exposure/outcome labels, perform minor filtering/exclusions, and explore each trait category in interactive plots. The interactive plots are equivalent to the RShiny app, but less refined. The output df can be used for more directed filtering (ignoring actual trait names) (done in the next script).
@@ -69,6 +72,8 @@ Legacy / supplementary:
 	* anything that does not fall into 12 categories defined in functions
 	
 	Output: `tidy_traits_by_cat.tsv`(n = 1643 -> 905)
+	
+	**UPD** 02_explore_mr_resultsV3.Rmd - - does it only in 3 discovery samples; new antro traits processing
 	
 
 3. **Traits processing and validation summary**
@@ -113,6 +118,8 @@ Legacy / supplementary:
 		
 		- `all_traits_MR_vs_BCAC2020.tsv`	
 		- `all_traits_sensMR_vs_BCAC2020.tsv`	
+		
+		**UPD** this step is done prior to the one above
 
 5. **Query and process potential mediators from MR-EvE** `04_query_mreve_mediators.R`
 

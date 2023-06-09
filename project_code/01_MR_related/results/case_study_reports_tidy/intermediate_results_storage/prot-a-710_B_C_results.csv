@@ -1,0 +1,91 @@
+exposure,outcome,mediator.id,mediator,"step1: 
+ exposure -> mediator 
+ (beta_CI); 
+ p.val, p.val.adj",nSNPs (step1),"step2: 
+ mediator -> outcome 
+  (OR_CI); 
+ p.val, p.val.adj",nSNPs (step2),outcome.id
+Cardiotrophin-1,ER+ Breast cancer ,met-c-914,Phospholipids in medium VLDL,"0.1 [0:0.2];
+0.042, 0.045",3,"0.9 [0.86:0.94];
+3.9e-06, 0.00011",15,ieu-a-1127
+Cardiotrophin-1,ER+ Breast cancer ,ukb-a-11,Morning/evening person (chronotype),"-0.02 [-0.02:-0.01];
+1.5e-06, 8.6e-06",3,"1.4 [1.2:1.64];
+2.9e-05, 0.00041",77,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,ukb-b-16576,Dried fruit intake,"0.02 [0.02:0.03];
+3.8e-21, 1.1e-19",3,"0.54 [0.4:0.73];
+6.3e-05, 0.00058",40,ieu-a-1126
+Cardiotrophin-1,Breast cancer ,met-c-914,Phospholipids in medium VLDL,"0.1 [0:0.2];
+0.042, 0.045",3,"0.91 [0.87:0.96];
+1e-04, 0.00072",15,ieu-a-1126
+Cardiotrophin-1,Breast cancer ,ukb-a-11,Morning/evening person (chronotype),"-0.02 [-0.02:-0.01];
+1.5e-06, 8.6e-06",3,"1.31 [1.13:1.51];
+0.00034, 0.0019",77,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,met-c-909,Total cholesterol in medium VLDL,"0.11 [0.02:0.2];
+0.013, 0.022",3,"0.92 [0.87:0.96];
+0.00072, 0.0034",15,ieu-a-1127
+Cardiotrophin-1,ER+ Breast cancer ,met-c-922,Concentration of small HDL particles,"0.06 [0:0.11];
+0.048, 0.048",3,"0.9 [0.84:0.96];
+0.0011, 0.0037",5,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,prot-a-366,Calpastatin,"-0.1 [-0.18:-0.02];
+0.02, 0.026",3,"1.06 [1.02:1.09];
+0.0013, 0.0037",4,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,prot-a-305,Complement C1q tumor necrosis factor-related protein 5,"-0.12 [-0.19:-0.04];
+0.0017, 0.004",3,"0.92 [0.87:0.97];
+0.0014, 0.0037",4,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,prot-a-305,Complement C1q tumor necrosis factor-related protein 5,"-0.12 [-0.19:-0.04];
+0.0017, 0.004",3,"0.92 [0.88:0.97];
+0.0014, 0.0037",4,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,ukb-d-1418_3,Milk type used: Skimmed,"0.01 [0:0.01];
+4.3e-05, 0.00017",3,"0.01 [0:0.15];
+0.0014, 0.0037",3,ieu-a-1127
+Cardiotrophin-1,ER+ Breast cancer ,prot-a-366,Calpastatin,"-0.1 [-0.18:-0.02];
+0.02, 0.026",3,"1.07 [1.02:1.13];
+0.0031, 0.0068",4,ieu-a-1127
+Cardiotrophin-1,ER+ Breast cancer ,met-c-900,Free cholesterol in medium HDL,"-0.05 [-0.1:0];
+0.042, 0.045",3,"1.12 [1.04:1.21];
+0.0031, 0.0068",5,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,met-c-909,Total cholesterol in medium VLDL,"0.11 [0.02:0.2];
+0.013, 0.022",3,"0.93 [0.88:0.98];
+0.0039, 0.0079",15,ieu-a-1126
+Cardiotrophin-1,Breast cancer ,met-c-922,Concentration of small HDL particles,"0.06 [0:0.11];
+0.048, 0.048",3,"0.92 [0.87:0.98];
+0.0043, 0.0079",5,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,met-c-927,Total cholesterol in small VLDL,"0.18 [0.14:0.22];
+9.4e-17, 1.3e-15",3,"0.93 [0.88:0.98];
+0.0045, 0.0079",16,ieu-a-1127
+Cardiotrophin-1,ER+ Breast cancer ,prot-a-2073,Pro-FMRFamide-related neuropeptide FF,"-0.08 [-0.15:-0.01];
+0.031, 0.04",3,"0.97 [0.95:0.99];
+0.0079, 0.013",3,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,prot-a-1506,Interleukin-21,"0.09 [0.01:0.16];
+0.018, 0.026",3,"1.05 [1.01:1.09];
+0.0081, 0.013",3,ieu-a-1126
+Cardiotrophin-1,Breast cancer ,met-c-900,Free cholesterol in medium HDL,"-0.05 [-0.1:0];
+0.042, 0.045",3,"1.09 [1.02:1.16];
+0.01, 0.015",5,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,met-c-864,Total cholesterol in HDL,"-0.05 [-0.08:-0.02];
+0.00059, 0.0018",3,"1.06 [1.01:1.11];
+0.01, 0.015",12,ieu-a-1127
+Cardiotrophin-1,ER+ Breast cancer ,prot-a-586,Dual specificity protein kinase CLK2,"0.18 [0.11:0.26];
+6.3e-07, 5.9e-06",3,"0.96 [0.92:0.99];
+0.012, 0.016",3,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,ukb-d-1418_3,Milk type used: Skimmed,"0.01 [0:0.01];
+4.3e-05, 0.00017",3,"0.01 [0:0.35];
+0.013, 0.016",3,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,prot-a-1506,Interleukin-21,"0.09 [0.01:0.16];
+0.018, 0.026",3,"1.05 [1:1.09];
+0.029, 0.035",3,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,prot-a-2891,Extracellular sulfatase Sulf-2,"-0.13 [-0.2:-0.06];
+0.00034, 0.0012",3,"0.96 [0.92:1];
+0.032, 0.037",3,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,prot-a-2744,SLAM family member 7,"0.13 [0.05:0.21];
+0.0012, 0.0032",3,"0.96 [0.92:1];
+0.034, 0.037",3,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,prot-a-1411,Alpha-L-iduronidase,"-0.09 [-0.17:-0.02];
+0.01, 0.019",3,"1.02 [1:1.04];
+0.034, 0.037",2,ieu-a-1126
+Cardiotrophin-1,ER+ Breast cancer ,prot-a-3093,Protein-tyrosine sulfotransferase 2,"-0.1 [-0.17:-0.03];
+0.0062, 0.012",3,"1.06 [1:1.12];
+0.041, 0.042",4,ieu-a-1127
+Cardiotrophin-1,Breast cancer ,ukb-a-487,Types of physical activity in last 4 weeks: Heavy DIY (eg: weeding  lawn mowing  carpentry  digging),"0.01 [0:0.01];
+0.0032, 0.0069",3,"0.33 [0.11:0.99];
+0.049, 0.049",3,ieu-a-1126

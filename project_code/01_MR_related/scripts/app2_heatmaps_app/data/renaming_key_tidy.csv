@@ -2,8 +2,10 @@ exposure_cat_sub,exposure.id,exposure.trait,exposure
 Alcohol,ukb-a-26,Average weekly red wine intake,Red wine intake
 Alcohol,ukb-b-1707,Average weekly spirits intake,Spirits intake
 Alcohol,ukb-d-20406,Ever addicted to alcohol,Ever addicted to alcohol
+Alcohol,ukb-a-30,Average weekly fortified wine intake (M/F) Neale Lab/2017 [241K],Fortified wine intake
 Antrophometric,ieu-a-1096,Childhood obesity,Childhood obesity
 Antrophometric,ieu-a-107,Weight,Weight
+Antrophometric,ieu-a-835,Body mass index,Body mass index
 Antrophometric,ieu-a-974,Body mass index,Body mass index
 Antrophometric,ukb-b-19953,Body mass index (BMI),Body mass index (BMI)
 Antrophometric,ukb-a-34,Comparative body size at age 10,Body size at age 10
@@ -18,12 +20,27 @@ Antrophometric,ieu-a-109,Waist-to-hip ratio,Waist-to-hip ratio
 Antrophometric,ieu-a-75,Waist-to-hip ratio,Waist-to-hip ratio
 Antrophometric,ieu-a-62,Waist circumference,Waist circumference
 Antrophometric,ukb-a-266,Whole body fat-free mass,Whole body fat-free mass
-Antrophometric,ieu-a-1034,Height,Height
+Antrophometric,ieu-a-1034,Height,Childhood height
 Antrophometric,ukb-b-16881,Sitting height,Sitting height
 Antrophometric,ukb-a-195,Sitting height,Sitting height
 Antrophometric,ukb-b-10787,Standing height,Standing height
-Antrophometric,ukb-a-35,Comparative height size at age 10,Height size at age 10
+Antrophometric,ukb-a-35,Comparative height size at age 10,"Childhood height, age 10"
 Antrophometric,ukb-a-269,Impedance of whole body,Impedance of whole body
+Antrophometric,ieu-a-2,Body mass index (M/F) Locke AE/2015 [339K],Body mass index
+Antrophometric,ukb-b-4650,body size at age 10 (M/F) MRC-IEU/2018 [454K],"Childhood body size, age 10"
+Antrophometric,ieu-a-89,Height (M/F) Wood AR/2014 [253K],Height
+Antrophometric,ieu-a-55,Hip circumference (AdjBMI) (M/F) Shungin D/2015 [211K] AdjBMI,Hip circumference
+Antrophometric,ieu-a-49,Hip circumference (M/F) Shungin D/2015 [213K],Hip circumference
+Antrophometric,ieu-a-50,Hip circumference (F) Shungin D/2015 [125K],Hip circumference
+Antrophometric,ieu-a-99,Hip circumference (F) Randall JC/2013 [ 73K],Hip circumference
+Antrophometric,ieu-a-101,Hip circumference (AdjBMI) (F) Randall JC/2013 [ 73K] AdjBMI,Hip circumference
+Antrophometric,ukb-b-19921,Impedance of whole body (M/F) MRC-IEU/2018 [454K],Impedance of whole body
+Antrophometric,ieu-a-60,Waist circumference (M/F) Shungin D/2015 [224K],Waist circumference
+Antrophometric,ieu-a-69,Waist circumference (F) Shungin D/2015 [127K] AdjBMI,Waist circumference
+Antrophometric,ieu-a-68,Waist circumference (AdjBMI) (F) Shungin D/2015 [134K] AdjBMI,Waist circumference
+Antrophometric,ieu-a-72,Waist-to-hip ratio (M/F) Shungin D/2015 [224K],Waist-to-hip ratio
+Antrophometric,ukb-b-12039,Weight (M/F) MRC-IEU/2018 [454K],Weight
+Antrophometric,ukb-b-14540,Whole body water mass (M/F) MRC-IEU/2018 [454K],Whole body water mass
 Developmental Biology,prot-a-2189,PAX-interacting protein 1,PAX-interacting protein 1
 Developmental Biology,prot-a-867,Desmocollin-3,Desmocollin-3
 Developmental Biology,prot-a-1360,Hepatocyte nuclear factor 4-alpha,Hepatocyte nuclear factor 4-alpha
@@ -42,11 +59,16 @@ Diet and supplements,ukb-b-3599,"Never eat eggs, dairy, wheat, sugar: Wheat prod
 Diet and supplements,ukb-b-6500,Pancake intake,Pancake intake
 Diet and supplements,ukb-b-8006,Poultry intake,Poultry intake
 Diet and supplements,ukb-d-1468_5,"Cereal type: Other (e.g. Cornflakes, Frosties)","Cereal type: Cornflakes, Frosties"
+Diet and supplements,ukb-d-1538_2,Major dietary changes in the last 5 years: Yes (M/F) Neale lab/2018 [360K],Major dietary change recently
+Diet and supplements,ukb-b-11189,Type of special diet followed: Gluten-free (M/F) MRC-IEU/2018 [ 64K],Gluten-free diet
+Diet and supplements,ukb-b-15555,Unsalted peanuts intake (M/F) MRC-IEU/2018 [ 64K],Unsalted peanuts intake
 Drugs,ukb-b-15895,Treatment/medication code: allopurinol,Drug: allopurinol
 Drugs,ukb-a-132,Treatment/medication code: aspirin,Drug: aspirin
 Drugs,ukb-a-153,Treatment/medication code: insulin product,Drug: insulin product
 Drugs,ukb-a-142,Treatment/medication code: allopurinol,Drug: allopurinol
 Drugs,ukb-a-117,Treatment/medication code: ramipril,Drug: ramipril
+Drugs,ukb-a-491,Medication for cholesterol  blood pressure or diabetes: Insulin (M/F) Neale Lab/2017 [154K],Medication: insulin
+Drugs,ukb-b-17616,Drug: xalatan 0.005% eye drops (M/F) MRC-IEU/2018 [462K],Medication: xalatan 0.005% eye drops
 Immune System,prot-a-710,Cardiotrophin-1,Cardiotrophin-1
 Immune System,prot-a-1530,Interleukin-3 receptor subunit alpha,Interleukin-3 receptor subunit alpha
 Immune System,prot-a-1117,Filamin-A,Filamin-A
@@ -153,6 +175,10 @@ Metabolites,met-a-519,X-11469,X-11469
 Metabolites,met-a-629,X-12510--2-aminooctanoic acid,2-aminooctanoic acid
 Metabolites,met-a-464,Serine,Serine
 Metabolites,met-a-444,X-10510,X-10510
+Metabolites,met-a-618,Decanoylcarnitine (M/F) Shin/2014 [  7K],Decanoylcarnitine
+Metabolites,met-a-615,Octanoylcarnitine (M/F) Shin/2014 [  7K],Octanoylcarnitine
+Metabolites,met-a-505,X-03056--N-[3-(2-Oxopyrrolidin-1-yl)propyl]acetamide (M/F) Shin/2014 [  7K],X-03056
+Metabolites,met-a-667,X-12850 (M/F) Shin/2014 [  6K],X-12850
 NA,prot-a-674,Beta-crystallin B2,Beta-crystallin B2
 NA,prot-a-394,C-C motif chemokine 17,C-C motif chemokine 17
 NA,prot-a-399,C-C motif chemokine 23,C-C motif chemokine 23
@@ -274,6 +300,31 @@ Physical activity,ukb-a-482,Types of physical activity in last 4 weeks: Walking 
 Physical activity,ukb-b-16886,Types of transport used (excluding work): Car/motor vehicle,Types of transport used: Car/motor vehicle
 Physical activity,ukb-b-15957,Types of transport used (excluding work): Public transport,Types of transport used: Public transport
 Physical activity,ukb-b-4711,Usual walking pace,Usual walking pace
+Physical activity,ukb-a-483,Physical activity: None of the above (M/F) Neale Lab/2017 [335K],No physical activity
+Proteins,prot-a-1154,"Alpha-(1,6)-fucosyltransferase (M/F) Sun BB/2018 [  3K]","Alpha-(1,6)-fucosyltransferase"
+Proteins,prot-a-392,C-C motif chemokine 15 (M/F) Sun BB/2018 [  3K],C-C motif chemokine 15
+Proteins,ieu-a-1015,C-reactive protein (M/F) Okada Y/2016 [ 10K],C-reactive protein 
+Proteins,prot-a-347,Calcium/calmodulin-dependent protein kinase type 1D (M/F) Sun BB/2018 [  3K],Calcium/calmodulin-dependent protein kinase type 1D
+Proteins,prot-a-426,CD209 antigen (M/F) Sun BB/2018 [  3K],CD209 antigen 
+Proteins,prot-a-197,Cyclic AMP-dependent transcription factor ATF-6 alpha (M/F) Sun BB/2018 [  3K],Cyclic AMP-dependent transcription factor ATF-6 alpha
+Proteins,prot-a-760,Cytohesin-4 (M/F) Sun BB/2018 [  3K],Cytohesin-4
+Proteins,prot-a-2486,DNA repair protein RAD51 homolog 4 (M/F) Sun BB/2018 [  3K],DNA repair protein RAD51 homolog 4
+Proteins,prot-a-884,Endothelin-converting enzyme 1 (M/F) Sun BB/2018 [  3K],Endothelin-converting enzyme 1
+Proteins,prot-a-977,Epiregulin (M/F) Sun BB/2018 [  3K],Epiregulin
+Proteins,prot-a-1178,Guanylate-binding protein 6 (M/F) Sun BB/2018 [  3K],Guanylate-binding protein 6
+Proteins,prot-a-1369,Haptoglobin (M/F) Sun BB/2018 [  3K],Haptoglobin
+Proteins,prot-a-1586,Inter-alpha-trypsin inhibitor heavy chain H1 (M/F) Sun BB/2018 [  3K],Inter-alpha-trypsin inhibitor heavy chain H1
+Proteins,prot-a-1526,Interleukin-36 alpha (M/F) Sun BB/2018 [  3K],Interleukin-36 alpha
+Proteins,prot-a-1540,Interleukin-6 receptor subunit alpha (M/F) Sun BB/2018 [  3K],Interleukin-6 receptor subunit alpha
+Proteins,prot-a-1858,Matrilin-3 (M/F) Sun BB/2018 [  3K],Matrilin-3
+Proteins,prot-a-2396,Myeloblastin (M/F) Sun BB/2018 [  3K],Myeloblastin
+Proteins,prot-a-1389,Oxidoreductase HTATIP2 (M/F) Sun BB/2018 [  3K],Oxidoreductase HTATIP2
+Proteins,prot-a-2087,Oxysterols receptor LXR-beta (M/F) Sun BB/2018 [  3K],Oxysterols receptor LXR-beta
+Proteins,prot-a-2205,Protocadherin beta-4 (M/F) Sun BB/2018 [  3K],Protocadherin beta-4
+Proteins,prot-a-2744,SLAM family member 7 (M/F) Sun BB/2018 [  3K],SLAM family member 7
+Proteins,prot-a-2959,Transferrin receptor protein 1 (M/F) Sun BB/2018 [  3K],Transferrin receptor protein 1
+Proteins,prot-a-3197,"Vascular endothelial growth factor A, isoform 121 (M/F) Sun BB/2018 [  3K]","Vascular endothelial growth factor A, isoform 121"
+Proteins,prot-a-3214,Vitronectin (M/F) Sun BB/2018 [  3K],Vitronectin
 Reproductive,ukb-a-320,Age at last live birth,Age at last live birth
 Reproductive,ukb-a-316,Had menopause,Had menopause
 Reproductive,ukb-b-18541,Ever used hormone-replacement therapy (HRT),Ever used HRT
@@ -283,6 +334,7 @@ Reproductive,ukb-b-9487,Age started hormone-replacement therapy (HRT),Age starte
 Reproductive,ukb-b-1209,Number of live births,Number of live births
 Reproductive,ukb-a-317,Number of live births,Number of live births
 Reproductive,ukb-b-17422,Age at menopause (last menstrual period),Age at menopause
+Reproductive,ukb-b-6445,Ever had hysterectomy (womb removed) (M/F) MRC-IEU/2018 [221K],Had hysterectomy
 Signal Transduction,prot-a-149,Rho GTPase-activating protein 30,Rho GTPase-activating protein 30
 Signal Transduction,prot-a-2073,Pro-FMRFamide-related neuropeptide FF,Pro-FMRFamide-related neuropeptide FF
 Signal Transduction,prot-a-3076,Torsin-1A-interacting protein 1,Torsin-1A-interacting protein 1
@@ -295,8 +347,9 @@ Signal Transduction,ukb-d-30770_irnt,IGF-1,IGF-1
 Sleep,ukb-b-4424,Sleep duration,Sleep duration
 Sleep,ukb-a-14,Snoring,Snoring
 Sleep,ukb-a-11,Morning/evening person (chronotype),Chronotype (evening person)
+Sleep,ukb-a-13,Sleeplessness / insomnia (M/F) Neale Lab/2017 [336K],Insomnia
 Smoking,ukb-d-22506_114,Tobacco smoking: Never smoked,Smoking status: Never smoked
 Smoking,ukb-b-223,Current tobacco smoking,Smoking status: Currently smoking
 Smoking,ukb-b-17685,Maternal smoking around birth,Maternal smoking around birth
-Smoking,ukb-b-4801,Number of unsuccessful stop-smoking attempts,Number of unsuccessful stop-smoking attempts
+Smoking,ukb-b-4801,Number of unsuccessful stop-smoking attempts,Attempts to stop smoking
 Smoking,ukb-a-225,Smoking status: Current,Smoking status: Current
