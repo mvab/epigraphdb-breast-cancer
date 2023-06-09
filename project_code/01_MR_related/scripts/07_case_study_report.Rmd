@@ -76,7 +76,7 @@ meta <- metadata %>% filter(analysis == "main", id == main)
 # run one of this in console, but set trait_name manually first
 
 trait_name = "Cardiotrophin-1"
-rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
+rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
                 params = list(
                   trait_name = "Cardiotrophin-1",
                   main = "prot-a-710",
@@ -90,7 +90,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
 )
 
 trait_name = "Age at menopause"
-rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
+rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
                   params = list(
                     trait_name = "Age at menopause",
                     main = "ukb-b-17422",
@@ -103,7 +103,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
 )
 
 trait_name = "IGF-1"
-rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
+rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
                   params  = list(
                     trait_name = "IGF-1",
                     main = "ukb-d-30770_irnt",
@@ -115,7 +115,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
                    output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
 trait_name = "Childhood body size"
-rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
+rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
                   params = list(
                     trait_name = "Childhood body size",
                     main = "ukb-a-34",
@@ -130,7 +130,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
 # new case studies
 
 trait_name = "HDL cholesterol"
-rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
+rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
                   params  = list(
                     trait_name = "HDL cholesterol",
                     main = "ukb-d-30760_irnt",
@@ -144,7 +144,7 @@ rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd",
 )
 
 trait_name = "Calpastatin"
-rmarkdown::render("01_MR_related/scripts/05_case_study_report.Rmd", 
+rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
                   params  = list(
                     trait_name = "Calpastatin",
                     main =  'prot-a-366',
