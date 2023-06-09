@@ -1,0 +1,375 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(epigraphdb)
+library(tidyverse)
+source("../../helper_functions.R")
+source("app3_sankey_app/functions_literature.R") 
+```
+
+This is a raw cypher query to  extract a literature space
+```{}
+MATCH (gwas:Gwas)-[gs1:GWAS_TO_LITERATURE_TRIPLE]->(s1:LiteratureTriple) -[:SEMMEDDB_OBJ]->(st:LiteratureTerm)
+WHERE gwas.id = '...'
+AND gs1.pval < 0.01
+MATCH (s1)-[:SEMMEDDB_SUB]-(st1:LiteratureTerm) 
+MATCH (gwas)-[:GWAS_TO_LITERATURE]-(lit:Literature)-[]-(s1)
+RETURN lit.id, lit.year,  gwas {.id, .trait}, 
+gs1 {.pval, .localCount}, st1 {.name, .type}, s1 {.id, .subject_id, .object_id, .predicate}, st {.name, .type}
+```
+
+# part 1: breast cancer
+
+```{r}
+### Extarct literature space for breast cancer using data from 2 traits
+
+id = 'ieu-a-1126' 
+space1<-extract_literature_space(id)
+dim(space1) #77496 (63907 w/o gwas cols?)
+
+id = 'finn-a-C3_BREAST' 
+space2<-extract_literature_space(id)
+dim(space2) #56878 (47473)
+
+
+bc_space <- bind_rows(space1, space2) %>% select(-gwas.id, -gwas.trait, -gs1.localCount, -gs1.pval) %>% distinct()
+dim(bc_space) #65738
+
+
+bc_space %>%  write_csv("../results/literature_outputs/breast_cancer_litspace_prod.csv")
+```
+
+# part 2: other traits
+
+```{r}
+# read list of traits for follow up
+trait_df_all <- read_tsv("../../01_MR_related/results/mr_evidence_outputs/trait_manual_ivw_subtypes_mergedV3.tsv") %>% 
+                filter(!(`ieu-a-1126` == 0 & `Breast cancer BCAC 2020` == 0 & `ieu-a-1127` == 0  & `ieu-a-1128` == 0 & `LuminalA ER+PR+HER-` == 0 & `LuminalB1 ER+PR+HER-` == 0 & `LuminalB2 ER+PR+HER+` == 0 &`HER2-enriched ER-PR-HER+` == 0 & `TNBC ER-PR-HER-` == 0 )) %>% 
+  select(id.exposure, exposure, exposure_cat) %>% distinct() # 130
+
+
+# traits with the same name or trait that ar eunlike to match to something meaningful
+ignore_traits<- c("ieu-a-974", "ieu-a-89", "ieu-a-49","ieu-a-99", "ieu-a-50", "ieu-a-101", "ieu-a-68", "ieu-a-62", "ieu-a-75", "ieu-a-107", "prot-a-1541", "ieu-a-302")
+
+#lipids_to_save <- c('met-c-932', 'met-c-912', 'met-c-891', 'met-c-928', 'met-c-913',# vldl
+#                    'met-c-923', 'met-c-877', 'met-c-898', 'met-c-900',	'met-c-878', # hdl
+#                    'ieu-a-780' ) # hdl
+
+trait_df_all<- trait_df_all %>% 
+   mutate(lit_analysis = case_when(
+             id.exposure %in% ignore_traits ~ F,
+             grepl("^X-", exposure) ~ F,
+             #grepl("HDL|VLDL|LDL", exposure) & !id.exposure %in% lipids_to_save  ~ F, ## ignoring all lipids except in the list
+             TRUE ~ T) )
+
+trait_df_all %>% count(lit_analysis) # True 116
+write_tsv(trait_df_all, "../results/literature_outputs/traits_marked_for_lit_analysisV3.tsv")
+
+
+# select we want to keep
+trait_df <- trait_df_all %>%  filter(lit_analysis == T)
+
+lit_spaces<-list()
+id_list <- trait_df$id.exposure
+length(id_list) # 116
+
+for ( id in id_list){
+  lit_spaces[[id]] <-extract_literature_space(id)
+}
+
+save(lit_spaces, file="../results/literature_outputs/lit_spaces_finalsetV3.RData")
+```
+
+
+```{r}
+# identify traits with empty lit spaces
+# save dim of spaces to trait_df_all table
+for (i in 1:length(trait_df_all$id.exposure)){
+  id <- trait_df_all$id.exposure[i]
+  
+  if (id %in% names(lit_spaces)){
+    trait_df_all$lit_space_size[i]<-dim(lit_spaces[[id]])[1]
+  }else{
+    trait_df_all$lit_space_size[i]<-NA
+  }
+}
+
+```
+
+
+
+```{r}
+## tidying lit spaces for loop
+
+load("../results/literature_outputs/lit_spaces_finalsetV3.RData")
+
+tidy_litspace <- list()
+
+for (i in 1:length(lit_spaces)){
+  if (dim(lit_spaces[[i]])[1] > 0){
+    print(paste("tidying... " , i, names(lit_spaces)[i] ))
+    
+    tidy_litspace[[names(lit_spaces)[i]]] <- tidy_lit_space(lit_spaces[[i]])
+  }
+}
+
+save(tidy_litspace, file="../results/literature_outputs/lit_spaces_finalset_tidyV3.RData")
+```
+
+```{r}
+
+# save dim to table
+for (i in 1:length(trait_df_all$id.exposure)){
+  id <- trait_df_all$id.exposure[i]
+  
+  if (id %in% names(tidy_litspace)){
+    
+    trait_df_all$lit_space_size_tidy[i] <- dim(tidy_litspace[[id]])[1]
+    
+    trait_df_all$unique_triples[i] <- dim(tidy_litspace[[id]] %>% select(term1, predicate, term2) %>% distinct() )[1]
+    
+    trait_df_all$unique_pairs[i] <- dim(tidy_litspace[[id]] %>% select(term1, term2) %>% distinct() )[1]
+
+  }else{
+    trait_df_all$lit_space_size_tidy[i]<-NA
+    trait_df_all$unique_triples[i]<-NA
+    trait_df_all$unique_pairs[i]<-NA
+  }
+}
+
+trait_df_all<- trait_df_all %>% arrange(-unique_pairs) %>% rename(used_in_lit_analysis = lit_analysis)
+
+write_tsv(trait_df_all,
+          "../results/literature_outputs/traits_marked_for_lit_analysis_with_sizeV3.tsv")
+
+trait_df_all<- read_tsv( "../results/literature_outputs/traits_marked_for_lit_analysis_with_sizeV3.tsv")
+```
+
+
+```{r}
+# ad hoc viewing
+
+tidy_litspace[["ukb-a-269"]] %>% View()
+tidy_litspace[["prot-a-1148"]] %>% filter(term2.type=='dsyn') %>% count(term2, sort=T)
+
+# any version of the key term
+tidy_litspace[["prot-a-1148"]] %>% filter(grepl("ferritin", term1, ignore.case = T) | grepl("ferritin", term2, ignore.case = T)) 
+
+#for each trait name, nee dto get its al names, ot name core part
+tidy_litspace[["prot-a-1117"]] %>% filter(grepl("filamin|flna", term1, ignore.case = T) | grepl("filamin|flna", term2, ignore.case = T) ) %>% View()
+
+
+```
+
+
+
+Making summary table
+
+```{r}
+# count available lit space by categories
+counts_by_cat <- list(
+  queried=trait_df_all %>% filter(used_in_lit_analysis ==1 ) %>% count(exposure_cat) %>% rename(queried=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  total=trait_df_all %>% filter(lit_space_size_tidy > 0) %>% count(exposure_cat) %>% rename(total=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `<=5`=trait_df_all %>% filter(lit_space_size_tidy > 0 & lit_space_size_tidy <=5) %>% count(exposure_cat) %>% rename(`<=5`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `<=50`=trait_df_all %>% filter(lit_space_size_tidy > 5 & lit_space_size_tidy <=50) %>% count(exposure_cat) %>% rename(`<=50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `>50`=trait_df_all %>% filter(lit_space_size_tidy > 50) %>% count(exposure_cat) %>% rename(`>50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
+
+counts_by_cat_df <- 
+  bind_rows(counts_by_cat) %>% t() %>% as.data.frame() %>% 
+   mutate(across(V1:V5, ~replace_na(.x, 0)))
+sums <- colSums(counts_by_cat_df)
+
+counts_by_cat_df<-bind_rows(counts_by_cat_df, sums)
+
+counts_by_cat_df<- counts_by_cat_df %>%
+  rownames_to_column('exposure_cat') %>%
+  mutate(exposure_cat = ifelse(exposure_cat == "...12", "TOTAL", exposure_cat)) %>% 
+  mutate(exposure_cat = factor(exposure_cat, levels= c( "Antrophometric", "Diet and supplements", "Physical activity",
+                                                        "Reproductive", "Sleep", "Drugs", "Alcohol", "Smoking",
+                                                        "Molecular traits", "Proteins", "Lipids", "Metabolites", 
+                                                        "Other biomarkers", "TOTAL" ))) %>% arrange(exposure_cat)
+  
+
+colnames(counts_by_cat_df)[2:6] <- names(counts_by_cat)
+write_tsv(counts_by_cat_df, "../results/literature_outputs/available_litspace_counts_by_exposure_catV3.tsv")
+```
+
+
+```{r}
+# combining lit space of related traits
+
+load("../results/literature_outputs/lit_spaces_finalsetV3.RData")
+#view(lit_spaces)
+
+combine_lit_spaces <- function(lit_spaces, names){
+  lit_spaces_subset <- lit_spaces[names]
+  space <- bind_rows(lit_spaces_subset) %>% 
+    select(-gwas.id, -gwas.trait, -gs1.localCount, -gs1.pval) 
+  return(space)
+}
+
+
+related_traits <- list(
+  height = c('ieu-a-1034', "ieu-a-89"),
+  bmi = c("ieu-a-835"),
+  obesity = c(	'ieu-a-93',	'ieu-a-91',	'ieu-a-90',	'ieu-a-85', "ieu-a-85"),
+  waist_hip = c('ieu-a-60','ieu-a-72','ieu-a-55'),
+  #fruit = c('ukb-b-3881','ukb-b-16576','ukb-b-2221'),
+  menopause = c('ukb-a-316' , 'ukb-b-17422'),
+  hrt = c('ukb-b-4564', 'ukb-b-18541'),
+  #birth = c('ukb-a-320', 'ukb-b-1209'),
+  vldl_particles = c("met-c-927" ,"met-c-889", "met-c-886" ,"met-c-950" ,"met-c-912", "met-c-887", "met-c-909", "met-c-913"),
+  hdl_particles = c( "ukb-d-30760_irnt" ,"met-c-864" , "met-c-923" , "met-c-945"  )
+  
+)
+
+
+
+combined_lit_spaces <- list()
+for (i in names(related_traits)) {
+  print(i)
+  combined_lit_spaces[[i]] <- combine_lit_spaces(lit_spaces, related_traits[[i]])
+}
+
+save(combined_lit_spaces, file="../results/literature_outputs/lit_spaces_combined_traitsV3.RData")
+```
+
+```{r}
+## tidying lit sapces for loop
+#load("../results/literature_outputs/lit_spaces_combined_traits.RData")
+View(combined_lit_spaces)
+
+tidy_combined_litspace <- list()
+
+for (i in 1:length(combined_lit_spaces)){
+  if (dim(combined_lit_spaces[[i]])[1] > 0){
+    print(paste("tidying... " , i, names(combined_lit_spaces)[i] ))
+    
+    tidy_combined_litspace[[names(combined_lit_spaces)[i]]] <- tidy_lit_space(combined_lit_spaces[[i]])
+  }
+}
+save(tidy_combined_litspace, file="../results/literature_outputs/lit_spaces_combined_traits_tidyV3.RData")
+
+```
+
+```{r}
+# calculate lit space / triples/ pair for combined spaces
+
+#load("literature_outputs/lit_spaces_combined_traits_tidy.RData") 
+
+trait_df_comb <- data_frame(trait= names(tidy_combined_litspace))
+
+for (i in 1:length(trait_df_comb$trait)){
+  
+  trait_comb_name <- trait_df_comb$trait[i]
+
+  trait_df_comb$lit_space_size_tidy[i] <- dim(combined_lit_spaces[[trait_comb_name]])[1]
+  
+  trait_df_comb$unique_triples[i] <- dim(tidy_combined_litspace[[trait_comb_name]] %>% select(term1, predicate, term2) %>% distinct() )[1]
+  
+  trait_df_comb$unique_pairs[i] <- dim(tidy_combined_litspace[[trait_comb_name]] %>% select(term1, term2) %>% distinct() )[1]
+
+}
+
+trait_df_comb <- trait_df_comb %>% 
+      mutate(used_in_lit_analysis = T)
+
+trait_df_comb$exposure_cat <- c("Anthropometric","Anthropometric","Anthropometric","Anthropometric", "Reproductive","Reproductive",  "Lipids","Lipids")
+trait_df_comb$combined<-T
+  
+write_tsv(trait_df_comb, "../results/literature_outputs/traits_marked_for_lit_analysis_combinedV3.tsv")
+
+
+# make a jopint lit_counts df
+lit_counts <- bind_rows(trait_df_all %>% mutate(combined=F) ,
+                        trait_df_comb %>% rename(exposure = trait) )
+  #filter(!id.exposure %in% unlist(related_traits))
+
+write_tsv(lit_counts, "../results/literature_outputs/lit_space_statsV3.tsv")
+
+```
+
+```{r}
+# make fiel with all tisy lit spaces for exposting to supplementary
+load("../results/literature_outputs/lit_spaces_finalset_tidyV3.RData")
+length(tidy_litspace) # 68
+load("../results/literature_outputs/lit_spaces_combined_traits_tidy.RData")
+length(tidy_combined_litspace) # 10
+
+names(tidy_combined_litspace)<- paste0("combined_", names(tidy_combined_litspace))
+
+all_tidy_spaces<-c(tidy_combined_litspace, tidy_litspace)
+length(all_tidy_spaces)
+sheet_list<- tibble(id.exposure=names(all_tidy_spaces)) %>% 
+             left_join(trait_df_all) %>% 
+            mutate(exposure = ifelse(is.na(exposure), "combined literature space", exposure))
+sheet_list<-list(sheet_list)
+
+names(sheet_list) <- "navigation"
+
+all_tidy_spaces<-c(sheet_list, tidy_combined_litspace, tidy_litspace)
+
+
+
+writexl::write_xlsx(all_tidy_spaces, "../results/literature_outputs/all_tidy_spacesV3.xlsx")
+
+```
+
+
+
+
+
+# Visualise lit space sizes
+
+
+```{r}
+
+library(cowplot)
+lid_data<- read_tsv(  "../results/literature_outputs/lit_space_statsV3.tsv")
+
+lid_data<-lid_data  %>% 
+  mutate(`>50 triples` = ifelse(unique_triples >=50 ,T, F)) %>% 
+  mutate(exposure_cat = ifelse(exposure_cat %in% c("Diet and supplements", "Physical activity", "Reproductive", "Sleep", "Drugs", "Alcohol", "Smoking"), "Lifestyle", exposure_cat)) %>% 
+  mutate(exposure_cat = ifelse(exposure_cat %in% c("Lipids", "Metabolites"), "Metabolites", exposure_cat)) %>% 
+  mutate(exposure_cat = ifelse(exposure_cat == "Antrophometric", "Anthropometric", exposure_cat)) %>% 
+  
+  mutate(exposure_cat = factor(exposure_cat,
+                               levels = (c("Anthropometric", "Lifestyle", "Proteins", "Metabolites"))))
+
+protein_path_data <- read_tsv("../../external_files/pathwaysV3/proteins_w_pathwaysV3.tsv") 
+
+lid_data_pl <- lid_data %>% 
+  filter(used_in_lit_analysis==T) %>% 
+  mutate(unique_triples = ifelse(is.na(lit_space_size_tidy), 1, unique_triples)) %>% 
+  left_join(protein_path_data %>% select(gene, id.exposure), by = "id.exposure") %>%
+  mutate(exposure = ifelse(!is.na(gene), gene, exposure)) %>% 
+  mutate(label2 = ifelse((id.exposure %in% c("ukb-d-30770_irnt", "prot-a-710","ieu-a-1096") | exposure == "menopause"), exposure, NA) ) 
+  #mutate(label2 = ifelse(combined, paste0("combined_", label2), label2))
+
+
+set.seed(1)
+p<- ggplot(lid_data_pl, aes(y = unique_triples, x= exposure_cat, label= label2))+
+  geom_violin()+
+  geom_point(aes(colour = `>50 triples`,
+                 alpha=0.3,
+                 #alpha = combined, shape = combined,
+                 size=0.7), position = position_jitter(w = 0.1, h = 0))+
+  geom_hline(yintercept=50, linetype =3)+
+  #ggrepel::geom_text_repel(size = 2.5, nudge_x = -0.1, nudge_y = 0, box.padding = 2)+  
+  #scale_alpha_discrete(range=c(0.4,1)) +
+  scale_y_log10(breaks = c( 0, 50, 100, 1000, 5000,10000, 50000))+
+  theme_minimal_grid(10)+
+  scale_x_discrete(position = "top") +
+  labs(y = "Unique triples count (log10 scale)", x= "Trait category")+
+  theme(axis.text.x = element_text( size=9),legend.position = "bottom")+
+   guides( alpha="none", size="none")
+
+plotly::ggplotly(p)
+
+
+```
+
+

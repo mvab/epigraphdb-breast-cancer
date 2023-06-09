@@ -1,0 +1,21 @@
+exposure_cat	id.exposure	exposure	BCAC 2017	ER+	ER-	non_zero	lit_space_size_tidy	unique_triples	unique_pairs
+Proteins	prot-a-2629	Diamine acetyltransferase 2	-1	-1	-1	3	50	50	41
+Proteins	prot-a-1530	Interleukin-3 receptor subunit alpha	-1	-1	-1	3	51	51	50
+Lipids	ukb-d-30760_irnt	HDL cholesterol	1	1	1	3	7808	7808	6084
+Lipids	met-c-923	Triglycerides in small HDL	-1	-1	-1	3	344	344	321
+Proteins	prot-a-67	Alcohol dehydrogenase [NADP(+)]	-1	-1	0	2	1752	1752	1464
+Proteins	prot-a-366	Calpastatin	1	1	0	2	241	241	203
+Proteins	prot-a-710	Cardiotrophin-1	-1	-1	0	2	136	136	123
+Lipids	met-c-864	Total cholesterol in HDL	1	1	0	2	3533	3533	3052
+Lipids	met-c-889	Total lipids in large VLDL	-1	-1	0	2	51	51	49
+Proteins	met-c-841	Albumin	0	1	0	1	17008	17008	14568
+Proteins	prot-a-1148	Ferritin	0	0	1	1	2556	2556	2064
+Proteins	prot-a-1097	Fibroblast growth factor 7	0	0	1	1	238	238	216
+Proteins	prot-a-1117	Filamin-A	0	-1	0	1	181	181	171
+Proteins	prot-a-1369	Haptoglobin	0	0	1	1	856	856	767
+Proteins	prot-a-2396	Myeloblastin	0	1	0	1	403	403	371
+Proteins	prot-a-2073	Pro-FMRFamide-related neuropeptide FF	0	-1	0	1	71	71	63
+Proteins	prot-a-3076	Torsin-1A-interacting protein 1	0	-1	0	1	9389	9389	8321
+Proteins	prot-b-71	fatty acid binding protein 4	0	1	0	1	777	777	720
+Proteins	prot-b-38	interleukin 1 receptor like 1	0	0	-1	1	1102	1102	973
+Lipids	met-c-945	Total lipids in very large HDL	1	0	0	1	185	185	179
