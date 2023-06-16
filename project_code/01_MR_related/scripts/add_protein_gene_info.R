@@ -28,6 +28,7 @@ write_csv(protein_names_id, "01_MR_related/results/mr_evidence_outputs/protein_n
 ####
 
 
+#### START HERE
 
 protein_names_id <- read_csv("01_MR_related/results/mr_evidence_outputs/protein_names_w_ids.csv") %>% filter(!is.na(gene))
 
@@ -50,6 +51,10 @@ for (i in unique(locations_all$name2)){
 
 
 location_tidy_names <- right_join(location_tidy, protein_names_id, by="gene") %>% distinct()
+
+# when redoing: check NA; 
+# most will be chr X: FLNA, IL3RA, KLHL13 - so just leave it,
+#  but for CCL3L1 and KIR2DL5A manually check and update UCSC file
 
 write_csv(location_tidy_names, "01_MR_related/results/mr_evidence_outputs/protein_gene_regions_ids.csv")
 
