@@ -84,6 +84,48 @@ traits_for_follow_up <- function(input) {
 }
 
 
+instrument_selection <- function(trait_exp, protein_regions) {
+  
+  if (trait_exp %in% protein_regions$exposure.id){
+    # it's a protein, so we are going to use cis instruments
+    protein_details <- protein_regions %>% filter(exposure.id == !!trait_exp)
+    protein_cis <- get_cis_region(id=trait_exp,
+                                  chr = protein_details$chr ,
+                                  start = protein_details$posStart, end = protein_details$posEnd)
+    
+    # now do filteting and clumping
+    instruments <- protein_cis %>% filter(pval.exposure < 5e-08) 
+    if (nrow(instruments) >= 1){
+      instruments_clumped <-  clump_data(instruments, clump_r2 = 0.01)
+      used_inst <- "cis_5e-08_r2=0.01"
+    } else{
+      # filter less stringent
+      instruments <- protein_cis %>% filter(pval.exposure < 0.05/nrow(protein_cis)) 
+      if (nrow(instruments) >= 1){
+        instruments_clumped <- clump_data(instruments, clump_r2 = 0.01)
+        used_inst <- "cis_lessStringent_r2=0.01"
+        
+      } else{
+        # no protein cis insruments to use
+        instruments_clumped <- extract_instruments(trait)
+        used_inst <- "cis_and_trans"
+      }
+    }
+    
+    
+  } else {
+    # not a protein
+    instruments_clumped <- extract_instruments(trait_exp) # clumping is done internally!
+    used_inst <- "not_protein"
+  }
+  
+print(paste0("extracted instruments for ", unique(instruments_clumped$exposure), " : ", used_inst))
+return(list(SNPs = instruments_clumped,
+            SNPs_type = used_inst))
+  
+}
+
+
 
 ### validation MR
 do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions){
@@ -108,43 +150,12 @@ do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions){
     outcome_ncontrol =105974
   }
   
-  exposure_ss <- exposure_ss_df %>% filter(exposure.id == trait) %>% pull(exposure.sample_size)
+  exposure_ss <- exposure_ss_df %>% filter(exposure.id == !!trait) %>% pull(exposure.sample_size)
   
   
-  if (trait %in% protein_regions$exposure.id){
-    # it's a protein, so we are going to use cis instruments
-    protein_details <- protein_regions %>% filter(exposure.id == trait)
-    protein_cis <- get_cis_region(id=trait,
-                                  chr = protein_details$chr ,
-                                  start = protein_details$posStart, end = protein_details$posEnd)
-    
-    # now do filteting and clumping
-    instruments <- protein_cis %>% filter(pval.exposure < 5e-08) 
-    if (nrow(instruments) >= 1){
-      instruments_clumped <-  clump_data(instruments, clump_r2 = 0.01)
-      used_inst <- "cis_5e-08_r2=0.01"
-    } else{
-      # filter less stringent
-      instruments <- protein_cis %>% filter(pval.exposure < 0.05/nrow(protein_cis)) 
-      if (nrow(instruments) >= 1){
-        instruments_clumped <- clump_data(instruments, clump_r2 = 0.01)
-        used_inst <- "cis_lessStringent_r2=0.01"
-        
-      } else{
-        # no protein cis insruments to use
-        instruments_clumped <- extract_instruments(trait)
-        used_inst <- "cis_and_trans"
-        
-      }
-      
-    }
-    
-  
-  } else {
-  # not a protein
-    instruments_clumped <- extract_instruments(trait) # clumping is done internally!
-    used_inst <- "not_protein"
-  }
+  instruments_selected <-  instrument_selection(trait, protein_regions )
+  instruments_clumped <- instruments_selected$SNPs
+  used_inst <- instruments_selected$SNPs_type
   
   
   out <- extract_outcome_data(snps = instruments_clumped$SNP,
@@ -193,6 +204,69 @@ do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions){
   
   return( out) 
 } 
+
+
+do_MR_not_BC <- function(trait_exp_instruments, trait_out, exposure_ss_df, protein_regions){
+  
+  cat("\n\n")
+  print(paste0(">>>>>>>>>> " , trait_exp , " vs ", trait_out))
+
+  
+  exposure_ss <- exposure_ss_df %>% filter(exposure.id == !!trait_exp) %>% pull(exposure.sample_size)
+  outcome_ss <- exposure_ss_df %>% filter(exposure.id == !!trait_out) %>% pull(exposure.sample_size)
+  
+  # load pre-extracted instruments
+  instruments_clumped <- trait_exp_instruments$SNPs
+  used_inst <- trait_exp_instruments$SNPs_type
+  
+  
+  out <- extract_outcome_data(snps = instruments_clumped$SNP,
+                              outcome = trait_out)
+  harmonised<- harmonise_data(exposure_dat = instruments_clumped, 
+                              outcome_dat = out)
+  #mr
+  res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
+    split_outcome() %>% 
+    split_exposure() %>% 
+    generate_odds_ratios() %>% 
+    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
+    mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
+    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                                     ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+  
+  streiger_res =  calc_steiger(harmonised, 
+                               exposure_ss = exposure_ss, 
+                               outcome_ss = outcome_ss) 
+  
+  # sensitivity
+  if (dim(harmonised)[1]>1){
+    
+    if (dim(mr_pleiotropy_test(harmonised))[1] ==0){
+      res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+    } else{
+      
+      res_sens <-
+        full_join(mr_pleiotropy_test(harmonised),
+                  mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
+        left_join(streiger_res$summary) %>% 
+        split_outcome() %>%
+        split_exposure() %>% 
+        rename(egger_intercept_pval = pval,
+               egger_intercept_se = se)
+    }
+  } else {
+    # making dummy sens anlysis table as a placeholder
+    res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+  }
+  
+  # join mr and sens in one table
+  out <- full_join(res, res_sens)
+  out$used_instrument <- used_inst
+  
+  return( out) 
+} 
+
+
 
 # used in case-study report
 do_MR_pair <- function(exp, out, exposure_ss_df){
@@ -679,7 +753,7 @@ tidy_conf_query_output <- function(df, type){
   
 }
 
-query_and_tidy_conf <- function(exposure, outcome, pval_threshold, mediator= F, confounder= F, collider= F, reverse_mediator = F){
+query_and_tidy_conf <- function(exposure, outcome, pval_threshold=1, mediator= F, confounder= F, collider= F, reverse_mediator = F){
   
   pval_threshold_outcome = 1
   

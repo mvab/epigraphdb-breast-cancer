@@ -27,37 +27,43 @@ traits_all <- bind_rows(
   traits_df %>%filter(`ieu-a-1128` !=0) %>%  select(id.exposure) %>% mutate(id.outcome = "ieu-a-1128")) %>% distinct()
 traits_all %>% pull(id.exposure) %>%  unique() %>% length() # 105
 
+
 # for each pair collect intermediates (all 4 scenarios)
 all_results <- tibble()
 for (i in 1:length(traits_all$id.exposure)){
   
   out <- query_and_tidy_conf(exposure = traits_all$id.exposure[i], 
                              outcome = traits_all$id.outcome[i], 
-                             pval_threshold =  0.01, ##### keeping almost all ( NB med->BC has no threshold, as we are gonna use prev valiadation as a filter)
+                             pval_threshold =  1, ##### keeping all; going to use FDR on both steps to identify reliable results
                              mediator = T)  # only mediators
+  #add FDR corrected p-val to results
+  out <- out %>% 
+  arrange(r1.pval) %>% mutate(r1.qval = p.adjust(r1.pval, method = "BH")) %>% 
+  arrange(r3.pval) %>% mutate(r3.qval = p.adjust(r3.pval, method = "BH")) 
+  
   all_results<- bind_rows(all_results, out)
 }
-length(unique(all_results$exposure.id)) # 105
+length(unique(all_results$exposure.id)) # 103 it's ok
+
+# keep only those pairs, where each step q-value passed 0.05
+all_results_fdr <- all_results %>% filter (r1.qval <0.05 & r3.qval <0.05)
 
 
 # add trait category to intermediate items
 all_results_trait_cats <- 
-  all_results %>%  
+  all_results_fdr %>%  
   select(exposure.trait = med.trait, exposure.id = med.id) %>% 
   create_exposure_categories() %>% 
   select(med_cat = exposure_cat, med.trait = exposure.trait, med.id = exposure.id ) %>% distinct() %>% 
   filter(!grepl("arm|leg", med.trait, ignore.case = T)) %>% 
   filter(med_cat %in% c("Antrophometric" ,"Physical activity" ,   "Diet and supplements", "Reproductive"  , "Alcohol" , "Smoking" ,
-                       "Metabolites" ,   "Proteins", "Other biomarkers" ,  "Sleep"  ,  "Drugs" ,   "Lipids"   )) %>% 
-  filter(med.id %in% traits_df$id.exposure)   # this keeps only those mediaotrs that are accepted exposure in main analysis validation
+                       "Metabolites" ,   "Proteins", "Other biomarkers" ,  "Sleep"  ,  "Drugs" ,   "Lipids"   )) 
 
-# filter
-results_subset <- all_results %>% right_join(all_results_trait_cats) %>% # right joining to "allowed" mediators, so end up with fewer(103) exposures
+# join with cats and restrubcture
+results_subset <- all_results_fdr %>% right_join(all_results_trait_cats) %>% 
                                   select(exposure.trait, med.trait, outcome.id,
-                                         r1.OR_CI, r2.OR_CI, r3.OR_CI, type, med_cat, r1.b, r2.b, r3.b, r1.pval, r2.pval, r3.pval, 
+                                         r1.OR_CI, r2.OR_CI, r3.OR_CI, type, med_cat, r1.b, r2.b, r3.b, r1.pval, r2.pval, r3.pval, r1.qval,  r3.qval, 
                                          exposure.id, med.id,med_cat) %>% 
-                                  # add FDR corrected p-val
-                                  arrange(r1.pval) %>% mutate(r1.qval = p.adjust(r1.pval, method = "BH")) %>% 
                                   distinct()
 
 length(unique(results_subset$exposure.id)) # 103 this is ok
@@ -68,16 +74,17 @@ write_csv(tmp, "01_MR_related/results/mr_evidence_outputs/dietary_PA_BC_mediatio
 
 
 
-dim(results_subset) # 3435
+dim(results_subset) # 9961
 
-counts_raw <- results_subset %>% select(exposure.trait,exposure.id, med.id) %>% distinct() %>% count(exposure.trait,exposure.id) %>% rename(med_count_preval=n)
-mean(counts_raw$med_count_preval) # 23.46 prevalidation mean meds per traits
+counts_raw <- results_subset %>%
+  select(exposure.trait,exposure.id, med.id) %>% distinct() %>% count(exposure.trait,exposure.id) %>% rename(med_count_preval=n) 
+mean(counts_raw$med_count_preval) # 75.32039 prevalidation mean meds per traits
 
 #write_csv(results_subset, "01_MR_related/mr_evidence_outputs/conf_med_extracted.csv") # p<10e4
-write_csv(results_subset, "01_MR_related/results/mr_evidence_outputs/med_extracted_all_r3V3.csv") # p<0.05 # r3 all is not pval restricted -- ??
+write_csv(results_subset, "01_MR_related/results/mr_evidence_outputs/med_extracted_all_r3V3.csv") # qval<0.05 
 
 
-protein_names <- read_csv("01_MR_related/results/mr_evidence_outputs/protein_names.csv", col_names = F) %>% rename(name = X1, gene = X2)
+protein_names <- read_csv("01_MR_related/results/mr_evidence_outputs/protein_names_w_ids.csv", col_names = T) %>% select(name=exposure, gene) %>% distinct() %>% drop_na()
 results_subset<- read_csv("01_MR_related/results/mr_evidence_outputs/med_extracted_all_r3V3.csv") %>% 
   filter(type %in% c('mediator')) %>%
   create_exposure_categories() %>%
@@ -86,7 +93,9 @@ results_subset<- read_csv("01_MR_related/results/mr_evidence_outputs/med_extract
   select(exposure.trait,exp.gene, med.trait, med.gene, everything()) 
 dim(results_subset)# 3435
 
-length(unique(results_subset$exposure.id)) # 105
+results_subset %>% filter(med_cat == "Proteins") %>% filter(is.na(med.gene)) %>% select(med.id, med.trait, med.gene) %>% distinct() %>% View()
+
+length(unique(results_subset$exposure.id)) # 103
 # next need to validate E->M for mediators (and M->E for confounders)
 
 #
@@ -94,7 +103,7 @@ length(unique(results_subset$exposure.id)) # 105
 #
 #### -- validation step happens here
 
-#  in 04sub_mreve_mediators_validation.R
+#  in 06sub_mreve_mediators_validation.R
 #
 #
 #
