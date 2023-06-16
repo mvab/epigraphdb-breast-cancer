@@ -96,14 +96,14 @@ create_exposure_categories <- function(dat){
       grepl("sleep|Snoring|chronotype|Getting up in morning|Nap during day", exposure, ignore.case = T) ~ "Sleep",
       grepl("Iron|Testosterone|Urate|Urea|Glucose|Sodium", exposure, ignore.case = T) ~ 'Other biomarkers',
       grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) ~ 'Lipids',
-      grepl("Albumin|Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Creatinine|Ferritin|Transferrin|transferase|Haemoglobin|cystatin|SHBG|bilirubin|Total protein|phosphatase|IGF", exposure, ignore.case = T) ~ 'Proteins',
+      grepl("Apoliprotein|Adiponectin|Lipoprotein|reactive protein|Ferritin|Transferrin|transferase|cystatin|SHBG|bilirubin|Total protein|phosphatase|IGF", exposure, ignore.case = T) ~ 'Proteins',
       grepl("Qualifications|GCSE|Townsend|schooling|College|intelligence|arithmetic|education", exposure, ignore.case = T) ~ 'Education',
       grepl("anxiety|feelings|embarrassment|worr|Bulimia|depressed|guilty|Miserableness|mood|Neuroticism|unenthusiasm|tenseness|Loneliness|self-harm|Risk taking|highly strung|ADHD|Drive faster|nerves|irritability|satisfaction", exposure, ignore.case = T) ~ 'psychiatric_or_mental_health',
       
       TRUE ~ 'other')) %>% 
     mutate(exposure_cat = ifelse(grepl("LDL|HDL|VLDL|cholest|trigl|cholesterol|glyceride|total lipids|Serum total", exposure.trait, ignore.case = T) & exposure_cat %in% c('Metabolites', 'Other biomarkers'), "Lipids", exposure_cat)) %>%  # recapture those in met-a
     mutate(exposure_cat = ifelse(grepl("Average number|Ratio of", exposure.trait, ignore.case = T) , "other", exposure_cat)) %>%  # recapture those in met-a
-    mutate(exposure_cat = ifelse(grepl("albumin", exposure.trait, ignore.case = T) , "Proteins", exposure_cat)) 
+    mutate(exposure_cat = ifelse(grepl("albumin|creatinine|haemoglobin", exposure.trait, ignore.case = T) , "Metabolites", exposure_cat)) 
   return(dat)
   
 }
