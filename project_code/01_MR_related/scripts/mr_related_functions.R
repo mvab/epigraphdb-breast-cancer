@@ -107,7 +107,7 @@ instrument_selection <- function(trait_exp, protein_regions) {
         
       } else{
         # no protein cis insruments to use
-        instruments_clumped <- extract_instruments(trait)
+        instruments_clumped <- extract_instruments(trait_exp)
         used_inst <- "cis_and_trans"
       }
     }
