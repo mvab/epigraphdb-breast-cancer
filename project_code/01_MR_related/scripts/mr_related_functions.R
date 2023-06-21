@@ -205,6 +205,92 @@ do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions){
   return( out) 
 } 
 
+### validation MR
+do_MR_all_BC <- function(trait, exposure_ss_df, protein_regions){
+  
+  cat("\n\n")
+  print(paste0(">>>>>>>>>> Exposure: " , trait))
+  
+  exposure_ss <- exposure_ss_df %>% filter(exposure.id == !!trait) %>% pull(exposure.sample_size)
+  
+  instruments_selected <-  instrument_selection(trait, protein_regions )
+  instruments_clumped <- instruments_selected$SNPs
+  used_inst <- instruments_selected$SNPs_type
+  
+  all_outcomes_res <-tibble()
+  
+  for (bc_type in c("all", "ER+", "ER-")){
+  
+    if       (bc_type %in% c('all' , 'ieu-a-1126')){
+      bc.id <- 'ieu-a-1126'
+      outcome_ss = 228951
+      outcome_ncase = 122977	
+      outcome_ncontrol = 105974
+    }else if (bc_type %in% c('ER+','ieu-a-1127')){
+      bc.id <- 'ieu-a-1127'
+      outcome_ss = 175475
+      outcome_ncase = 69501
+      outcome_ncontrol = 105974
+    }else if (bc_type %in% c('ER-', 'ieu-a-1128')){
+      bc.id <- 'ieu-a-1128'
+      outcome_ss = 127442
+      outcome_ncase = 21468
+      outcome_ncontrol =105974
+    }
+   
+    print(paste0(">>>>>>>>>> Outcome: " , bc_type))
+    
+    
+    out <- extract_outcome_data(snps = instruments_clumped$SNP,
+                                outcome = bc.id)
+    harmonised<- harmonise_data(exposure_dat = instruments_clumped, 
+                                outcome_dat = out)
+    #mr
+    res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
+      split_outcome() %>% 
+      split_exposure() %>% 
+      generate_odds_ratios() %>% 
+      mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
+      mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                                       ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+    
+    streiger_res =  calc_steiger(harmonised, 
+                                 exposure_ss = exposure_ss, 
+                                 outcome_ss = outcome_ss,
+                                 outcome_ncase = outcome_ncase,
+                                 outcome_ncontrol = outcome_ncontrol) 
+    
+    # sensitivity
+    if (dim(harmonised)[1]>1){
+      
+      if (dim(mr_pleiotropy_test(harmonised))[1] ==0){
+        res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+      } else{
+        
+        res_sens <-
+          full_join(mr_pleiotropy_test(harmonised),
+                    mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
+          left_join(streiger_res$summary) %>% 
+          split_outcome() %>%
+          split_exposure() %>% 
+          rename(egger_intercept_pval = pval,
+                 egger_intercept_se = se)
+      }
+    } else {
+      # making dummy sens anlysis table as a placeholder
+      res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+    }
+    
+    # join mr and sens in one table
+    out <- full_join(res, res_sens)
+    out$used_instrument <- used_inst
+    
+    all_outcomes_res <- bind_rows(all_outcomes_res, out)
+  } 
+  
+  return(all_outcomes_res) 
+} 
+
 
 do_MR_not_BC <- function(trait_exp_instruments, trait_out, exposure_ss_df, protein_regions){
   
@@ -222,46 +308,57 @@ do_MR_not_BC <- function(trait_exp_instruments, trait_out, exposure_ss_df, prote
   
   out <- extract_outcome_data(snps = instruments_clumped$SNP,
                               outcome = trait_out)
-  harmonised<- harmonise_data(exposure_dat = instruments_clumped, 
-                              outcome_dat = out)
-  #mr
-  res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
-    split_outcome() %>% 
-    split_exposure() %>% 
-    generate_odds_ratios() %>% 
-    mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
-    mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
-    mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
-                                     ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
   
-  streiger_res =  calc_steiger(harmonised, 
-                               exposure_ss = exposure_ss, 
-                               outcome_ss = outcome_ss) 
-  
-  # sensitivity
-  if (dim(harmonised)[1]>1){
+  if(!is.null(out)){
+    harmonised<- harmonise_data(exposure_dat = instruments_clumped, 
+                                outcome_dat = out)
     
-    if (dim(mr_pleiotropy_test(harmonised))[1] ==0){
-      res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
-    } else{
-      
-      res_sens <-
-        full_join(mr_pleiotropy_test(harmonised),
-                  mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
-        left_join(streiger_res$summary) %>% 
-        split_outcome() %>%
-        split_exposure() %>% 
-        rename(egger_intercept_pval = pval,
-               egger_intercept_se = se)
-    }
-  } else {
-    # making dummy sens anlysis table as a placeholder
-    res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
-  }
+    if (TRUE %in% harmonised$mr_keep){ # finding corner cases where mr_keep is false for all and dropping them
   
-  # join mr and sens in one table
-  out <- full_join(res, res_sens)
-  out$used_instrument <- used_inst
+      #mr
+      res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
+        split_outcome() %>% 
+        split_exposure() %>% 
+        generate_odds_ratios() %>% 
+        mutate(OR_CI = paste0(round(or,2), " [",round(or_lci95,2) ,":",round(or_uci95,2), "]")) %>% 
+        mutate(beta_CI = paste0(round(b,2), " [",round(lo_ci,2) ,":",round(up_ci,2), "]")) %>% 
+        mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                                         ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) 
+      
+      streiger_res =  calc_steiger(harmonised, 
+                                   exposure_ss = exposure_ss, 
+                                   outcome_ss = outcome_ss) 
+      
+      # sensitivity
+      if (dim(harmonised)[1]>1){
+        
+        if (dim(mr_pleiotropy_test(harmonised))[1] ==0){
+          res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+        } else{
+          
+          res_sens <-
+            full_join(mr_pleiotropy_test(harmonised),
+                      mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
+            left_join(streiger_res$summary) %>% 
+            split_outcome() %>%
+            split_exposure() %>% 
+            rename(egger_intercept_pval = pval,
+                   egger_intercept_se = se)
+        }
+      } else {
+        # making dummy sens anlysis table as a placeholder
+        res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+      }
+      
+      # join mr and sens in one table
+      out <- full_join(res, res_sens)
+      out$used_instrument <- used_inst
+    }
+    
+  } else{
+    out<-tibble()
+  } 
+  
   
   return( out) 
 } 
