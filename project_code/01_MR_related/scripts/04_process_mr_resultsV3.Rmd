@@ -21,8 +21,8 @@ source("mr_related_functions.R")
 # load BCAC 2017 validation results and turn into wide format
 
 # create wide form of results to view by subtype
-redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv") # created in 03
-length(unique(redone_MR$id.exposure)) # 208
+redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv") # created in 03
+length(unique(redone_MR$id.exposure)) # 202
 
 redone_wide <- redone_MR %>%
   select(id.outcome, id.exposure,exposure, exposure_name, effect_direction, method, exposure_cat) %>% 
@@ -73,10 +73,15 @@ table1_col1 <-  all_cats %>%  select (exposure.id, exposure_cat) %>% distinct() 
 res_subtypes_for_count <- bind_rows(redone_MR,res_subtypes) %>% 
   select(exposure, id.exposure , outcome, OR_CI, effect_direction , nsnp, method, exposure_cat) %>% 
   filter(effect_direction != "overlaps null") %>% 
-  filter(method %in% c('Inverse variance weighted', 'Wald ratio')) 
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio')) %>% 
+  # for some reason cat is missing:
+  mutate(exposure_cat = ifelse(id.exposure =="prot-a-550", "Proteins", exposure_cat)) %>% 
+  mutate(exposure_cat = ifelse(id.exposure =="met-c-841", "Metabolites", exposure_cat)) 
+  
+  
 
 length(unique(res_subtypes$exposure_cat))
-unique(res_subtypes_for_count$outcome)
+unique(res_subtypes_for_count$exposure_cat)
 
 counts_by_outcome <- list(
   total = res_subtypes_for_count %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total=n) %>% 
@@ -107,8 +112,6 @@ counts_by_outcome <- list(
 counts_by_outcome_df <- bind_rows(counts_by_outcome) %>% t() %>% as.data.frame() %>% rownames_to_column('exposure_cat') 
 colnames(counts_by_outcome_df) <- c("exposure_cat", names(counts_by_outcome)) 
 
-
-
 counts_by_outcome_df<- left_join(table1_col1, counts_by_outcome_df) %>% column_to_rownames('exposure_cat')  %>% replace(is.na(.), 0) 
 
 sums<- colSums(counts_by_outcome_df)
@@ -133,47 +136,48 @@ write_tsv(table1, "../results/mr_evidence_outputs/mr_subtypes/table1_counts_by_e
 ```
 
 ```{r}
-library(flextable) #### need to get this to work for V3
-library(officer)
-set_flextable_defaults(big.mark = " ", 
-  font.size = 8, theme_fun = theme_vanilla,
-  background.color = "white")
-
-table1_disp<- transform(table1,group =factor(group))
-ft<-flextable(table1_disp) %>% 
-   align(align = "center", part = "all", j = c(3:16)) %>% 
-  merge_v(j = ~group) %>% 
-  width(., j = c(1,2), width=2) %>% 
- # width(., j = c(3), width=2) %>% 
-  vline(.,j = c(1,2,3,4,5,9), border = fp_border( width = 2), part = "all") %>% 
-  vline(.,j = c(6,7,8,10:15), border = fp_border( width = 1), part = "all") %>% 
-  add_header_row(., 
-                 values = c("",'Trait category',	
-                            'Traits in MR-EvE app',	
-                            'Traits with consistent effect *',
-                            'Traits validated in either BCAC',
-                            'Traits validated in \n BCAC 2017 (Supplementary Table 1)',
-                            'Traits validated in \n BCAC 2020 (Supplementary Table 2)'),
-                 colwidths = c(1, 1, 1, 1,1, 4, 7)) %>% 
-  set_header_labels(ft,
-    values = list(
-            exposure_cat = "",
-            group = " ",
-            "total_preval" = 'Total',
-            "total_consist" = 'Total',
-            "total"   = 'Total',
-            "total2017" = 'Total',
-            "all2017" = 'Full',
-            "er_pos" = "ER+",
-            "er_neg"= "ER-",
-            "total2020"  = 'Total',  
-            "all2020" = 'Full',
-            "lumA" = "LumA",
-            "lumB1"  = "LumB1",
-            "lumB2" = "LumB2",
-            "her2"  = "HER2",
-            "tnbc"  = "TNBC" ))
-ft
+# legacy
+#library(flextable) #### need to get this to work for V3
+#library(officer)
+#set_flextable_defaults(big.mark = " ", 
+#  font.size = 8, theme_fun = theme_vanilla,
+#  background.color = "white")
+#
+#table1_disp<- transform(table1,group =factor(group))
+#ft<-flextable(table1_disp) %>% 
+#   align(align = "center", part = "all", j = c(3:16)) %>% 
+#  merge_v(j = ~group) %>% 
+#  width(., j = c(1,2), width=2) %>% 
+# # width(., j = c(3), width=2) %>% 
+#  vline(.,j = c(1,2,3,4,5,9), border = fp_border( width = 2), part = "all") %>% 
+#  vline(.,j = c(6,7,8,10:15), border = fp_border( width = 1), part = "all") %>% 
+#  add_header_row(., 
+#                 values = c("",'Trait category',	
+#                            'Traits in MR-EvE app',	
+#                            'Traits with consistent effect *',
+#                            'Traits validated in either BCAC',
+#                            'Traits validated in \n BCAC 2017 (Supplementary Table 1)',
+#                            'Traits validated in \n BCAC 2020 (Supplementary Table 2)'),
+#                 colwidths = c(1, 1, 1, 1,1, 4, 7)) %>% 
+#  set_header_labels(ft,
+#    values = list(
+#            exposure_cat = "",
+#            group = " ",
+#            "total_preval" = 'Total',
+#            "total_consist" = 'Total',
+#            "total"   = 'Total',
+#            "total2017" = 'Total',
+#            "all2017" = 'Full',
+#            "er_pos" = "ER+",
+#            "er_neg"= "ER-",
+#            "total2020"  = 'Total',  
+#            "all2020" = 'Full',
+#            "lumA" = "LumA",
+#            "lumB1"  = "LumB1",
+#            "lumB2" = "LumB2",
+#            "her2"  = "HER2",
+#            "tnbc"  = "TNBC" ))
+#ft
 
 ```
 
@@ -186,12 +190,14 @@ merged <- left_join(redone_wide,
           select(-exposure_name) %>% 
           left_join(all_cats %>% select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat')) %>% 
           mutate(label = paste0("(", id.exposure, ") ", exposure_name )) %>% 
-          select(exposure_cat, label, exposure_name, everything()) 
+          select(exposure_cat, label, exposure_name, everything()) %>% 
+          distinct()
 
 
 write_tsv(merged, "../results/mr_evidence_outputs/trait_manual_ivw_subtypes_mergedV3.tsv")
 
 proteins <- merged %>% filter(exposure_cat == "Proteins") %>% select(id.exposure, exposure)
+dim(proteins) # 108 + 2 I dropped because their SNPs are not in outcomes??
 write_tsv(proteins, "../results/mr_evidence_outputs/protein_in_final_setV3.tsv")
 ```
 
@@ -245,7 +251,7 @@ plot(euler(s4, shape = "ellipse"), quantities = TRUE)
 
 ```{r}
 # create wide form of results to view by subtype
-redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv")
+redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
 res_subtypes <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020V3.tsv") %>% filter(outcome != "TNBC_BRCA1 ER-PR-HER-")
 ## category update 
 res_subtypes <- res_subtypes %>% 
@@ -262,8 +268,8 @@ all_mr_validation <- bind_rows(redone_MR, res_subtypes) %>%
     filter(method %in% c('Inverse variance weighted', 'Wald ratio') ) %>% 
    arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) 
 
-all_mr_validation %>% filter(pval < 0.05) %>% pull(id.exposure) %>% unique() %>% length() # 130
-all_mr_validation %>% filter(qval < 0.05) %>% pull(id.exposure) %>% unique() %>% length() # 67
+all_mr_validation %>% filter(pval < 0.05) %>% pull(id.exposure) %>% unique() %>% length() # 129 
+all_mr_validation %>% filter(qval < 0.05) %>% pull(id.exposure) %>% unique() %>% length() # 65
 
 write_tsv(all_mr_validation, "../results/mr_evidence_outputs/all_multiple_testingV3.tsv")
 
@@ -273,26 +279,26 @@ tmp <- all_mr_validation %>% select(pval, qval) %>%
   mutate(pval_sign = ifelse(pval <0.05, T, F)) %>% 
   mutate(qval_sign = ifelse(qval <0.05, T, F))
 
-tmp %>% count(pval_sign) # FALSE	1409	 TRUE	463	
-tmp %>% count(qval_sign) # FALSE 1646		TRUE	226	
+tmp %>% count(pval_sign) 
+tmp %>% count(qval_sign) 
 
 
 x<- all_mr_validation %>%  filter(pval < 0.05) %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(x$id.exposure)) #  130
+length(unique(x$id.exposure)) #  129
 
 y<- all_mr_validation %>%  filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(y$id.exposure)) #  130
+length(unique(y$id.exposure)) #  129
 
 z<- all_mr_validation %>%  filter(!is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(z$id.exposure)) #  105 in BCAC 2020
+length(unique(z$id.exposure)) #  102 in BCAC 2017
 
 w<- all_mr_validation %>%  filter(is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(w$id.exposure)) #  108 in BCAC 2017
+length(unique(w$id.exposure)) #  109 in BCAC 2020
 
 passed_pairs <- all_mr_validation %>%  mutate(mtc = ifelse(qval < 0.05, "*", NA))  %>%
   select(id.exposure, exposure,outcome, exposure_cat, effect_direction, OR_CI, pval, qval, mtc) %>% distinct() 
 
-passed_pairs %>% filter(mtc == "*") %>% pull(id.exposure) %>% unique() %>% length() #  67
+passed_pairs %>% filter(mtc == "*") %>% pull(id.exposure) %>% unique() %>% length() #  65
 write_tsv(passed_pairs, "../results/mr_evidence_outputs/passed_multiple_testingV3.tsv")
 
 ```
