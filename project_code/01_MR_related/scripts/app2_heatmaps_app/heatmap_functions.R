@@ -4,9 +4,9 @@ library(tidyverse)
 
 
 #### functions ----
-load_and_merge_heatmap_inputs <- function(ext = "") {
+load_and_merge_heatmap_inputs <- function(extCis = "", ext = "") {
   
-  redone_MR <- read_tsv(paste0("01_MR_related/results/mr_evidence_outputs/redone_MR_fulloutput",ext,".tsv")) %>% 
+  redone_MR <- read_tsv(paste0("01_MR_related/results/mr_evidence_outputs/redone_MR_fulloutput",extCis,".tsv")) %>% 
     filter(method %in% c("Inverse variance weighted", "Wald ratio")) %>% 
     select(id.exposure, id.outcome, OR_CI, pval, exposure_name, nsnp) %>% 
     mutate(outcome = case_when(id.outcome =="ieu-a-1126" ~ "BCAC 2017",
@@ -326,13 +326,14 @@ plot_heatmap4 <- function(data_tidy, font_size = 11, star_size = 7, col_order = 
                                          '</br>P-value: ', format(pval),
                                          '</br>P-value (FDR adjusted): ', format(qval),
                                          '</br>Odds ratio: ', OR_CI,
-                                         '</br>nSNPs: ', nsnp)
+                                         '</br>nSNPs: ', nsnp,
+                                         '</br>Instruments: ', used_instrument)
   )) + 
     geom_tile(colour = "grey") + 
     #geom_text(aes(label=mtc,  vjust = 0.27), size = star_size) +
     geom_text(aes(label=hazards, alpha=0.9), size = star_size,  nudge_y = 0.1, nudge_x = 0.1) +
     scale_fill_manual(values = pal_values)+ 
-    
+
     theme_minimal_grid(font_size) +
     panel_border() +
     labs(fill = "Effect direction", x="", y ="")+

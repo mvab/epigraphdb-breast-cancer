@@ -9,7 +9,7 @@ source("01_MR_related/scripts/app2_heatmaps_app/functions_copy_from_mreveapp.R")
  #### load data ----
 
 
-#inputs <- load_and_merge_heatmap_inputs(ext="V3") # V3 for new data
+#inputs <- load_and_merge_heatmap_inputs(extCis = "V3cis", ext="V3") # V3 for new data
 #saveRDS(inputs, "01_MR_related/scripts/app2_heatmaps_app/data/inputsV3.rds")
 
 inputs<- readRDS("01_MR_related/scripts/app2_heatmaps_app/data/inputsV3.rds")
@@ -19,7 +19,10 @@ protein_path_data <- inputs$protein_path_data
 antro_blacklist <- inputs$antro_blacklist
 passed_pairs <- inputs$passed_pairs
 
+
 # prep data ----
+
+merged_input <-merged_input %>%  mutate(exposure_cat = ifelse(id.exposure %in% c('prot-a-550', 'prot-a-3000'), "Proteins", exposure_cat))
 
 # give better names
 #names <- data_full %>% select(exposure_cat_sub,exposure.id, exposure.trait, exposure) %>% distinct()
@@ -44,7 +47,7 @@ sensitivity_hazards <- read_tsv("01_MR_related/results/mr_evidence_outputs/all_d
                      #   TRUE ~ hazards
                      # ))
                 
-data_full <- data_full %>%  left_join(sensitivity_hazards %>% select(-exposure)) 
+data_full <- data_full %>%  left_join(sensitivity_hazards %>% select(-exposure, -method, -exposure_cat)) 
 
 
 # drop exposures with no effect
@@ -83,6 +86,12 @@ metabolites <- plot_heatmap4(data_sub,font_size = font_size, star_size = star_si
 data_sub<- data_full %>% filter(exposure_cat %in% c("Proteins"))
 data_sub <- data_sub %>% 
   arrange( value, outcome, main_path) %>%
+  # add cis-used label to protein names
+  mutate(used_inst_code = ifelse(is.na(used_inst_code), "", used_inst_code)) %>% 
+  mutate(name_mix = paste0(name_mix," ", used_inst_code)) 
+
+
+data_sub <- data_sub %>%   
   select(-exposure) %>% rename(exposure= name_mix) %>% 
   mutate(exposure = factor(exposure, levels = unique(data_sub$name_mix))) %>% 
   select(-exposure_cat) %>% rename(exposure_cat=exposure_cat_sub) %>% 
@@ -97,20 +106,24 @@ data_sub <- data_sub %>%
                                                         'Proteins: Signal Transduction',#'Proteins: Developmental Biology', 
                                                         "Proteins: other", "Proteins: not mapped")))
   
+  
 #data_sub %>% left_join(merged %>% select(id.exposure, exposure)) %>%  write_tsv("01_MR_related/mr_evidence_outputs/protein_in_final_set.tsv")
 proteins <- plot_heatmap4(data_sub,font_size = font_size, star_size = star_size/2)
 
 
 leftcol <- plot_grid(lifestyle, metabolites , labels = c('A', 'B'), label_size = 12, ncol=1, rel_heights = c(0.7, 0.6))
-full_plot <- plot_grid(leftcol, proteins , labels = c('', 'C'), label_size = 12, ncol = 2, 
-                                            rel_widths = c(1, 1), rel_heights = c(1, 0.8))
-full_plot <- full_plot + theme(panel.background = element_rect(fill='white'), panel.border = element_blank() )
+rightcol <- plot_grid(proteins, NULL , labels = c('', ''),  ncol=1, rel_heights = c(0.9, 0.1))
 
-full_plot
-ggsave(paste0("01_MR_related/results/heatmap_html/combined_heatmaps2V3.png"),
+full_plot <- plot_grid(leftcol, rightcol , labels = c('', 'C'), label_size = 12, ncol = 2, 
+                       rel_widths = c(1, 1)) +panel_border(remove = T)
+
+#full_plotOLD <- plot_grid(leftcol, proteins , labels = c('', 'C'), label_size = 12, ncol = 2, 
+#                                            rel_widths = c(1, 1), rel_heights = c(1, 0.6))
+
+ggsave(paste0("01_MR_related/results/heatmap_html/combined_heatmaps2V3cis.png"),
        plot=full_plot, scale=1, 
        width=18, height=26,  #for paper 
-       #width=18, height=32, # for supplement - complete set
+       #width=18, height=32, # for supplement - complete set: to save with white bg,  add theme(panel.background = element_rect(fill='white')) to full plot
        units=c("cm"), dpi=300, limitsize=F)
 
 
@@ -135,17 +148,17 @@ diplay_summary %>%
   summarise(N = n()) %>%
   mutate(freq = round(N / sum(N), 2)) 
 
-#    exposure_cat_broad included_in_plot     N  freq
-#    <chr>              <lgl>            <int> <dbl>
-#    1 A - Antro          FALSE                1  0.05
-#    2 A - Antro          TRUE                22  0.95
-#    3 A - Lifestyle      FALSE               15  0.43
-#    4 A - Lifestyle      TRUE                20  0.57
-#    5 B - Lipids         TRUE                20  1   
-#    6 B - Metabolites    FALSE                6  0.32
-#    7 B - Metabolites    TRUE                13  0.68
-#    8 C - Proteins       FALSE               50  0.45
-#    9 C - Proteins       TRUE                61  0.55
+#.  exposure_cat_broad included_in_plot     N  freq
+#. <chr>              <lgl>            <int> <dbl>
+#1 A - Antro          FALSE                1  0.05
+#2 A - Antro          TRUE                19  0.95
+#3 A - Lifestyle      FALSE               15  0.43
+#4 A - Lifestyle      TRUE                20  0.57
+#5 B - Lipids         TRUE                18  1   
+#6 B - Metabolites    FALSE                6  0.32
+#7 B - Metabolites    TRUE                13  0.68
+#8 C - Proteins       FALSE               51  0.46
+#9 C - Proteins       TRUE                59  0.54
 
 
 
