@@ -19,7 +19,7 @@ source("functions_copy_from_mreveapp.R")
 
 ###
 
-inputs<- readRDS("data/inputs.rds") # created in heatmap_static.R
+inputs<- readRDS("data/inputsV3.rds") # created in heatmap_static.R
 
 merged <- inputs$merged
 protein_path_data <- inputs$protein_path_data
@@ -27,6 +27,8 @@ antro_blacklist <- inputs$antro_blacklist
 passed_pairs <- inputs$passed_pairs
 or_ci_data <- inputs$or_ci_data
 
+# fix these 2 prots ad hoc
+merged <-merged %>%  mutate(exposure_cat = ifelse(id.exposure %in% c('prot-a-550', 'prot-a-3000'), "Proteins", exposure_cat)) 
 
 names_tidy <- read_csv("data/renaming_key_tidy.csv") %>% select(exposure.id, exposure)# use new exposure column from here
 merged<- merged %>%
@@ -35,6 +37,19 @@ merged<- merged %>%
   select(exposure, everything())  %>% 
   filter(!is.na(exposure))
 data_full <- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs) 
+
+
+# add data hazards column
+sensitivity_hazards <- 
+                read_tsv("data/all_data_with_sens_filters_hazardsV3.tsv") %>% 
+                mutate(used_instrument = ifelse(exposure.id %in% c('prot-a-550', 'prot-a-3000'), "genome-wide", used_instrument)) %>% 
+                # display 'instrument' for all non-proteins like this:
+                mutate(used_instrument = ifelse(exposure_cat != "Proteins" & is.na(used_instrument), "genome-wide, p=5e-08, r2=0.001", used_instrument))
+
+
+data_full <- data_full %>%  left_join(sensitivity_hazards %>% select(-exposure, -method, -exposure_cat)) 
+
+
 
 # add column for sharing
 data_full <- data_full %>% mutate(value_mtc = ifelse(!is.na(mtc), paste0(value, "*"), value)) %>% 
@@ -74,11 +89,14 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                 "The MR results were estimated using the inverse-variance weighted (IVW) method (or Wald ratio if only 1 SNP 
                                 was available). By hovering over any data point (square) in the interactive version of the plot, you can see
                                 the details of each MR analysis: exposure ID in OpenGWAS (gwas.mrcieu.ac.uk), exposure details (sample size/sex, author/cohort name),
-                                OR and CIs, p-value and FDR-adjusted p-value, and the number of SNPs).",
+                                OR and CIs, p-value and FDR-adjusted p-value, and the number of SNPs, and how instruments were selected (e.g. cis-only for proteins)).
+                                The letters summarise arbitrarily dichotomised sensitivity analysis results: 'P' - potential pleiotropy (abs(egger intercept)>0.05); 
+                                'H' - heterogeneity (Q-stat p-value < 0.05); 'X' - low number of instruments (<=2) where sensitivity analyses were not possible;
+                                an empty cell indicates that no H/P/X issues were identified. ",
                                 br(), br(),
                                 em("Widget options: "),"select category; split by sub-category (for lifestyle traits and proteins only); don't show exposures 
-                                that have no evidence of effect in any of the outcomes; for proteins only - show full names or abbreviations/gene names; 
-                                select outcomes to display.",
+                                that have no evidence of effect in any of the outcomes; for proteins only - show full names or abbreviations/gene names; show only results 
+                                proteins where cis-only instruments were used; select outcomes to display.",
                                 br(), 
                                 "All exposure traits are from mixed-sex samples unless otherwise specified (F: female-only) or are female-specific reproductive traits.",
                                 br(), br(),
@@ -133,6 +151,13 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                          strong("FDR correction"), 
                          checkboxInput("rows_with_fdr", 
                                        label = "Show passed", 
+                                       value = F),
+                         
+                        
+                         br(),
+                         strong("Used instruments"), 
+                         checkboxInput("rows_with_cis", 
+                                       label = "Show cis-only (proteins only)", 
                                        value = F)
                          
               
@@ -232,6 +257,12 @@ server <- function(input, output) {
       
     }
     
+    if(input$rows_with_cis){
+      
+      dat_sub <- dat_sub %>% filter(used_instrument != "genome-wide")
+      
+    }
+    
     # calculate name length in the selected subgroup
     dat_sub <- dat_sub %>% mutate(name_nchar = stringr::str_count(exposure))
     
@@ -251,13 +282,13 @@ server <- function(input, output) {
     res = 96,
     
     {
-    plot_heatmap2(dataInput(), font_size = 11)  
+    plot_heatmap4(dataInput(), font_size = 9, star_size = 3)  
   })
   
   output$heatmap2 <- renderPlotly(
     
     {
-    plot <- plot_heatmap2(dataInput(), font_size = 9, star_size = 4)  
+    plot <- plot_heatmap4(dataInput(), font_size = 9, star_size = 3)  
     plotly::ggplotly(plot , tooltip = c("text"), 
                      width = (3 * max(dataInput()$name_nchar))  + max((66 * length(unique(dataInput()$outcome))), 265 ), # set size for trait name based on max length + plot width based on number of selected outcomes or min 265
                      height = max((3 * 10 *length(unique(dataInput()$exposure.id))),200) # calculate or use 200
@@ -271,7 +302,7 @@ server <- function(input, output) {
     },
     content = function(file) {
       write.csv(dataInput() %>% select(exposure.id, exposure, exposure_cat, exposure_details, gene, 
-                                       outcome, effect_direction, OR_CI, pval, qval), 
+                                       outcome, effect_direction, OR_CI, pval, qval, nsnp, used_instrument), 
                 file, row.names = FALSE)
     }
   )

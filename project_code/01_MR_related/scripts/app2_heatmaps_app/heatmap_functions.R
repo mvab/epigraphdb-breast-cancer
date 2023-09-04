@@ -327,7 +327,9 @@ plot_heatmap4 <- function(data_tidy, font_size = 11, star_size = 7, col_order = 
                                          '</br>P-value (FDR adjusted): ', format(qval),
                                          '</br>Odds ratio: ', OR_CI,
                                          '</br>nSNPs: ', nsnp,
-                                         '</br>Instruments: ', used_instrument)
+                                         '</br>Instruments: ', used_instrument,
+                                         '</br>Egger intercept: ', egger_intercept,
+                                         '</br>Q-stat p-value: ', heterogeneity_Q_pval)
   )) + 
     geom_tile(colour = "grey") + 
     #geom_text(aes(label=mtc,  vjust = 0.27), size = star_size) +
@@ -345,7 +347,8 @@ plot_heatmap4 <- function(data_tidy, font_size = 11, star_size = 7, col_order = 
     #      axis.ticks.y=element_blank()  #remove y axis ticks
     #)
     theme(axis.text.y = element_text( size=font_size_ax), #7
-          axis.text.x = element_text(angle=40, size=font_size_ax, hjust = 1), legend.position = 'none') #  40 , 6
+          axis.text.x = element_text(angle=40, size=font_size_ax, hjust = 1), legend.position = 'none', #  40 , 6
+          panel.background = element_rect(fill='white'))
   
   p<- p + ggforce::facet_col(vars(exposure_cat), scales = "free_y", space = "free") 
   
