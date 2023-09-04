@@ -60,11 +60,14 @@ protein_regions<- read_csv("../results/mr_evidence_outputs/protein_gene_regions_
 ## validate results by redoing MR + sensitivity tests
 ## MR -- doing all outcomes validation, even if mr-eve had sign result only for one or two types
 
+#### redone r2 + 2 odd : ids<- c("prot-a-643",  "prot-a-1369", "prot-a-1317", "prot-a-1540", "prot-a-1541", "prot-a-2824" ,"prot-a-1074", "prot-a-2493", "prot-a-2291","prot-a-550" , "prot-a-3000")
+
 res_df_all <- bind_rows(lapply(ids, do_MR, 'all', exp_ss, protein_regions)) 
 res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+', exp_ss, protein_regions)) 
 res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-', exp_ss, protein_regions))
 
 redone_MR_full <- bind_rows( res_df_all,res_df_pos,res_df_neg) %>% left_join(exp_help_names) %>% arrange(id.outcome)
+
 
 # split into MR and sens and save
 redone_MR <- redone_MR_full %>% 
@@ -79,12 +82,11 @@ redone_MR_sens <- redone_MR_full %>%
 
 write_tsv(redone_MR,      "../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
 write_tsv(redone_MR_sens, "../results/mr_evidence_outputs/redone_MR_fulloutput_sensV3cis.tsv")
-redone_MR<- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
 
 length(unique(redone_MR$id.exposure)) # 202 tested; but how many validated????
 
-##
-#redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv")
+
+redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv")
 redoneMR_tidy <- redone_MR %>%  
   select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, pval, effect_direction , nsnp, method, exposure_cat, used_instrument) %>% 
   filter(effect_direction != "overlaps null") %>% 
@@ -93,7 +95,7 @@ redoneMR_tidy <- redone_MR %>%
 redoneMR_tidy%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)#total
 redoneMR_tidy%>% filter(id.outcome == 'ieu-a-1128') %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat) # selected outcome
 
-length(unique(redoneMR_tidy$id.exposure)) # 102 validated
+length(unique(redoneMR_tidy$id.exposure)) # 101 validated
 
 write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_ivwV3cis.tsv") ### this is used in mediator validation
 redone_MR<- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
@@ -129,7 +131,7 @@ for (i in bcac_lookup$full_data){
 ####ids <- ids[ids %in% protein_regions$exposure.id] # as they are individually saved, only do proteins - redoing for cis
 
 
-for (i in 104:length(ids)){ # NBb skipped 57 prot-a-2356 and 103 prot-b-55, - no harmonized with wny outcome: 
+for (i in 1:length(ids)){ # NBb skipped 57 prot-a-2356 and 103 prot-b-55, - no harmonized with wny outcome: 
     trait = ids[i]
     print(paste0("==== ", trait, " / ", i,  " ===="))
   
