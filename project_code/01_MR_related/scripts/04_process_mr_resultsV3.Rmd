@@ -75,7 +75,7 @@ res_subtypes_for_count <- bind_rows(redone_MR,res_subtypes) %>%
   filter(effect_direction != "overlaps null") %>% 
   filter(method %in% c('Inverse variance weighted', 'Wald ratio')) %>% 
   # for some reason cat is missing:
-  mutate(exposure_cat = ifelse(id.exposure =="prot-a-550", "Proteins", exposure_cat)) %>% 
+  mutate(exposure_cat = ifelse(id.exposure %in% c("prot-a-550", "prot-a-3000" ), "Proteins", exposure_cat)) %>% 
   mutate(exposure_cat = ifelse(id.exposure =="met-c-841", "Metabolites", exposure_cat)) 
   
   
@@ -269,7 +269,7 @@ all_mr_validation <- bind_rows(redone_MR, res_subtypes) %>%
    arrange(pval) %>% mutate(qval = p.adjust(pval, method = "BH")) 
 
 all_mr_validation %>% filter(pval < 0.05) %>% pull(id.exposure) %>% unique() %>% length() # 129 
-all_mr_validation %>% filter(qval < 0.05) %>% pull(id.exposure) %>% unique() %>% length() # 65
+all_mr_validation %>% filter(qval < 0.05) %>% pull(id.exposure) %>% unique() %>% length() # 63
 
 write_tsv(all_mr_validation, "../results/mr_evidence_outputs/all_multiple_testingV3.tsv")
 
@@ -290,7 +290,7 @@ y<- all_mr_validation %>%  filter(effect_direction != 'overlaps null') %>% selec
 length(unique(y$id.exposure)) #  129
 
 z<- all_mr_validation %>%  filter(!is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
-length(unique(z$id.exposure)) #  102 in BCAC 2017
+length(unique(z$id.exposure)) #  101 in BCAC 2017
 
 w<- all_mr_validation %>%  filter(is.na(id.outcome)) %>% filter(effect_direction != 'overlaps null') %>% select(id.exposure, exposure,outcome, exposure_cat, effect_direction) %>% distinct() 
 length(unique(w$id.exposure)) #  109 in BCAC 2020
@@ -322,8 +322,10 @@ mtc <- read_tsv("../results/mr_evidence_outputs/all_multiple_testingV3.tsv")  %>
   select(id.exposure, outcome,qval )%>% rename(pval_FDR_adj = qval)
 
 ## old outcomes
-main_results <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv")
-sens_results <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput_sensV3.tsv")
+main_results <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv") %>% 
+    mutate(exposure_cat = ifelse(id.exposure %in% c("prot-a-550", "prot-a-3000" ), "Proteins", exposure_cat)) %>% 
+    mutate(exposure_cat = ifelse(id.exposure =="met-c-841", "Metabolites", exposure_cat)) 
+sens_results <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutput_sensV3cis.tsv")
 
 res_w_sens <- list()
 
@@ -335,7 +337,9 @@ for (outcome_name in outcomes1){
 
 # new outcomes <- will add to the same list
 
-main_results <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020V3.tsv") %>%  mutate(id.outcome = outcome)
+main_results <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020V3.tsv") %>%  mutate(id.outcome = outcome) %>% 
+    mutate(exposure_cat = ifelse(id.exposure %in% c("prot-a-550", "prot-a-3000" ), "Proteins", exposure_cat)) %>% 
+    mutate(exposure_cat = ifelse(id.exposure =="met-c-841", "Metabolites", exposure_cat)) 
 sens_results <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020V3.tsv") %>%  mutate(id.outcome = outcome)
 
 outcomes2 <- unique(main_results$id.outcome)
@@ -348,12 +352,11 @@ names(res_w_sens) <- c("All. BCAC 2017", "ER+. BCAC 2017 ", "ER-. BCAC 2017",
                        "All. BCAC 2020", "Luminal A. BCAC 2020","Luminal B1. BCAC 2020", 
                                      "Luminal B2. BCAC 2020",  "HER2-enriched. BCAC 2020", "TNBC. BCAC 2020" )
 
-res_w_sens <-res_w_sens[names(res_w_sens)[1:9]]# drop second TNBC
 
 writexl::write_xlsx(res_w_sens, "../results/mr_evidence_outputs/all_data_with_sens_filtersV3.xlsx")
 
 ## also save 
-main_results17 <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv")
+main_results17 <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
 main_results20 <- read_tsv("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020V3.tsv") %>% 
                               mutate(id.outcome = outcome) %>% filter(outcome != "TNBC_BRCA1 ER-PR-HER-")
 
@@ -366,6 +369,9 @@ all_mr_tests <- read_tsv("../results/mr_evidence_outputs/all_data_validationV3.t
 length(unique(all_mr_tests$id.exposure)) # 202
 ```
 
+
+
+
 ```{r}
 # testing subsetting by sensitivity
 library(rio)
@@ -375,7 +381,7 @@ res_w_sens <- import_list("../results/mr_evidence_outputs/all_data_with_sens_fil
 all_df <- bind_rows(res_w_sens)
 
 dat <- all_df %>% 
-  select(exposure.id=id.exposure, exposure,  outcome, nsnp, effect_direction, 
+  select(exposure.id=id.exposure, exposure,  outcome, nsnp, effect_direction, used_instrument,exposure_cat, method,
          egger_intercept, egger_intercept_less_than_0.05, heterogeneity_Q_pval, heterogeneity_Q_pval_less_than_0.05) %>% 
   mutate(outcome = case_when(outcome =="Breast cancer BCAC 2020" ~ "BCAC'20",
                              outcome =="Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)" ~ "BCAC'17",
@@ -394,6 +400,13 @@ dat <- all_df %>%
                                  TRUE ~ NA))
  
 dat %>% count(hazards)
+dat %>% filter(exposure_cat=="Proteins") %>% count(used_instrument) %>% View()
+dat %>% select(exposure.id, used_instrument) %>% distinct() %>% count(exposure.id) %>% View() 
+# prot-a-2356 and  prot-b-55 are genome-wide in BCAC 2020 but cis in 2017; going to put genome-side for all
+
+dat <- dat %>% 
+  mutate(used_instrument = ifelse(exposure.id %in% c('prot-a-2356', 'prot-b-55'), "genome-wide",used_instrument )) %>% 
+  mutate(used_inst_code = ifelse(exposure_cat=="Proteins" & used_instrument == "genome-wide", "", "*"))
 
 write_tsv(dat, "../results/mr_evidence_outputs/all_data_with_sens_filters_hazardsV3.tsv")
 ```
@@ -406,7 +419,7 @@ write_tsv(dat, "../results/mr_evidence_outputs/all_data_with_sens_filters_hazard
 # compare with previous final list
 ```{r}
 datV3 <- read_tsv("../results/mr_evidence_outputs/all_multiple_testingV3.tsv") %>% filter(pval < 0.05)
-length(unique(datV3$id.exposure)) # 130
+length(unique(datV3$id.exposure)) # 129
 
 datV2 <- read_tsv("../results/mr_evidence_outputs/all_multiple_testing.tsv") %>% filter(pval < 0.05)
 length(unique(datV2$id.exposure)) # 213
@@ -414,15 +427,19 @@ length(unique(datV2$id.exposure)) # 213
 
 
 new <- setdiff(datV3$id.exposure, datV2$id.exposure)
-length(new)# 19
+length(new)# 26
 new_df<-datV3 %>%  filter(id.exposure %in% new) %>% select(id.exposure, exposure, exposure_cat) %>% distinct()
 write_tsv(new_df, "../results/mr_evidence_outputs/comparisonsV2vsV3_new_traits.tsv")
 
 missing <- setdiff(datV2$id.exposure, datV3$id.exposure)
-length(missing) # 102
+length(missing) # 110
 missing_df <- datV2 %>%  filter(id.exposure %in% missing) %>% select(id.exposure, exposure, exposure_cat) %>% distinct() 
 write_tsv(missing_df, "../results/mr_evidence_outputs/comparisonsV2vsV3_missing_traits.tsv")
 ```
+
+
+
+
 
 
 
