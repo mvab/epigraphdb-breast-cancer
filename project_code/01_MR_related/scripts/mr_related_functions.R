@@ -98,6 +98,12 @@ instrument_selection <- function(trait_exp, protein_regions) {
     if (nrow(instruments) >= 1){
       instruments_clumped <-  clump_data(instruments, clump_r2 = 0.01)
       used_inst <- "cis_5e-08_r2=0.01"
+      # now check if N instrument is not too high, then clump with more strungent threshold
+      if (nrow(instruments_clumped) >= 7){
+        instruments_clumped <-  clump_data(instruments, clump_r2 = 0.001)
+        used_inst <- "cis_5e-08_r2=0.001"
+      }
+      
     } else{
       # filter less stringent
       instruments <- protein_cis %>% filter(pval.exposure < 0.05/nrow(protein_cis)) 
@@ -548,10 +554,21 @@ add_sensitivity_cols <- function(main_results, sens_results, outcome_name, mtc){
     left_join(effect_count) %>%
     filter(method %in%  c('Inverse variance weighted', "Wald ratio"))
   
+  # fix used_instrument label for proteins
+  
+  type<- type %>% 
+    mutate(used_instrument = case_when(
+                exposure_cat=="Proteins" & used_instrument == "cis_5e-08_r2=0.01" ~ "cis_5e-08_r2=0.01",
+                exposure_cat=="Proteins" & used_instrument == "cis_5e-08_r2=0.001" ~ "cis_5e-08_r2=0.001",
+                exposure_cat=="Proteins" & used_instrument == "cis_lessStringent_r2=0.01" ~ "cis_lessStringent_r2=0.01",
+                exposure_cat=="Proteins" & !used_instrument %in% c("cis_5e-08_r2=0.01", "cis_lessStringent_r2=0.01") ~ "genome-wide" ))
+  
+  
   # sens results 
   sens_type <- sens_results %>% 
     filter(id.outcome == outcome_name) %>% 
-    filter(method ==  'Inverse variance weighted')
+    filter(method ==  'Inverse variance weighted') %>% 
+    select(-used_instrument)
   
   sens_type <- sens_type %>%   
     mutate(`egger_intercept_less_than_0.05` = ifelse(abs(egger_intercept) < 0.05, T, F) ) %>%  # pleio 1?
