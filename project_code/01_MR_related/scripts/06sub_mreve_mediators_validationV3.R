@@ -29,14 +29,13 @@ trait_ss <-ao %>%
   filter(id %in% unique(results_subset$med.id, results_subset$exposure.id)) %>% 
   mutate(sample_size = ifelse(is.na(sample_size) & author == "Neale lab", 361194, sample_size)) %>%
   select(exposure.id =id, trait, sex, exposure.sample_size =sample_size, population)
-exclude_meds<- trait_ss %>% filter(population != "European" | sex == "Males")
+exclude_meds<- trait_ss %>% filter(population != "European" | sex == "Males" | grepl("raw", exposure.id))
 
 ### select pairs for validation
 
 x<- results_subset %>%
   filter(type == 'mediator') %>% 
   create_exposure_categories() %>% 
-  filter(!grepl("raw", med.id)) %>% 
   filter(!med.id %in% exclude_meds$exposure.id) %>% 
   select(exposure.trait, exposure.id, exposure_cat, med.trait, med.id, med_cat, type) %>% distinct() # there are dups because of multiple BC 
 
@@ -247,11 +246,14 @@ write_tsv(step2_validated, "01_MR_related/results/mr_evidence_outputs/redone_MRm
 
 # bring in total effect data
 total_effect <- read_tsv(paste0("01_MR_related/results/mr_evidence_outputs/all_multiple_testingV3.tsv")) %>% 
-  filter(!is.na(id.outcome)) %>% 
-  filter(qval < 0.05)
+  filter(!is.na(id.outcome)) 
 length(unique(total_effect$id.exposure)) # 50
 
 total_effect <- total_effect %>% 
+  mutate(total_inst = ifelse(grepl("r2", used_instrument), "cis", "genome-wide")) %>% 
+  mutate(total_sign_level = case_when(qval < 0.05 ~ "FDR",
+                                      pval < 0.05 ~ "nominal",
+                                      TRUE ~ "not")) %>% 
   select( id.exposure, id.outcome,
           "total.OR_CI" = "OR_CI",
           "total.or" = "or",
@@ -259,7 +261,9 @@ total_effect <- total_effect %>%
           "total.qval" =  "qval", 
           "total.effect_direction" = "effect_direction" ,
           "total.nsnp" =  "nsnp"  , 
-          "exposure_cat" )
+          "exposure_cat" ,
+          'total_inst',
+          'total_sign_level')
 
 
 
@@ -291,7 +295,7 @@ step2_validated <- step2_validated %>%
          "step2.effect_direction" =  "effect_direction",
          "step2.nsnp" ="nsnp") 
 
-steps_joined <- full_join(step1_validated,step2_validated, by = "id.med") %>% 
+steps_joinedQval <- full_join(step1_validated,step2_validated, by = "id.med") %>% 
   select(exposure, id.exposure, mediator, id.med, starts_with("step1"), outcome, id.outcome, starts_with("step2"), everything()) %>% 
   left_join(total_effect, by = c("id.exposure", "id.outcome")) %>% 
   filter(step1.qval < 0.05 & step2.qval < 0.05  & !is.na(total.effect_direction))
@@ -302,19 +306,65 @@ steps_joinedPval <- full_join(step1_validated,step2_validated, by = "id.med") %>
   left_join(total_effect, by = c("id.exposure", "id.outcome")) %>% 
   filter(step1.pval < 0.05 & step2.pval < 0.05  & !is.na(total.effect_direction))
 
-
+med_cats<- steps_joinedPval %>% 
+  select(exposure.trait = mediator, exposure.id = id.med, exposure.trait = mediator) %>% 
+  create_exposure_categories() %>% 
+  select(id.med = exposure.id, med_cat=exposure_cat ) %>% distinct() 
+  
+steps_joinedPval <- left_join(steps_joinedPval, med_cats)
 
 # no med per trait
-counts<- steps_joined %>%  
-  select(exposure_cat,exposure,id.exposure, id.med) %>% distinct() %>% 
-  count(exposure_cat,exposure,id.exposure) %>% rename(med_count=n)
 
-counts %>% filter(id.exposure %in% c("prot-a-1369", "prot-a-1097",  "prot-b-38", "prot-a-2396", # proteins with lit space
-                                     "prot-a-2629", "prot-a-1530",  "prot-a-67", "prot-a-366", 
-                                     "prot-a-710", "prot-b-71",  "prot-a-1148", "prot-a-1117", 
-                                     "prot-a-2073", "prot-a-3076")) %>% View()
-  
-counts %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traitsV3.csv") # this is Supl Table 7
+comparisonPval<- steps_joinedPval %>% 
+  select(exposure_cat,exposure,id.exposure,total.nsnp, total_inst,total_sign_level, id.med) %>% distinct() %>%
+  count(exposure_cat,exposure,id.exposure,total.nsnp,  total_inst,  total_sign_level) %>% rename(med_count_P=n) 
+
+comparisonQval<- steps_joinedQval %>% 
+  select(exposure_cat,exposure,id.exposure, total.nsnp, total_inst, total_sign_level, id.med) %>% distinct() %>%
+  count(exposure_cat,exposure,id.exposure, total.nsnp, total_inst, total_sign_level) %>% rename(med_count_Q=n) 
+
+
+lit_counts<-read_tsv("02_literature_related//results/literature_outputs/lit_space_statsV3.tsv") %>% 
+  select(id.exposure,exposure, unique_triples) %>% 
+  mutate(unique_triples =ifelse(is.na(unique_triples), 0, unique_triples))
+
+
+counts<- full_join(comparisonPval, comparisonQval) %>% left_join(lit_counts)
+
+counts  %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traitsV3.csv") # this is Supl Table 7
+
+
+counts_prots <- counts %>% 
+  filter(exposure_cat == "Proteins") %>% 
+  filter(total_sign_level %in% c("FDR","nominal")) %>%
+  #filter( total_inst == "cis") %>% 
+  arrange(total_sign_level, total_inst, desc(med_count_P)) 
+
+counts_prots %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traitsV3proteins.tsv")
+
+
+# saving all mediaotrs per each trait
+
+exposure_to_extract <- unique(steps_joinedPval$id.exposure)
+
+out <- list()
+for (i in exposure_to_extract){
+  sub <- steps_joinedPval %>%  filter(id.exposure == i)
+  out[[i]] <- sub
+}
+writexl::write_xlsx(out, "01_MR_related/results/mr_evidence_outputs/med-table-validatedV3.xlsx") # this is not really validated; just pval for each step
+
+
+out[["ukb-d-30760_irnt"]] %>% filter(total.pval < 0.05) %>% View()
+
+
+
+
+
+### old
+
+
+
 
 p <- ggplot(counts, aes(x=med_count)) + 
   geom_histogram()+ facet_wrap(~exposure_cat)
@@ -325,20 +375,37 @@ counts %>%
   summarise(mean = mean(med_count)) %>% View()
 
 
-# saving all mediaotrs per each trait
 
-exposure_to_extract <- unique(steps_joined$id.exposure)
+counts %>% filter(id.exposure %in% c("prot-a-1369", "prot-a-1097",  "prot-b-38", "prot-a-2396", # proteins with lit space
+                                     "prot-a-2629", "prot-a-1530",  "prot-a-67", "prot-a-366", 
+                                     "prot-a-710", "prot-b-71",  "prot-a-1148", "prot-a-1117", 
+                                     "prot-a-2073", "prot-a-3076")) %>% View()
 
-out <- list()
-for (i in exposure_to_extract){
-  sub <- steps_joined %>%  filter(id.exposure == i)
-  out[[i]] <- sub
-}
-writexl::write_xlsx(out, "01_MR_related/results/mr_evidence_outputs/med-table-validatedV3.xlsx")
-
-
+#####
+###
+###
+###
 
 
+# extracting stuff for childhiid BMI
+
+# this is already fdr-corrected in both steps; mr-eve
+res<- results_subset %>% 
+  filter(type %in% c('mediator')) %>% # conf coud be here too if it was extracted
+  filter(!med.id %in% exclude_meds$exposure.id) %>% 
+  filter(exposure.id == "ukb-b-4650") 
+
+res %>% select(med.trait, med.id, med_cat) %>% distinct() %>% count(med_cat) %>% View()
+  
+res %>% select(med.trait, med.id, med_cat, r1.OR_CI, r3.OR_CI, r1.qval, r3.qval) %>% distinct() %>% View()
 
 
+res_valid<- steps_joinedPval %>% 
+  filter(id.exposure == "ukb-b-4650") 
 
+res_valid %>% select(mediator, id.med, med_cat) %>% distinct() %>% count(med_cat) %>% View() # pval
+
+res_valid %>% filter(step1.qval <0.05 & step2.qval <0.05) %>%  select(mediator, id.med, med_cat) %>% distinct() %>% count(med_cat) %>% View() #qval
+
+
+res_valid %>% filter(step1.qval <0.05 & step2.qval <0.05) %>% View()
