@@ -329,7 +329,8 @@ plot_heatmap4 <- function(data_tidy, font_size = 11, star_size = 7, col_order = 
                                          '</br>nSNPs: ', nsnp,
                                          '</br>Instruments: ', used_instrument,
                                          '</br>Egger intercept: ', egger_intercept,
-                                         '</br>Q-stat p-value: ', heterogeneity_Q_pval)
+                                         '</br>Q-stat p-value: ', heterogeneity_Q_pval,
+                                         '</br>F-statistics: ', Fst)
   )) + 
     geom_tile(colour = "grey") + 
     #geom_text(aes(label=mtc,  vjust = 0.27), size = star_size) +
