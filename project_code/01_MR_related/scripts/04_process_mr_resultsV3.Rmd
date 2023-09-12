@@ -63,7 +63,7 @@ res_subtypes_wide<- res_subtypes %>%
 
 
 ```{r}
-### this is a table1 in paper making code
+### this is a table1 in paper making code ---- see table 1 new version with FDR below
 ### 
 
 all_cats <- read_tsv("../results/mr_evidence_outputs/tidy_traits_by_catV3.tsv")
@@ -134,6 +134,59 @@ table1 <- counts_by_outcome_df %>%
 
 write_tsv(table1, "../results/mr_evidence_outputs/mr_subtypes/table1_counts_by_exposure_catV3.tsv")
 ```
+
+
+```{r}
+# table 1 mini version with FDR: 
+res_subtypes_for_count_mtc <- left_join(res_subtypes_for_count, mtc)  # mtc is created later in the code
+
+counts_by_outcome <- list(
+  total = res_subtypes_for_count_mtc %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  totalFDR = res_subtypes_for_count_mtc %>% filter(pval_FDR_adj < 0.05) %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  total2017 = res_subtypes_for_count_mtc %>% filter(grepl("Combined", outcome)) %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total2017=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  total2017FDR = res_subtypes_for_count_mtc %>% filter(pval_FDR_adj < 0.05)%>% filter(grepl("Combined", outcome)) %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total2017=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+
+  total2020 = res_subtypes_for_count_mtc %>% filter(!grepl("Combined", outcome)) %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total2020=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  total2020FDR = res_subtypes_for_count_mtc %>% filter(pval_FDR_adj < 0.05)%>% filter(!grepl("Combined", outcome)) %>% select(id.exposure, exposure_cat) %>% distinct() %>%  count(exposure_cat) %>% rename(total2020=n) %>% 
+    column_to_rownames('exposure_cat') %>% t() %>% as_data_frame()
+  )
+
+counts_by_outcome_df <- bind_rows(counts_by_outcome) %>% t() %>% as.data.frame() %>% rownames_to_column('exposure_cat') 
+colnames(counts_by_outcome_df) <- c("exposure_cat", names(counts_by_outcome)) 
+
+counts_by_outcome_df<- left_join(table1_col1, counts_by_outcome_df) %>% column_to_rownames('exposure_cat')  %>% replace(is.na(.), 0) 
+
+sums<- colSums(counts_by_outcome_df)
+counts_by_outcome_df<- counts_by_outcome_df%>% bind_rows(.,sums)
+
+
+
+table1FDR <- counts_by_outcome_df %>% 
+    rownames_to_column('exposure_cat') %>% 
+    mutate(exposure_cat = case_when(exposure_cat == "...13" ~"TOTAL", 
+                                    exposure_cat == 'Antrophometric' ~ 'Anthropometric',
+                                     exposure_cat == 'Drugs' ~ 'Medication',
+                                    TRUE ~ exposure_cat) )%>% 
+      mutate(exposure_cat = factor(exposure_cat, 
+     levels= c( "Anthropometric", "Diet and supplements", "Physical activity", "Reproductive", 
+               "Sleep", "Medication", "Alcohol", "Smoking", "Proteins", "Lipids", "Metabolites", "Other biomarkers", "TOTAL"))) %>% 
+     arrange(exposure_cat) %>% 
+    mutate(group = ifelse(exposure_cat %in% c("Proteins", "Lipids", "Metabolites", "Other biomarkers"), "Molecular traits", "Lifestyle traits")) %>% 
+    mutate(group = ifelse(exposure_cat == "TOTAL", "TOTAL", group)) %>% 
+    select(group, everything()) 
+  
+
+write_csv(table1FDR, "../results/mr_evidence_outputs/mr_subtypes/table1_counts_by_exposure_catV3_FDR.csv")
+
+```
+
+
+
 
 ```{r}
 # legacy
@@ -382,7 +435,7 @@ all_df <- bind_rows(res_w_sens)
 
 dat <- all_df %>% 
   select(exposure.id=id.exposure, exposure,  outcome, nsnp, effect_direction, used_instrument,exposure_cat, method,
-         egger_intercept, egger_intercept_less_than_0.05, heterogeneity_Q_pval, heterogeneity_Q_pval_less_than_0.05) %>% 
+         egger_intercept, egger_intercept_less_than_0.05, heterogeneity_Q_pval, heterogeneity_Q_pval_less_than_0.05, Fst) %>% 
   mutate(outcome = case_when(outcome =="Breast cancer BCAC 2020" ~ "BCAC'20",
                              outcome =="Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)" ~ "BCAC'17",
                              outcome =="ER+ Breast cancer (Combined Oncoarray; iCOGS; GWAS meta analysis)" ~ "ER+",
@@ -397,7 +450,7 @@ dat <- all_df %>%
                                  egger_intercept_less_than_0.05 != T & heterogeneity_Q_pval_less_than_0.05 == F ~ "P",
                                  egger_intercept_less_than_0.05 != T & heterogeneity_Q_pval_less_than_0.05 != F ~ "HP",
                                  nsnp <=2 ~ "X",
-                                 TRUE ~ NA))
+                                 TRUE ~ NA)) 
  
 dat %>% count(hazards)
 dat %>% filter(exposure_cat=="Proteins") %>% count(used_instrument) %>% View()
