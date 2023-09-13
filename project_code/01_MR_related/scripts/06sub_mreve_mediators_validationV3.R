@@ -329,9 +329,18 @@ lit_counts<-read_tsv("02_literature_related//results/literature_outputs/lit_spac
   mutate(unique_triples =ifelse(is.na(unique_triples), 0, unique_triples))
 
 
-counts<- full_join(comparisonPval, comparisonQval) %>% left_join(lit_counts)
+counts<- full_join(comparisonPval, comparisonQval) %>% left_join(lit_counts) %>% 
+         mutate(med_count_P =ifelse(is.na(med_count_P), 0, med_count_P)) %>% 
+         mutate(med_count_Q =ifelse(is.na(med_count_Q), 0, med_count_Q))
 
-counts  %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traitsV3.csv") # this is Supl Table 7
+length(unique(counts$id.exposure)) # 101 yes this is bcac 2017 risk factors only
+
+counts %>% filter(med_count_P > 0) %>% pull(id.exposure) %>% unique() %>% length() # 101 - all exposures have at least 1 putative mediaotr if pval is used
+counts %>% filter(med_count_Q > 0) %>% pull(id.exposure) %>% unique() %>% length()  # 64
+counts %>% filter(total_sign_level == "FDR") %>% filter(med_count_Q > 0) %>% pull(id.exposure) %>% unique() %>% length()  # 39
+
+counts  %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traitsV3.csv")
+
 
 
 counts_prots <- counts %>% 
@@ -352,7 +361,8 @@ for (i in exposure_to_extract){
   sub <- steps_joinedPval %>%  filter(id.exposure == i)
   out[[i]] <- sub
 }
-writexl::write_xlsx(out, "01_MR_related/results/mr_evidence_outputs/med-table-validatedV3.xlsx") # this is not really validated; just pval for each step
+writexl::write_xlsx(out, "01_MR_related/results/mr_evidence_outputs/med-table-validatedV3.xlsx") # this is not really validated; 
+                                                                                                 # just pval for each step -- is this Supl table 6??
 
 
 out[["ukb-d-30760_irnt"]] %>% filter(total.pval < 0.05) %>% View()
@@ -369,10 +379,18 @@ out[["ukb-d-30760_irnt"]] %>% filter(total.pval < 0.05) %>% View()
 p <- ggplot(counts, aes(x=med_count)) + 
   geom_histogram()+ facet_wrap(~exposure_cat)
 
-# ad hoc category checking
+
+# ad hoc category size checking
 counts %>% 
+filter(total_sign_level=="FDR") %>%
+  filter(!is.na(med_count_Q)) %>% 
+  pull(id.exposure) %>% unique() %>% length()# 39/49 have mediators at Q value
+
+counts %>% 
+  filter(total_sign_level=="FDR") %>% 
   group_by(exposure_cat) %>%
-  summarise(mean = mean(med_count)) %>% View()
+  mutate(across(everything(), ~replace_na(.x, 0))) %>%  
+  summarise(meanP = mean(med_count_P), meanQ = mean(med_count_Q)) %>% View()  # this is Supl Table 7
 
 
 
