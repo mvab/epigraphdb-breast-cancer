@@ -1,7 +1,8 @@
 library(tidyverse)
+library(cowplot)
 
 
-inputs<- readRDS("01_MR_related/scripts/app2_heatmaps_app/data/inputs.rds")
+inputs<- readRDS("01_MR_related/scripts/app2_heatmaps_app/data/inputsV3.rds")
 or_ci_data <- inputs$or_ci_data
 passed_pairs <- inputs$passed_pairs
 merged <- inputs$merged
@@ -29,43 +30,45 @@ res<- or_ci_data %>%
   mutate(OR_CI = gsub("[", "", OR_CI, fixed = T)) %>% 
   mutate(OR_CI = gsub("]", "", OR_CI, fixed = T)) %>% 
   separate(OR_CI, into = c("or", "lo_ci", "up_ci"), sep=' ') %>% 
-  rename(OR_CI =OR_CI2) %>% 
+ # rename(OR_CI =OR_CI2) %>% 
   mutate_at(vars(or, lo_ci, up_ci), as.numeric) %>%  
+  mutate(OR_CI = paste0(round(or,2), " [", round(lo_ci,2), ":", round(up_ci,2), "]")) %>% 
   left_join(passed_pairs) %>% 
-  filter(!is.na(mtc)) %>% 
+  #filter(!is.na(mtc)) %>% 
   left_join(merged) %>% 
-  filter(!exposure.id %in% antro_blacklist)
+  mutate(outcome = factor(outcome, levels = rev(c("BCAC'17", "BCAC'20" ,
+                                                  "ER+"  ,   "ER-" ,  
+                                                  "Lum A" ,  "Lum B1" , "Lum B2" , "HER2"  ,  "TNBC"  ))))
+
+# only do this for selected case studies
+keep <- c("ukb-b-4650", "ukb-a-11", "ukb-d-30760_irnt", "met-a-500")
+
+res_sub <- res %>% filter(exposure.id %in% keep)
+
+
+
+for (i in unique(res_sub$exposure.id)){
   
+  mr_results <- res_sub %>% filter(exposure.id == i) 
 
-
-
-for (i in unique(res$outcome)){
+  pal<- c("#EB5291FF", "#FBBB68FF" ,"#F5BACFFF", "#9DDAF5FF", "#6351A0FF" ,"#FFEA5E", "#1794CEFF",'darkgrey', "#972C8DFF")
   
-  mr_results <- res %>% filter(outcome == i) %>% arrange(exposure_cat, or)
-
-  
-  pal<-(c(unname(yarrr::piratepal("pony"))))
-  pal[6:7]<-c('darkgrey', "#FFEA5E")
-  p<-ggplot(mr_results, aes(y=exposure_name, x=or, colour=exposure_cat)) +
-    geom_errorbarh(aes(xmin=lo_ci, xmax=up_ci), height=.2) +
-    geom_point(size=1)+
+  p<-ggplot(mr_results, aes(y=outcome, x=or, colour=outcome)) +
+    geom_errorbarh(aes(xmin=lo_ci, xmax=up_ci), height=.3) +
+    geom_point(size=2)+
     scale_color_manual(values=pal)+
     geom_vline(xintercept=1, linetype='longdash') +
-    geom_text(aes(label=OR_CI),hjust=-0.1, vjust=-0.6, size =3, color = '#333232')+
+    geom_text(aes(label=OR_CI),hjust=-0.2, vjust=-0.6, size =3, color = '#333232')+
     theme_minimal_vgrid(8, rel_small = 1) +
     scale_y_discrete(position = "right")+
-    facet_wrap( exposure_cat ~ . , ncol=2,  scales="free")+
-    labs(color = "", y = unique(mr_results$outcome), x = "Odds ratio" )+
-    theme(legend.position = "none", plot.title.position  = "plot")
-  p
+    scale_x_log10()+
+    labs(color = "", y = "Outcomes", x = "Odds ratio", title = unique(mr_results$exposure_name) )+
+    theme(legend.position = "none",plot.title = element_text(hjust = 0.5))
   
-  ggsave(paste0("01_MR_related/results/heatmap_html/forest_plots/forest_plots_FDR_only_", unique(mr_results$outcome), ".png"),
-         plot=p, scale=1, 
-         width=30, height=30,
+  ggsave(paste0("01_MR_related/results/heatmap_html/forest_plotsV3/forest_plots_FDR_only_", unique(mr_results$exposure.id), ".png"),
+         plot=p, scale=1.2, 
+         width=10, height=6,
          units=c("cm"), dpi=300, limitsize=F)
-  
-  
-  
   
 }
 
