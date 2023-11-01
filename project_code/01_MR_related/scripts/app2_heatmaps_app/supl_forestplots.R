@@ -32,8 +32,9 @@ res<- or_ci_data %>%
   separate(OR_CI, into = c("or", "lo_ci", "up_ci"), sep=' ') %>% 
  # rename(OR_CI =OR_CI2) %>% 
   mutate_at(vars(or, lo_ci, up_ci), as.numeric) %>%  
-  mutate(OR_CI = paste0(round(or,2), " [", round(lo_ci,2), ":", round(up_ci,2), "]")) %>% 
   left_join(passed_pairs) %>% 
+  mutate(mtc =ifelse(is.na(mtc), "", mtc)) %>% 
+  mutate(OR_CI = paste0(as.character(mtc), " " ,round(or,2), " [", round(lo_ci,2), ":", round(up_ci,2), "]")) %>% 
   #filter(!is.na(mtc)) %>% 
   left_join(merged) %>% 
   mutate(outcome = factor(outcome, levels = rev(c("BCAC'17", "BCAC'20" ,
@@ -43,7 +44,8 @@ res<- or_ci_data %>%
 # only do this for selected case studies
 keep <- c("ukb-b-4650", "ukb-a-11", "ukb-d-30760_irnt", "met-a-500")
 
-res_sub <- res %>% filter(exposure.id %in% keep)
+res_sub <- res %>% filter(exposure.id %in% keep) %>% 
+  mutate(exposure_name = ifelse(exposure_name == "body size at age 10 (M/F) MRC-IEU/2018 [454K]", "Childhood body size, age 10 (M/F) UKBiobank/2018 [454K]", exposure_name))
 
 
 
@@ -58,7 +60,7 @@ for (i in unique(res_sub$exposure.id)){
     geom_point(size=2)+
     scale_color_manual(values=pal)+
     geom_vline(xintercept=1, linetype='longdash') +
-    geom_text(aes(label=OR_CI),hjust=-0.2, vjust=-0.6, size =3, color = '#333232')+
+    geom_text(aes(label=OR_CI),hjust=-0.2, vjust=-0.25, size =2.5, color = '#333232')+
     theme_minimal_vgrid(8, rel_small = 1) +
     scale_y_discrete(position = "right")+
     scale_x_log10()+
