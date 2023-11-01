@@ -153,7 +153,9 @@ return(list(SNPs = instruments_clumped,
 
 
 ### validation MR
-do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions){
+do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions, preextracted_inst = NULL, inst_table = NULL){
+  
+  # ignore preextracted_inst and  inst_table - this is for a corner case when instrumet have been pre-extracted
   
   cat("\n\n")
   print(paste0(">>>>>>>>>> " , trait))
@@ -177,10 +179,15 @@ do_MR <- function(trait, bc_type, exposure_ss_df, protein_regions){
   
   exposure_ss <- exposure_ss_df %>% filter(exposure.id == !!trait) %>% pull(exposure.sample_size)
   
-  
-  instruments_selected <-  instrument_selection(trait, protein_regions )
-  instruments_clumped <- instruments_selected$SNPs
-  used_inst <- instruments_selected$SNPs_type
+  if (is.null(preextracted_inst)){
+    instruments_selected <-  instrument_selection(trait, protein_regions )
+    instruments_clumped <- instruments_selected$SNPs
+    used_inst <- instruments_selected$SNPs_type
+  } else{
+    print("using pre-extracted inst")
+    instruments_clumped <- preextracted_inst[[trait]]
+    used_inst <- inst_table %>% filter(gwas.id == trait) %>% pull(used_inst)
+  }
   
   
   out <- extract_outcome_data(snps = instruments_clumped$SNP,
@@ -391,19 +398,28 @@ do_MR_not_BC <- function(trait_exp_instruments, trait_out, exposure_ss_df, prote
 
 
 # used in case-study report
-do_MR_pair <- function(exp, out, exposure_ss_df){
+do_MR_pair <- function(exp, out, exposure_ss_df, protein_regions = NA, preextracted_inst = NULL, inst_table = NULL){
   
-  #cat("\n\n")
-  #print(paste0(">>>>>>>>>> " , exp, " to ", out))
+  cat("\n\n")
+  print(paste0(">>>>>>>>>> " , exp, " to ", out))
   
   
   exposure_ss <- exposure_ss_df %>% filter(exposure.id == exp) %>% pull(exposure.sample_size)
   outcome_ss <- exposure_ss_df%>% filter(exposure.id == out) %>% pull(exposure.sample_size)
   
-  instruments <- extract_instruments(exp) # clumping is done internally!
-  outdat <- extract_outcome_data(snps = instruments$SNP,
+  if (is.null(preextracted_inst)){
+    instruments_selected <-  instrument_selection(exp, protein_regions )
+    instruments_clumped <- instruments_selected$SNPs
+    used_inst <- instruments_selected$SNPs_type
+  } else{
+    print("using pre-extracted inst")
+    instruments_clumped <- preextracted_inst[[exp]]
+    used_inst <- inst_table %>% filter(gwas.id == exp) %>% pull(used_inst)
+  }
+  
+  outdat <- extract_outcome_data(snps = instruments_clumped$SNP,
                                  outcome = out)
-  harmonised<- harmonise_data(exposure_dat = instruments, 
+  harmonised<- harmonise_data(exposure_dat = instruments_clumped, 
                               outcome_dat = outdat)
   #mr
   res <- TwoSampleMR::mr(harmonised, method_list=c('mr_ivw','mr_wald_ratio','mr_egger_regression','mr_weighted_median')) %>% 
@@ -442,6 +458,7 @@ do_MR_pair <- function(exp, out, exposure_ss_df){
   
   # join mr and sens in one table
   out <- full_join(res, res_sens)
+  out$used_instrument <- used_inst
   
   return( out) 
 } 
