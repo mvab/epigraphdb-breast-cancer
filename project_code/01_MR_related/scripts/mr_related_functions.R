@@ -84,11 +84,29 @@ traits_for_follow_up <- function(input) {
 }
 
 
+clump_data_local <- function(dat, clump_r2 = 0.001, path = "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/"){
+  #https://github.com/MRCIEU/TwoSampleMR/issues/173  
+  dat %>% 
+    rename(rsid = SNP, 
+           pval = pval.exposure,
+           id = id.exposure) %>% 
+    ieugwasr::ld_clump(
+      dat = .,
+      clump_r2 = clump_r2,
+      plink_bin = genetics.binaRies::get_plink_binary(),
+      bfile = paste0(path, "01_Data/reference/1kg.v3/EUR")) %>% 
+    rename(SNP = rsid, 
+           pval.exposure = pval,
+           id.exposure = id) 
+  
+}
+
+
 instrument_selection <- function(trait_exp, protein_regions) {
   
   if (trait_exp %in% protein_regions$exposure.id){
     # it's a protein, so we are going to use cis instruments
-    protein_details <- protein_regions %>% filter(exposure.id == !!trait_exp)
+    protein_details <- protein_regions %>% filter(exposure.id == !!trait_exp) %>% distinct()
     protein_cis <- get_cis_region(id=trait_exp,
                                   chr = protein_details$chr ,
                                   start = protein_details$posStart, end = protein_details$posEnd)
@@ -96,11 +114,12 @@ instrument_selection <- function(trait_exp, protein_regions) {
     # now do filteting and clumping
     instruments <- protein_cis %>% filter(pval.exposure < 5e-08) 
     if (nrow(instruments) >= 1){
-      instruments_clumped <-  clump_data(instruments, clump_r2 = 0.01)
+      instruments_clumped <-  clump_data_local(instruments, clump_r2 = 0.01)
       used_inst <- "cis_5e-08_r2=0.01"
-      # now check if N instrument is not too high, then clump with more strungent threshold
+      # now check if N instrument is not too high, then clump with more stringent threshold
       if (nrow(instruments_clumped) >= 7){
-        instruments_clumped <-  clump_data(instruments, clump_r2 = 0.001)
+        instruments_clumped <-  clump_data_local(instruments, clump_r2 = 0.001)
+        
         used_inst <- "cis_5e-08_r2=0.001"
       }
       
@@ -108,13 +127,13 @@ instrument_selection <- function(trait_exp, protein_regions) {
       # filter less stringent
       instruments <- protein_cis %>% filter(pval.exposure < 0.05/nrow(protein_cis)) 
       if (nrow(instruments) >= 1){
-        instruments_clumped <- clump_data(instruments, clump_r2 = 0.01)
+        instruments_clumped <- clump_data_local(instruments, clump_r2 = 0.01)
         used_inst <- "cis_lessStringent_r2=0.01"
         
       } else{
         # no protein cis insruments to use
         instruments_clumped <- extract_instruments(trait_exp)
-        used_inst <- "cis_and_trans"
+        used_inst <- "genome-wide"
       }
     }
     
@@ -122,7 +141,7 @@ instrument_selection <- function(trait_exp, protein_regions) {
   } else {
     # not a protein
     instruments_clumped <- extract_instruments(trait_exp) # clumping is done internally!
-    used_inst <- "not_protein"
+    used_inst <- "genome-wide"
   }
   
 print(paste0("extracted instruments for ", unique(instruments_clumped$exposure), " : ", used_inst))
