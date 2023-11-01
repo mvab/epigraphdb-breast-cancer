@@ -118,7 +118,8 @@ trait_name = "Childhood body size"
 rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
                   params = list(
                     trait_name = "Childhood body size",
-                    main = "ukb-a-34",
+                    #main = "ukb-a-34", # old
+                    main = "ukb-b-4650",
                     main_lit = "ieu-a-1096",
                     lit_space_file = "lit_terms_childhood_obesity.csv",
                     sens_analysis = T,
@@ -142,6 +143,22 @@ rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd",
                   ),
                    output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
 )
+
+
+trait_name = "Haptoglobin"
+rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
+                  params  = list(
+                    trait_name = "Haptoglobin",
+                    main = "prot-a-1369",
+                    main_lit = "prot-a-1369",
+                    lit_space_file = "lit_terms_TODO.csv",
+                    sens_analysis = F,
+                    data_prefix = NA,
+                    regenerate_results = F
+                  ),
+                   output_file = paste0("../results/case_study_reports_tidy/case_study_report_", gsub(" ", "_", trait_name, ".html"))
+)
+
 
 trait_name = "Calpastatin"
 rmarkdown::render("01_MR_related/scripts/07_case_study_report.Rmd", 
@@ -285,133 +302,56 @@ _The instruments, full MR results, and sensitivity analyses are available in Cas
 
 # MR-EvE-mined mediators
 
+
 ```{r,  include=F}
 
 med_conf_table <- readxl::read_excel("../results/mr_evidence_outputs/med-table-validatedV3.xlsx", sheet = main) %>% 
-     mutate(outcome = case_when(outcome.id =="ieu-a-1126" ~ "BCAC 2017",
-                             outcome.id =="ieu-a-1127" ~ "ER+",
-                             outcome.id =="ieu-a-1128" ~ "ER-"))
-
-# the old way
-
-#meds_table <- med_conf_table %>% 
-#  filter(type == 'mediator') %>% 
-#  select('exposure.trait', 
-#         'outcome',
-#         'outcome.id', 
-#         'med.id',
-#         'med.trait',
-#         'r1.beta_CI_val', 
-#         'r1.pval',
-#         "r1.nsnp_val",
-#         'r3.OR_CI_val',
-#         'r3.pval',
-#         "r3.nsnp_val") %>% 
-#  # add FDR corrected p-val
-#  arrange(r1.pval) %>% mutate(r1.qval = p.adjust(r1.pval, method = "BH")) %>% 
-#  arrange(r3.pval) %>% mutate(r3.qval = p.adjust(r3.pval, method = "BH")) %>% 
-#  mutate_if(is.numeric, funs(as.character(signif(., 2)))) %>% 
-#  mutate(r1.beta_CI_pval = paste0(r1.beta_CI_val, ";\n",r1.pval, ", ", r1.qval )) %>% 
-#  mutate(r3.OR_CI_pval = paste0(r3.OR_CI_val, ";\n",r3.pval, ", ", r3.qval )) %>% 
-#  select(-c('r1.beta_CI_val', 'r1.pval', 'r1.qval',
-#           'r3.OR_CI_val', 'r3.pval', 'r3.qval')) %>% 
-#  select('exposure' = 'exposure.trait', 
-#         'outcome',
-#         'mediator.id' = 'med.id',
-#         'mediator' = 'med.trait',
-#         "step1: \n exposure -> mediator \n (beta_CI); \n p.val, p.val.adj" = 'r1.beta_CI_pval', 
-#         "nSNPs (step1)" = 'r1.nsnp_val', 
-#         'step2: \n mediator -> outcome \n  (OR_CI); \n p.val, p.val.adj' = 'r3.OR_CI_pval',
-#         'nSNPs (step2)' = 'r3.nsnp_val', 
-#         'outcome.id') 
-#
-#
-#unique_meds <- length(unique(meds_table$mediator.id))
-#
-
+     mutate(outcome = case_when(id.outcome =="ieu-a-1126" ~ "Breast cancer",
+                             id.outcome =="ieu-a-1127" ~ "ER+ Breast cancer",
+                             id.outcome =="ieu-a-1128" ~ "ER- Breast cancer")) %>% 
+     mutate(step1.used_instrument = case_when(step1.used_instrument %in% c("cis_and_trans" , "not_protein") ~ "genome-wide",
+                                              step1.used_instrument ==  "cis_5e-08_r2=0.01" ~ "cis-region, 5e-08, r2=0.01",
+                                              step1.used_instrument == "cis_lessStringent_r2=0.01" ~"cis-region, 1e-05, r2=0.01" )) %>% 
+     mutate(step2.used_instrument = case_when(step2.used_instrument %in% c("cis_and_trans" , "not_protein") ~ "genome-wide",
+                                              step2.used_instrument ==  "cis_5e-08_r2=0.01" ~ "cis-region, 5e-08, r2=0.01",
+                                              step2.used_instrument == "cis_lessStringent_r2=0.01" ~"cis-region, 1e-05, r2=0.01" ))
 ```
 
 ```{r BC, include =F}
 
+
 if (regenerate_results){
-  # reproducing full MR results from pairs in meds_table
-  pairs_todo<- med_conf_table %>%  select(exposure.id, med.id, outcome.id) %>% distinct() 
   
-  ss_df <- ao %>% filter(id %in% c(pairs_todo$med.id,main)) %>%
-    select(id, sample_size, author, consortium) %>%
-    mutate(sample_size = ifelse(is.na(sample_size) & author == "Neale lab", 361194, sample_size)) %>% 
-    select(exposure.id = id, exposure.sample_size = sample_size) 
-  
-  # step 1
-  step1mr<-tibble()
-  
-  for (interm in c(pairs_todo$med.id)){ # some will be duplicated, but that's fine
-      # exp -> med (step1)
-        tmp1 <- do_MR_pair(exp = main, out = interm, ss_df) 
-        step1mr <- bind_rows(step1mr, tmp1)
-  }
-  export1 = step1mr #export 1
-  
-  
-  # step 2
-  step2mr <- tibble()
-  for (i in 1:nrow(pairs_todo)){
-        med<- pairs_todo$med.id[i]
-        out <- pairs_todo$outcome.id[i]
-        
-        tmp1 <- do_MR(trait = med, bc_type  = out, ss_df) 
-        step2mr <- bind_rows(step2mr, tmp1)
-  }
-  export2 = step2mr # export
-  
-  
-  
-  # now join steps data
-  
-  step1sub <- step1mr %>%  
-    filter(method %in% c('Inverse variance weighted', 'Wald ratio')) %>% 
-    select( exposure, id.exposure, mediator=outcome, med.id1 = id.outcome, r1.snp = nsnp, r1.beta_CI_val=beta_CI, r1.pval = pval)  
-  
-  step2sub <- step2mr %>%
-    filter(method %in% c('Inverse variance weighted', 'Wald ratio')) %>% 
-    select(med.id2 =id.exposure, outcome, id.outcome, r3.snp = nsnp, r3.OR_CI_val=OR_CI, r3.pval = pval) %>% 
-    mutate(outcome = gsub(" (Combined Oncoarray; iCOGS; GWAS meta analysis)", "", outcome, fixed = T)) 
-  
-  stopifnot(nrow(step1sub)== nrow(step2sub))
-  
-  meds_table <- cbind(step1sub, step2sub) %>% 
-    mutate(check = ifelse(med.id1==med.id2, T, F))
-  stopifnot(meds_table$check)
-  
-  meds_table <- meds_table %>%  
-                    select('exposure', 
-                           'outcome',
-                           'id.outcome', 
-                           'med.id' ='med.id1',
-                           'mediator',
-                           'r1.beta_CI_val', 
-                           'r1.pval',
-                           "r1.snp",
-                           'r3.OR_CI_val',
-                           'r3.pval',
-                           "r3.snp") %>% 
-   # add FDR corrected p-val
-    arrange(r1.pval) %>% mutate(r1.qval = p.adjust(r1.pval, method = "BH")) %>% 
-    arrange(r3.pval) %>% mutate(r3.qval = p.adjust(r3.pval, method = "BH")) %>% 
+  # not actually regeneration, but pulling from saved file
+
+  meds_table <- med_conf_table %>% 
     mutate_if(is.numeric, funs(as.character(signif(., 2)))) %>% 
-    mutate(r1.beta_CI_pval = paste0(r1.beta_CI_val, ";\n",r1.pval, ", ", r1.qval )) %>% 
-    mutate(r3.OR_CI_pval = paste0(r3.OR_CI_val, ";\n",r3.pval, ", ", r3.qval )) %>% 
-    select(-c('r1.beta_CI_val', 'r1.pval', 'r1.qval',
-             'r3.OR_CI_val', 'r3.pval', 'r3.qval')) %>% 
+    mutate(step1.beta_CI_pval = paste0(step1.beta_CI, ";\n",step1.pval)) %>% 
+    mutate(step2.OR_CI_pval = paste0(step2.OR_CI, ";\n",step2.pval)) %>% 
+    mutate(exposure = paste0(exposure, "\n(", id.exposure, ")")) %>% 
+    mutate(outcome = paste0(outcome, "\n(", id.outcome, ")")) %>% 
+    mutate(mediator = paste0(mediator, "\n(", id.med, ")")) %>% 
     select('exposure', 
-           'outcome',
-           'mediator.id' = 'med.id',
            'mediator' ,
-           "step1: \n exposure -> mediator \n (beta_CI); \n p.val, p.val.adj" = 'r1.beta_CI_pval', 
-           "nSNPs (step1)" = 'r1.snp', 
-           'step2: \n mediator -> outcome \n  (OR_CI); \n p.val, p.val.adj' = 'r3.OR_CI_pval',
-           'nSNPs (step2)' = 'r3.snp', 
-           'outcome.id'='id.outcome') 
+           'outcome' ,
+           "step1: \n (beta_CI),p.val" = 'step1.beta_CI_pval', 
+           "step1: \n p.val.adj" = 'step1.qval', 
+           "step1: \n nSNPs" = 'step1.nsnp', 
+           "step1: \n SNPs source" =    "step1.used_instrument" ,
+           "step2: \n (beta_CI),p.val" = 'step2.OR_CI_pval', 
+           "step2: \n p.val.adj" = 'step2.qval',       
+           "step2: \n nSNPs" = 'step2.nsnp', 
+           "step2: \n SNPs source" =    "step2.used_instrument" ) 
+
+
+  pairs_todo<- med_conf_table %>%  select(id.exposure, id.med, id.outcome) %>% distinct() 
+  
+  export1 <- read_tsv("../results/mr_evidence_outputs/redone_MRmeds_fulloutput_fulltable_step1_V3.tsv") %>% 
+              filter(id.exposure %in% pairs_todo$id.exposure) %>% 
+              filter(id.outcome %in% pairs_todo$id.med) 
+  export2 <- read_tsv("../results/mr_evidence_outputs/redone_MRmeds_fulloutput_fulltable_step2_V3.tsv") %>% 
+              filter(id.exposure %in% pairs_todo$id.med) %>% 
+              filter(id.outcome %in% pairs_todo$id.outcome) 
   
   write_csv(meds_table, paste0( "../results/case_study_reports_tidy/intermediate_results_storage/", main, "_B_C_results.csv"))
   write_csv(export1, paste0( "../results/case_study_reports_tidy/intermediate_results_storage/", main, "_B_C_step1_results.csv"))
@@ -438,15 +378,15 @@ Below is a table of two-step MR results for each mediator, including _exposure -
 
 ```{r echo=F, results='asis'}
 if (all){
-  med <- meds_table %>% filter(outcome == "Breast cancer") %>% select(-outcome.id)%>% pull( mediator.id) %>% length()
-  cat(paste0("**Overall sample**: ", med , " potential mediators from MR-EvE" ))}
+  med <- meds_table %>% filter(!grepl("ER", outcome)) %>% pull( mediator) %>% length()
+  cat(paste0("**Overall sample**: ", med , " potential mediators from MR-EvE" )) }
 ```
 
 ```{r, echo=F}
 if (all){
-  ft<-flextable(meds_table %>% filter(outcome == "Breast cancer")  %>% arrange(desc(mediator.id)))
-  ft<-width(ft, j = c(1), width=1.5)
-  ft<-width(ft, j = c(4), width=3)
+  ft<-flextable(meds_table %>% filter(!grepl("ER", outcome))) 
+ ft<-width(ft, j = c(1,3), width=1.5)
+  ft<-width(ft, j = c(2, 4,8), width=3)
   ft<-width(ft, j = c(5,7), width=1.6)
   ft
 }
@@ -455,15 +395,15 @@ if (all){
 
 ```{r echo=F, results='asis'}
 if (pos){
-  med <- meds_table %>% filter(outcome == "ER+ Breast cancer")%>% select(-outcome.id) %>% pull( mediator.id) %>% length()
+  med <- meds_table %>% filter(grepl("ER+", outcome))%>% pull( mediator)  %>% unique() %>% length()
   cat(paste0("**ER+ sample**: ", med , " potential mediators from MR-EvE" ))}
 ```
 
 ```{r echo =F}
 if (pos) {
-  ft<-flextable(meds_table %>% filter(outcome == "ER+ Breast cancer")  %>% arrange(desc(mediator.id)))
-  ft<-width(ft, j = c(1), width=1.5)
-  ft<-width(ft, j = c(4), width=3)
+  ft<-flextable(meds_table %>% filter(grepl("ER+", outcome, fixed = T))) 
+  ft<-width(ft, j = c(1,2,3), width=1.5)
+  ft<-width(ft, j = c(4,8), width=3)
   ft<-width(ft, j = c(5,7), width=1.6)
   ft
   }
@@ -472,15 +412,15 @@ if (pos) {
 
 ```{r echo=F, results='asis'}
 if (neg){
-  med <- meds_table %>% filter(outcome == "ER- Breast cancer") %>% select(-outcome.id) %>% pull( mediator.id) %>% length()
+  med <- meds_table %>% filter(grepl("ER-", outcome))%>% pull( mediator) %>% unique() %>% length()
   cat(paste0("**ER- sample:** ", med , " potential mediators from MR-EvE" ))}
 ```
 
 ```{r echo =F}
 if (neg) {
-  ft<-flextable(meds_table %>% filter(outcome == "ER- Breast cancer") %>% arrange(desc(mediator.id))) 
-  ft<-width(ft, j = c(1), width=1.5)
-  ft<-width(ft, j = c(4), width=3)
+  ft<-flextable(meds_table %>% filter(grepl("ER-", outcome, fixed = T))) 
+  ft<-width(ft, j = c(1,2,3), width=1.5)
+  ft<-width(ft, j = c(4,8), width=3)
   ft<-width(ft, j = c(5,7), width=1.6)
   ft
 }
