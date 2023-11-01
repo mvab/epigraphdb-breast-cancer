@@ -804,6 +804,63 @@ write_tsv(as_tibble(overlap$terms_list), paste0("../results/literature_outputs/s
 ```
 
 
+## snoring
+```{r}
+space = 'single'
+trait_id="ukb-a-14"
+
+trait_tidy <- get_lifestyle_trait(space, trait_id ) 
+
+trait_tidy %>% write_csv("~/Desktop/snoring_literature_space.csv")
+  
+# trait_triples <- extract_lifestyle_main_triples(trait_tidy) remove too much for this trait; going to do some steps manually
+
+apneas_variations <- c("Sleep Apnea Syndromes", "Sleep Apnea, Obstructive", "Sleep Apnea, Central", "OSA")
+
+trait_triple1 <- trait_tidy %>% 
+   select(1:5) %>% 
+   mutate(term1 = ifelse(term1 %in% apneas_variations, "Sleep Apnea", term1)) %>% 
+   mutate(term2 = ifelse(term2 %in% apneas_variations, "Sleep Apnea", term2)) %>% 
+    group_by(term1, predicate, term2) %>% 
+    summarise_all(sum) %>% ungroup()
+  
+  print(trait_triple1 %>% select(term1, term2) %>% distinct() %>% dim())
+  
+trait_triples2 <- trait_triple1 %>% 
+    tidy_terms_for_viz() %>% 
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  
+
+ # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  trait_triple2_onedir<- trait_triples2 %>% 
+    # forward count
+    rename(n_pair_f = n_pair) %>% 
+    # join col that will show reverse pair count
+    left_join(trait_triples2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n_pair=n_pair_f) %>% 
+    rename(n=n_pair)
+
+
+trait_san<- make_sankey(trait_triple2_onedir %>% filter(n>0), fontSize=13)
+
+
+### overlap not working!
+overlap <- overlap_lifestyle_trait_and_bc(trait_triple2_onedir, bc_triples)
+sankey = make_sankey(overlap$sankey_data, colour_links = T, fontSize = 13)
+
+
+```
+
+
+
 
 ## menopause
 
