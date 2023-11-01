@@ -11,11 +11,11 @@ prev_terms6<- read_csv("02_literature_related/results/literature_outputs/sankey_
 prev_terms7<- read_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/terms_to_opengwas_part7.csv")
 prev_terms8<- read_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/terms_to_opengwas_part8.csv")
 prev_terms9<- read_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/terms_to_opengwas_part9.csv")
+prev_terms10<- read_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/terms_to_opengwas_part10.csv")
 
+prev_terms <- bind_rows( prev_terms10, prev_terms9, prev_terms8, prev_terms7,prev_terms6, prev_terms5, prev_terms4, prev_terms3, prev_terms2, prev_terms1) %>% distinct()
 
-prev_terms <- bind_rows( prev_terms9, prev_terms8, prev_terms7,prev_terms6, prev_terms5, prev_terms4, prev_terms3, prev_terms2, prev_terms1) %>% distinct()
-
-new_trait_terms <- read_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/lit_terms_calpastatin.csv")
+new_trait_terms <- read_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/lit_terms_childhood_obesity_NEW.csv")
 
 merged<- new_trait_terms %>% left_join(prev_terms) %>% arrange(value)
 
@@ -26,7 +26,7 @@ merged <- merged %>%
   slice(1)
 
 
-merged %>% write_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/lit_terms_calpastatin.csv")
+merged %>% write_csv("02_literature_related/results/literature_outputs/sankey_terms_storage/lit_terms_childhood_obesity_NEW.csv")
 
 
 
