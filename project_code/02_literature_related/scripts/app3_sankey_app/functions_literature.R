@@ -147,6 +147,7 @@ tidy_gwas_to_lit_output <- function(dat){
     # tidy up names
     mutate(term1 = gsub(" gene", "", term1), term2 = gsub(" gene", "", term2)) %>% 
     mutate(term1 = gsub(" protein, human", "", term1), term2 = gsub(" protein, human", "", term2)) %>% 
+    mutate(term1 = gsub(" protein, mammalian", "", term1), term2 = gsub(" protein, mammalian", "", term2)) %>% 
     mutate(term1 = gsub(", human", "", term1, ignore.case = T), term2 = gsub(", human", "", term2, ignore.case = T)) %>% 
     mutate(term1 = gsub("BRCA1 Protein", "BRCA1", term1, ignore.case = T), term2 = gsub("BRCA1 Protein", "BRCA1", term2, ignore.case = T)) %>% 
     mutate(term1 = gsub("BRCA2 Protein", "BRCA2", term1, ignore.case = T), term2 = gsub("BRCA2 Protein", "BRCA2", term2, ignore.case = T)) %>% 
