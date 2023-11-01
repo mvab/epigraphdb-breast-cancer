@@ -355,7 +355,7 @@ write_tsv(as_tibble(out$terms_list), paste0("../results/literature_outputs/sanke
 
 ```{r}
 
-load(paste0(data_location, "lit_spaces_finalset_tidy.RData"))
+load(paste0(data_location, "lit_spaces_finalset_tidyV3.RData"))
 id = 'ukb-d-30770_irnt'
 trait_tidy <- tidy_litspace[[id]]
 rm(tidy_litspace)
@@ -381,7 +381,7 @@ write_tsv(as_tibble(out$terms_list), paste0("../results/literature_outputs/sanke
 ## cardiotrophin 1
 
 ```{r}
-load(paste0("../results/literature_outputs/lit_spaces_finalset_tidy.RData"))
+load(paste0("../results/literature_outputs/lit_spaces_finalset_tidyV3.RData"))
 id = 'prot-a-710'
 trait_tidy <- tidy_litspace[[id]]
 rm(tidy_litspace)
@@ -695,12 +695,12 @@ get_lifestyle_trait <- function(space, trait_id=NA, name=NA ) {
   data_location = '../results/literature_outputs/'
   
    if (space == 'single' & !is.na(trait_id)){
-      load(paste0(data_location,"lit_spaces_finalset_tidy.RData"))
+      load(paste0(data_location,"lit_spaces_finalset_tidyV3.RData"))
       trait_tidy <- tidy_litspace[[trait_id]] 
       rm(tidy_litspace)
       
     } else if (space == "combined" & !is.na(name)){
-      load(paste0(data_location,"lit_spaces_combined_traits_tidy.RData"))
+      load(paste0(data_location,"lit_spaces_combined_traits_tidyV3.RData"))
       trait_tidy <- tidy_combined_litspace[[name]]
       rm(tidy_combined_litspace)
     } 
@@ -774,7 +774,7 @@ sankey = make_sankey(overlap$sankey_data, colour_links = T, fontSize = 12)
 
 
 KEY_TERM="childhood_obesity"
-write_tsv(as_tibble(overlap$terms_list), paste0("../results/literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
+write_tsv(as_tibble(overlap$terms_list), paste0("../results/literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), "_NEW.csv"))
 
 
 ```
