@@ -46,26 +46,33 @@ bc_space %>%  write_csv("../results/literature_outputs/breast_cancer_litspace_pr
 
 ```{r}
 # read list of traits for follow up
-trait_df_all <- read_tsv("../../01_MR_related/results/mr_evidence_outputs/trait_manual_ivw_subtypes_mergedV3.tsv") %>% 
+trait_df_all <- read_tsv("../../01_MR_related/results/mr_evidence_outputs/trait_manual_ivw_subtypes_mergedV3_copy.tsv") %>% 
                 filter(!(`ieu-a-1126` == 0 & `Breast cancer BCAC 2020` == 0 & `ieu-a-1127` == 0  & `ieu-a-1128` == 0 & `LuminalA ER+PR+HER-` == 0 & `LuminalB1 ER+PR+HER-` == 0 & `LuminalB2 ER+PR+HER+` == 0 &`HER2-enriched ER-PR-HER+` == 0 & `TNBC ER-PR-HER-` == 0 )) %>% 
-  select(id.exposure, exposure, exposure_cat) %>% distinct() # 130
+  select(id.exposure, exposure, exposure_cat) %>% distinct() # 129
+
+
+dup_name <- trait_df_all %>% count(exposure) %>% filter(n>1) %>% pull(exposure)
+trait_df_all %>% filter(exposure %in% dup_name) %>% View()
 
 
 # traits with the same name or trait that ar eunlike to match to something meaningful
-ignore_traits<- c("ieu-a-974", "ieu-a-89", "ieu-a-49","ieu-a-99", "ieu-a-50", "ieu-a-101", "ieu-a-68", "ieu-a-62", "ieu-a-75", "ieu-a-107", "prot-a-1541", "ieu-a-302")
+ignore_traits<- c('ieu-a-95', 'ieu-a-974', 'ukb-a-248',  'ukb-a-34', 'ukb-a-35', 'ukb-b-16881', 'ukb-a-317',
+                  'ieu-a-299', 	'ukb-a-388', 'ieu-a-101','ieu-a-51',  'prot-a-1541','ieu-a-62', 	'ukb-b-9405', 'ieu-a-105', 'ieu-a-109', 'ieu-a-783',
+                  "ieu-a-89", "ieu-a-99", "ieu-a-49", "ukb-b-12039")
+trait_df_all %>% filter(id.exposure %in% ignore_traits) %>% View()
 
-#lipids_to_save <- c('met-c-932', 'met-c-912', 'met-c-891', 'met-c-928', 'met-c-913',# vldl
-#                    'met-c-923', 'met-c-877', 'met-c-898', 'met-c-900',	'met-c-878', # hdl
-#                    'ieu-a-780' ) # hdl
+lipids_to_save <- c(#'met-c-932', 'met-c-912', 'met-c-891', 'met-c-928', 'met-c-913',# vldl
+                    'met-c-923', 'met-c-877', 'met-c-898', 'met-c-900',	'met-c-878', "met-c-864", # hdl
+                    'ieu-a-780' , "ukb-d-30760_irnt") # hdl
 
 trait_df_all<- trait_df_all %>% 
    mutate(lit_analysis = case_when(
              id.exposure %in% ignore_traits ~ F,
-             grepl("^X-", exposure) ~ F,
-             #grepl("HDL|VLDL|LDL", exposure) & !id.exposure %in% lipids_to_save  ~ F, ## ignoring all lipids except in the list
+             #grepl("^X-", exposure) ~ F,
+             grepl("HDL|VLDL|LDL", exposure) & !id.exposure %in% lipids_to_save  ~ F, ## ignoring all lipids except in the list
              TRUE ~ T) )
 
-trait_df_all %>% count(lit_analysis) # True 116
+trait_df_all %>% count(lit_analysis) # True 107
 write_tsv(trait_df_all, "../results/literature_outputs/traits_marked_for_lit_analysisV3.tsv")
 
 
@@ -74,7 +81,7 @@ trait_df <- trait_df_all %>%  filter(lit_analysis == T)
 
 lit_spaces<-list()
 id_list <- trait_df$id.exposure
-length(id_list) # 116
+length(id_list) # 107
 
 for ( id in id_list){
   lit_spaces[[id]] <-extract_literature_space(id)
@@ -104,7 +111,7 @@ for (i in 1:length(trait_df_all$id.exposure)){
 ```{r}
 ## tidying lit spaces for loop
 
-load("../results/literature_outputs/lit_spaces_finalsetV3.RData")
+#load("../results/literature_outputs/lit_spaces_finalsetV3.RData")
 
 tidy_litspace <- list()
 
@@ -128,9 +135,7 @@ for (i in 1:length(trait_df_all$id.exposure)){
   if (id %in% names(tidy_litspace)){
     
     trait_df_all$lit_space_size_tidy[i] <- dim(tidy_litspace[[id]])[1]
-    
     trait_df_all$unique_triples[i] <- dim(tidy_litspace[[id]] %>% select(term1, predicate, term2) %>% distinct() )[1]
-    
     trait_df_all$unique_pairs[i] <- dim(tidy_litspace[[id]] %>% select(term1, term2) %>% distinct() )[1]
 
   }else{
@@ -141,18 +146,24 @@ for (i in 1:length(trait_df_all$id.exposure)){
 }
 
 trait_df_all<- trait_df_all %>% arrange(-unique_pairs) %>% rename(used_in_lit_analysis = lit_analysis)
+# adhoc fix
+trait_df_all<-trait_df_all %>% mutate(exposure_cat = ifelse(id.exposure =="prot-a-550", "Proteins", exposure_cat))
+
+# replace NA to 0
+trait_df_all <- trait_df_all %>%  mutate(across(5:8, ~replace_na(.x, 0)))
 
 write_tsv(trait_df_all,
           "../results/literature_outputs/traits_marked_for_lit_analysis_with_sizeV3.tsv")
 
-trait_df_all<- read_tsv( "../results/literature_outputs/traits_marked_for_lit_analysis_with_sizeV3.tsv")
+trait_df_all <- read_tsv("../results/literature_outputs/traits_marked_for_lit_analysis_with_sizeV3.tsv")
+
 ```
 
 
 ```{r}
 # ad hoc viewing
 
-tidy_litspace[["ukb-a-269"]] %>% View()
+tidy_litspace[["ukb-d-30760_irnt"]] %>% View()
 tidy_litspace[["prot-a-1148"]] %>% filter(term2.type=='dsyn') %>% count(term2, sort=T)
 
 # any version of the key term
@@ -172,14 +183,14 @@ Making summary table
 # count available lit space by categories
 counts_by_cat <- list(
   queried=trait_df_all %>% filter(used_in_lit_analysis ==1 ) %>% count(exposure_cat) %>% rename(queried=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  total=trait_df_all %>% filter(lit_space_size_tidy > 0) %>% count(exposure_cat) %>% rename(total=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  `<=5`=trait_df_all %>% filter(lit_space_size_tidy > 0 & lit_space_size_tidy <=5) %>% count(exposure_cat) %>% rename(`<=5`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  `<=50`=trait_df_all %>% filter(lit_space_size_tidy > 5 & lit_space_size_tidy <=50) %>% count(exposure_cat) %>% rename(`<=50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
-  `>50`=trait_df_all %>% filter(lit_space_size_tidy > 50) %>% count(exposure_cat) %>% rename(`>50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
+  #total=trait_df_all %>% filter(lit_space_size_tidy > 0) %>% count(exposure_cat) %>% rename(total=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+#  `<=5`=trait_df_all %>% filter(lit_space_size_tidy > 0 & lit_space_size_tidy <=5) %>% count(exposure_cat) %>% rename(`<=5`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `empty or <50`=trait_df_all %>% filter(used_in_lit_analysis ==1 & lit_space_size_tidy <50) %>% count(exposure_cat) %>% rename(`empty or <50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame(),
+  `>=50`=trait_df_all %>% filter( used_in_lit_analysis ==1 & lit_space_size_tidy >= 50) %>% count(exposure_cat) %>% rename(`>=50`=n) %>% column_to_rownames('exposure_cat') %>% t() %>% as_data_frame())
 
 counts_by_cat_df <- 
   bind_rows(counts_by_cat) %>% t() %>% as.data.frame() %>% 
-   mutate(across(V1:V5, ~replace_na(.x, 0)))
+   mutate(across(V1:V3, ~replace_na(.x, 0)))
 sums <- colSums(counts_by_cat_df)
 
 counts_by_cat_df<-bind_rows(counts_by_cat_df, sums)
@@ -193,15 +204,15 @@ counts_by_cat_df<- counts_by_cat_df %>%
                                                         "Other biomarkers", "TOTAL" ))) %>% arrange(exposure_cat)
   
 
-colnames(counts_by_cat_df)[2:6] <- names(counts_by_cat)
-write_tsv(counts_by_cat_df, "../results/literature_outputs/available_litspace_counts_by_exposure_catV3.tsv")
+colnames(counts_by_cat_df)[2:4] <- names(counts_by_cat)
+write_csv(counts_by_cat_df, "../results/literature_outputs/available_litspace_counts_by_exposure_catV3.csv")
 ```
 
 
 ```{r}
 # combining lit space of related traits
 
-load("../results/literature_outputs/lit_spaces_finalsetV3.RData")
+#load("literature_outputs/lit_spaces_finalset.RData")
 #view(lit_spaces)
 
 combine_lit_spaces <- function(lit_spaces, names){
@@ -213,24 +224,22 @@ combine_lit_spaces <- function(lit_spaces, names){
 
 
 related_traits <- list(
-  height = c('ieu-a-1034', "ieu-a-89"),
-  bmi = c("ieu-a-835"),
-  obesity = c(	'ieu-a-93',	'ieu-a-91',	'ieu-a-90',	'ieu-a-85', "ieu-a-85"),
-  waist_hip = c('ieu-a-60','ieu-a-72','ieu-a-55'),
+ # height = c('ieu-a-1034','ieu-a-89'),
+  bmi = c("ieu-a-835", "	ieu-a-107"),
+  obesity = c( 'ieu-a-90',	   'ieu-a-91',	'ieu-a-85'),
+ # waist_hip = c('ieu-a-68','ieu-a-75','ieu-a-99'),
   #fruit = c('ukb-b-3881','ukb-b-16576','ukb-b-2221'),
   menopause = c('ukb-a-316' , 'ukb-b-17422'),
-  hrt = c('ukb-b-4564', 'ukb-b-18541'),
+ # hrt = c('ukb-b-9487', 'ukb-b-18541'),
   #birth = c('ukb-a-320', 'ukb-b-1209'),
-  vldl_particles = c("met-c-927" ,"met-c-889", "met-c-886" ,"met-c-950" ,"met-c-912", "met-c-887", "met-c-909", "met-c-913"),
-  hdl_particles = c( "ukb-d-30760_irnt" ,"met-c-864" , "met-c-923" , "met-c-945"  )
+  #vldl_particles = c('met-c-932', 'met-c-912', 'met-c-891', 'met-c-928', 'met-c-913'),
+  hdl = c( 'ukb-d-30760_irnt', 'met-c-864', 'met-c-923')
   
 )
 
 
-
 combined_lit_spaces <- list()
 for (i in names(related_traits)) {
-  print(i)
   combined_lit_spaces[[i]] <- combine_lit_spaces(lit_spaces, related_traits[[i]])
 }
 
@@ -239,7 +248,7 @@ save(combined_lit_spaces, file="../results/literature_outputs/lit_spaces_combine
 
 ```{r}
 ## tidying lit sapces for loop
-#load("../results/literature_outputs/lit_spaces_combined_traits.RData")
+load("../results/literature_outputs/lit_spaces_combined_traitsV3.RData")
 View(combined_lit_spaces)
 
 tidy_combined_litspace <- list()
@@ -258,7 +267,7 @@ save(tidy_combined_litspace, file="../results/literature_outputs/lit_spaces_comb
 ```{r}
 # calculate lit space / triples/ pair for combined spaces
 
-#load("literature_outputs/lit_spaces_combined_traits_tidy.RData") 
+load("../results/literature_outputs/lit_spaces_combined_traits_tidyV3.RData")
 
 trait_df_comb <- data_frame(trait= names(tidy_combined_litspace))
 
@@ -266,7 +275,9 @@ for (i in 1:length(trait_df_comb$trait)){
   
   trait_comb_name <- trait_df_comb$trait[i]
 
-  trait_df_comb$lit_space_size_tidy[i] <- dim(combined_lit_spaces[[trait_comb_name]])[1]
+  trait_df_comb$lit_space_size[i] <- dim(combined_lit_spaces[[trait_comb_name]])[1]
+  
+  trait_df_comb$lit_space_size_tidy[i] <- dim(tidy_combined_litspace[[trait_comb_name]] %>% select(term1, predicate, term2) %>% distinct() )[1]
   
   trait_df_comb$unique_triples[i] <- dim(tidy_combined_litspace[[trait_comb_name]] %>% select(term1, predicate, term2) %>% distinct() )[1]
   
@@ -277,44 +288,68 @@ for (i in 1:length(trait_df_comb$trait)){
 trait_df_comb <- trait_df_comb %>% 
       mutate(used_in_lit_analysis = T)
 
-trait_df_comb$exposure_cat <- c("Anthropometric","Anthropometric","Anthropometric","Anthropometric", "Reproductive","Reproductive",  "Lipids","Lipids")
-trait_df_comb$combined<-T
+trait_df_comb$exposure_cat <- c("Anthropometric","Anthropometric","Reproductive","Lipids")
+trait_df_comb <- trait_df_comb %>% mutate(trait = paste0("combined_", trait)) %>% 
+                                   rename(exposure = trait) %>% 
+                                   mutate(id.exposure = exposure)
+
   
 write_tsv(trait_df_comb, "../results/literature_outputs/traits_marked_for_lit_analysis_combinedV3.tsv")
 
 
 # make a jopint lit_counts df
 lit_counts <- bind_rows(trait_df_all %>% mutate(combined=F) ,
-                        trait_df_comb %>% rename(exposure = trait) )
+                        trait_df_comb %>% mutate(combined=T))
   #filter(!id.exposure %in% unlist(related_traits))
 
-write_tsv(lit_counts, "../results/literature_outputs/lit_space_statsV3.tsv")
+write_tsv(lit_counts, "../results/literature_outputs/lit_space_stats_V3.tsv") # supl data 2 thesis?
 
 ```
 
 ```{r}
 # make fiel with all tisy lit spaces for exposting to supplementary
 load("../results/literature_outputs/lit_spaces_finalset_tidyV3.RData")
-length(tidy_litspace) # 68
-load("../results/literature_outputs/lit_spaces_combined_traits_tidy.RData")
-length(tidy_combined_litspace) # 10
+length(tidy_litspace)
+load("../results/literature_outputs/lit_spaces_combined_traits_tidyV3.RData")
+length(tidy_combined_litspace)
+
+lit_space_stats<- read_tsv("../results/literature_outputs/lit_space_stats_V3.tsv")
 
 names(tidy_combined_litspace)<- paste0("combined_", names(tidy_combined_litspace))
 
 all_tidy_spaces<-c(tidy_combined_litspace, tidy_litspace)
 length(all_tidy_spaces)
+
 sheet_list<- tibble(id.exposure=names(all_tidy_spaces)) %>% 
-             left_join(trait_df_all) %>% 
-            mutate(exposure = ifelse(is.na(exposure), "combined literature space", exposure))
-sheet_list<-list(sheet_list)
+             full_join(lit_space_stats) %>% 
+             mutate(exposure = ifelse(is.na(exposure), "combined literature space", exposure)) %>% 
+             mutate(priority = case_when(id.exposure %in% c('ukb-d-30760_irnt', 'ieu-a-1096', 'ukb-b-4650') ~ 1,
+                                         grepl("combined", id.exposure) ~ 3,
+                                         used_in_lit_analysis == F ~ 4,
+                                         TRUE ~ 2)) %>% 
+            arrange(priority) %>% select(-priority) %>% 
+            rename(queried =used_in_lit_analysis) %>% 
+            mutate(queried = ifelse(grepl("combined", id.exposure), "combined", queried)) %>% 
+            mutate(sheet = row_number()+1) %>% select(sheet, everything()) %>% 
+            filter(id.exposure != 'navigation')
 
-names(sheet_list) <- "navigation"
+sheet_list_list<-list(sheet_list)
+names(sheet_list_list) <- "navigation"
 
-all_tidy_spaces<-c(sheet_list, tidy_combined_litspace, tidy_litspace)
+# todo: manually add link_to_sheet column: =HYPERLINK("#'"&B2&"'!A2",B2)
+
+# rearrange items in lst:
+tidy_trait_list <- sheet_list %>% filter(queried %in% c("TRUE"), lit_space_size > 0) %>% pull(id.exposure)
+tidy_litspace2 <- tidy_litspace[ tidy_trait_list ]
+
+all_tidy_spaces<-c(sheet_list_list, tidy_litspace2, tidy_combined_litspace)
 
 
 
-writexl::write_xlsx(all_tidy_spaces, "../results/literature_outputs/all_tidy_spacesV3.xlsx")
+writexl::write_xlsx(all_tidy_spaces, "../results/literature_outputs/all_tidy_spacesV3.xlsx") # supl data 3 thesis
+
+
+
 
 ```
 
@@ -328,10 +363,10 @@ writexl::write_xlsx(all_tidy_spaces, "../results/literature_outputs/all_tidy_spa
 ```{r}
 
 library(cowplot)
-lid_data<- read_tsv(  "../results/literature_outputs/lit_space_statsV3.tsv")
+lid_data<- read_tsv(  "../results/literature_outputs/lit_space_stats.tsv")
 
 lid_data<-lid_data  %>% 
-  mutate(`>50 triples` = ifelse(unique_triples >=50 ,T, F)) %>% 
+  mutate(`>50 triples` = ifelse(unique_triples >50 ,T, F)) %>% 
   mutate(exposure_cat = ifelse(exposure_cat %in% c("Diet and supplements", "Physical activity", "Reproductive", "Sleep", "Drugs", "Alcohol", "Smoking"), "Lifestyle", exposure_cat)) %>% 
   mutate(exposure_cat = ifelse(exposure_cat %in% c("Lipids", "Metabolites"), "Metabolites", exposure_cat)) %>% 
   mutate(exposure_cat = ifelse(exposure_cat == "Antrophometric", "Anthropometric", exposure_cat)) %>% 
@@ -339,7 +374,7 @@ lid_data<-lid_data  %>%
   mutate(exposure_cat = factor(exposure_cat,
                                levels = (c("Anthropometric", "Lifestyle", "Proteins", "Metabolites"))))
 
-protein_path_data <- read_tsv("../../external_files/pathwaysV3/proteins_w_pathwaysV3.tsv") 
+protein_path_data <- read_tsv("../../external_files/pathways/proteins_w_pathways.tsv") 
 
 lid_data_pl <- lid_data %>% 
   filter(used_in_lit_analysis==T) %>% 
