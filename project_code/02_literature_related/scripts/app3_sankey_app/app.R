@@ -25,19 +25,19 @@ bc_triples_tidy_count <- tidy_lit_space(dat) %>%
 bc_triples <- get_breast_cancer_triples(bc_triples_tidy_count)
 
 ### get traits data ----
-available_traits <- read_csv("data/traits_meta.csv") 
+available_traits <- read_csv("data/traits_meta.csv") %>% filter(include==T)
 single_ids <- available_traits %>% filter(type == 'single') %>% pull(id)
 single_names <- available_traits %>% filter(type == 'single') %>% pull(trait_name)
 combined_ids <- available_traits %>% filter(type == 'combined') %>% pull(id)
 combined_names <- available_traits %>% filter(type == 'combined') %>% pull(trait_name)
 
 
-load("data/lit_spaces_finalset_tidy.RData")
+load("data/lit_spaces_finalset_tidyV3.RData")
 trait_tidy_subset1 <- tidy_litspace[single_ids] 
 names(trait_tidy_subset1) <- single_names
 rm(tidy_litspace)
 
-load("data/lit_spaces_combined_traits_tidy.RData")
+load("data/lit_spaces_combined_traits_tidyV3.RData")
 trait_tidy_subset2 <- tidy_combined_litspace[combined_ids]
 names(trait_tidy_subset2) <-  combined_names
 rm(tidy_combined_litspace)

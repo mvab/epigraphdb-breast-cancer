@@ -5,10 +5,9 @@ account: 5d5pxx-mvab
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6384999
-bundleId: 6115177
+bundleId: 7879068
 url: https://mvab.shinyapps.io/literature_overlap_sankey/
-when: 1658314656.24434
-lastSyncTime: 1658314656.24436
+when: 1698862069.90503
+lastSyncTime: 1698862069.90505
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: www/.DS_Store
