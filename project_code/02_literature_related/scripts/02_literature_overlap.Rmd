@@ -89,7 +89,96 @@ out <- overlap_trait_and_bc(trait_triples$joined_triples, KEY_TERM =KEY_TERM, n_
 out$full_sankey
 out$subset_sankey
 
-#write_tsv(as_tibble(out$terms_list), paste0("../results/literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), ".csv"))
+#write_tsv(as_tibble(out$terms_list), paste0("../results/literature_outputs/sankey_terms_storage/lit_terms_", c(gsub( " ", "", KEY_TERM)), "NEW.csv")) # already saved!
+
+```
+
+#### path finder
+```{r}
+# find path when term is the link between two spaces
+mediator = "testosterone"
+
+AB = trait_triples$joined_triples %>% filter(term2 == mediator)
+TA = trait_triples$joined_triples %>% filter(term2 %in% AB$term1)
+from_trait <- bind_rows(AB, TA) %>% rename(sankey_n=n)
+
+from_BC <- tibble()
+
+links<- mediator
+for (i in rev(1:length(bc_triples))){ # start with the inner
+  tmp <- bc_triples[[i]] %>% filter(term1 %in%links)
+  links <- c(links, tmp$term2) # in the next triple level collect next triple in chain
+  from_BC <- bind_rows(from_BC, tmp)
+}
+
+left_join(from_trait, trait_tidy) %>% arrange(term1, term2) %>% View()
+
+trait_tidy %>% filter(term1 %in% from_trait$term1, term2 %in% from_trait$term2) %>% arrange(term1, term2) %>% View()
+
+mini <- overlap_trait_and_bc( bind_rows(AB, TA) , KEY_TERM =KEY_TERM, n_filter=0, sankey_font = 13,bc_triples)
+
+```
+
+```{r}
+# find path when term is from BC space
+mediator = "CATHEPSIN D"
+
+from_BC <- tibble()
+
+links<- mediator
+
+# triple 3:
+
+t3 <- bc_triples$triple3 %>% filter(term2 == mediator)
+t2 <- bc_triples$triple2 %>% filter(term1 == mediator)
+t1 <- bc_triples$triple1 %>% filter(term1 %in% t2$term2)
+t4 <- bc_triples$triple4 %>% filter(term2 %in% t3$term1)
+
+from_BC <- bind_rows(t1,t2,t3,t4)
+
+
+AB = trait_triples$joined_triples %>% filter(term2 %in% from_BC$term1)
+TA = trait_triples$joined_triples %>% filter(term2 %in% AB$term1)
+from_trait <- bind_rows(AB, TA) %>% rename(sankey_n=n)
+
+
+left_join(from_trait, trait_tidy) %>% arrange(term1, term2) %>% View()
+left_join(from_BC, bc_triples_tidy_count) %>% arrange(term1, term2) %>% View()
+
+trait_tidy %>% filter(term1 %in% from_trait$term1, term2 %in% from_trait$term2) %>% arrange(term1, term2) %>% View()
+
+mini <- overlap_trait_and_bc( bind_rows(AB, TA) , KEY_TERM =KEY_TERM, n_filter=0, sankey_font = 13,bc_triples)
+
+```
+```{r}
+# find path when term is from BC space
+mediator = "CATHEPSIN D"
+
+from_BC <- tibble()
+
+links<- mediator
+
+# triple 3:
+
+t3 <- bc_triples$triple3 %>% filter(term2 == mediator)
+t2 <- bc_triples$triple2 %>% filter(term1 == mediator)
+t1 <- bc_triples$triple1 %>% filter(term1 %in% t2$term2)
+t4 <- bc_triples$triple4 %>% filter(term2 %in% t3$term1)
+
+from_BC <- bind_rows(t1,t2,t3,t4)
+
+
+AB = trait_triples$joined_triples %>% filter(term2 %in% from_BC$term1)
+TA = trait_triples$joined_triples %>% filter(term2 %in% AB$term1)
+from_trait <- bind_rows(AB, TA) %>% rename(sankey_n=n)
+
+
+left_join(from_trait, trait_tidy) %>% arrange(term1, term2) %>% View()
+left_join(from_BC, bc_triples_tidy_count) %>% arrange(term1, term2) %>% View()
+
+trait_tidy %>% filter(term1 %in% from_trait$term1, term2 %in% from_trait$term2) %>% arrange(term1, term2) %>% View()
+
+mini <- overlap_trait_and_bc( bind_rows(AB, TA) , KEY_TERM =KEY_TERM, n_filter=0, sankey_font = 13,bc_triples)
 
 ```
 
