@@ -275,21 +275,23 @@ tidy_terms_for_viz <- function(df){
       . == "Insulin-Like Growth-Factor Binding Protein 1" ~ 'IGFBP1',
       . == 'Insulin-Like Growth Factor Binding Protein 5' ~ 'IGFBP5',
       . == "Insulin-Like Growth Factor Binding Protein 6" ~ 'IGFBP6',
-      . == 'EGF' ~ 'epidermal growth factor',
-      . == 'GHR' ~ 'Growth Hormone Receptor',
+      . == 'epidermal growth factor' ~ 'EGF' ,
+      . == 'Growth Hormone Receptor' ~ 'Somatotropin Receptor',
       . == 'LEP' ~ 'Leptin',
-      . == 'LEPR' ~ 'leptin receptor',
-      . == 'leptin' ~ 'Leptin',
-      . == 'IRS1' ~  'insulin receptor substrate 1 protein',
-      . == 'PRL' ~ 'Prolactin',
-      . == 'AR'~ 'Androgen Receptor',
-      . == 'PGR'~ 'Progesterone receptor',
-      . == 'CRP' ~  'C-reactive protein',
-      . == 'Receptors, Steroid' ~ 'Steroid receptor',
-      . == 'Receptors, LH' ~ 'luteinizing hormone receptor',
-      . == 'Receptors, Progesterone'~ 'Progesterone receptor',
-      . == 'MC4R' ~ 'Melanocortin 4 Receptor',
-      . == 'MC3R' ~ 'Melanocortin 3 Receptor',
+      . == 'LEPR' ~ 'Leptin receptor' ,
+      . == 'leptin receptor' ~ 'Leptin receptor' ,
+      . == 'leptin' ~ 'Leptin'  ,
+      . ==  'insulin receptor substrate 1 protein' ~  'IRS1',
+      . == 'PRL' ~ 'Prolactin' ,
+      . == 'AR'~ 'Androgen Receptor'  ,
+      . == 'PGR'~ 'Progesterone receptor'  ,
+      . == 'CRP' ~  'C-reactive protein' ,
+      . == 'Receptors, Steroid' ~ 'Steroid receptor'  ,
+      . == 'Receptors, LH' ~ 'Luteinizing hormone receptor'  ,
+      . == 'Receptors, Progesterone'~ 'Progesterone receptor'  ,
+      . == 'MC4R' ~ 'Melanocortin 4 Receptor'  ,
+      . == 'MC3R' ~ 'Melanocortin 3 Receptor' ,
+      . == 'Receptor, Melanocortin, Type 2' ~ 'Melanocortin 2 Receptor', 
       . == 'RETN' ~ 'resistin',
       
       . == 'Interleukin-1' ~ "IL1", 
@@ -360,19 +362,21 @@ tidy_terms_for_viz <- function(df){
       
       . == 'VEGF' ~ 'VEGFA',
       . == 'Vascular Endothelial Growth Factor Receptor-2'~ 'VEGFR2',
-
       
-      . ==  'TFRC' ~ "Transferrin Receptor",
-      . ==  'TF' ~ "Transferrin",
+      . == "Peptide YY" ~ "PYY",
       
-      . == 'OSM' ~ 'oncostatin M',
+      . ==  'oncostatin M'  ~'OSM' ,
       
-      . == 'HGF' ~ 'Hepatocyte Growth Factor',
+      . == 'Hepatocyte Growth Factor' ~ 'HGF',
       
       . == 'Proto-Oncogene Proteins c-akt' ~ "AKT1",
       . == 'Epidermal Growth Factor Receptor' ~ "EGFR",
       
       . == 'Urokinase Plasminogen Activator Receptor' ~ 'PLAUR',
+      . == 'Plasminogen Activator Inhibitor 1' ~ 'PAI1',  # SERPINE1
+      
+      . == "myocyte-specific enhancer-binding factor 2" ~ "MEF2",
+      . == "IkappaB Kinase epsilon" ~ "IKBKE",
       
       . == 'CTF1' ~ "cardiotrophin 1",
       . == 'CD40LG' ~ 'CD40 Ligand',
@@ -390,10 +394,32 @@ tidy_terms_for_viz <- function(df){
       . == 'VIM' ~ "Vimentin",
       
       . == 'ADIPOQ' ~ "Adiponectin",
-      . == 'APOB' ~ "Apolipoproteins B",
       . == 'C3' ~ "Complement 3",
-
       
+      . == 'Apolipoproteins B' ~ "APOB",   
+      . == "Apolipoprotein E" ~ 'APOE' ,
+      . == "Apolipoprotein A-I" ~ 'APOA1' ,
+      . == "Apolipoprotein A-II" ~ 'APOA2' ,
+      
+      . == "ATPase, Aminophospholipid Transporter-Like, Class I, Type 8A, Member 2" ~ 'ATP8A2' ,
+      
+      . == "Multidrug Resistance Associated Protein 1" ~ "ABCC1",
+      
+      . == "Very low density lipoprotein" ~ "VLDL",
+      . == "Low Density Lipoprotein Receptor" ~ "LDL receptor", 
+      . == "Low-Density Lipoproteins" ~ "LDL",
+      . == "very low density lipoprotein triglyceride" ~ "VLDL triglyceride",
+      . == "oxidized low density lipoprotein" ~ "oxidized LDL",
+      . == "LIPOPROTEIN LIPASE" ~ "LPL",
+      . == "Cholesterol Ester Transfer Proteins" ~ "CETP",
+      
+      . == "Mitogen-Activated Protein Kinases" ~ "MAPK",
+      . == "Mitogen-Activated Protein Kinase 1" ~ "MAPK1",
+      . == "Mitogen-Activated Protein Kinase 3" ~ "MAPK3",
+      . == "mitogen-activated protein kinase 7" ~ "MAPK7",
+      . == "mitogen-activated protein kinase p38" ~ "MAPK p38",
+      
+      . == "OSA" ~ "Sleep Apnea, Obstructive",
 
       
       TRUE ~ .)))
