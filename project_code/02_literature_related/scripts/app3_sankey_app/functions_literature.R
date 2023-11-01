@@ -322,7 +322,10 @@ tidy_terms_for_viz <- function(df){
       . == 'Tumor Necrosis Factors' ~ 'TNF',
       
       
-      . == 'LIF' ~ 'leukemia inhibitory factor',
+      . == 'glucocorticoid receptor alpha' ~ 'NR3C1',
+      . == '1-Phosphatidylinositol 3-Kinase' ~ 'PIK3',
+      
+      . == 'LIF' ~ 'Leukemia inhibitory factor',
       
       . == 'Tumor Necrosis Factor Receptor Superfamily, Member 10B' ~ 'TNFRSF10B',
       . == 'tumor necrosis factor receptor 1A' ~ 'TNFRSF1A',
@@ -555,9 +558,165 @@ get_breast_cancer_triples <- function(bc_triples_tidy_count){
 
 
 
+get_outcome_diesease_triples <- function(bc_triples_tidy_count, outcomes, outcome_name){
+  
+  bc_triple1 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% outcomes) %>% 
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_ISA')) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>% 
+    #filter(term1.type != 'inch/phsu') %>% 
+    filter(term1 != 'Prostate-Specific Antigen') %>% 
+    mutate(term2 = ifelse(term2 %in% outcomes,outcome_name, term2 )) %>% 
+    select(1:5) %>% 
+    group_by(term1,predicate, term2) %>% 
+    summarise_all(sum) %>% ungroup()
+  
+  bc_triple1 %>% select(term1, term2) %>% distinct() %>% dim() # total 46
+  
+  bc_triple2 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% bc_triple1$term1) %>% #& !term1 %in% bc_triple1$term1) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>%  
+    #filter(term1.type != 'inch/phsu') %>%   
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_COEXISTS_WITH'))
+  
+  bc_triple2 %>% select(term1, term2) %>% distinct() %>% dim() # total 1291
+  
+  
+  ### TIDYING
+  
+  bc_triple1_tidy <- bc_triple1 %>% 
+    tidy_terms_for_viz() %>% 
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  
+  # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  bc_triple2_onedir<- bc_triple2 %>% 
+    # forward count
+    rename(n_pair_f = n_pair) %>% 
+    # join col that will show reverse pair count
+    left_join(bc_triple2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n_pair=n_pair_f)
+  
+  bc_triple2_tidy <- bc_triple2_onedir %>% 
+    tidy_terms_for_viz() %>% 
+    # after tidying names you get almost duplicates: keep the one with highest n
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  
+  ## single path 
+  # pick terms linked to anchor
+  bc_x<- bc_triple1_tidy %>% filter(n>1)
+  # make sure they are term1 in triple2
+  bc_y<- bc_triple2_tidy %>% filter(term2 %in% bc_x$term1 )  %>% filter(n>13) # for viz use 13
+  # drop triple 1 term1 that ends up not linked to anything because of previous filteting step
+  bc_x2 <- bc_x %>%  filter(term1 %in% bc_y$term2)
+  
+  bc_twostep_triples<- bind_rows(bc_x2, bc_y)
+  bc_s_n<- make_sankey(bc_twostep_triples, fontSize=13)
+  
+  
+  
+  bc_triple3 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% bc_triple2$term1 & !term1 %in% bc_triple2$term1) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>%  
+    #filter(term1.type != 'inch/phsu') %>%   
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_COEXISTS_WITH'))
+  
+  bc_triple3 %>% select(term1, term2) %>% distinct() %>% dim() # total 1767
+  
+  # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  bc_triple3_onedir<- bc_triple3 %>% 
+    # forward count
+    rename(n_pair_f = n_pair) %>% 
+    # join col that will show reverse pair count
+    left_join(bc_triple2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n_pair=n_pair_f)
+  
+  bc_triple3_tidy <- bc_triple3_onedir %>% 
+    tidy_terms_for_viz() %>% 
+    # after tidying names you get almost duplicates: keep the one with highest n
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  bc_triple3_tidy %>% select(term1, term2) %>% distinct() %>% dim() # 1749
+  
+  
+  
+  
+  bc_triple4 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% bc_triple3$term1 & !term1 %in% bc_triple3$term1 & !term1 %in% bc_triple2$term1) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>%  
+    #filter(term1.type != 'inch/phsu') %>%   
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_COEXISTS_WITH'))
+  
+  bc_triple4 %>% select(term1, term2) %>% distinct() %>% dim() # total 375
+  
+  # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  bc_triple4_onedir<- bc_triple4 %>% 
+    # forward count
+    rename(n_pair_f = n_pair) %>% 
+    # join col that will show reverse pair count
+    left_join(bc_triple2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n_pair=n_pair_f)
+  
+  bc_triple4_tidy <- bc_triple4_onedir %>% 
+    tidy_terms_for_viz() %>% 
+    # after tidying names you get almost duplicates: keep the one with highest n
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  bc_triple4_tidy %>% select(term1, term2) %>% distinct() %>% dim() # 375
+  
+  
+  bc_triple1_tidy <- bc_triple1_tidy %>% mutate(term2 = ifelse(term2 %in% outcomes, outcome_name, term2))
+  
+  
+  return(list(triple1 = bc_triple1_tidy,
+              triple2 = bc_triple2_tidy,
+              triple3 = bc_triple3_tidy,
+              triple4 = bc_triple4_tidy))
+  
+}
+
+
+
+
 ## another method that searches for links in 4 BC triples! from 2 trait triples
 
-overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, bc_triples,sankey_font = 13 ){
+overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, bc_triples,sankey_font = 13 , outcome = 'Breast cancer'){
   
   bc_triple1_tidy = bc_triples$triple1
   bc_triple2_tidy = bc_triples$triple2
@@ -588,8 +747,8 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
     mutate(group = as.factor(group)) %>% distinct()
   
   a_sankey<- a %>% 
-    filter(!(!term2 %in% term1 & term2 != 'Breast cancer')) %>% 
-    filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))# exclude loose terms
+    filter(!(!term2 %in% term1 & term2 != outcome)) %>% 
+    filter(!(!term2 %in% term1 & term2 != outcome))# exclude loose terms
   
   full_sankey<- make_sankey(a_sankey, fontSize=13, colour_links = T)
   
@@ -597,7 +756,7 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
   
   print(paste0("Using n=", n_filter))
   #to_exl<- a %>%  filter(n <= n_filter & term2 != KEY_TERM) %>%  pull(term2) %>% unique()
-  a_sub <- a %>% filter(n > n_filter | term2 == 'Breast cancer') #%>% filter(!term1 %in% to_exl) 
+  a_sub <- a %>% filter(n > n_filter | term2 == outcome) #%>% filter(!term1 %in% to_exl) 
   
   remove_loose_terms1 =T
   while (remove_loose_terms1) {
@@ -614,8 +773,8 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
   remove_loose_terms2 =T
   while (remove_loose_terms2) {
     print("term 2 while loop filtering")
-    a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
-    tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
+    a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != outcome))
+    tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != outcome))
     if (dim(tmp)[1]==0){
       remove_loose_terms2 =F
     }
@@ -639,7 +798,7 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
 
 
 
-overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_font = 13, n_filter = 1 ){
+overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_font = 13, n_filter = 1 , outcome = "Breast cancer"){
   
   bc_triple1_tidy = bc_triples$triple1
   bc_triple2_tidy = bc_triples$triple2
@@ -698,7 +857,7 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   
   # join trait and BC triples
   trait_tr_and_bc <- bind_rows(trait_triples_linked_to_bc %>% mutate(group = "trait"), 
-                               bc_triples_subset %>% mutate(group = "BC"),
+                               bc_triples_subset %>% mutate(group = outcome),
                                triples_X_A %>% mutate(group = "trait")) %>% 
     left_join(shared %>% mutate(group2 = "shared"), by = c("term1"="term1", "term2"="term2")) %>% 
     mutate(group = ifelse(!is.na(group2), group2, group)) %>% 
@@ -732,8 +891,8 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   remove_loose_terms2 =T
   while (remove_loose_terms2) {
     print("term 2 while loop filtering")
-    trait_tr_and_bc <- trait_tr_and_bc %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
-    tmp <- trait_tr_and_bc %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
+    trait_tr_and_bc <- trait_tr_and_bc %>% filter(!(!term2 %in% term1 & term2 != outcome))
+    tmp <- trait_tr_and_bc %>% filter((!term2 %in% term1 & term2 != outcome))
     if (dim(tmp)[1]==0){
       remove_loose_terms2 =F
     }
@@ -743,7 +902,7 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   if (n_filter > 1) {
     ## filtering by n
     print(paste0("Using n=", n_filter))
-    a_sub <- trait_tr_and_bc %>% filter(n >= n_filter | term2 == 'Breast cancer') 
+    a_sub <- trait_tr_and_bc %>% filter(n >= n_filter | term2 == outcome) 
     
     remove_loose_terms1 =T
     while (remove_loose_terms1) {
@@ -759,8 +918,8 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
     remove_loose_terms2 =T
     while (remove_loose_terms2) {
       print("term 2 while loop filtering")
-      a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
-      tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
+      a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != outcome))
+      tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != outcome))
       if (dim(tmp)[1]==0){
         remove_loose_terms2 =F
       }
