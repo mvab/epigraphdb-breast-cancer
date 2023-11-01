@@ -1,11 +1,11 @@
 library(TwoSampleMR)
 library(tidyverse)
-instruments <- extract_instruments("prot-b-20")
+instruments <- extract_instruments("ieu-b-5108")
 instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project4/01_Data/GWAS_tophits/hdl_cholesterol_tophits.tsv")
 
 out <- extract_outcome_data(
   snps = instruments$SNP,
-  outcome = "ukb-b-17400")
+  outcome = "ebi-a-GCST90010245")
 
 #out in local data 
 #out <- vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/igf_GWAS_tidy_outcome.txt.gz") %>% 
