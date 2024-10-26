@@ -42,9 +42,12 @@ res<- or_ci_data %>%
                                                   "Lum A" ,  "Lum B1" , "Lum B2" , "HER2"  ,  "TNBC"  ))))
 
 # only do this for selected case studies
-keep <- c("ukb-b-4650", "ukb-a-11", "ukb-d-30760_irnt", "met-a-500")
+keep <- c("prot-a-1576")#"ukb-b-4650", "ukb-a-11", "ukb-d-30760_irnt", "met-a-500")
 
 res_sub <- res %>% filter(exposure.id %in% keep) %>% 
+  mutate(exposure_name = ifelse(exposure_name == "Immunoglobulin superfamily containing leucine-rich repeat protein 2 (M/F) Sun BB/2018 [  3K]", "ISLR2 (M/F) Sun BB/2018 [  3K]
+", exposure_name)) %>% 
+
   mutate(exposure_name = ifelse(exposure_name == "body size at age 10 (M/F) MRC-IEU/2018 [454K]", "Childhood body size, age 10 (M/F) UKBiobank/2018 [454K]", exposure_name))
 
 
