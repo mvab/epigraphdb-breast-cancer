@@ -32,7 +32,8 @@ merged<- merged_input %>%
   select(-exposure) %>%
   left_join(names_tidy, by =c("id.exposure" = "exposure.id")) %>% 
   select(exposure, everything())  %>% 
-  filter(!is.na(exposure))
+  filter(!is.na(exposure)) %>% 
+  mutate(exposure = gsub("*", "", exposure, fixed = T)) 
 length(unique(merged$id.exposure)) # 202
 
 data_full<- prepare_data(merged, protein_path_data, antro_blacklist,or_ci_data, passed_pairs) # antro_blacklist is ingnored
@@ -80,7 +81,7 @@ lifestyle <- plot_heatmap4(data_sub,font_size = font_size, star_size = star_size
 # metabolites 
 data_sub<- data_full %>% filter(exposure_cat %in% c("Lipids", "Metabolites"))
 metabolites <- plot_heatmap4(data_sub,font_size = font_size, star_size = star_size/2)
-
+metabolites
 
 # proteins  
 data_sub<- data_full %>% filter(exposure_cat %in% c("Proteins"))
@@ -88,7 +89,7 @@ data_sub <- data_sub %>%
   arrange( value, outcome, main_path) %>%
   # add cis-used label to protein names
   mutate(used_inst_code = ifelse(is.na(used_inst_code), "", used_inst_code)) %>% 
-  mutate(name_mix = paste0(name_mix," ", used_inst_code)) 
+  mutate(name_mix = paste0(gene," ", used_inst_code))  #### final version - using gene names!
 
 
 data_sub <- data_sub %>%   
@@ -115,12 +116,12 @@ leftcol <- plot_grid(lifestyle, metabolites , labels = c('A', 'B'), label_size =
 rightcol <- plot_grid(proteins, NULL , labels = c('', ''),  ncol=1, rel_heights = c(0.9, 0.1))
 
 full_plot <- plot_grid(leftcol, rightcol , labels = c('', 'C'), label_size = 12, ncol = 2, 
-                       rel_widths = c(1, 1)) +panel_border(remove = T)
+                       rel_widths = c(0.98, 0.79)) +panel_border(remove = T)
 
 #full_plotOLD <- plot_grid(leftcol, proteins , labels = c('', 'C'), label_size = 12, ncol = 2, 
 #                                            rel_widths = c(1, 1), rel_heights = c(1, 0.6))
 
-ggsave(paste0("01_MR_related/results/heatmap_html/combined_heatmaps2V3cis.png"),
+ggsave(paste0("01_MR_related/results/heatmap_html/combined_heatmaps2V3cis_genenames.png"),
        plot=full_plot, scale=1, 
        width=18, height=26,  #for paper 
        #width=18, height=32, # for supplement - complete set: to save with white bg,  add theme(panel.background = element_rect(fill='white')) to full plot
