@@ -809,13 +809,18 @@ write_tsv(as_tibble(overlap$terms_list), paste0("../results/literature_outputs/s
 space = 'single'
 trait_id="ukb-a-14"
 
+apneas_variations <- c("Sleep Apnea Syndromes", "Sleep Apnea, Obstructive", "Sleep Apnea, Central", "OSA")
+
 trait_tidy <- get_lifestyle_trait(space, trait_id ) 
+
+trait_tidy_mod <- trait_tidy %>% 
+   mutate(term1 = ifelse(term1 %in% apneas_variations, "Sleep Apnea", term1)) %>% 
+   mutate(term2 = ifelse(term2 %in% apneas_variations, "Sleep Apnea", term2)) 
 
 trait_tidy %>% write_csv("~/Desktop/snoring_literature_space.csv")
   
 # trait_triples <- extract_lifestyle_main_triples(trait_tidy) remove too much for this trait; going to do some steps manually
 
-apneas_variations <- c("Sleep Apnea Syndromes", "Sleep Apnea, Obstructive", "Sleep Apnea, Central", "OSA")
 
 trait_triple1 <- trait_tidy %>% 
    select(1:5) %>% 
@@ -851,10 +856,25 @@ trait_triples2 <- trait_triple1 %>%
 
 trait_san<- make_sankey(trait_triple2_onedir %>% filter(n>0), fontSize=13)
 
+htmlwidgets::saveWidget(trait_san, file=paste0( getwd(), "/snoring_literature_space.html"))
+
 
 ### overlap not working!
 overlap <- overlap_lifestyle_trait_and_bc(trait_triple2_onedir, bc_triples)
 sankey = make_sankey(overlap$sankey_data, colour_links = T, fontSize = 13)
+
+
+# no
+out <- overlap_trait_and_bc(trait_triple2_onedir, KEY_TERM = 'Sleep Apnea', n_filter=1, sankey_font = 13,bc_triples)
+
+
+# mainstrem way
+trait_triples <- extract_lifestyle_main_triples(trait_tidy_mod)
+
+overlap <- overlap_lifestyle_trait_and_bc(trait_triples, bc_triples)
+sankey = make_sankey(overlap$sankey_data, colour_links = T, fontSize = 12)
+
+
 
 
 ```
