@@ -1,3 +1,0 @@
-test,exposure,id.exposure,outcome,total_OR_CI,total_ED,total_OR,total_snp,direct_OR_CI,direct_ED,direct_OR,direct_snp
-prot-a-1736 / ieu-a-1127,Cardiotrophin-1,prot-a-710,ER+ Breast cancer ,0.97 [0.95:0.99],ok,0.970717391779483,3,0.98 [0.95:1.01],overlaps null,0.9803819423864432,3
-prot-a-1736 / ieu-a-1127,Leukemia inhibitory factor,prot-a-1736,ER+ Breast cancer ,1.1 [1.02:1.18],positive,1.0959630408833376,1,1.09 [1.01:1.18],positive,1.0925936027243368,1

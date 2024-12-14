@@ -1,5 +1,0 @@
-id.exposure,id.outcome,outcome,exposure,method,nsnp,b,se,pval,lo_ci,up_ci,or,or_lci95,or_uci95,beta_CI,OR_CI,effect_direction,effect
-prot-a-1737,prot-a-710,Cardiotrophin-1,Leukemia inhibitory factor receptor,Wald ratio,1,-0.04706275033377837,0.10781041388518026,0.6624504188782832,-0.2583711615487317,0.16424566088117493,0.9540275301660887,0.7723085276741586,1.1785037918146783,-0.05 [-0.26:0.16],0.95 [0.77:1.18],overlaps null,term trait as confounder
-prot-a-1737,prot-a-710,Cardiotrophin-1,Leukemia inhibitory factor receptor,NO SENSITIVITY,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,term trait as confounder
-prot-a-1736,prot-a-710,Cardiotrophin-1,Leukemia inhibitory factor,Wald ratio,1,0.03286852589641434,0.12250996015936255,0.788474038011842,-0.20725099601593625,0.27298804780876496,1.0334146630429446,0.8128156109021162,1.3138845409315973,0.03 [-0.21:0.27],1.03 [0.81:1.31],overlaps null,term trait as confounder
-prot-a-1736,prot-a-710,Cardiotrophin-1,Leukemia inhibitory factor,NO SENSITIVITY,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,term trait as confounder
