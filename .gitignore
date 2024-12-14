@@ -30,3 +30,4 @@ project_code/htmls*
 *pyc
 
 .DS_Store
+.png
