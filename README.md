@@ -25,5 +25,8 @@ This is a development repo of the work presented in the article _"Integrating Me
 
 ```
 
+See posters related to this work in the Wiki tab of this repo.
+
+
 ### Project overview 
 ![](study_overview.png)
