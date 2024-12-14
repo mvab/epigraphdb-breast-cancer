@@ -3,13 +3,6 @@
 This is a development repo of the work presented in the article _"Integrating Mendelian randomization and literature-mined evidence for breast cancer risk factors"_.
 
 
-A pre-print of this work will soon be available on MedRxiv. 
-
-* See [Github Pages](https://mvab.github.io/epigraphdb-breast-cancer/) site with links to web-based components of this article.
-
-* See a [poster](https://github.com/mvab/epigraphdb-breast-cancer/wiki/MR-conference-2021-poster) about this work that was presented at Mendelian Randomization Conference 2021. 
-
-
 ---
 
 ### Repo summary
