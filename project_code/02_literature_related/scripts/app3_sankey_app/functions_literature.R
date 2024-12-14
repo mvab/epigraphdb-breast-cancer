@@ -147,6 +147,7 @@ tidy_gwas_to_lit_output <- function(dat){
     # tidy up names
     mutate(term1 = gsub(" gene", "", term1), term2 = gsub(" gene", "", term2)) %>% 
     mutate(term1 = gsub(" protein, human", "", term1), term2 = gsub(" protein, human", "", term2)) %>% 
+    mutate(term1 = gsub(" protein, mammalian", "", term1), term2 = gsub(" protein, mammalian", "", term2)) %>% 
     mutate(term1 = gsub(", human", "", term1, ignore.case = T), term2 = gsub(", human", "", term2, ignore.case = T)) %>% 
     mutate(term1 = gsub("BRCA1 Protein", "BRCA1", term1, ignore.case = T), term2 = gsub("BRCA1 Protein", "BRCA1", term2, ignore.case = T)) %>% 
     mutate(term1 = gsub("BRCA2 Protein", "BRCA2", term1, ignore.case = T), term2 = gsub("BRCA2 Protein", "BRCA2", term2, ignore.case = T)) %>% 
@@ -274,21 +275,23 @@ tidy_terms_for_viz <- function(df){
       . == "Insulin-Like Growth-Factor Binding Protein 1" ~ 'IGFBP1',
       . == 'Insulin-Like Growth Factor Binding Protein 5' ~ 'IGFBP5',
       . == "Insulin-Like Growth Factor Binding Protein 6" ~ 'IGFBP6',
-      . == 'EGF' ~ 'epidermal growth factor',
-      . == 'GHR' ~ 'Growth Hormone Receptor',
+      . == 'epidermal growth factor' ~ 'EGF' ,
+      . == 'Growth Hormone Receptor' ~ 'Somatotropin Receptor',
       . == 'LEP' ~ 'Leptin',
-      . == 'LEPR' ~ 'leptin receptor',
-      . == 'leptin' ~ 'Leptin',
-      . == 'IRS1' ~  'insulin receptor substrate 1 protein',
-      . == 'PRL' ~ 'Prolactin',
-      . == 'AR'~ 'Androgen Receptor',
-      . == 'PGR'~ 'Progesterone receptor',
-      . == 'CRP' ~  'C-reactive protein',
-      . == 'Receptors, Steroid' ~ 'Steroid receptor',
-      . == 'Receptors, LH' ~ 'luteinizing hormone receptor',
-      . == 'Receptors, Progesterone'~ 'Progesterone receptor',
-      . == 'MC4R' ~ 'Melanocortin 4 Receptor',
-      . == 'MC3R' ~ 'Melanocortin 3 Receptor',
+      . == 'LEPR' ~ 'Leptin receptor' ,
+      . == 'leptin receptor' ~ 'Leptin receptor' ,
+      . == 'leptin' ~ 'Leptin'  ,
+      . ==  'insulin receptor substrate 1 protein' ~  'IRS1',
+      . == 'PRL' ~ 'Prolactin' ,
+      . == 'AR'~ 'Androgen Receptor'  ,
+      . == 'PGR'~ 'Progesterone receptor'  ,
+      . == 'CRP' ~  'C-reactive protein' ,
+      . == 'Receptors, Steroid' ~ 'Steroid receptor'  ,
+      . == 'Receptors, LH' ~ 'Luteinizing hormone receptor'  ,
+      . == 'Receptors, Progesterone'~ 'Progesterone receptor'  ,
+      . == 'MC4R' ~ 'Melanocortin 4 Receptor'  ,
+      . == 'MC3R' ~ 'Melanocortin 3 Receptor' ,
+      . == 'Receptor, Melanocortin, Type 2' ~ 'Melanocortin 2 Receptor', 
       . == 'RETN' ~ 'resistin',
       
       . == 'Interleukin-1' ~ "IL1", 
@@ -321,7 +324,10 @@ tidy_terms_for_viz <- function(df){
       . == 'Tumor Necrosis Factors' ~ 'TNF',
       
       
-      . == 'LIF' ~ 'leukemia inhibitory factor',
+      . == 'glucocorticoid receptor alpha' ~ 'NR3C1',
+      . == '1-Phosphatidylinositol 3-Kinase' ~ 'PIK3',
+      
+      . == 'LIF' ~ 'Leukemia inhibitory factor',
       
       . == 'Tumor Necrosis Factor Receptor Superfamily, Member 10B' ~ 'TNFRSF10B',
       . == 'tumor necrosis factor receptor 1A' ~ 'TNFRSF1A',
@@ -356,19 +362,21 @@ tidy_terms_for_viz <- function(df){
       
       . == 'VEGF' ~ 'VEGFA',
       . == 'Vascular Endothelial Growth Factor Receptor-2'~ 'VEGFR2',
-
       
-      . ==  'TFRC' ~ "Transferrin Receptor",
-      . ==  'TF' ~ "Transferrin",
+      . == "Peptide YY" ~ "PYY",
       
-      . == 'OSM' ~ 'oncostatin M',
+      . ==  'oncostatin M'  ~'OSM' ,
       
-      . == 'HGF' ~ 'Hepatocyte Growth Factor',
+      . == 'Hepatocyte Growth Factor' ~ 'HGF',
       
       . == 'Proto-Oncogene Proteins c-akt' ~ "AKT1",
       . == 'Epidermal Growth Factor Receptor' ~ "EGFR",
       
       . == 'Urokinase Plasminogen Activator Receptor' ~ 'PLAUR',
+      . == 'Plasminogen Activator Inhibitor 1' ~ 'PAI1',  # SERPINE1
+      
+      . == "myocyte-specific enhancer-binding factor 2" ~ "MEF2",
+      . == "IkappaB Kinase epsilon" ~ "IKBKE",
       
       . == 'CTF1' ~ "cardiotrophin 1",
       . == 'CD40LG' ~ 'CD40 Ligand',
@@ -386,10 +394,32 @@ tidy_terms_for_viz <- function(df){
       . == 'VIM' ~ "Vimentin",
       
       . == 'ADIPOQ' ~ "Adiponectin",
-      . == 'APOB' ~ "Apolipoproteins B",
       . == 'C3' ~ "Complement 3",
-
       
+      . == 'Apolipoproteins B' ~ "APOB",   
+      . == "Apolipoprotein E" ~ 'APOE' ,
+      . == "Apolipoprotein A-I" ~ 'APOA1' ,
+      . == "Apolipoprotein A-II" ~ 'APOA2' ,
+      
+      . == "ATPase, Aminophospholipid Transporter-Like, Class I, Type 8A, Member 2" ~ 'ATP8A2' ,
+      
+      . == "Multidrug Resistance Associated Protein 1" ~ "ABCC1",
+      
+      . == "Very low density lipoprotein" ~ "VLDL",
+      . == "Low Density Lipoprotein Receptor" ~ "LDL receptor", 
+      . == "Low-Density Lipoproteins" ~ "LDL",
+      . == "very low density lipoprotein triglyceride" ~ "VLDL triglyceride",
+      . == "oxidized low density lipoprotein" ~ "oxidized LDL",
+      . == "LIPOPROTEIN LIPASE" ~ "LPL",
+      . == "Cholesterol Ester Transfer Proteins" ~ "CETP",
+      
+      . == "Mitogen-Activated Protein Kinases" ~ "MAPK",
+      . == "Mitogen-Activated Protein Kinase 1" ~ "MAPK1",
+      . == "Mitogen-Activated Protein Kinase 3" ~ "MAPK3",
+      . == "mitogen-activated protein kinase 7" ~ "MAPK7",
+      . == "mitogen-activated protein kinase p38" ~ "MAPK p38",
+      
+      . == "OSA" ~ "Sleep Apnea, Obstructive",
 
       
       TRUE ~ .)))
@@ -554,9 +584,165 @@ get_breast_cancer_triples <- function(bc_triples_tidy_count){
 
 
 
+get_outcome_diesease_triples <- function(bc_triples_tidy_count, outcomes, outcome_name){
+  
+  bc_triple1 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% outcomes) %>% 
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_ISA')) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>% 
+    #filter(term1.type != 'inch/phsu') %>% 
+    filter(term1 != 'Prostate-Specific Antigen') %>% 
+    mutate(term2 = ifelse(term2 %in% outcomes,outcome_name, term2 )) %>% 
+    select(1:5) %>% 
+    group_by(term1,predicate, term2) %>% 
+    summarise_all(sum) %>% ungroup()
+  
+  bc_triple1 %>% select(term1, term2) %>% distinct() %>% dim() # total 46
+  
+  bc_triple2 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% bc_triple1$term1) %>% #& !term1 %in% bc_triple1$term1) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>%  
+    #filter(term1.type != 'inch/phsu') %>%   
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_COEXISTS_WITH'))
+  
+  bc_triple2 %>% select(term1, term2) %>% distinct() %>% dim() # total 1291
+  
+  
+  ### TIDYING
+  
+  bc_triple1_tidy <- bc_triple1 %>% 
+    tidy_terms_for_viz() %>% 
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  
+  # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  bc_triple2_onedir<- bc_triple2 %>% 
+    # forward count
+    rename(n_pair_f = n_pair) %>% 
+    # join col that will show reverse pair count
+    left_join(bc_triple2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n_pair=n_pair_f)
+  
+  bc_triple2_tidy <- bc_triple2_onedir %>% 
+    tidy_terms_for_viz() %>% 
+    # after tidying names you get almost duplicates: keep the one with highest n
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  
+  ## single path 
+  # pick terms linked to anchor
+  bc_x<- bc_triple1_tidy %>% filter(n>1)
+  # make sure they are term1 in triple2
+  bc_y<- bc_triple2_tidy %>% filter(term2 %in% bc_x$term1 )  %>% filter(n>13) # for viz use 13
+  # drop triple 1 term1 that ends up not linked to anything because of previous filteting step
+  bc_x2 <- bc_x %>%  filter(term1 %in% bc_y$term2)
+  
+  bc_twostep_triples<- bind_rows(bc_x2, bc_y)
+  bc_s_n<- make_sankey(bc_twostep_triples, fontSize=13)
+  
+  
+  
+  bc_triple3 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% bc_triple2$term1 & !term1 %in% bc_triple2$term1) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>%  
+    #filter(term1.type != 'inch/phsu') %>%   
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_COEXISTS_WITH'))
+  
+  bc_triple3 %>% select(term1, term2) %>% distinct() %>% dim() # total 1767
+  
+  # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  bc_triple3_onedir<- bc_triple3 %>% 
+    # forward count
+    rename(n_pair_f = n_pair) %>% 
+    # join col that will show reverse pair count
+    left_join(bc_triple2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n_pair=n_pair_f)
+  
+  bc_triple3_tidy <- bc_triple3_onedir %>% 
+    tidy_terms_for_viz() %>% 
+    # after tidying names you get almost duplicates: keep the one with highest n
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  bc_triple3_tidy %>% select(term1, term2) %>% distinct() %>% dim() # 1749
+  
+  
+  
+  
+  bc_triple4 <- bc_triples_tidy_count %>%  
+    filter(term2 %in% bc_triple3$term1 & !term1 %in% bc_triple3$term1 & !term1 %in% bc_triple2$term1) %>%
+    #filter(term1.type_verbose != "drug_or_compound") %>%  
+    #filter(term1.type != 'inch/phsu') %>%   
+    filter(!predicate %in% c("COEXISTS_WITH", 'NEG_COEXISTS_WITH'))
+  
+  bc_triple4 %>% select(term1, term2) %>% distinct() %>% dim() # total 375
+  
+  # need to drop reverse connections: keep A-B or B-A depending which one is more common
+  bc_triple4_onedir<- bc_triple4 %>% 
+    # forward count
+    rename(n_pair_f = n_pair) %>% 
+    # join col that will show reverse pair count
+    left_join(bc_triple2 %>% select(term1,term2,n_pair_b = n_pair), by = c('term1' = 'term2', 'term2' = 'term1')) %>% 
+    distinct() %>% 
+    # if rel does not exist uin reverse, set it to 0
+    mutate(across(n_pair_b, ~replace_na(.x, 0))) %>% 
+    # if f more common, keep it, else, keep reverse
+    mutate(keep = ifelse(n_pair_f >= n_pair_b ,T,F)) %>% 
+    filter(keep==T) %>%  rename(n_pair=n_pair_f)
+  
+  bc_triple4_tidy <- bc_triple4_onedir %>% 
+    tidy_terms_for_viz() %>% 
+    # after tidying names you get almost duplicates: keep the one with highest n
+    select(term1,term2,n_pair) %>% 
+    filter(term1 !=term2) %>% 
+    group_by(term1, term2) %>% 
+    slice(which.max(n_pair)) %>%
+    ungroup()  %>% 
+    rename(n=n_pair) 
+  
+  bc_triple4_tidy %>% select(term1, term2) %>% distinct() %>% dim() # 375
+  
+  
+  bc_triple1_tidy <- bc_triple1_tidy %>% mutate(term2 = ifelse(term2 %in% outcomes, outcome_name, term2))
+  
+  
+  return(list(triple1 = bc_triple1_tidy,
+              triple2 = bc_triple2_tidy,
+              triple3 = bc_triple3_tidy,
+              triple4 = bc_triple4_tidy))
+  
+}
+
+
+
+
 ## another method that searches for links in 4 BC triples! from 2 trait triples
 
-overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, bc_triples,sankey_font = 13 ){
+overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, bc_triples,sankey_font = 13 , outcome = 'Breast cancer'){
   
   bc_triple1_tidy = bc_triples$triple1
   bc_triple2_tidy = bc_triples$triple2
@@ -587,8 +773,8 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
     mutate(group = as.factor(group)) %>% distinct()
   
   a_sankey<- a %>% 
-    filter(!(!term2 %in% term1 & term2 != 'Breast cancer')) %>% 
-    filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))# exclude loose terms
+    filter(!(!term2 %in% term1 & term2 != outcome)) %>% 
+    filter(!(!term2 %in% term1 & term2 != outcome))# exclude loose terms
   
   full_sankey<- make_sankey(a_sankey, fontSize=13, colour_links = T)
   
@@ -596,7 +782,7 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
   
   print(paste0("Using n=", n_filter))
   #to_exl<- a %>%  filter(n <= n_filter & term2 != KEY_TERM) %>%  pull(term2) %>% unique()
-  a_sub <- a %>% filter(n > n_filter | term2 == 'Breast cancer') #%>% filter(!term1 %in% to_exl) 
+  a_sub <- a %>% filter(n > n_filter | term2 == outcome) #%>% filter(!term1 %in% to_exl) 
   
   remove_loose_terms1 =T
   while (remove_loose_terms1) {
@@ -613,8 +799,8 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
   remove_loose_terms2 =T
   while (remove_loose_terms2) {
     print("term 2 while loop filtering")
-    a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
-    tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
+    a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != outcome))
+    tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != outcome))
     if (dim(tmp)[1]==0){
       remove_loose_terms2 =F
     }
@@ -638,7 +824,7 @@ overlap_trait_and_bc <- function(trait_twostep_triples, KEY_TERM, n_filter = 1, 
 
 
 
-overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_font = 13, n_filter = 1 ){
+overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_font = 13, n_filter = 1 , outcome = "Breast cancer"){
   
   bc_triple1_tidy = bc_triples$triple1
   bc_triple2_tidy = bc_triples$triple2
@@ -697,7 +883,7 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   
   # join trait and BC triples
   trait_tr_and_bc <- bind_rows(trait_triples_linked_to_bc %>% mutate(group = "trait"), 
-                               bc_triples_subset %>% mutate(group = "BC"),
+                               bc_triples_subset %>% mutate(group = outcome),
                                triples_X_A %>% mutate(group = "trait")) %>% 
     left_join(shared %>% mutate(group2 = "shared"), by = c("term1"="term1", "term2"="term2")) %>% 
     mutate(group = ifelse(!is.na(group2), group2, group)) %>% 
@@ -731,8 +917,8 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   remove_loose_terms2 =T
   while (remove_loose_terms2) {
     print("term 2 while loop filtering")
-    trait_tr_and_bc <- trait_tr_and_bc %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
-    tmp <- trait_tr_and_bc %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
+    trait_tr_and_bc <- trait_tr_and_bc %>% filter(!(!term2 %in% term1 & term2 != outcome))
+    tmp <- trait_tr_and_bc %>% filter((!term2 %in% term1 & term2 != outcome))
     if (dim(tmp)[1]==0){
       remove_loose_terms2 =F
     }
@@ -742,7 +928,7 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
   if (n_filter > 1) {
     ## filtering by n
     print(paste0("Using n=", n_filter))
-    a_sub <- trait_tr_and_bc %>% filter(n >= n_filter | term2 == 'Breast cancer') 
+    a_sub <- trait_tr_and_bc %>% filter(n >= n_filter | term2 == outcome) 
     
     remove_loose_terms1 =T
     while (remove_loose_terms1) {
@@ -758,8 +944,8 @@ overlap_lifestyle_trait_and_bc <- function(trait_triples,  bc_triples,sankey_fon
     remove_loose_terms2 =T
     while (remove_loose_terms2) {
       print("term 2 while loop filtering")
-      a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != 'Breast cancer'))
-      tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != 'Breast cancer'))
+      a_sub <- a_sub %>% filter(!(!term2 %in% term1 & term2 != outcome))
+      tmp <- a_sub %>% filter((!term2 %in% term1 & term2 != outcome))
       if (dim(tmp)[1]==0){
         remove_loose_terms2 =F
       }

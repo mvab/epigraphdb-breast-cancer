@@ -1,9 +1,9 @@
 library(tidyverse)
 
 
-proteins_used <- read_tsv("01_MR_related/mr_evidence_outputs/protein_in_final_set.tsv") %>% select(id.exposure, name=exposure)# %>% filter(!id.exposure %in% c("prot-a-2396", 'prot-a-1540'))
+proteins_used <- read_tsv("01_MR_related/results/mr_evidence_outputs/protein_in_final_setV3.tsv") %>% select(id.exposure, name=exposure) %>% distinct() # %>% filter(!id.exposure %in% c("prot-a-2396", 'prot-a-1540'))
 
-protein_names <- read_csv("01_MR_related/mr_evidence_outputs/protein_names.csv", col_names = F) %>% 
+protein_names <- read_csv("01_MR_related/results/mr_evidence_outputs/protein_names.csv", col_names = F) %>%  # these gene names are manually collected
                   rename(name = X1, gene = X2) %>% 
                   right_join(proteins_used) %>% drop_na() # 91: w/o 3 drugs
                   
@@ -52,12 +52,12 @@ clipr::write_clip(protein_names$gene) ### to reactome
 
 # review reactome res
 
-res <- read_csv("01_MR_related/pathways/result.csv")
+res <- read_csv("external_files/pathwaysV3/result.csv")
 res<- res %>% select(`Pathway name`,  `#Entities found`, `Submitted entities found`) %>% arrange(-`#Entities found`)
 
 
-not_found <- read_csv("01_MR_related/pathways/not_found.csv") %>% rename(gene =1)
-dim(not_found) #12
+not_found <- read_csv("external_files/pathwaysV3/not_found.csv") %>% rename(gene =1)
+dim(not_found) #33
 
 top3_path_df<-tibble()
 paths_by_gene<- tibble()
@@ -84,7 +84,7 @@ for (i in unique(protein_names$gene)){
   }
 }
 colnames(top3_path_df) <- c('gene', '1', '2', '3')
-length(unique(top3_path_df$gene)) # 64
+length(unique(top3_path_df$gene)) # 76
 
 top3_path_df %>% count(`1`, sort= T)
 top3_path_df %>% count(`1`, `2`, `3`, sort= T)
@@ -96,23 +96,22 @@ top3_path_df %>% filter(`1` == "Metabolism") %>%  count(`2`, sort= T)
 # add genes with missing pathwys to official 'not found' list
 not_found <- no_data %>% as_tibble() %>% rename(gene = value) %>% 
   bind_rows(not_found)  %>% mutate(main_path = "Not mapped") %>% distinct()
-dim(not_found) #25
+dim(not_found) #33
 
 
 # tidy up now
 path_df <- top3_path_df %>% select(gene, `1`) %>% 
-  mutate(main_path = ifelse(!`1` %in% c('Immune System', 'Metabolism', 'Signal Transduction',
-                                           'Developmental Biology'), "Other", `1`)) %>% select(gene, main_path)
-dim(path_df)# 64
+  mutate(main_path = ifelse(!`1` %in% c('Immune System', 'Metabolism', 'Signal Transduction'), "Other", `1`)) %>% select(gene, main_path)# dropped dev biology 
+dim(path_df)# 77
 
 
 path_df <- bind_rows(path_df, not_found) %>% left_join(protein_names) %>% distinct() %>% drop_na()
-dim(path_df)# 89
+dim(path_df)# 111
 
 path_df %>% count(main_path, sort=T)
 
 
-path_df %>% write_tsv("01_MR_related/pathways/proteins_w_pathways.tsv")
+path_df %>% write_tsv("external_files/pathwaysV3/proteins_w_pathwaysV3.tsv")
 
 ##
 

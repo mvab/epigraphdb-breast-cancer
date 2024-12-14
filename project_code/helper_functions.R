@@ -106,6 +106,26 @@ enrich_dbs<-function(gene_list, dbs, adjpval_filter = 0.05){
 
 
 ### eQTL
+### 
+### 
+
+#library(httr)
+#library(jsonlite)
+#library(GenomicRanges)
+#library(biomaRt)
+
+eqtl_for_snps <- function(variants){
+  eqtl_df <- data.frame()
+  for (i in 1:length(variants)){
+    eqtl_df<-bind_rows(eqtl_df, get_eQTL_for_snp(variants[i]))
+    #print(paste0("done: ", i))
+  }
+  gene_names <- map_ensembl_to_genename(eqtl_df$gene_id)
+  eqtl_df<-left_join(eqtl_df, gene_names, 
+                     by = c('gene_id' = 'ensembl_gene_id')) %>% 
+    dplyr::select('hgnc_symbol', everything()) %>% 
+    arrange(desc(median_tpm))
+}
 
 get_eQTL_for_snp <- function(variant){
   
@@ -115,7 +135,8 @@ get_eQTL_for_snp <- function(variant){
                         size = 1000,
                         p_upper = 5e-8)
   )
-  stopifnot(request$status_code==200)
+  #print(variant)
+  stopifnot(request$status_code==200) # 200 is good
   
   response = httr::content(request, as = "text", encoding = "UTF-8")
   variant_assoc = jsonlite::fromJSON(response, flatten = TRUE)$`_embedded`$associations

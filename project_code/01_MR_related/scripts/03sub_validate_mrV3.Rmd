@@ -1,0 +1,350 @@
+---
+title: "MR validation"
+author: "Marina Vabistsevits"
+date: '2022-06-21'
+output: html_document
+---
+
+```{r message=F}
+
+library(dplyr)
+library(purrr)
+library(readr)
+library(stringr)
+library(tibble)
+library(tidyr)
+library(TwoSampleMR)
+library(vroom)
+library(tidyselect)
+
+
+source("app1_MR-EvE_app/functions.R")
+source("mr_related_functions.R")
+```
+
+
+```{r}
+all_cats <-  read_tsv("../results/mr_evidence_outputs/tidy_traits_by_catV3.tsv") %>%  # made in explore_mr_results.Rmd
+        # for HDL chol fro UKB we have no sample size, so we will arbitrarily add 400,000 (needed for Fstat calc)
+        # upd - going to use the number from here: https://docs.google.com/spreadsheets/d/1kvPoupSzsSFBNSztMzl04xMoSC3Kcx3CrjVf4yBmESU/edit#gid=227859291&range=B75
+        mutate(exposure.sample_size = ifelse(exposure.id == "ukb-d-30760_irnt", 361194, exposure.sample_size)) %>% 
+        # update exposure categories 
+        create_exposure_categories() %>%  add_exposure_labels() %>% filter(exposure_cat != 'other') 
+        
+
+length(unique(all_cats$exposure.id)) # 202
+
+
+exp_help_names <- all_cats %>% # from the first chunk
+  select('exposure_name'='exposure', 'id.exposure'='exposure.id', 'exposure_cat') %>% 
+  distinct()
+
+ids_to_ignore <- c("prot-a-550", "prot-a-3000") # their SNPs are not available in outcomes
+
+ids <-all_cats %>% pull(exposure.id) %>% unique()
+ids_copy_all <- ids #202
+exp_ss <- all_cats %>% select(exposure.id, exposure.sample_size)%>%  distinct()
+
+# protein location data, for cis instruments extraction
+protein_regions<- read_csv("../results/mr_evidence_outputs/protein_gene_regions_ids.csv") %>% 
+  filter(chr != "X") %>%  # non 1-22 will be labeles as 'not a protein'
+  filter(!exposure.id %in% ids_to_ignore) # these protein's cis insruments are not available in BC output; so treating them not as proteins, we get their cis+trans SNPs
+```
+
+
+
+
+# Validation in BCAC 2017
+
+```{r}
+## validate results by redoing MR + sensitivity tests
+## MR -- doing all outcomes validation, even if mr-eve had sign result only for one or two types
+
+#### redone r2 + 2 odd : ids<- c("prot-a-643",  "prot-a-1369", "prot-a-1317", "prot-a-1540", "prot-a-1541", "prot-a-2824" ,"prot-a-1074", "prot-a-2493", "prot-a-2291","prot-a-550" , "prot-a-3000")
+
+res_df_all <- bind_rows(lapply(ids, do_MR, 'all', exp_ss, protein_regions)) 
+res_df_pos <- bind_rows(lapply(ids, do_MR, 'ER+', exp_ss, protein_regions)) 
+res_df_neg <- bind_rows(lapply(ids, do_MR, 'ER-', exp_ss, protein_regions))
+
+redone_MR_full <- bind_rows( res_df_all,res_df_pos,res_df_neg) %>% left_join(exp_help_names) %>% arrange(id.outcome)
+
+
+# split into MR and sens and save
+redone_MR <- redone_MR_full %>% 
+              select(-starts_with('egger_intercept'), -starts_with('Q'),
+                     -Fst, -total_r2, -correct_causal_direction, -steiger_pval,-starts_with("snp_r2"))
+redone_MR_sens <- redone_MR_full %>% 
+              select(id.exposure, id.outcome, exposure, outcome, method, nsnp, used_instrument,
+                     starts_with('egger_intercept'), starts_with('Q'), 
+                     Fst, total_r2, correct_causal_direction,  steiger_pval, starts_with("snp_r2"),
+                     exposure_name, exposure_cat) %>% 
+              filter(method != 'Weighted median')
+
+write_tsv(redone_MR,      "../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
+write_tsv(redone_MR_sens, "../results/mr_evidence_outputs/redone_MR_fulloutput_sensV3cis.tsv")
+
+length(unique(redone_MR$id.exposure)) # 202 tested; but how many validated????
+
+
+redone_MR <- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3.tsv")
+redoneMR_tidy <- redone_MR %>%  
+  select(exposure, id.exposure ,exposure_name, id.outcome, OR_CI, pval, effect_direction , nsnp, method, exposure_cat, used_instrument) %>% 
+  filter(effect_direction != "overlaps null") %>% 
+  filter(method %in% c('Inverse variance weighted', 'Wald ratio'))
+
+redoneMR_tidy%>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat)#total
+redoneMR_tidy%>% filter(id.outcome == 'ieu-a-1128') %>%  select(exposure, id.exposure, exposure_cat) %>% distinct() %>% count(exposure_cat) # selected outcome
+
+length(unique(redoneMR_tidy$id.exposure)) # 101 validated
+
+write_tsv(redoneMR_tidy, "../results/mr_evidence_outputs/redone_MR_subsetoutput_ivwV3cis.tsv") ### this is used in mediator validation
+redone_MR<- read_tsv("../results/mr_evidence_outputs/redone_MR_fulloutputV3cis.tsv")
+```
+
+
+# Validation in BCAC 2020
+
+
+```{r message=F}
+other_project_path <- "/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project4/"
+bcac_lookup<-read_csv(paste0(other_project_path, "mammo_density_mr/metadata/data_lookup_BCAC.csv")) %>% 
+              filter(trait != "BRCA1_TN") %>% filter(is.na(mr.base.id))
+
+# load functions
+source(paste0(other_project_path, "mammo_density_mr/functions.R"))
+source(paste0(other_project_path, "mammo_density_mr/functions_mvmr.R"))
+
+
+# load all BC subtype data
+bc_data<-list()
+data_path_gwas <- paste0(other_project_path, "/01_Data/GWAS_tidy/")
+for (i in bcac_lookup$full_data){
+  print(paste0("Loading  ", i))
+  bc_data[[i]]<- vroom(paste0(data_path_gwas, i), show_col_types = F) 
+}
+
+```
+
+
+```{r message=F,  warnings=F}
+
+####ids <- ids[ids %in% protein_regions$exposure.id] # as they are individually saved, only do proteins - redoing for cis
+
+
+for (i in 1:length(ids)){ # NBb skipped 57 prot-a-2356 and 103 prot-b-55, - no harmonized with wny outcome: 
+    trait = ids[i]
+    print(paste0("==== ", trait, " / ", i,  " ===="))
+  
+    # load instruments
+    instruments_selected <-  instrument_selection(trait, protein_regions )
+    instruments_clumped <- instruments_selected$SNPs
+    used_inst <- instruments_selected$SNPs_type
+    
+    exposure_ss <- exp_ss %>% filter(exposure.id == trait) %>% pull(exposure.sample_size)
+    
+    # MR against every BC subtype outcome
+    trait_vs_subtypes<-tibble()
+    for (bc_type in names(bc_data)){
+        print(paste0(">> ", bc_type))
+   
+        outcome_mediator_trait1 <- bc_data[[bc_type]] %>%
+                                filter(SNP %in% instruments_clumped$SNP)
+        # Harmonise 
+        harmonised <- harmonise_data(exposure_dat = instruments_clumped, 
+                                 outcome_dat = outcome_mediator_trait1)
+        
+      if (nrow(harmonised)>0){
+          
+        
+            # steiger
+         
+            ss_data <- bcac_lookup %>% filter(full_data == bc_type) %>% select(sample.size, ncase, ncontrol)
+            outcome_ss = ss_data$sample.size
+            outcome_ncase = ss_data$ncase
+            outcome_ncontrol =ss_data$ncontrol
+            
+            streiger_res =  calc_steiger(harmonised, 
+                                     exposure_ss = exposure_ss, 
+                                     outcome_ss = outcome_ss,
+                                     outcome_ncase = outcome_ncase,
+                                     outcome_ncontrol = outcome_ncontrol) 
+  
+            
+            # Perform MR
+            res <- mr(harmonised, method_list=c('mr_ivw','mr_egger_regression','mr_weighted_median', 'mr_wald_ratio')) 
+            
+            if (dim(res)[1]!=0){
+                # Tidy up results and save
+                res_tidy<- res %>%
+                            split_outcome() %>% 
+                            split_exposure() %>% 
+                            generate_odds_ratios() %>% 
+                            arrange(method)
+                
+                  # sensitivity
+                if (dim(harmonised)[1]>1 & length(unique(res$method))>1){
+                  res_sens <-
+                    full_join(mr_pleiotropy_test(harmonised),
+                            mr_heterogeneity(harmonised, method_list=c("mr_egger_regression", "mr_ivw"))) %>% 
+                    left_join(streiger_res$summary) %>% 
+                  split_outcome() %>%
+                  split_exposure() %>% 
+                  rename(egger_intercept_pval = pval,
+                          egger_intercept_se = se)
+                } else {
+                  # making dummy sens analysis table as a placeholder
+                  res_sens <- res %>% select(id.exposure, id.outcome, exposure, outcome, nsnp) %>% distinct() %>% mutate(method = "NO SENSITIVITY")
+                  print(paste0("Can't do sensitivity tests for ", trait))
+                }
+               rm(harmonised)
+            }  
+            # join mr and sens in one table
+            out <- full_join(res_tidy, res_sens)
+            out$used_instrument <- used_inst
+            
+          } else {
+            out<-tibble()
+            print("HERE")
+          }
+            
+          # add to main table with all outcomes
+          trait_vs_subtypes<-bind_rows(trait_vs_subtypes, out)
+            
+        }
+
+         # add useful cols
+         trait_vs_subtypes <- trait_vs_subtypes  %>% select(-id.outcome) %>% distinct()
+
+         
+         mr_res <- trait_vs_subtypes   %>% 
+           select(id.exposure:or_uci95, used_instrument)
+         
+         sens_res <- trait_vs_subtypes %>% 
+           select(any_of(c('id.exposure', 'exposure', 'outcome', 'method', 'nsnp',
+                    "egger_intercept", "egger_intercept_se","egger_intercept_pval"  , 
+                    "Q" , "Q_df" ,"Q_pval",
+                    'Fst', 'total_r2', 'correct_causal_direction', 'steiger_pval',  "snp_r2.exposure" ,"snp_r2.outcome" ))) %>% 
+           filter(method != 'Weighted median')
+         
+         ind_res_dir <- paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/")
+         
+         write_tsv(mr_res, paste0(ind_res_dir, "MR_", trait,"-to-BCAC2020_subtypesV3.tsv" ))
+         write_tsv(sens_res, paste0(ind_res_dir, "sens_", trait,"-to-BCAC2020_subtypesV3.tsv" ))
+          
+           
+} 
+
+```
+
+
+```{r}
+# join all files into one df 
+
+
+# as I have some protein files with V3 and V3cis extension, I want to to only keep V3cis, which is later created; 
+# so i need to access not only names but dates of files in the folder
+# sorry this is a total mess
+
+all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/"), pattern = paste0("^MR*"),full.names = T) %>% 
+  enframe(name = NULL) %>% 
+  bind_cols(pmap_df(., file.info)) %>% 
+  select(value, mtime) %>% 
+  mutate(filename = value) %>% 
+  separate(value, sep = "MR_", into=c("tmp", "value")) %>% 
+  separate(value, sep = "-to-", into=c("value", "tmp2")) %>% 
+  select(-tmp, -tmp2) %>% 
+  # select latest
+  group_by(value) %>% 
+  slice(which.max(mtime)) %>% 
+  # 211 for some reason; need to filter by total ids
+  filter(value %in% ids_copy_all) %>% # 202
+  pull(filename)
+  
+
+# old way
+#all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/"), pattern = paste0("^MR*"), full.names = T)
+#all.files<- all.files[grepl("V3", all.files)]
+#all.files<- all.files[!grepl("cis", all.files)] # weird files
+
+l <- lapply(all.files, read_tsv, show_col_types = FALSE)
+all_res<- bind_rows(l) %>% filter(id.exposure %in% ids)
+length(ids)
+length(unique(all_res$id.exposure))# 202
+
+all_res<- all_res %>% 
+  #select(-exposure_cat) %>% 
+  mutate(OR_CI = paste0(round(or,3), " [",round(or_lci95,3) ,":",round(or_uci95,3), "]")) %>% 
+  mutate(effect_direction = ifelse(or_lci95 > 1 & or_uci95 >= 1, 'positive',
+                            ifelse(or_lci95 < 1 & or_uci95 <= 1, 'negative', 'overlaps null'))) %>% 
+  # fix issue with rounding negative effect to 1 
+  mutate(OR_CI = ifelse(effect_direction == 'negative' & OR_CI == '1 [1:1]', "0.99 [0.99:0.99]", OR_CI)) %>% 
+  mutate(outcome =  case_when(outcome == 'Luminal B-HER2 negative' ~ 'LuminalB1 ER+PR+HER-',
+                               outcome == 'Luminal B'        ~ 'LuminalB2 ER+PR+HER+',
+                               outcome == 'Luminal A'        ~ 'LuminalA ER+PR+HER-',
+                               outcome == 'HER2 enriched'    ~ 'HER2-enriched ER-PR-HER+',
+                               outcome == 'TNBC Basal-like'  ~ 'TNBC ER-PR-HER-',
+                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'TNBC_BRCA1 ER-PR-HER-',
+                               outcome == 'Breast cancer (overall BCAC 2020)' ~ 'Breast cancer BCAC 2020',
+                               TRUE ~ outcome))
+# add categories
+all_res<- all_res %>% 
+  rename(exposure.trait=exposure, exposure.id = id.exposure ) %>%
+  create_exposure_categories() %>% 
+  select(-exposure ) %>% 
+  rename(id.exposure = exposure.id , exposure = exposure.trait)
+
+
+write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_MR_vs_BCAC2020V3.tsv"))
+length(unique(all_res$id.exposure))
+```
+
+
+
+```{r}
+# join all SENS files into one df
+# 
+
+all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure/"), pattern = paste0("^sens*"),full.names = T) %>% 
+  enframe(name = NULL) %>% 
+  bind_cols(pmap_df(., file.info)) %>% 
+  select(value, mtime) %>% 
+  mutate(filename = value) %>% 
+  separate(value, sep = "sens_", into=c("tmp", "value")) %>% 
+  separate(value, sep = "-to-", into=c("value", "tmp2")) %>% 
+  select(-tmp, -tmp2) %>% 
+  # select latest
+  group_by(value) %>% 
+  slice(which.max(mtime)) %>% 
+  # 211 for some reason; need to filter by total ids
+  filter(value %in% ids_copy_all) %>% # 202
+  pull(filename)
+  
+
+# old way
+#all.files <- list.files(path = paste0("../results/mr_evidence_outputs/mr_subtypes/per_exposure"), pattern = paste0("^sens*"), full.names = T)
+#all.files<- all.files[grepl("V3", all.files)]
+#all.files<- all.files[!grepl("cis", all.files)] # weird files
+
+
+l <- lapply(all.files, read_tsv, show_col_types = FALSE)
+all_res<- bind_rows(l) %>% filter(id.exposure %in% ids)
+length(unique(all_res$id.exposure))# 202
+
+all_res <- all_res %>%   mutate(outcome =
+                     case_when(outcome == 'Luminal B-HER2 negative' ~ 'LuminalB1 ER+PR+HER-',
+                               outcome == 'Luminal B'        ~ 'LuminalB2 ER+PR+HER+',
+                               outcome == 'Luminal A'        ~ 'LuminalA ER+PR+HER-',
+                               outcome == 'HER2 enriched'    ~ 'HER2-enriched ER-PR-HER+',
+                               outcome == 'TNBC Basal-like'  ~ 'TNBC ER-PR-HER-',
+                               outcome == 'CIMBA_BRCA1_BCAC_TN' ~ 'TNBC_BRCA1 ER-PR-HER-',
+                               outcome == 'Breast cancer (overall BCAC 2020)' ~ 'Breast cancer BCAC 2020',
+                               TRUE ~ outcome))
+
+write_tsv(all_res, paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020V3.tsv"))
+all_res <-read_tsv(paste0("../results/mr_evidence_outputs/mr_subtypes/all_traits_sensMR_vs_BCAC2020V3.tsv"))
+
+```
+
+
+
+

@@ -200,7 +200,7 @@ ui <- fluidPage(align="center", theme = shinytheme("flatly"),
                                                            'GWAS v2' =  'GWASv2',
                                                            'Survival' = 'Survival',
                                                            "UK Biobank" = 'UKBB'),
-                                            selected = chip_list[!grepl('iCOG2015|GWASv2|UKBB|Survival',chip_list)]),
+                                            selected = chip_list[grepl('Meta',chip_list)]),
                          downloadButton('downloadData', 'Download currently displayed data')
                   )
                   

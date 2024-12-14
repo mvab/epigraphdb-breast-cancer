@@ -1,11 +1,11 @@
 library(TwoSampleMR)
 library(tidyverse)
-instruments <- extract_instruments("prot-b-20")
-instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_tophits/igf_tophits.tsv")
+instruments <- extract_instruments("ieu-b-5108")
+instruments<-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project4/01_Data/GWAS_tophits/hdl_cholesterol_tophits.tsv")
 
 out <- extract_outcome_data(
   snps = instruments$SNP,
-  outcome = "ieu-a-1126")
+  outcome = "ebi-a-GCST90010245")
 
 #out in local data 
 #out <- vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project2/01_Data/GWAS_results_tidy/igf_GWAS_tidy_outcome.txt.gz") %>% 
@@ -160,3 +160,21 @@ mvmr_sens_df$Qstat <- pres$Qstat
 mvmr_sens_df$Qpval <- pres$Qpval
 
 
+
+### other test
+### 
+### 
+
+exp <-read_tsv("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project4/01_Data/GWAS_tophits/hdl_cholesterol_tophits.tsv")
+out <- vroom::vroom("/Users/ny19205/OneDrive - University of Bristol/Documents - OneDrive/Mini-project4/01_Data/GWAS_tidy/snoring_GWAS_tidy_outcome.txt.gz") %>% 
+  filter(SNP %in%exp$SNP)
+
+
+harmonised<- harmonise_data(exposure_dat = exp, 
+                            outcome_dat = out)
+
+
+res_early <- TwoSampleMR::mr(harmonised, method_list = c('mr_ivw')) %>% 
+  split_outcome() %>% 
+  split_exposure() %>% 
+  generate_odds_ratios()
