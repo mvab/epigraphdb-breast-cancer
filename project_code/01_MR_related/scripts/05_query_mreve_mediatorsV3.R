@@ -43,7 +43,7 @@ for (i in 1:length(traits_all$id.exposure)){
   
   all_results<- bind_rows(all_results, out)
 }
-length(unique(all_results$exposure.id)) # 103 it's ok
+length(unique(all_results$exposure.id)) # 103 it's ok : 96 will do too :saved 103 as med_extracted_all_r3V3_backup_with_103 
 
 # keep only those pairs, where each step q-value passed 0.05
 all_results_fdr <- all_results %>% filter (r1.qval <0.05 & r3.qval <0.05)
@@ -62,11 +62,11 @@ all_results_trait_cats <-
 # join with cats and restrubcture
 results_subset <- all_results_fdr %>% right_join(all_results_trait_cats) %>% 
                                   select(exposure.trait, med.trait, outcome.id,
-                                         r1.OR_CI, r2.OR_CI, r3.OR_CI, type, med_cat, r1.b, r2.b, r3.b, r1.pval, r2.pval, r3.pval, r1.qval,  r3.qval, 
+                                         r1.beta_CI, r2.OR_CI, r3.OR_CI, type, med_cat, r1.b, r2.b, r3.b, r1.pval, r2.pval, r3.pval, r1.qval, r3.qval, 
                                          exposure.id, med.id,med_cat) %>% 
                                   distinct()
 
-length(unique(results_subset$exposure.id)) # 103 this is ok
+length(unique(results_subset$exposure.id)) # 103 this is ok 96 will do too
 
 # adhoc save of intesting results - dieatary - PA - BC
 tmp <- results_subset %>% filter(exposure_cat == "Diet and supplements", med_cat == "Physical activity" ) 
@@ -86,11 +86,11 @@ write_csv(results_subset, "01_MR_related/results/mr_evidence_outputs/med_extract
 
 protein_names <- read_csv("01_MR_related/results/mr_evidence_outputs/protein_names_w_ids.csv", col_names = T) %>% select(name=exposure, gene) %>% distinct() %>% drop_na()
 results_subset<- read_csv("01_MR_related/results/mr_evidence_outputs/med_extracted_all_r3V3.csv") %>% 
-  filter(type %in% c('mediator')) %>%
+  filter(type %in% c('mediator')) %>% # i.e. not conf
   create_exposure_categories() %>%
   left_join(protein_names, by = c("med.trait" = 'name')) %>% rename(med.gene = gene) %>% 
   left_join(protein_names, by = c("exposure.trait" = 'name')) %>% rename(exp.gene = gene) %>% 
-  select(exposure.trait,exp.gene, med.trait, med.gene, everything()) 
+  select(exposure_cat,exposure.trait, exposure.id, exp.gene, med.trait, med.gene, med.id, med_cat, everything()) 
 dim(results_subset)# 3435
 
 results_subset %>% filter(med_cat == "Proteins") %>% filter(is.na(med.gene)) %>% select(med.id, med.trait, med.gene) %>% distinct() %>% View()
@@ -104,3 +104,28 @@ length(unique(results_subset$exposure.id)) # 103
 #### -- validation step happens here
 
 #  in 06sub_mreve_mediators_validation.R
+
+
+
+
+
+#### for exporting supplementary
+
+cols<- colnames(results_subset)
+
+cols<- gsub("r1", "step1", cols)
+cols<- gsub("r3", "step2", cols)
+cols<- gsub("r2", "total", cols)
+ 
+colnames(results_subset)<- cols
+
+# rearrage cols:
+
+results_subset <- results_subset %>% 
+  mutate(outcome = case_when(outcome.id == "ieu-a-1126"~ 'Brest cancer overall',
+                             outcome.id == "ieu-a-1127"~ 'Brest cancer ER+',
+                              outcome.id == "ieu-a-1128"~ 'Brest cancer ER-')) %>% 
+  select(exposure_cat:outcome.id,outcome, step1.beta_CI, step2.OR_CI, total.OR_CI, step1.b, step2.b, total.b, step1.pval, step2.pval,total.pval, step1.qval, step2.qval)
+
+
+write_csv(results_subset, "01_MR_related/results/mr_evidence_outputs/med_extracted_all_r3V3_as_mreveraw_supl.csv") # supl data 5

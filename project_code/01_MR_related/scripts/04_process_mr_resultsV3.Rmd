@@ -418,7 +418,7 @@ all_mr_tests <- bind_rows(main_results17,main_results20 ) %>%
                 select(-exposure_name)
 
 write_tsv(all_mr_tests, "../results/mr_evidence_outputs/all_data_validationV3.tsv")
-all_mr_tests <- read_tsv("../results/mr_evidence_outputs/all_data_validationV3.tsv")
+all_mr_tests <- read_tsv("../results/mr_evidence_outputs/all_data_validationV3.tsv") # supl data 3
 length(unique(all_mr_tests$id.exposure)) # 202
 ```
 
@@ -428,7 +428,7 @@ length(unique(all_mr_tests$id.exposure)) # 202
 ```{r}
 # testing subsetting by sensitivity
 library(rio)
-res_w_sens <- import_list("../results/mr_evidence_outputs/all_data_with_sens_filtersV3.xlsx")
+res_w_sens <- import_list("../results/mr_evidence_outputs/all_data_with_sens_filtersV3.xlsx") # supl data 2
 
 
 all_df <- bind_rows(res_w_sens)
@@ -463,6 +463,25 @@ dat <- dat %>%
 
 write_tsv(dat, "../results/mr_evidence_outputs/all_data_with_sens_filters_hazardsV3.tsv")
 ```
+
+```{r}
+
+dat <- read_tsv("../results/mr_evidence_outputs/all_data_with_sens_filters_hazardsV3.tsv") # supl data 2
+
+
+
+
+library(rio)
+res_w_sens <- import_list("../results/mr_evidence_outputs/all_data_with_sens_filtersV3.xlsx")
+
+
+all_df <- bind_rows(res_w_sens)
+
+
+```
+
+
+
 
 
 

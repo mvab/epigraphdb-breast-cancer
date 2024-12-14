@@ -151,6 +151,18 @@ res_step2_fdr<- bind_rows(res_step2ivw,res_step2other) %>% arrange(id.exposure, 
 write_tsv(res_step2_fdr,      "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_fulloutput_fulltable_step2_V3.tsv")
 
 
+####3 supl data 6 ---- no this is not 6; 6 is a at the bottom; ok this is 6b wiht all sens tests
+#
+    res1<-read_tsv("01_MR_related/results/mr_evidence_outputs/redone_MRmeds_fulloutput_fulltable_step1_V3.tsv")
+    res2<-read_tsv( "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_fulloutput_fulltable_step2_V3.tsv")
+    twostep<-list()
+    twostep[["step1"]] <- res1
+    twostep[["step2"]] <- res2
+    
+    writexl::write_xlsx(twostep, "01_MR_related/results/mr_evidence_outputs/mreve_twostep_all_mr_results_post_validation.xlsx")
+
+
+
 ## split into MR and sens and save as is
 
 # step 1
@@ -239,7 +251,6 @@ step2_validated <- read_tsv("01_MR_related/results/mr_evidence_outputs/redone_MR
 # ---NB this data also have to saved as supl data  - supl 6?? - save unselected cols version 
 write_tsv(step1_validated, "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_subsetoutput_ivw_step1_validated_V3_Pval.tsv")
 write_tsv(step2_validated, "01_MR_related/results/mr_evidence_outputs/redone_MRmeds_subsetoutput_ivw_step2_validated_V3_Pval.tsv")
-
 
 
 #### next: putting everything together
@@ -334,6 +345,7 @@ counts<- full_join(comparisonPval, comparisonQval) %>% left_join(lit_counts) %>%
          mutate(med_count_P =ifelse(is.na(med_count_P), 0, med_count_P)) %>% 
          mutate(med_count_Q =ifelse(is.na(med_count_Q), 0, med_count_Q))
 
+
 length(unique(counts$id.exposure)) # 101 yes this is bcac 2017 risk factors only
 
 counts %>% filter(med_count_P > 0) %>% pull(id.exposure) %>% unique() %>% length() # 101 - all exposures have at least 1 putative mediaotr if pval is used
@@ -343,7 +355,7 @@ counts %>% filter(total_sign_level == "FDR") %>% filter(med_count_Q > 0) %>% pul
 counts  %>% write_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traitsV3.csv")
 
 
-
+counts <- read_tsv("01_MR_related/results/mr_evidence_outputs/mediators_counts_per_traitsV3.csv")
 counts_prots <- counts %>% 
   filter(exposure_cat == "Proteins") %>% 
   filter(total_sign_level %in% c("FDR","nominal")) %>%
@@ -362,9 +374,12 @@ for (i in exposure_to_extract){
   sub <- steps_joinedPval %>%  filter(id.exposure == i)
   out[[i]] <- sub
 }
-writexl::write_xlsx(out, "01_MR_related/results/mr_evidence_outputs/med-table-validatedV3.xlsx") # this is not really validated; 
-                                                                                                 # just pval for each step -- is this Supl table 6??
 
+out2 <- out
+
+writexl::write_xlsx(out, "01_MR_related/results/mr_evidence_outputs/med-table-validatedV3.xlsx") #  this Supl table 6a
+
+out[["ukb-d-30760_irnt"]] %>%  filter(step1.qval < 0.05, step2.qval < 0.05) %>% distinct() %>% filter(med_cat != "Lipids") %>% View()
 
 out[["ukb-d-30760_irnt"]] %>% filter(total.pval < 0.05) %>% View()
 
@@ -373,8 +388,6 @@ out[["ukb-d-30760_irnt"]] %>% filter(total.pval < 0.05) %>% View()
 
 
 ### old
-
-
 
 
 p <- ggplot(counts, aes(x=med_count)) + 
@@ -409,7 +422,7 @@ counts %>% filter(id.exposure %in% c("prot-a-1369", "prot-a-1097",  "prot-b-38",
 # extracting stuff for each case study
 # 
 # specify ID:
-case_id = "ukb-a-11" # cBMI
+case_id = "prot-a-1576" # cBMI
 
 # this is already fdr-corrected in both steps; mr-eve
 res<- results_subset %>% 
@@ -456,17 +469,17 @@ res_validP %>% select(id.med, med_cat) %>% distinct() %>% count(med_cat) %>% Vie
 res_validQ<- steps_joinedPval %>% 
   filter(id.exposure == case_id) %>% 
   filter(step1.qval <0.05 & step2.qval <0.05) %>% 
-  #filter(!med_cat %in% c("Lipids", "Antrophometric")) %>%  # for CBMI
+  #filter(!med_cat %in% c("Lipids")) %>%  # for CBMI
   distinct() %>% 
   arrange(outcome, med_cat)
 
 res_validQ %>% select(id.med, med_cat) %>% distinct() %>% count(med_cat) %>% View()
 
 
-output_table <- res_validP %>%
+output_table <- res_validQ %>%
               select("exposure",  "mediator", "outcome",  "step1.beta_CI" , "step1.pval", "step1.qval", "step2.OR_CI"  , "step2.pval", "step2.qval", "mediator_id"='id.med') %>% 
-               mutate(outcome = case_when(grepl("ER+", outcome)  ~ "ER+ subtype" ,
-                                          grepl("ER-" , outcome) ~  "ER- sybtype",
+               mutate(outcome = case_when(grepl("ER-", outcome)  ~ "ER- subtype" ,
+                                          grepl("ER+" , outcome) ~  "ER+ subtype",
                                                 TRUE ~ "Overall BC")) %>% 
               mutate(step1.pval = signif(step1.pval, digits=2)) %>% 
               mutate(step2.pval = signif(step2.pval, digits=2)) %>% 
@@ -475,6 +488,9 @@ output_table <- res_validP %>%
               # pheno names specifc chanages
               mutate(mediator = ifelse(mediator == "Types of physical activity in last 4 weeks: Other exercises (eg: swimming  cycling  keep fit  bowling)",
                                        "Physical activity: exercise to keep fit", mediator)) %>% 
+            mutate(exposure = ifelse(exposure == "Immunoglobulin superfamily containing leucine-rich repeat protein 2",
+                                     "ISLR2", exposure)) %>% 
+              mutate(mediator = paste0(mediator, "\n", mediator_id)) %>% 
               arrange(mediator)
 
-output_table %>%  write_csv(paste0("01_MR_related/results/mr_evidence_outputs/case_studies_V3/", case_id, "_twostepMR_notFDR_subset.csv"))
+output_table %>%  write_csv(paste0("01_MR_related/results/mr_evidence_outputs/case_studies_V3/", case_id, "_twostepMR_FDR_subset.csv"))

@@ -861,16 +861,16 @@ do_MR_trait_pairs <- function(exp_trait, out_trait){
 
 
 tidy_conf_query_output <- function(df, type){
-  
+
   if (dim(df)[1] != 0){
     
     df_OR <- df %>% 
-      mutate( r1.loci = r1.b - 1.96 * r1.se, 
+      mutate( r1.loci = r1.b - 1.96 * r1.se, ######## NB this is not supposed to in OR - this is step 1 - need to be beta_CI
               r1.upci = r1.b + 1.96 * r1.se,
               r1.or = exp(r1.b), 
               r1.or_loci = exp(r1.loci), 
               r1.or_upci = exp(r1.upci),
-              r1.OR_CI = paste0(round(r1.or,2), " [",round(r1.or_loci,2) ,":",round(r1.or_upci,2), "]")) %>% 
+              r1.beta_CI = paste0(round(r1.b,2), " [",round(r1.loci,2) ,":",round(r1.upci,2), "]")) %>% 
       mutate(r1.effect_direction = ifelse(r1.or_loci > 1 & r1.or_upci >= 1, 'positive',
                                           ifelse(r1.or_loci < 1 & r1.or_upci <= 1, 'negative', 'overlaps null'))) %>% 
       mutate( r2.loci = r2.b - 1.96 * r2.se, 
