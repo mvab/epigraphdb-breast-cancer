@@ -25,21 +25,6 @@
 
 <br>
 
-#### Case study reports
-
-  <img src="content/figs/case_studies.png" width="315"/>
-  
-  In the article, we explore four breast cancer risk/protective factors in more detail as case studies. The potential mediators identified for these traits from MR-EvE and literature-mined data are investigated in individual reports, which were generated with Rmd.
-
-* [Cardiotrophin-1](content/case_study_report_Cardiotrophin-1.html)
-
-* [IGF-1](content/case_study_report_IGF-1.html)
-
-* [Childhood body size](content/case_study_report_Childhood_body_size.html)
-
-* [Age at menopause](content/case_study_report_Age_at_menopause.html)
-
-<br>
 
 #### EpiGraphDB queries examples 
 
