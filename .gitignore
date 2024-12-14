@@ -13,6 +13,9 @@ other_text_files/*
 query_results/*
 
 
+01_MR_related/scripts/08_case_study_report_lit_only.Rmd
+
+
 project_code/external_figures/
 project_code/01_MR_related/scripts/05_case_study_report_cache/html/*
 project_code/01_MR_related/results/mr_evidence_outputs/*
