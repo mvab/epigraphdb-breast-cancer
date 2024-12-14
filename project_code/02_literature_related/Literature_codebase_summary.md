@@ -1,6 +1,6 @@
 # Literature codebase summary
 
-1. `01_extract_lit_space.Rmd` 
+1. `01_extract_lit_spaceV3.Rmd` 
 
 	**Part 1:** breast cancer lit space
 	
@@ -14,22 +14,22 @@
 	
 	**Part 2:** risk factor traits lit spaces
 	
-	Input: `trait_manual_ivw_subtypes_merged.tsv` list of 213 traits from MR analysis
+	Input: `trait_manual_ivw_subtypes_merged.tsv` list of final traits from MR analysis
 	
-	- we exclude traits that we know beforehand that are not good for lit space extraction, or with duplicate, similar traits. In total, we query 154 traits (some will become combined lit spaces)
+	- we exclude traits that we know beforehand that are not good for lit space extraction, or with duplicate, similar traits. In total, we query N traits (some will become combined lit spaces)
 	- we also identify zero-spaces, and tidy spaces and save triple/pair counts
 	
 	Output: 
 	
-	* `traits_marked_for_lit_analysis.tsv` - 154/213 marked for analysis
-	* `lit_spaces_finalset.RData` - raw lit space for those 154 traits
-	* `lit_spaces_finalset_tidy.RData` - tidy space for 90 traits with non-empty spaces
+	* `traits_marked_for_lit_analysis.tsv` - traits marked for analysis
+	* `lit_spaces_finalset.RData` - raw lit space for those  traits
+	* `lit_spaces_finalset_tidy.RData` - tidy space for  traits with non-empty spaces
 	* `traits_marked_for_lit_analysis_with_size.tsv` - same as first, but included lit spaces sizes, highlighting those qith zero-size lit spaces. 
 	
 	
 	Then we get lit spaces summary sizes by categories:
 	
-	* `available_litspace_counts_by_exposure_cat.tsv`-- Table 2 in paper
+	* `available_litspace_counts_by_exposure_cat.tsv`-- Table 2 in paper V1
 	
 		
 	We also combine similar traits' lit spaces to present them as a single trait:
@@ -87,9 +87,16 @@
 	* All functions used by this script are stored within the Shinyapp `app3_sankey_app/functions_literature.R`
 
 
+3. The app
+
+```
+app3_sankey_app/
+```
+Similarly to script `02_literature_overlap.R`, the app loads the tidy triples and perform literature overlap, which is then display as a Sankey diagram. 
+
 
 	
-3. Legacy scripts in `legacy/`
+4. Legacy scripts in `legacy/`
 
 
 	* `review_literature_mapping.Rmd` - legacy; exploratory -- will reuse parts or GWAS linking analysis
@@ -104,7 +111,7 @@
 	|                | prod  | v1.2  |   
 	|----------------|-------|-------|
 	| unique triples | 65738 | 74333 | 
-	| unique PMIDs    | 23809 | 26392 |   
+	| unique PMIDs   | 23809 | 26392 |   
 	| missing PMIDs from the other version | 3032  | 449   |  
 	
 	 ~1000 out of 3032  from 2020/2019 
