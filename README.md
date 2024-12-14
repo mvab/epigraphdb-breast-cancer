@@ -17,13 +17,14 @@ This is a development repo of the work presented in the article _"Integrating Me
 │   │   ├── results/
 │   │   └── scripts/
 ├── graph_testing_legacy # python-based initial exploration of EpiGraphDB (not a part of the article results)
-├── MRconf_poster.png
-├── study_overview.png
-└── query_results/
+└── study_overview.png
 
 ```
 
-See posters related to this work in the Wiki tab of this repo.
+See posters related to this work in the Wiki tab of this repo: 
+
+* [Poster](https://github.com/mvab/epigraphdb-breast-cancer/wiki/MR-conference-2021-poster) about the early stages of this work presented at Mendelian Randomization Conference 2021. 
+* [Poster](https://github.com/mvab/epigraphdb-breast-cancer/wiki/IGES-conference-2022-poster) based on the pre-print v1 presented at International Genetic Epidemiology Society meeting 2022 (Paris).
 
 
 ### Project overview 
