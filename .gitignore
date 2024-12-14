@@ -28,3 +28,5 @@ project_code/htmls*
 *.xmind
 *.html
 *pyc
+
+.DS_Store
